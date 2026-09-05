@@ -85,14 +85,17 @@ GitHub: https://github.com/Oba-One/omo-yoruba-website (public). Workflows in `.g
 - Actions are pinned to commit SHAs with the version in a comment, and the shared setup
   lives in `.github/actions/setup-js`.
 
-Branch protection is not configured yet. To require the four CI jobs on `main`:
+Branch protection on `main` (enabled 5 September 2026): the four CI jobs are required
+status checks, the branch must be up to date before merging, the rule applies to
+administrators too, and force pushes and deletions are refused. So every change reaches
+`main` through a pull request, the owner's included. To inspect or change it:
 
 ```bash
-gh api -X PUT repos/Oba-One/omo-yoruba-website/branches/main/protection --input - <<'JSON'
-{ "required_status_checks": { "strict": true, "contexts": ["Typecheck, lint, test", "Build packages/web", "Commit messages and PR title", "Shell scripts"] },
-  "enforce_admins": false, "required_pull_request_reviews": null, "restrictions": null }
-JSON
+gh api repos/Oba-One/omo-yoruba-website/branches/main/protection --jq '.required_status_checks.contexts'
 ```
+
+Adding a required check later (Chromatic in Phase 1, Playwright in Phase 3) means adding
+its job name to the `contexts` list with the same `PUT` call, body as in this file's history.
 
 ## Security headers
 
