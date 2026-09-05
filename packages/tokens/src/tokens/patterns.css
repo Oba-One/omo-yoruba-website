@@ -1,0 +1,40 @@
+/* Ported from docs/design/design/_ds/.../tokens/patterns.css. Edits: the five pattern SVGs from
+   docs/design/design/images/patterns live in ./patterns and are exposed as url tokens below.
+   Pattern is texture, never costume. Àdìrẹ dot fields, aṣọ òkè stripe rhythms, ayo dot-grids, always low opacity.
+   Never kente, never Adinkra, no safari or faux-carved motifs. */
+:root {
+  --adire-dot-size: 26px;
+  --adire-opacity-dark: 0.1; /* @kind other */ /* 8-12% on dark bands */
+  --adire-opacity-light: 0.07; /* @kind other */
+  --pattern-adire-white: radial-gradient(
+    circle at 2px 2px,
+    rgba(255, 255, 255, 0.9) 1.6px,
+    transparent 1.7px
+  ); /* @kind other */
+  --pattern-adire-indigo: radial-gradient(
+    circle at 2px 2px,
+    #1e2a5a 1.6px,
+    transparent 1.7px
+  ); /* @kind other */
+  /* aṣọ òkè: 2-4 uneven horizontal bands, not pinstripes */
+  --pattern-asoke: linear-gradient(
+    180deg,
+    var(--indigo-700) 0 3px,
+    transparent 3px 5px,
+    var(--terra-600) 5px 7px,
+    transparent 7px 9px,
+    var(--gold-500) 9px 10px,
+    transparent 10px
+  );
+  --pattern-ayo-dot: radial-gradient(
+    circle 3.5px at 50% 50%,
+    currentColor 3.4px,
+    transparent 3.6px
+  ); /* @kind other */
+  /* SVG textures, copied verbatim from the handoff. Tile sizes: chevron 20x12, motif 72x60 (drawn at 54x45), batik 260x260, ornament 460x44, sun crest 140x104. */
+  --pattern-chevron-band: url("../patterns/chevron-band.svg");
+  --pattern-motif-band: url("../patterns/motif-band.svg");
+  --pattern-batik-wash: url("../patterns/batik-wash.svg");
+  --pattern-ornament-divider: url("../patterns/ornament-divider.svg");
+  --pattern-sun-crest: url("../patterns/sun-crest.svg");
+}
