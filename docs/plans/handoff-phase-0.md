@@ -71,7 +71,9 @@ protection yet; the runbook has the command).
   top of `ci.yml` with their phases.
 - The `setup-pre-commit` skill the pre-step installed was removed: it installs Husky,
   lint-staged and Prettier, which contradicts lefthook and Biome. `git-guardrails-claude-code`
-  stays; its hook copy in `.claude/hooks/` fails closed when the payload cannot be parsed.
+  stays; its hook copy in `.claude/hooks/` fails closed when the payload cannot be parsed,
+  and on the owner's instruction (5 September 2026) it allows plain pushes and blocks only
+  forced ones.
 - The Sanity MCP server needs OAuth on first use; the `sanity` plugin's own MCP entry also
   shows as unauthenticated in this session.
 

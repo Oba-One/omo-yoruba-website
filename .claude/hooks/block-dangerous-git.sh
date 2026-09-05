@@ -3,6 +3,9 @@
 # Claude runs them. Adapted from .claude/skills/git-guardrails-claude-code/scripts. This copy
 # fails closed and needs nothing but bash: a payload it cannot parse is judged as raw text,
 # and matching uses bash's own regex engine rather than grep.
+#
+# Plain pushes are allowed (owner's instruction, 5 September 2026); forced pushes in every
+# spelling (--force, --force-with-lease, -f, a + refspec) stay blocked.
 set -uo pipefail
 
 INPUT=$(cat)
@@ -16,7 +19,7 @@ if [[ -z "$COMMAND" ]]; then
 fi
 
 DANGEROUS_PATTERNS=(
-  'git push'
+  'git push.*( --force| -f( |$)| \+[^ ]+)'
   'git reset --hard'
   'git clean -f'
   'git branch -D'
