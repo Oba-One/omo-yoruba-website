@@ -2,7 +2,8 @@
 
 Written 5 September 2026 at the end of the Phase 1 session, for the owner's checkpoint
 (wayfinder ticket 16) and the session that runs Phase 2 (`docs/design/PROMPTS.md`). Branch:
-`phase-1/tokens-and-storybook`, one pull request against `main`. Tickets:
+`phase-1/tokens-and-storybook`, pull request https://github.com/Oba-One/omo-yoruba-website/pull/2
+against `main`. Tickets:
 `docs/tickets/phase-1/issues/` (ten, all resolved). Research with sources:
 `docs/research/phase-1-storybook-chromatic.md` and `docs/research/fonts-source-serif-sans-subsets.md`.
 
