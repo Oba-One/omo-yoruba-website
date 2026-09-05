@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "bun run --filter @oy/web dev",
     "build": "bun run --filter @oy/web build",
-    "storybook": "bun run --filter @oy/storybook storybook",
+    "storybook": "bun run --filter @oy/ui storybook",
     "test": "vitest run",
     "e2e": "bun run --filter @oy/web e2e",
     "lint": "biome check . && bun packages/lint/src/cli.ts all",
@@ -28,7 +28,7 @@
     "check": "bun run typecheck && bun run lint && bun run test && bun run check:toolchain",
     "check:toolchain": "bash scripts/check-toolchain-pins.sh",
     "check:commits": "bash scripts/check-commits.sh",
-    "prepare": "lefthook install"
+    "prepare": "lefthook install || echo 'lefthook could not install the git hooks; see docs/runbook.md, Local'"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.12",

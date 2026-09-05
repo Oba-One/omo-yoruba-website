@@ -9,4 +9,4 @@ Blocked by: none
 
 ## Question
 
-Default: a second Vercel project built from `packages/storybook` so the owner can visit it. Alternative: serve the static build under a path of the site. The default keeps the site's bundle and CSP untouched.
+Default: a second Vercel project built from `packages/ui` (its `.storybook/` config) so the owner can visit it. Alternative: serve the static build under a path of the site. The default keeps the site's bundle and CSP untouched.

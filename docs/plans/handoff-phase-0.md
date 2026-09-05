@@ -7,7 +7,7 @@ Phase 0 and then runs Phase 1 (`docs/design/PROMPTS.md`). Branch: `phase-0/boots
 
 - Bun workspace with `packages/web` (Astro 7.3.1, `@astrojs/vercel`, `output: 'server'`,
   `astro:env` schema, PostHog behind `PUBLIC_POSTHOG_KEY`, CSP as a report-only header),
-  `packages/storybook` (empty, Phase 1), `packages/tokens`, `packages/ui`, `packages/content`
+  `packages/tokens`, `packages/ui` (with the empty `.storybook/`, Phase 1), `packages/content`
   (scaffolds) and `packages/lint` (working checks with tests).
 - Agent docs: `CLAUDE.md`, `CONTEXT.md`, ADRs 0001 to 0011 in `docs/adr/`, seven repo
   skills in `.claude/skills/oy-*`, `.mcp.json` (Sanity MCP), `docs/runbook.md` stub,
@@ -39,8 +39,9 @@ Lighthouse in CI (needs the preview URL, Phase 4), and nonces or hashes for inli
 
 ## Layout change after the first commit
 
-On the owner's instruction the apps moved under `packages/` (`packages/web`,
-`packages/storybook`), matching the green-goods repo. ADR 0003, `CLAUDE.md`, the wizard,
+On the owner's instruction the apps moved under `packages/` (`packages/web`), matching the
+green-goods repo, and the Storybook config moved into `packages/ui/.storybook/` so there is
+no Storybook workspace of its own; Phase 1 stands it up there. ADR 0003, `CLAUDE.md`, the wizard,
 the runbook and the lint scope were updated; `packages/web/vercel.json` pins the Vercel
 settings for that root directory. The handoff docs under `docs/design/` still describe an
 `apps/` split; the repo wins.

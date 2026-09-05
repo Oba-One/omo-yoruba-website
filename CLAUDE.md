@@ -33,9 +33,8 @@ Every workspace lives under `packages/`, apps and libraries alike, modelled on t
 green-goods repo (ADR 0003). The handoff's `apps/` split is not used.
 
 - `packages/web`: pages, layouts, actions, Sanity loading, `astro.config.ts`, the Studio mount.
-- `packages/storybook`: Storybook config and theme; stories are discovered from `packages/ui`.
 - `packages/tokens`: every colour, type, spacing, pattern and font. Tokens only.
-- `packages/ui`: every visual component (`.astro`) with its story and test.
+- `packages/ui`: every visual component (`.astro`) with its story and test; `.storybook/` config and theme.
 - `packages/content`: the content model, structure, GROQ, generated types, seed, functions.
 - `packages/lint`: em dash, Yoruba diacritics and colour literal checks; `yoruba-terms.json`.
 - `docs/design`: the design handoff (brief, specs, prototypes). Read-only reference.

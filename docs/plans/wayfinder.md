@@ -37,8 +37,9 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   ADR 0011, status proposed; the owner's call is ticket 13.
 
 - [Every workspace lives under packages/, like green-goods](../adr/0003-bun-workspaces-monorepo.md):
-  `packages/web` and `packages/storybook` instead of the handoff's `apps/` split; owner's
-  instruction on 4 September 2026.
+  `packages/web` instead of the handoff's `apps/web`, and the Storybook config inside
+  `packages/ui/.storybook/` instead of a workspace of its own; owner's instructions on 4 and
+  5 September 2026.
 
 ## Frontier
 

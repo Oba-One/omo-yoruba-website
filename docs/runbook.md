@@ -22,7 +22,11 @@ Names and roles: `docs/design/README.md` section 7. Schema: `packages/web/astro.
 
 Local: Node 22 through `mise` (`mise trust` once, then `mise install`), Bun 1.3.
 `bun install` installs the git hooks. `LEFTHOOK=0 git commit` skips them once; do not
-make a habit of it.
+make a habit of it. If `lefthook install` reports that `core.hooksPath` is set globally,
+git is ignoring this repo's hooks: check with `git config --show-origin --get-all
+core.hooksPath`, and either unset it (`git config --unset-all --global core.hooksPath`)
+or point lefthook at it (`bunx lefthook install --force`). Until then the gates run only
+in CI and through `bunx lefthook run pre-commit`.
 
 ## Deploy
 
@@ -32,7 +36,7 @@ Astro, Node 22 (`engines` in `packages/web/package.json` pins `22.x`; the root p
 The adapter writes `.vercel/output`; `bun run build` from the repo root builds it. Every
 push to a branch gets a preview URL; `main` deploys to production. Public `PUBLIC_*`
 values are inlined at build time, so changing one in Vercel needs a redeploy. Storybook
-gets its own project in Phase 1.
+gets its own project in Phase 1, Root Directory `packages/ui`.
 
 ## Preview and Visual Editing
 
