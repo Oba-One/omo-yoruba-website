@@ -71,6 +71,29 @@ in the phase's handoff. Expect `style-src` reports from Astro's inlined small st
 and any `style=""` attribute; Phase 9 decides between `build.inlineStylesheets: 'never'`
 plus hashes, `'unsafe-inline'` for styles, and Astro's built-in meta CSP (wayfinder ticket 13).
 
+## CI and merging
+
+GitHub: https://github.com/Oba-One/omo-yoruba-website (public). Workflows in `.github/workflows/`:
+
+- `ci.yml` on every pull request and push to main: `check` (typecheck, Biome, voice and
+  colour lints, unit tests, toolchain pins), `build` (writes the gzipped client JS sizes to
+  the job summary), `messages` (conventional subjects and no dashes in every commit and the
+  PR title), `scripts` (bash syntax and shellcheck). None is path filtered, so all four can
+  be required checks.
+- `audit.yml` Mondays 06:23 UTC and on demand: `bun audit --audit-level=high`.
+- Dependabot updates the pinned action SHAs monthly; package updates stay with Bun.
+- Actions are pinned to commit SHAs with the version in a comment, and the shared setup
+  lives in `.github/actions/setup-js`.
+
+Branch protection is not configured yet. To require the four CI jobs on `main`:
+
+```bash
+gh api -X PUT repos/Oba-One/omo-yoruba-website/branches/main/protection --input - <<'JSON'
+{ "required_status_checks": { "strict": true, "contexts": ["Typecheck, lint, test", "Build packages/web", "Commit messages and PR title", "Shell scripts"] },
+  "enforce_admins": false, "required_pull_request_reviews": null, "restrictions": null }
+JSON
+```
+
 ## Security headers
 
 HSTS, `X-Content-Type-Options`, `Referrer-Policy` and `Permissions-Policy` arrive in

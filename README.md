@@ -18,6 +18,9 @@ bun run test     # unit tests only (bun test is Bun's own runner, not Vitest)
 bun run build    # production build of packages/web (bun build is Bun's bundler)
 ```
 
+CI runs the same check, the build, the commit message rules and shellcheck on every pull
+request (`.github/workflows/ci.yml`); a weekly `bun audit` runs on Mondays.
+
 Node 22 (`.node-version`, `.mise.toml`) and Bun 1.3 (`packageManager`).
 
 ## First-time setup for the owner

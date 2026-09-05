@@ -45,6 +45,15 @@ the runbook and the lint scope were updated; `packages/web/vercel.json` pins the
 settings for that root directory. The handoff docs under `docs/design/` still describe an
 `apps/` split; the repo wins.
 
+## GitHub Actions
+
+`ci.yml` has four jobs (check, build with a JS size summary, commit message rules on pull
+requests, shellcheck), all safe to require in branch protection; `audit.yml` runs `bun audit`
+weekly; Dependabot keeps the SHA-pinned actions current; a PR template carries the
+validation checklist. Shape borrowed from green-goods: a composite `setup-js` action and
+SHA pins. The GitHub repo exists at Oba-One/omo-yoruba-website (public, no branch
+protection yet; the runbook has the command).
+
 ## What is stubbed or deliberately deferred
 
 - `bun storybook`, `bun typegen`, `bun seed`, `bun e2e` print a pointer and exit 1 until

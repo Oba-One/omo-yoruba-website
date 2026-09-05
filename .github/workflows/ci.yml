@@ -1,8 +1,11 @@
 # CI on every pull request and on pushes to main. Spec: docs/design/QUALITY.md section 5.
-# Phase 0 wires install (cached), `bun check` (typecheck, lint, unit tests) and the web build.
-# Later phases add, in order: Storybook build and Chromatic (Phase 1), the TypeGen drift
-# check (Phase 2), Playwright with axe against the Vercel preview (Phase 3), Lighthouse CI
-# against the preview (Phase 4), and the nightly content-lint workflow (Phase 9).
+# Phase 0 wires: the check (typecheck, Biome, voice and colour lints, unit tests, toolchain
+# pins), the web build with a JS size summary, the commit message rules on pull requests,
+# and shellcheck on the repo scripts. Later phases add, in order: Storybook build and
+# Chromatic (Phase 1), the TypeGen drift check (Phase 2), Playwright with axe against the
+# Vercel preview (Phase 3), Lighthouse CI against the preview (Phase 4), and the nightly
+# content-lint workflow (Phase 9). Every job here is safe to require in branch protection:
+# none is path filtered, so each reports on every pull request.
 
 name: CI
 
@@ -20,33 +23,70 @@ concurrency:
 
 jobs:
   check:
-    name: Typecheck, lint, test, build
+    name: Typecheck, lint, test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Node 22 (Astro and Vercel runtime)
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version-file: .node-version
-
-      - name: Bun (install and scripts)
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: package.json
-
-      - name: Cache Bun downloads
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: bun-${{ runner.os }}-
-
-      - name: Install
-        run: bun install --frozen-lockfile --ignore-scripts
-
-      - name: Typecheck, lint, unit tests
+          persist-credentials: false
+      - uses: ./.github/actions/setup-js
+      - name: bun run check
         run: bun run check
 
-      - name: Build packages/web
+  build:
+    name: Build packages/web
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-js
+      - name: bun run build
         run: bun run build
+      - name: Client JavaScript sizes (budget is 60 KB gzipped per content page, QUALITY.md section 3)
+        shell: bash
+        run: |
+          {
+            echo '### Client JavaScript in packages/web/.vercel/output/static/_astro'
+            echo
+            echo '| File | Gzipped bytes |'
+            echo '| --- | --- |'
+            find packages/web/.vercel/output/static/_astro -name '*.js' -print0 | sort -z | while IFS= read -r -d '' f; do
+              printf '| `%s` | %s |\n' "$(basename "$f")" "$(gzip -c "$f" | wc -c | tr -d ' ')"
+            done
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+  messages:
+    name: Commit messages and PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-js
+      - name: Conventional subjects, no em dashes (same rules as the local commit-msg hook)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: bash scripts/check-commits.sh "$BASE_SHA" "$HEAD_SHA"
+
+  scripts:
+    name: Shell scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Syntax
+        run: bash -n scripts/*.sh .claude/hooks/*.sh
+      # SC2034 is excluded because the wizard library defines colour variables it leaves to
+      # the stages; the library is copied verbatim from the wizard skill template.
+      - name: shellcheck (preinstalled on the runner image)
+        run: shellcheck --severity=warning --exclude=SC2034 scripts/*.sh .claude/hooks/*.sh

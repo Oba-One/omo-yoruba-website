@@ -2,7 +2,7 @@
   "name": "omo-yoruba",
   "private": true,
   "type": "module",
-  "description": "Website for Omo Yorùbá of Southern California: Astro 7 on Vercel, Sanity at /admin, Storybook, Bun workspaces.",
+  "description": "Website for Omo Yor\u00f9b\u00e1 of Southern California: Astro 7 on Vercel, Sanity at /admin, Storybook, Bun workspaces.",
   "workspaces": [
     "packages/*"
   ],
@@ -25,7 +25,9 @@
     "typecheck": "bun run --filter '*' typecheck",
     "typegen": "bun run --filter @oy/content typegen",
     "seed": "bun run --filter @oy/content seed",
-    "check": "bun run typecheck && bun run lint && bun run test",
+    "check": "bun run typecheck && bun run lint && bun run test && bun run check:toolchain",
+    "check:toolchain": "bash scripts/check-toolchain-pins.sh",
+    "check:commits": "bash scripts/check-commits.sh",
     "prepare": "lefthook install"
   },
   "devDependencies": {

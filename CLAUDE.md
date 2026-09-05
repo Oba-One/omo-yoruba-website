@@ -22,7 +22,7 @@ at `/admin`; Storybook via `@storybook-astro/framework`; Bun workspaces; Node 22
 | `bun lint` | Biome, then the em dash, Yoruba diacritics and colour literal checks (`.lintignore` lists the exemptions) |
 | `bun typegen` | Sanity TypeGen (Phase 2) |
 | `bun seed` | seed script (Phase 2) |
-| `bun check` | typecheck, lint, unit tests; pre-push and CI run this |
+| `bun check` | typecheck, lint, unit tests, toolchain pins; pre-push and CI run this |
 | `bun run build` | production build of `packages/web` (`bun build` is Bun's bundler) |
 
 Node 22 must be active: `.mise.toml` and `.node-version` pin it (run `mise trust` once).
@@ -41,6 +41,7 @@ green-goods repo (ADR 0003). The handoff's `apps/` split is not used.
 - `docs/design`: the design handoff (brief, specs, prototypes). Read-only reference.
 - `docs/adr`, `docs/plans`, `docs/tickets`, `docs/research`, `docs/runbook.md`.
 - `.claude/skills`: this repo's own skills. `.mcp.json`: the Sanity MCP server.
+- `.github`: CI (`ci.yml`), the weekly audit, Dependabot for action pins, the PR template.
 
 ## Rules that lint cannot catch
 
