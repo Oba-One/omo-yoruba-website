@@ -40,6 +40,8 @@ Not pinned yet, checked for the wayfinder map (each later phase re-verifies befo
   `22.x` maps to the latest 22.x. Vercel's default for new projects is 24.x and Node 20
   is deprecated on 1 October 2026. Source:
   https://vercel.com/docs/functions/runtimes/node-js/node-js-versions
+- 5 September 2026: Bun moved from 1.3.10 (what the machine had) to 1.4.2, that day's
+  latest release; the lockfile did not change and every gate stayed green.
 - Astro 7 requires Node 22.12 or later (`engines` on the package). Bun 1.3.10 installs and
   runs scripts; the `astro` and `vitest` binaries run under Node from `PATH`, so Node 22
   must be active (`.node-version`, `.mise.toml`, and `actions/setup-node` in CI).

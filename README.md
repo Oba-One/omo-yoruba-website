@@ -4,7 +4,8 @@ Website for Omo Yorùbá of Southern California, a 501(c)(3) founded in 1997 in 
 Angeles that keeps Yoruba language, culture and community alive in Southern
 California. Astro 7 on Vercel, Sanity Studio at `/admin`, Storybook, Bun workspaces.
 
-- New here or an agent session: read `CLAUDE.md`, then `CONTEXT.md`.
+- New here or an agent session: read `AGENTS.md`, then `CONTEXT.md`. `CLAUDE.md` is the
+  Claude Code note that imports it.
 - Design handoff and prototypes: `docs/design/`.
 - Decisions: `docs/adr/`. Plan: `docs/plans/wayfinder.md`. Ops: `docs/runbook.md`.
 
@@ -21,7 +22,7 @@ bun run build    # production build of packages/web (bun build is Bun's bundler)
 CI runs the same check, the build, the commit message rules and shellcheck on every pull
 request (`.github/workflows/ci.yml`); a weekly `bun audit` runs on Mondays.
 
-Node 22 (`.node-version`, `.mise.toml`) and Bun 1.3 (`packageManager`).
+Node 22 and Bun 1.4 (`.node-version`, `.mise.toml`, `packageManager`).
 
 ## First-time setup for the owner
 

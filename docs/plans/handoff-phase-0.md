@@ -55,6 +55,13 @@ validation checklist. Shape borrowed from green-goods: a composite `setup-js` ac
 SHA pins. The GitHub repo exists at Oba-One/omo-yoruba-website (public, no branch
 protection yet; the runbook has the command).
 
+## Agent docs across tools
+
+`AGENTS.md` is the tool-neutral contract (the former `CLAUDE.md` content); `CLAUDE.md`
+imports it and keeps the Claude Code entry points; `.agents/skills` symlinks `.claude/skills`;
+`.github/copilot-instructions.md` points Copilot at the contract (ADR 0012). Bun is pinned
+to 1.4.2 everywhere.
+
 ## What is stubbed or deliberately deferred
 
 - `bun storybook`, `bun typegen`, `bun seed`, `bun e2e` print a pointer and exit 1 until

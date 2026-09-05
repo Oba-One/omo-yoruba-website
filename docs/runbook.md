@@ -20,7 +20,7 @@ Names and roles: `docs/design/README.md` section 7. Schema: `packages/web/astro.
 | `RESEND_API_KEY` | `packages/content/.env`, then the Sanity Function environment (Phase 2) | Not an Astro or Vercel variable |
 | `CHROMATIC_PROJECT_TOKEN` | GitHub Actions secret | Phase 1 workflow |
 
-Local: Node 22 through `mise` (`mise trust` once, then `mise install`), Bun 1.3.
+Local: Node 22 and Bun 1.4 through `mise` (`mise trust` once, then `mise install`).
 `bun install` installs the git hooks. `LEFTHOOK=0 git commit` skips them once; do not
 make a habit of it. If `lefthook install` reports that `core.hooksPath` is set globally,
 git is ignoring this repo's hooks: check with `git config --show-origin --get-all

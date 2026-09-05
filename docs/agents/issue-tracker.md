@@ -1,7 +1,7 @@
 # Issue tracker: local Markdown under docs/tickets/
 
 Issues, specs and plans for this repo live as Markdown files in `docs/tickets/`.
-Single owner, no remote tracker. Chosen on 4 September 2026 (Phase 0).
+Single owner, no remote tracker. Chosen on 4 September 2026 (Phase 0). The `## Agent skills` block that points here lives in `AGENTS.md`.
 
 ## Conventions
 

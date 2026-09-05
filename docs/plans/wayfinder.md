@@ -41,6 +41,10 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   `packages/ui/.storybook/` instead of a workspace of its own; owner's instructions on 4 and
   5 September 2026.
 
+- [Agent guidance is tool-neutral](../adr/0012-agent-guidance-is-tool-neutral.md): `AGENTS.md`
+  is the contract, `CLAUDE.md` imports it, `.agents/skills` symlinks the skills; owner's
+  instruction on 5 September 2026.
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.
