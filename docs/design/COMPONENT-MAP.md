@@ -27,12 +27,12 @@ Conventions:
 
 | Component | Variants and states | Props | Used on | Story notes |
 | --- | --- | --- | --- | --- |
-| `Kicker` | Yoruba • English; single; on dark (gold-300) | `yo`, `en`, `as` | Every section | Test string with diacritics at 12px |
+| `Kicker` | Yoruba • English; single; on dark (gold-300); Pending chip when both halves are empty | `yo`, `en`, `as`, `what` | Every section | Test string with diacritics at 12px |
 | `Button` | primary (gold), secondary (indigo outline, fills on hover), quiet (text with arrow), sizes default and small; hover, focus (2px ring, offset 2px, gold-300 in dark), pressed (settle 1.5%), disabled, busy ("Sending...") | `variant`, `size`, `href`, `type`, `arrow`, `busy`, `disabled` | Everywhere | One gold per view rule documented in the story |
-| `Divider` | aṣọ òkè stripe 2 to 4 uneven bands; thin rule | `kind` | Section seams | Never pinstripes |
-| `Pending` | chip inline; block with aspect ratio; caption naming the missing item | `what`, `aspect`, `tone` (indigo, terra, green, gold) | Every page | Shows the àdìrẹ dot fill at 8 to 12% |
-| `PatternBand` | àdìrẹ dot field overlay; chevron rows; motif columns; batik wash | `pattern`, `opacity` | Hero, event band, footer, cards | SVGs from `design/images/patterns/` |
-| `Logo` | mark + two-line wordmark; mark only under 1060px; light version for dark | `variant` | Nav, footer | `logo-mark.png`, `logo-lockup-light.png` |
+| `Divider` | aṣọ òkè stripe 2 to 4 uneven bands (`asoke`); thin rule (`thin`); ayo dot row (`ayo`); the handoff ornament (`ornament`) | `kind` | Section seams | Never pinstripes |
+| `Pending` | chip inline (`chip`); the "Pending from you" line (`line`); block with aspect ratio (`block`); every form names the missing item | `what`, `variant`, `aspect`, `tone` (indigo, terra, green, gold) | Every page | Shows the àdìrẹ dot fill at 8 to 12% |
+| `PatternBand` | àdìrẹ dot field overlay (`dots`); chevron rows (`chevron`, `flip` for the bottom edge); motif columns (`motif`); batik wash (`batik`) | `pattern`, `opacity`, `flip` | Hero, event band, footer, cards | Lives in `bands/`; SVGs from `@oy/tokens/patterns/` (copied from `design/images/patterns/`) |
+| `Logo` | mark + two-line wordmark (`lockup`, line two hides under 1060px); mark only (`mark`); light lockup for dark (`light`) | `variant`, `href` | Nav, footer | Lives in `navigation/`; `logo-mark.png`, `logo-lockup-light.png` beside the component |
 
 ## Page structure
 
@@ -82,7 +82,7 @@ Conventions:
 
 | Component | Variants and states | Props | Used on |
 | --- | --- | --- | --- |
-| `ImagePlaceholder` | gradient or àdìrẹ fill, caption naming the future photo, fixed aspect | `what`, `aspect`, `tone` | Anywhere a photo is missing |
+| `ImagePlaceholder` | gradient or àdìrẹ fill, caption naming the future photo, fixed aspect; the default slot replaces the caption (Pending uses it) | `what`, `aspect`, `tone`, `label` | Anywhere a photo is missing |
 | `PhotoCarousel` | framed (paper, aṣọ òkè top), 16:8 stage (4:3 under 720px), prev and next 52px (44px mobile), dots, caption, count; keyboard arrows | `slides[]`, `label` | Odunde past years, Gala past galas |
 | `Lightbox` | full-screen `<dialog>`, arrows, swipe, Escape, caption and credit, `?photo=` deep link, focus return | `photos[]`, `openKey` | Gallery album |
 
@@ -103,17 +103,20 @@ now a dialog). They appear in the canvas marked retired; do not build them.
 
 ## Storybook organisation
 
-Sidebar groups mirror the folders: Core, Page structure, Cards, Lists and rows,
-Media, Forms and dialogs, then **Pages** with one story per page section option
+Sidebar groups mirror the folders: Core, Page, Cards, Content, Media, Forms,
+Navigation, Bands, then **Pages** with one story per page section option
 (the tweak table) using seed-shaped fixtures from `packages/ui/src/fixtures/`.
 Fixtures use only confirmed facts and Pending states; no mock names or prices.
 
 Every story file exports at least: `Default`, each variant, `Pending` (empty
 content), and `OnDark` where the component appears in a dark scope. Interactive
 components add a `play` test for keyboard behaviour. Chromatic snapshots at
-375 and 1440.
+375 and 1440 (`parameters.chromatic.modes` in the preview). Story types come from
+`packages/ui/src/storybook.ts` (`Meta`, `StoryObj`, `onDark`, `wrap`, the test string); slots
+are passed as `args.slots.default`. Tests compose the stories with `composeStories` and render
+them with the framework's `renderStory`.
 
-Manager theme (`apps/storybook/.storybook/theme.ts`): `base: 'light'`,
+Manager theme (`packages/ui/.storybook/theme.ts`; the handoff said `apps/storybook`, ADR 0003 moved it): `base: 'light'`,
 `brandTitle: 'Omo Yorùbá components'`, `colorPrimary: #1E2A5A`,
 `colorSecondary: #E8A13A`, `appBg: #FAF5EC`, `appContentBg: #FFFFFF`,
 `barBg: #1E2A5A`, `barTextColor: #C8CDE8`, `barSelectedColor: #F4C66D`,
