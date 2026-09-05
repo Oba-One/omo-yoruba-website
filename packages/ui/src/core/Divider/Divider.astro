@@ -1,0 +1,40 @@
+---
+/**
+ * Section seams. The aṣọ òkè stripe (two to four uneven bands, never pinstripes), its thin form,
+ * the ayo dot row for playful punctuation, and the ornament from the handoff. All decorative.
+ */
+export type DividerKind = 'asoke' | 'thin' | 'ayo' | 'ornament';
+
+interface Props {
+  kind?: DividerKind;
+  class?: string;
+}
+
+const { kind = 'asoke', class: className } = Astro.props;
+---
+
+{
+  kind === 'ayo' ? (
+    <div class:list={['oy-divider-ayo', className]} aria-hidden="true">
+      <i />
+      <i />
+      <i />
+    </div>
+  ) : kind === 'ornament' ? (
+    <div class:list={['oy-divider-ornament', className]} aria-hidden="true" />
+  ) : (
+    <div
+      class:list={['oy-divider-asoke', kind === 'thin' && 'oy-divider-asoke--thin', className]}
+      aria-hidden="true"
+    />
+  )
+}
+
+<style>
+  .oy-divider-ornament {
+    width: min(280px, 100%);
+    height: 27px;
+    margin: 0 auto;
+    background: var(--pattern-ornament-divider) center / contain no-repeat;
+  }
+</style>

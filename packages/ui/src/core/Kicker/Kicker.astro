@@ -1,0 +1,40 @@
+---
+/**
+ * The Yoruba • English uppercase label above a heading. Yoruba leads, English supports; either
+ * half may stand alone. Empty renders a Pending chip naming the kicker. Colour comes from
+ * `--accent-kicker` (terracotta on light, gold-300 inside `.oy-dark`).
+ */
+import Pending from '../Pending/Pending.astro';
+
+interface Props {
+  /** Yoruba text with full marks: "Ẹ káàbọ̀". */
+  yo?: string;
+  /** English translation: "Welcome". */
+  en?: string;
+  /** Wrapping element, default span. */
+  as?: 'span' | 'p' | 'div';
+  /** Names the kicker in the Pending chip when both halves are empty. */
+  what?: string;
+  class?: string;
+}
+
+// The cast only silences a language server hint (Props reads as unused with the `as` prop renamed).
+const { yo, en, as: Tag = 'span', what = 'kicker', class: className } = Astro.props as Props;
+const empty = !yo && !en;
+---
+
+{
+  empty ? (
+    <Pending what={what} class={className} />
+  ) : (
+    <Tag class:list={['oy-kicker', className]}>
+      {yo && <span lang="yo">{yo}</span>}
+      {yo && en && (
+        <span class="oy-kicker-dot" aria-hidden="true">
+          •
+        </span>
+      )}
+      {en && <span>{en}</span>}
+    </Tag>
+  )
+}

@@ -3,15 +3,29 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
     "./*": "./src/*"
   },
   "files": [
     "src"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit -p .",
-    "storybook": "echo 'Storybook is stood up in Phase 1 with @storybook-astro/framework; config lives in packages/ui/.storybook. See docs/design/COMPONENT-MAP.md.' && exit 1",
-    "build-storybook": "echo 'Storybook is stood up in Phase 1.' && exit 1"
+    "typecheck": "astro check",
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build -o storybook-static"
+  },
+  "dependencies": {
+    "@oy/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@storybook-astro/framework": "1.11.0",
+    "@storybook/addon-a11y": "10.6.0",
+    "@storybook/addon-docs": "10.6.0",
+    "@storybook/builder-vite": "10.6.0",
+    "astro": "7.3.1",
+    "happy-dom": "20.14.0",
+    "storybook": "10.6.0",
+    "storybook-addon-pseudo-states": "10.6.0",
+    "typescript": "5.9.3"
   }
 }

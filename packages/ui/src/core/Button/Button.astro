@@ -1,0 +1,87 @@
+---
+/**
+ * The one button. Primary is gold and there is one per screen view; secondary is the indigo
+ * outline that fills on hover; quiet is text with an arrow. Hover darkens or fills, press settles
+ * 1.5 percent, focus draws a 2px ring, never a lift (the rules live in @oy/tokens). Renders a
+ * link when `href` is set, otherwise a button. Busy replaces the label with "Sending..." and
+ * keeps focus; disabled links drop their href so they cannot be followed.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'quiet';
+export type ButtonSize = 'default' | 'small';
+
+interface Props extends Omit<HTMLAttributes<'a'> & HTMLAttributes<'button'>, 'class' | 'type'> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  /** Renders an anchor instead of a button. */
+  href?: string;
+  /** Button only. */
+  type?: 'button' | 'submit' | 'reset';
+  /** Appends the → glyph after the label. */
+  arrow?: boolean;
+  /** Submitting: reads "Sending..." and cannot be pressed again. */
+  busy?: boolean;
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'default',
+  href,
+  type = 'button',
+  arrow = false,
+  busy = false,
+  disabled = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = ['oy-btn', `oy-btn--${variant}`, size === 'small' && 'oy-btn--sm', className];
+const inert = disabled || busy;
+---
+
+{
+  href !== undefined ? (
+    <a
+      class:list={classes}
+      href={inert ? undefined : href}
+      role={inert ? 'link' : undefined}
+      aria-disabled={inert ? 'true' : undefined}
+      aria-busy={busy ? 'true' : undefined}
+      {...rest}
+    >
+      {busy ? 'Sending...' : <slot />}
+      {arrow && !busy && (
+        <span class="oy-btn-arrow" aria-hidden="true">
+          →
+        </span>
+      )}
+    </a>
+  ) : (
+    <button
+      class:list={classes}
+      type={type}
+      disabled={disabled}
+      aria-disabled={busy ? 'true' : undefined}
+      aria-busy={busy ? 'true' : undefined}
+      {...rest}
+    >
+      {busy ? 'Sending...' : <slot />}
+      {arrow && !busy && (
+        <span class="oy-btn-arrow" aria-hidden="true">
+          →
+        </span>
+      )}
+    </button>
+  )
+}
+
+<style>
+  /* A busy button is not a disabled one: it keeps its colour and shows progress. */
+  .oy-btn[aria-busy='true'] {
+    opacity: 0.85;
+    cursor: progress;
+  }
+</style>

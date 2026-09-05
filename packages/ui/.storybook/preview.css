@@ -1,0 +1,103 @@
+/* Storybook-only styles for the preview iframe. Components never depend on these. */
+
+/* A stage for overlay patterns (PatternBand dots and batik fill a positioned parent). */
+.sb-oy-stage {
+  position: relative;
+  min-height: 220px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.sb-oy-stage--row {
+  display: flex;
+  align-items: stretch;
+}
+.sb-oy-stage--paper {
+  background: var(--paper);
+}
+.sb-oy-stage--indigo {
+  background: var(--indigo-900);
+}
+
+/* Cards and placeholders keep a card's width in the canvas. */
+.sb-oy-narrow {
+  max-width: 360px;
+}
+
+/* Docs pages wear the design system type: Source Serif 4 headings in indigo, Source Sans 3 body
+   at 17px (docs/design/COMPONENT-MAP.md, Storybook organisation). */
+.sbdocs.sbdocs-content h1,
+.sbdocs.sbdocs-content h2,
+.sbdocs.sbdocs-content h3 {
+  font-family: var(--font-display);
+  color: var(--text-heading);
+  line-height: var(--leading-heading);
+}
+.sbdocs.sbdocs-content p:not(.oy-type-specimen *),
+.sbdocs.sbdocs-content li:not(.oy-type-specimen *) {
+  font-family: var(--font-body);
+  font-size: var(--text-body-size);
+  line-height: var(--leading-body);
+  color: var(--text-body);
+}
+
+/* The type specimen on the Foundations docs page: the site's own scale, outside the docs styles. */
+.oy-type-specimen {
+  display: grid;
+  gap: 20px;
+  padding: 32px;
+  margin: 24px 0;
+  background: var(--surface-page);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+}
+.oy-type-specimen > * {
+  margin: 0;
+}
+.oy-type-hero {
+  font-family: var(--font-display);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-hero);
+  line-height: var(--leading-heading);
+  color: var(--text-heading);
+}
+.oy-type-h2 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h2);
+  line-height: var(--leading-heading);
+  color: var(--text-heading);
+}
+.oy-type-h3 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-heading-2);
+  font-size: var(--text-h3);
+  line-height: var(--leading-heading);
+  color: var(--text-heading);
+}
+.oy-type-body {
+  font-family: var(--font-body);
+  font-weight: var(--weight-body);
+  font-size: var(--text-body-size);
+  line-height: var(--leading-body);
+  color: var(--text-body);
+}
+.oy-type-body--semibold {
+  font-weight: var(--weight-semibold);
+}
+.oy-type-body--bold {
+  font-weight: 700;
+}
+.oy-type-body--italic {
+  font-style: italic;
+}
+.oy-type-caption {
+  font-family: var(--font-body);
+  font-weight: var(--weight-body);
+  font-size: var(--text-caption);
+  line-height: 1.45;
+  color: var(--text-muted);
+  letter-spacing: var(--track-caption);
+}
+.oy-type-specimen.oy-dark {
+  background: var(--indigo-900);
+}

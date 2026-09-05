@@ -1,0 +1,41 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Type" />
+
+# Type
+
+Source Serif 4 carries the headings (600 and 700) and Source Sans 3 carries body and UI text
+(400, 600 and 700), falling back through Noto Serif and Noto Sans, then Georgia and system-ui.
+Both faces are self-hosted from `@oy/tokens/fonts.css` in three subsets (latin, latin-ext and
+vietnamese), the minimum that covers Yoruba. Every size below must show the test string with no
+tofu and every mark in place: the underdots on Ẹ, Ọ and ṣ, and the tone marks that sit on ẹ́ and
+ẹ̀ and ọ̀. Sizes come from the type tokens: hero 44 to 64px, H2 32 to 40, H3 20 to 24, body 17,
+caption 13.5, kicker 12 uppercase.
+
+<div className="sb-unstyled oy-type-specimen">
+  <p className="oy-kicker">
+    <span lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</span>
+  </p>
+  <p className="oy-type-hero" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+  <p className="oy-type-h2" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+  <p className="oy-type-h3" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+  <p className="oy-type-body" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+  <p className="oy-type-body oy-type-body--semibold" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+  <p className="oy-type-body oy-type-body--bold" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+  <p className="oy-type-body oy-type-body--italic" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+  <p className="oy-type-caption" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+</div>
+
+## In a dark band
+
+Headings turn white, body text `--text-on-dark-soft`, the kicker gold-300.
+
+<div className="sb-unstyled oy-type-specimen oy-dark">
+  <p className="oy-kicker">
+    <span lang="yo">Ẹ káàbọ̀</span>
+    <span className="oy-kicker-dot" aria-hidden="true">•</span>
+    <span>Welcome</span>
+  </p>
+  <p className="oy-type-h2" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+  <p className="oy-type-body" lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+</div>
