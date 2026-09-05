@@ -1,0 +1,41 @@
+/* Ported verbatim from docs/design/design/_ds/.../tokens/themes.css. Three theme variants over one foundation;
+   the site sets data-theme="adire" by default (oy-design-system skill), the Studio theme field can change it.
+   Apply data-theme="calm" | "adire" | "festival" on <body> or a section wrapper.
+   calm: photography carries emotion, texture nearly absent, gold only on primary buttons.
+   adire: indigo-led, dark texture bands, gold-300 glowing on dark, reading always on light.
+   festival: terracotta + gold forward, scale jumps; energy from color and scale, never ornament count. */
+:root,
+[data-theme="calm"] {
+  --hero-surface: linear-gradient(
+    160deg,
+    var(--indigo-900) 0%,
+    var(--indigo-700) 55%,
+    #2c3a72 100%
+  );
+  --hero-texture-opacity: 0; /* @kind other */
+  --band-surface: var(--indigo-700);
+  --band-texture-opacity: 0; /* @kind other */
+  --section-alt-surface: var(--paper);
+  --theme-hero-scale: 1; /* @kind other */
+}
+[data-theme="adire"] {
+  --hero-surface: linear-gradient(170deg, var(--indigo-900) 0%, var(--indigo-700) 100%);
+  --hero-texture-opacity: var(--adire-opacity-dark); /* @kind other */
+  --band-surface: var(--indigo-900);
+  --band-texture-opacity: var(--adire-opacity-dark); /* @kind other */
+  --section-alt-surface: var(--indigo-100);
+  --theme-hero-scale: 1; /* @kind other */
+}
+[data-theme="festival"] {
+  --hero-surface: linear-gradient(
+    150deg,
+    var(--terra-700) 0%,
+    var(--terra-600) 48%,
+    var(--gold-600) 130%
+  );
+  --hero-texture-opacity: 0.08; /* @kind other */
+  --band-surface: linear-gradient(135deg, var(--terra-600), var(--terra-700));
+  --band-texture-opacity: 0.08; /* @kind other */
+  --section-alt-surface: var(--paper);
+  --theme-hero-scale: 1.12; /* @kind other */
+}

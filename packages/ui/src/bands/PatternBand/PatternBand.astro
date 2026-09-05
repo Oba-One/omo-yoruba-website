@@ -1,0 +1,54 @@
+---
+/**
+ * One texture where a band asks for it, never costume. The dot field, the batik wash and the
+ * motif column reuse the interaction layer's classes from @oy/tokens (`.v2-dots`, `.v2-batik`,
+ * `.v2-motif`), so their tile sizes and opacities have one home and the page-level
+ * `data-pattern="subtle"` option still applies. `dots` and `batik` are overlays that fill a
+ * `position: relative` parent; `chevron` is a 12px row for the top or bottom edge of a band;
+ * `motif` is a 54px column that hides under 1000px.
+ */
+export type Pattern = 'dots' | 'chevron' | 'motif' | 'batik';
+
+interface Props {
+  pattern?: Pattern;
+  /** 0 to 1, overriding the layer's default (dots .08, batik .4, motif .85, chevron 1). */
+  opacity?: number;
+  /** Chevron only: point the row the other way for the bottom edge of a band. */
+  flip?: boolean;
+  class?: string;
+}
+
+const { pattern = 'dots', opacity, flip = false, class: className } = Astro.props;
+const layerClass = {
+  dots: 'v2-dots',
+  batik: 'v2-batik',
+  motif: 'v2-motif v2-motif-col',
+  chevron: '',
+}[pattern];
+---
+
+<div
+  class:list={['oy-pattern', `oy-pattern--${pattern}`, layerClass, flip && 'oy-pattern--flip', className]}
+  aria-hidden="true"
+  style={opacity === undefined ? undefined : `opacity: ${opacity}`}
+/>
+
+<style>
+  /* Layout only; the textures themselves come from @oy/tokens. */
+  .oy-pattern {
+    pointer-events: none;
+  }
+  .oy-pattern--chevron {
+    height: 12px;
+    background: var(--pattern-chevron-band);
+    background-size: 20px 12px;
+  }
+  .oy-pattern--flip {
+    transform: scaleY(-1);
+  }
+  .oy-pattern--motif {
+    width: 54px;
+    flex: none;
+    align-self: stretch;
+  }
+</style>

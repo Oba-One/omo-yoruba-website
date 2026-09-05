@@ -1,0 +1,45 @@
+---
+/**
+ * What the owner still owes, always visible (docs/design/CONTENT-MODEL.md, principle 2). Three
+ * forms: the chip ("Pending: 2027 date"), the "Pending from you" line, and the block, a captioned
+ * placeholder with the àdìrẹ dot fill for a missing photo or figure. On dark bands the chip and
+ * the line flip to gold through `.oy-dark` in @oy/tokens.
+ */
+import ImagePlaceholder, {
+  type PlaceholderTone,
+} from '../../media/ImagePlaceholder/ImagePlaceholder.astro';
+
+export type PendingVariant = 'chip' | 'line' | 'block';
+
+interface Props {
+  /**
+   * Names the missing item. Chip: a short noun phrase ("2027 date"). Line: the sentence that
+   * tells the owner what to supply. Block: the photo or figure the block stands in for.
+   */
+  what?: string;
+  variant?: PendingVariant;
+  /** Block only: CSS aspect ratio, default "4 / 3". */
+  aspect?: string;
+  /** Block only: fill colour, default indigo. */
+  tone?: Exclude<PlaceholderTone, 'adire'>;
+  class?: string;
+}
+
+const { what, variant = 'chip', aspect = '4 / 3', tone = 'indigo', class: className } = Astro.props;
+const chipText = what ? `Pending: ${what}` : 'Pending';
+---
+
+{
+  variant === 'line' ? (
+    <p class:list={['oy-pend-line', className]}>
+      <b>Pending from you</b>
+      <slot>{what}</slot>
+    </p>
+  ) : variant === 'block' ? (
+    <ImagePlaceholder what={what ?? 'this item'} aspect={aspect} tone={tone} label={chipText} class={className}>
+      <span class="oy-pend">{chipText}</span>
+    </ImagePlaceholder>
+  ) : (
+    <span class:list={['oy-pend', className]}>{chipText}</span>
+  )
+}

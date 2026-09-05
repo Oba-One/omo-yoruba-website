@@ -1,0 +1,37 @@
+---
+/**
+ * Stands in wherever a photo is missing: gradient or àdìrẹ fill, a caption naming the future
+ * photo, a fixed aspect ratio, square corners. Never stock, never AI imagery. The fills and the
+ * dot field come from `.oy-ph` in @oy/tokens (docs/design/COMPONENT-MAP.md, Media).
+ */
+export type PlaceholderTone = 'indigo' | 'terra' | 'green' | 'gold' | 'adire';
+
+interface Props {
+  /** Names the photo that will land here: "a portrait of the teacher". Shown in brackets. */
+  what: string;
+  /** CSS aspect ratio, for example "4 / 3", "16 / 9", "1 / 1". */
+  aspect?: string;
+  tone?: PlaceholderTone;
+  /** Accessible name; defaults to "Placeholder for <what>". */
+  label?: string;
+  class?: string;
+}
+
+const { what, aspect = '4 / 3', tone = 'indigo', label, class: className } = Astro.props;
+---
+
+<div
+  class:list={['oy-ph', `oy-ph--${tone}`, className]}
+  role="img"
+  aria-label={label ?? `Placeholder for ${what}`}
+  style={`--ph-aspect: ${aspect}`}
+>
+  <slot><span>[ {what} ]</span></slot>
+</div>
+
+<style>
+  .oy-ph {
+    width: 100%;
+    aspect-ratio: var(--ph-aspect, 4 / 3);
+  }
+</style>

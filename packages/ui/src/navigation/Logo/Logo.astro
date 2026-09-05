@@ -1,0 +1,56 @@
+---
+/**
+ * The Ifẹ̀ bronze head is the mark. `lockup`: the mark at 40px beside the two-line Source Serif
+ * wordmark, whose second line hides under 1060px (nav). `mark`: the head alone. `light`: the
+ * light lockup image for dark grounds (footer). The mark alone carries the full name as its alt
+ * text; beside the wordmark it is decorative. The two PNGs live beside this file; their imports
+ * resolve to `ImageMetadata` in Astro and in Storybook alike.
+ */
+import lockupLight from './logo-lockup-light.png';
+import mark from './logo-mark.png';
+
+export type LogoVariant = 'lockup' | 'mark' | 'light';
+
+interface Props {
+  variant?: LogoVariant;
+  /** Wraps the logo in a link when set. */
+  href?: string;
+  class?: string;
+}
+
+const { variant = 'lockup', href, class: className } = Astro.props;
+const name = 'Omo Yorùbá of Southern California';
+const Tag = href ? 'a' : 'span';
+---
+
+{
+  variant === 'light' ? (
+    <Tag class:list={['oy-logo', 'oy-logo--light', className]} href={href}>
+      <img class="oy-logo-lockup" src={lockupLight.src} alt={name} />
+    </Tag>
+  ) : (
+    <Tag class:list={['oy-logo', className]} href={href}>
+      {variant === 'mark' ? (
+        <img class="oy-logo-img" src={mark.src} alt={name} />
+      ) : (
+        <img class="oy-logo-img" src={mark.src} alt="" aria-hidden="true" />
+      )}
+      {variant === 'lockup' && (
+        <span class="oy-logo-text">
+          Omo Yorùbá <span class="oy-logo-sub">of Southern California</span>
+        </span>
+      )}
+    </Tag>
+  )
+}
+
+<style>
+  .oy-logo--light {
+    display: inline-flex;
+  }
+  .oy-logo-lockup {
+    display: block;
+    height: 58px;
+    width: auto;
+  }
+</style>

@@ -45,6 +45,10 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   is the contract, `CLAUDE.md` imports it, `.agents/skills` symlinks the skills; owner's
   instruction on 5 September 2026.
 
+- [Fonts: self-hosted fontsource files, subsets latin, latin-ext and vietnamese](../tickets/wayfinder/issues/19-fonts-provider-and-subsets.md):
+  hand-written `@font-face` rules in `@oy/tokens/fonts.css`, no font origin in the CSP, Yoruba
+  text kept NFC; research in `docs/research/fonts-source-serif-sans-subsets.md` (Phase 1).
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.
@@ -72,8 +76,8 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 08 | News cadence: feed or list | Later phase |
 
 Research and design tickets the phases work themselves: 15 (analytics bundle versus the JS
-budget), 19 (fonts provider and subsets), 20 (Sanity loader for live collections), 21
-(cache and draft mode), 25 (Sanity webhook after Phase 4).
+budget), 20 (Sanity loader for live collections), 21 (cache and draft mode), 25 (Sanity
+webhook after Phase 4). Ticket 19 (fonts) was resolved in Phase 1.
 
 ## Not yet specified
 

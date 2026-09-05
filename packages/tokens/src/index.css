@@ -1,4 +1,13 @@
-/* @oy/tokens entry point.
-   Phase 1 ports docs/design/design/_ds/.../tokens/*.css, css/base.css,
-   css/components.css and docs/design/design/oy-components.css into this
-   package, in that order (oy-components.css wins on conflict). */
+/* @oy/tokens: the whole design system in one import. Order matters: the tokens first, then the
+   base styles, the component classes, and last the interaction layer, which wins on conflict
+   (6px card radius, no hover lift, grain-dots texture). Sources: docs/design/design/_ds/ and
+   docs/design/design/oy-components.css; each file names its edits at the top. */
+@import "./fonts.css";
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+@import "./tokens/patterns.css";
+@import "./tokens/themes.css";
+@import "./base.css";
+@import "./components.css";
+@import "./oy-components.css";

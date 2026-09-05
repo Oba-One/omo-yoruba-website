@@ -1,7 +1,8 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+    "noUncheckedIndexedAccess": true
   },
-  "include": ["src"]
+  "include": [".astro/types.d.ts", "src/**/*", ".storybook/**/*"],
+  "exclude": ["dist", "storybook-static"]
 }

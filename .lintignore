@@ -19,3 +19,9 @@ docs/design/design/
 bun.lock
 skills-lock.json
 **/sanity.types.ts
+
+# The Storybook manager runs outside the preview iframe and cannot read @oy/tokens: its theme
+# repeats the token values as literals (docs/design/COMPONENT-MAP.md, Manager theme), and the
+# background swatches the toolbar paints need literal values too.
+[colors] packages/ui/.storybook/theme.ts
+[colors] packages/ui/.storybook/preview.ts

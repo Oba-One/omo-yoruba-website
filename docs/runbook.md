@@ -35,8 +35,14 @@ root directory" enabled (the lockfile and the workspace packages live above it),
 Astro, Node 22 (`engines` in `packages/web/package.json` pins `22.x`; the root pins it too).
 The adapter writes `.vercel/output`; `bun run build` from the repo root builds it. Every
 push to a branch gets a preview URL; `main` deploys to production. Public `PUBLIC_*`
-values are inlined at build time, so changing one in Vercel needs a redeploy. Storybook
-gets its own project in Phase 1, Root Directory `packages/ui`.
+values are inlined at build time, so changing one in Vercel needs a redeploy.
+
+Storybook: a second Vercel project with Root Directory `packages/ui` and "Include files outside
+the root directory" enabled; `packages/ui/vercel.json` pins the install and build commands and
+the `storybook-static` output. Whether it stays a separate project or moves under a path of the
+site is the owner's call in wayfinder ticket 11. Locally: `bun storybook` (dev server on port
+6006) and `bun run --filter @oy/ui build-storybook`. Chromatic baselines are accepted by the
+owner in the Chromatic app; CI never fails on a visual change.
 
 ## Preview and Visual Editing
 
@@ -82,8 +88,11 @@ GitHub: https://github.com/Oba-One/omo-yoruba-website (public). Workflows in `.g
 - `ci.yml` on every pull request and push to main: `check` (typecheck, Biome, voice and
   colour lints, unit tests, toolchain pins), `build` (writes the gzipped client JS sizes to
   the job summary), `messages` (conventional subjects and no dashes in every commit and the
-  PR title), `scripts` (bash syntax and shellcheck). None is path filtered, so all four can
-  be required checks.
+  PR title), `scripts` (bash syntax and shellcheck), and since Phase 1 `storybook` (builds
+  `packages/ui/storybook-static`, then publishes it to Chromatic when the
+  `CHROMATIC_PROJECT_TOKEN` secret exists; without the secret, or on a pull request from a
+  fork, it writes a "Chromatic skipped" notice and finishes green). None is path filtered, so
+  all five can be required checks.
 - `audit.yml` Mondays 06:23 UTC and on demand: `bun audit --audit-level=high`.
 - Dependabot updates the pinned action SHAs monthly; package updates stay with Bun.
 - Actions are pinned to commit SHAs with the version in a comment, and the shared setup
@@ -98,8 +107,10 @@ administrators too, and force pushes and deletions are refused. So every change 
 gh api repos/Oba-One/omo-yoruba-website/branches/main/protection --jq '.required_status_checks.contexts'
 ```
 
-Adding a required check later (Chromatic in Phase 1, Playwright in Phase 3) means adding
-its job name to the `contexts` list with the same `PUT` call, body as in this file's history.
+Adding a required check later means adding its job name to the `contexts` list with the same
+`PUT` call, body as in this file's history. Phase 1 adds the context `Storybook build and
+Chromatic` (the job's `name`), so the list becomes the four Phase 0 names plus that one.
+Playwright follows in Phase 3.
 
 ## Security headers
 

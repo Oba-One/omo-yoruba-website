@@ -51,10 +51,10 @@ const PATH_EXTENSION = new RegExp(`${SEGMENT}(?:/${SEGMENT})+\\.[a-z0-9]{1,5}\\b
 const PATH_DEEP = new RegExp(`${SEGMENT}(?:/${SEGMENT}){2,}`, 'gu');
 // snake_case and dotted identifiers, in every mode.
 const DOTTED_OR_SNAKE = /[\p{L}\p{N}]+(?:[._][\p{L}\p{N}]+)+/gu;
-// kebab-case, code mode only (in prose a hyphen joins words: "adire-print").
-const KEBAB = /[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)+/gu;
-// CSS names written bare in prose: .oy-card, --token, #id
-const CSS_NAME = /(?<![\p{L}\p{N}])(?:\.|--|#)[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*/gu;
+// kebab-case, code mode only (in prose a hyphen joins words: "adire-print"). BEM modifiers use two.
+const KEBAB = /[\p{L}\p{N}]+(?:-+[\p{L}\p{N}]+)+/gu;
+// CSS names written bare in prose: .oy-card, .oy-ph--adire, --token, #id
+const CSS_NAME = /(?<![\p{L}\p{N}])(?:\.|--|#)[\p{L}\p{N}]+(?:-+[\p{L}\p{N}]+)*/gu;
 const CAMEL_OR_PASCAL = /\b[A-Za-z][a-z0-9]+[A-Z][A-Za-z0-9]*\b/g;
 
 function maskCodeLike(text: string, markdown: boolean): string {
