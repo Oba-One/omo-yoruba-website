@@ -36,6 +36,10 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
 - [CSP ships as a report-only header, enforcement decided in Phase 9](../adr/0011-csp-report-only-header-until-phase-9.md):
   ADR 0011, status proposed; the owner's call is ticket 13.
 
+- [Every workspace lives under packages/, like green-goods](../adr/0003-bun-workspaces-monorepo.md):
+  `packages/web` and `packages/storybook` instead of the handoff's `apps/` split; owner's
+  instruction on 4 September 2026.
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.

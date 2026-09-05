@@ -7,7 +7,7 @@ Date: 4 September 2026. Source: https://posthog.com/docs/libraries/astro.
   with `defaults: '2026-05-30'`. With `<ClientRouter />` it recommends guarding against
   double initialisation and `capture_pageview: 'history_change'`.
 - The brief names the `posthog-js` package rather than the CDN snippet, so
-  `apps/web/src/components/Analytics.astro` bundles the package and imports it lazily
+  `packages/web/src/components/Analytics.astro` bundles the package and imports it lazily
   after the `load` event, only when `PUBLIC_POSTHOG_KEY` is set. It initialises with the
   documented `defaults` and `history_change` pageviews, and switches off autocapture and
   session recording so no form contents are captured (ROUTES section 2).

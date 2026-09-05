@@ -5,9 +5,9 @@ Phase 0 and then runs Phase 1 (`docs/design/PROMPTS.md`). Branch: `phase-0/boots
 
 ## What exists now
 
-- Bun workspace with `apps/web` (Astro 7.3.1, `@astrojs/vercel`, `output: 'server'`,
+- Bun workspace with `packages/web` (Astro 7.3.1, `@astrojs/vercel`, `output: 'server'`,
   `astro:env` schema, PostHog behind `PUBLIC_POSTHOG_KEY`, CSP as a report-only header),
-  `apps/storybook` (empty, Phase 1), `packages/tokens`, `packages/ui`, `packages/content`
+  `packages/storybook` (empty, Phase 1), `packages/tokens`, `packages/ui`, `packages/content`
   (scaffolds) and `packages/lint` (working checks with tests).
 - Agent docs: `CLAUDE.md`, `CONTEXT.md`, ADRs 0001 to 0011 in `docs/adr/`, seven repo
   skills in `.claude/skills/oy-*`, `.mcp.json` (Sanity MCP), `docs/runbook.md` stub,
@@ -36,6 +36,14 @@ Vercel, and keeps the Resend key out of the web app's env file. Findings left op
 purpose: the 39 MB of original photographs under `docs/design/design/images` (owner call),
 Lighthouse in CI (needs the preview URL, Phase 4), and nonces or hashes for inline styles
 (Phase 9, ADR 0011).
+
+## Layout change after the first commit
+
+On the owner's instruction the apps moved under `packages/` (`packages/web`,
+`packages/storybook`), matching the green-goods repo. ADR 0003, `CLAUDE.md`, the wizard,
+the runbook and the lint scope were updated; `packages/web/vercel.json` pins the Vercel
+settings for that root directory. The handoff docs under `docs/design/` still describe an
+`apps/` split; the repo wins.
 
 ## What is stubbed or deliberately deferred
 
@@ -70,7 +78,7 @@ Lighthouse in CI (needs the preview URL, Phase 4), and nonces or hashes for inli
   reverses in ticket 18.
 - The wizard library from the `wizard` skill template carries one documented change:
   `tput dim` tolerates terminals without that capability.
-- `mise` refuses the repo's `mise.toml` until `mise trust` is run; the session used the
+- `mise` refuses the repo's `.mise.toml` until `mise trust` is run; the session used the
   Node 22 install path directly.
 
 ## Owner decisions waiting

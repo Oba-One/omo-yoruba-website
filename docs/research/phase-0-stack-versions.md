@@ -42,8 +42,8 @@ Not pinned yet, checked for the wayfinder map (each later phase re-verifies befo
   https://vercel.com/docs/functions/runtimes/node-js/node-js-versions
 - Astro 7 requires Node 22.12 or later (`engines` on the package). Bun 1.3.10 installs and
   runs scripts; the `astro` and `vitest` binaries run under Node from `PATH`, so Node 22
-  must be active (`.node-version`, `mise.toml`, and `actions/setup-node` in CI).
-- Bun workspaces: `"workspaces": ["apps/*", "packages/*"]` in the root `package.json`,
+  must be active (`.node-version`, `.mise.toml`, and `actions/setup-node` in CI).
+- Bun workspaces: `"workspaces": ["packages/*"]` in the root `package.json`,
   `workspace:*` for internal dependencies, `bun run --filter <name> <script>` to run a
   workspace script. `--filter '*'` runs the script in every workspace that defines it
   and skips the rest (verified locally). Source: https://bun.com/docs/install/workspaces

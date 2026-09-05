@@ -48,5 +48,5 @@ jobs:
       - name: Typecheck, lint, unit tests
         run: bun run check
 
-      - name: Build apps/web
+      - name: Build packages/web
         run: bun run build

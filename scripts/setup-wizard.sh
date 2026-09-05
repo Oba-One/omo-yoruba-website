@@ -192,15 +192,15 @@ TOTAL_STAGES=7
 # Run from anywhere: every path below is relative to the repo root.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-# Astro reads env from the app directory, so values land in apps/web/.env unless the caller
+# Astro reads env from the app directory, so values land in packages/web/.env unless the caller
 # set ENV_FILE (the library's documented override). Secrets are typed hidden and never echoed.
-if [[ "$ENV_FILE" == ".env" ]]; then ENV_FILE="apps/web/.env"; fi
+if [[ "$ENV_FILE" == ".env" ]]; then ENV_FILE="packages/web/.env"; fi
 FUNCTIONS_ENV_FILE="packages/content/.env"
 SITE_URL_DEFAULT="https://omoyorubaofsocal.org"
 LOCAL_URL="http://localhost:4321"
 
 VERCEL_READY=0
-if command -v vercel >/dev/null 2>&1 && [[ -f apps/web/.vercel/project.json ]]; then VERCEL_READY=1; fi
+if command -v vercel >/dev/null 2>&1 && [[ -f packages/web/.vercel/project.json ]]; then VERCEL_READY=1; fi
 
 # vercel_env KEY VALUE [ENV...] sets KEY on the linked Vercel project for the named
 # environments (default: production, preview, development). It removes any existing value
@@ -214,13 +214,13 @@ vercel_env() {
     return
   fi
   if (( ! VERCEL_READY )); then
-    SKIPPED+=("Vercel env $key (link first: cd apps/web && vercel link, then re-run)")
+    SKIPPED+=("Vercel env $key (link first: cd packages/web && vercel link, then re-run)")
     return
   fi
   local env
   for env in "${envs[@]}"; do
-    (cd apps/web && vercel env rm "$key" "$env" --yes >/dev/null 2>&1) || true
-    if printf '%s' "$value" | (cd apps/web && vercel env add "$key" "$env" >/dev/null 2>&1); then
+    (cd packages/web && vercel env rm "$key" "$env" --yes >/dev/null 2>&1) || true
+    if printf '%s' "$value" | (cd packages/web && vercel env add "$key" "$env" >/dev/null 2>&1); then
       printf '  %s✓ set%s Vercel %s (%s)\n' "$GREEN" "$RESET" "$key" "$env"
     else
       SKIPPED+=("Vercel env $key ($env): the CLI refused; set it in the dashboard")
@@ -278,21 +278,21 @@ pause
 
 # Stage 3
 stage "Vercel: project, settings and environment variables"
-say "The site deploys from apps/web. Linking is interactive and runs the Vercel CLI here."
+say "The site deploys from packages/web. Linking is interactive and runs the Vercel CLI here."
 if command -v vercel >/dev/null 2>&1; then
-  if [[ -f apps/web/.vercel/project.json ]]; then
-    note "apps/web is already linked to a Vercel project"
-  elif confirm "Run 'vercel link' in apps/web now?"; then
-    (cd apps/web && vercel link) || warn "vercel link did not finish; run it by hand later"
+  if [[ -f packages/web/.vercel/project.json ]]; then
+    note "packages/web is already linked to a Vercel project"
+  elif confirm "Run 'vercel link' in packages/web now?"; then
+    (cd packages/web && vercel link) || warn "vercel link did not finish; run it by hand later"
   fi
-  [[ -f apps/web/.vercel/project.json ]] && VERCEL_READY=1
+  [[ -f packages/web/.vercel/project.json ]] && VERCEL_READY=1
 else
   warn "Vercel CLI not found. Install it (npm i -g vercel) or set the variables in the dashboard."
 fi
 open_url "https://vercel.com/dashboard"
 step "Open the project, then Settings, then Build and Deployment."
-step "Root Directory: apps/web, with 'Include files outside the root directory' enabled."
-step "Framework Preset: Astro. Node.js Version: 22.x (apps/web/package.json also pins it)."
+step "Root Directory: packages/web, with 'Include files outside the root directory' enabled."
+step "Framework Preset: Astro. Node.js Version: 22.x (packages/web/package.json also pins it)."
 step "Under Domains, add omoyorubaofsocal.org (and www) when you are ready to point DNS."
 if (( VERCEL_READY )) && confirm "Push the values from $ENV_FILE to Vercel now? Existing values are replaced."; then
   vercel_env PUBLIC_SANITY_PROJECT_ID "$PUBLIC_SANITY_PROJECT_ID"

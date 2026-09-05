@@ -13,7 +13,7 @@ describe('globToRegExp', () => {
     );
     expect(globToRegExp('**/sanity.types.ts').test('packages/content/sanity.types.ts')).toBe(true);
     expect(globToRegExp('bun.lock').test('bun.lock')).toBe(true);
-    expect(globToRegExp('bun.lock').test('apps/web/bun.lock')).toBe(true);
+    expect(globToRegExp('bun.lock').test('packages/web/bun.lock')).toBe(true);
     expect(globToRegExp('bun.lock').test('bun.lockb')).toBe(false);
   });
 });
@@ -33,8 +33,8 @@ describe('isExcluded with the repo .lintignore', () => {
     for (const check of ['dash', 'yoruba', 'colors'] as const) {
       expect(isExcluded('docs/design/design/08 Build Brief.md', check)).toBe(true);
       expect(isExcluded('node_modules/astro/index.js', check)).toBe(true);
-      expect(isExcluded('apps/web/dist/index.html', check)).toBe(true);
-      expect(isExcluded('apps/web/.astro/types.d.ts', check)).toBe(true);
+      expect(isExcluded('packages/web/dist/index.html', check)).toBe(true);
+      expect(isExcluded('packages/web/.astro/types.d.ts', check)).toBe(true);
       expect(isExcluded('.claude/skills/git-guardrails-claude-code/SKILL.md', check)).toBe(true);
       expect(isExcluded('packages/content/sanity.types.ts', check)).toBe(true);
     }
@@ -55,13 +55,13 @@ describe('isExcluded with the repo .lintignore', () => {
     expect(isExcluded('packages/lint/yoruba-terms.json', 'yoruba')).toBe(true);
     expect(isExcluded('packages/lint/src/yoruba.test.ts', 'yoruba')).toBe(true);
     expect(isExcluded('packages/lint/src/yoruba.test.ts', 'dash')).toBe(false);
-    expect(isExcluded('apps/web/src/lib/csp.test.ts', 'yoruba')).toBe(false);
+    expect(isExcluded('packages/web/src/lib/csp.test.ts', 'yoruba')).toBe(false);
   });
 
   it('limits the colour check to ui and web and exempts tokens', () => {
     expect(isExcluded('packages/tokens/src/colors.css', 'colors')).toBe(true);
     expect(isExcluded('packages/ui/src/core/Button/Button.astro', 'colors')).toBe(false);
-    expect(isExcluded('apps/web/src/pages/index.astro', 'colors')).toBe(false);
+    expect(isExcluded('packages/web/src/pages/index.astro', 'colors')).toBe(false);
     expect(isExcluded('docs/adr/0001-server-output.md', 'colors')).toBe(true);
   });
 

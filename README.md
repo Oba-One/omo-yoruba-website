@@ -12,13 +12,13 @@ California. Astro 7 on Vercel, Sanity Studio at `/admin`, Storybook, Bun workspa
 
 ```bash
 bun install      # also installs the git hooks
-bun dev          # Astro dev server (apps/web)
+bun dev          # Astro dev server (packages/web)
 bun check        # typecheck + lint + unit tests
 bun run test     # unit tests only (bun test is Bun's own runner, not Vitest)
-bun run build    # production build of apps/web (bun build is Bun's bundler)
+bun run build    # production build of packages/web (bun build is Bun's bundler)
 ```
 
-Node 22 (`.node-version`, `mise.toml`) and Bun 1.3 (`packageManager`).
+Node 22 (`.node-version`, `.mise.toml`) and Bun 1.3 (`packageManager`).
 
 ## First-time setup for the owner
 

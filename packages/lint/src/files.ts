@@ -21,7 +21,7 @@ const STRUCTURAL = [
   /(^|\/)\.git\//,
 ];
 const BINARY = /\.(png|jpe?g|gif|webp|avif|ico|pdf|zip|woff2?|ttf|otf|eot|mp4|mov|mp3|lockb)$/i;
-const COLOR_SCOPE = /^(apps\/web|packages\/ui)\//;
+const COLOR_SCOPE = /^packages\/(web|ui)\//;
 
 let cachedRoot: string | undefined;
 

@@ -7,7 +7,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 declare -a dirs=()
 for file in "$@"; do
   case "$file" in
-    apps/*/*|packages/*/*) dir="${file%%/*}/$(cut -d/ -f2 <<<"$file")" ;;
+    packages/*/*) dir="packages/$(cut -d/ -f2 <<<"$file")" ;;
     *) continue ;;
   esac
   [[ " ${dirs[*]-} " == *" $dir "* ]] || dirs+=("$dir")

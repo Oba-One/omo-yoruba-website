@@ -1,6 +1,6 @@
 ---
 name: oy-page
-description: How to build or change a route in apps/web from its wireframe. Use for a new page, a page section, loading a page from Sanity, layout options, Visual Editing on a route, cache tags, or a page-level Playwright or Lighthouse check.
+description: How to build or change a route in packages/web from its wireframe. Use for a new page, a page section, loading a page from Sanity, layout options, Visual Editing on a route, cache tags, or a page-level Playwright or Lighthouse check.
 ---
 
 # Building a page
@@ -18,8 +18,8 @@ Copy comes from the prototype and the Studio, never from memory.
    through `loadQuery`; lists (news, events, albums, people) through the live content
    collections. Typed results come from `sanity.types.ts`; run `bun typegen` after a
    schema change.
-3. Compose in `apps/web/src/pages/<route>.astro` inside `SiteLayout`. The page arranges
-   library parts and owns layout and copy only: no component styling in `apps/web`.
+3. Compose in `packages/web/src/pages/<route>.astro` inside `SiteLayout`. The page arranges
+   library parts and owns layout and copy only: no component styling in `packages/web`.
 4. Read every layout option from the page singleton's `layout` object (same names as the
    tweak table) and pass it down. Add a page-section story per option.
 5. Pending: any required-for-launch field that is empty renders `<Pending what="..." />`.

@@ -13,4 +13,4 @@ same word list (`packages/lint/yoruba-terms.json`) feeds the Sanity validation r
   diacritics check only (they quote bare forms on purpose), the word list and the lint
   package's own fixtures, one third-party skill, and generated files. The owner accepts or
   reverses the handoff carve-out in wayfinder ticket 18.
-- The colour literal check limits `apps/web` and `packages/ui` to `var(--*)` tokens.
+- The colour literal check limits `packages/web` and `packages/ui` to `var(--*)` tokens.

@@ -12,10 +12,22 @@
         "vitest": "4.1.11",
       },
     },
-    "apps/storybook": {
+    "packages/content": {
+      "name": "@oy/content",
+    },
+    "packages/lint": {
+      "name": "@oy/lint",
+    },
+    "packages/storybook": {
       "name": "@oy/storybook",
     },
-    "apps/web": {
+    "packages/tokens": {
+      "name": "@oy/tokens",
+    },
+    "packages/ui": {
+      "name": "@oy/ui",
+    },
+    "packages/web": {
       "name": "@oy/web",
       "dependencies": {
         "@astrojs/vercel": "11.0.10",
@@ -30,18 +42,6 @@
         "typescript": "5.9.3",
         "vitest": "4.1.11",
       },
-    },
-    "packages/content": {
-      "name": "@oy/content",
-    },
-    "packages/lint": {
-      "name": "@oy/lint",
-    },
-    "packages/tokens": {
-      "name": "@oy/tokens",
-    },
-    "packages/ui": {
-      "name": "@oy/ui",
     },
   },
   "packages": {
@@ -277,13 +277,13 @@
 
     "@oy/lint": ["@oy/lint@workspace:packages/lint"],
 
-    "@oy/storybook": ["@oy/storybook@workspace:apps/storybook"],
+    "@oy/storybook": ["@oy/storybook@workspace:packages/storybook"],
 
     "@oy/tokens": ["@oy/tokens@workspace:packages/tokens"],
 
     "@oy/ui": ["@oy/ui@workspace:packages/ui"],
 
-    "@oy/web": ["@oy/web@workspace:apps/web"],
+    "@oy/web": ["@oy/web@workspace:packages/web"],
 
     "@posthog/browser-common": ["@posthog/browser-common@0.7.2", "", { "dependencies": { "@posthog/core": "^1.50.4", "@posthog/types": "^1.408.1" } }, "sha512-ukDmETXy6fTBE4ZpaO8ccscrNz5SvTaUnhQ0Ze2JX/oYILa89rrNwqUH7lDAuhFKa+NY6EoJ9kZMuOvuu4WwLQ=="],
 

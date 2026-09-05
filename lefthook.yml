@@ -20,7 +20,7 @@ pre-commit:
           - name: yoruba diacritics
             run: bun packages/lint/src/cli.ts yoruba {staged_files}
           - name: colour literals
-            glob: '{apps,packages}/**/*.{astro,css,ts,tsx,js,mjs}'
+            glob: 'packages/**/*.{astro,css,ts,tsx,js,mjs}'
             run: bun packages/lint/src/cli.ts colors {staged_files}
           - name: typecheck touched packages
             glob: '*.{ts,tsx,astro}'

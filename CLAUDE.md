@@ -15,7 +15,7 @@ at `/admin`; Storybook via `@storybook-astro/framework`; Bun workspaces; Node 22
 | Command | Does |
 | --- | --- |
 | `bun install` | installs every workspace and the git hooks (lefthook) |
-| `bun dev` | Astro dev server for `apps/web`; run it in the background, never in the foreground |
+| `bun dev` | Astro dev server for `packages/web`; run it in the background, never in the foreground |
 | `bun storybook` | Storybook (Phase 1) |
 | `bun run test` | Vitest in every package that has a `vitest.config.ts` (`bun test` is Bun's own runner) |
 | `bun e2e` | Playwright (Phase 3) |
@@ -23,14 +23,17 @@ at `/admin`; Storybook via `@storybook-astro/framework`; Bun workspaces; Node 22
 | `bun typegen` | Sanity TypeGen (Phase 2) |
 | `bun seed` | seed script (Phase 2) |
 | `bun check` | typecheck, lint, unit tests; pre-push and CI run this |
-| `bun run build` | production build of `apps/web` (`bun build` is Bun's bundler) |
+| `bun run build` | production build of `packages/web` (`bun build` is Bun's bundler) |
 
-Node 22 must be active: `mise.toml` and `.node-version` pin it (run `mise trust` once).
+Node 22 must be active: `.mise.toml` and `.node-version` pin it (run `mise trust` once).
 
 ## Where things live
 
-- `apps/web`: pages, layouts, actions, Sanity loading, `astro.config.ts`, the Studio mount.
-- `apps/storybook`: Storybook config and theme; stories are discovered from `packages/ui`.
+Every workspace lives under `packages/`, apps and libraries alike, modelled on the
+green-goods repo (ADR 0003). The handoff's `apps/` split is not used.
+
+- `packages/web`: pages, layouts, actions, Sanity loading, `astro.config.ts`, the Studio mount.
+- `packages/storybook`: Storybook config and theme; stories are discovered from `packages/ui`.
 - `packages/tokens`: every colour, type, spacing, pattern and font. Tokens only.
 - `packages/ui`: every visual component (`.astro`) with its story and test.
 - `packages/content`: the content model, structure, GROQ, generated types, seed, functions.
