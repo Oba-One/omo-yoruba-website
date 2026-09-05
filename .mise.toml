@@ -1,0 +1,4 @@
+# Keep local setup aligned with packageManager in package.json and with CI.
+[tools]
+node = "22"
+bun = "1.4.2"

@@ -1,0 +1,25 @@
+# Weekly dependency audit. Bun is the source of truth for dependencies (no Dependabot
+# package updates), so this is the one place known vulnerabilities surface on their own.
+
+name: Dependency audit
+
+on:
+  schedule:
+    - cron: '23 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: bun audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-js
+      - name: Fail on high or critical advisories
+        run: bun audit --audit-level=high

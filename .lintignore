@@ -1,0 +1,21 @@
+# Files the voice and colour checks skip. One gitignore-style glob per line. A [dash],
+# [yoruba] or [colors] prefix limits a line to that check. Read by packages/lint/src/files.ts.
+
+# The design handoff's prototypes, design system and build brief are vendored verbatim and
+# contain em dashes and the older festival spelling (docs/adr/0010, wayfinder ticket 18).
+docs/design/design/
+
+# The six companion docs quote bare Yoruba forms on purpose (the word list in QUALITY.md).
+[yoruba] docs/design/*.md
+
+# The word list and the lint's own fixtures must contain the bare forms.
+[yoruba] packages/lint/yoruba-terms.json
+[yoruba] packages/lint/src/*.test.ts
+
+# Third-party skill, copied as published.
+.claude/skills/git-guardrails-claude-code/
+
+# Generated files.
+bun.lock
+skills-lock.json
+**/sanity.types.ts

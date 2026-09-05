@@ -1,0 +1,27 @@
+---
+// Phase 0 shell. Phase 3 mounts SiteNav, SiteFooter, the Give Dialog, the Enquiry
+// Modal, <ClientRouter /> and the gold progress bar here.
+import { PUBLIC_POSTHOG_KEY } from 'astro:env/client';
+import Analytics from '../components/Analytics.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {PUBLIC_POSTHOG_KEY && <Analytics />}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

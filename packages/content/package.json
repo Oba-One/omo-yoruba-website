@@ -1,0 +1,13 @@
+{
+  "name": "@oy/content",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "typegen": "echo 'TypeGen is wired in Phase 2 (sanity schema extract, then sanity typegen generate).' && exit 1",
+    "seed": "echo 'The seed script arrives in Phase 2. See docs/design/CONTENT-MODEL.md section 6.' && exit 1"
+  }
+}

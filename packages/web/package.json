@@ -1,0 +1,28 @@
+{
+  "name": "@oy/web",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "e2e": "echo 'Playwright arrives in Phase 3. See docs/design/QUALITY.md section 2.' && exit 1"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "11.0.10",
+    "@oy/content": "workspace:*",
+    "@oy/tokens": "workspace:*",
+    "@oy/ui": "workspace:*",
+    "astro": "7.3.1",
+    "posthog-js": "1.427.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+</helmet>
+<nav class="oy-nav" aria-label="Main" data-page="{{ current }}">
+  <div class="oy-wrap oy-nav-inner">
+    <a class="oy-logo" href="02%20Homepage.dc.html"><img class="oy-logo-img" src="images/logo-mark.png" alt="" aria-hidden="true"><span class="oy-logo-text">Omo Yorùbá <span class="oy-logo-sub">of Southern California</span></span></a>
+    <div class="oy-nav-links">
+      <div class="oy-nav-drop">
+        <button class="oy-nav-trigger" type="button" data-nav="events" aria-haspopup="true">Events<span class="oy-nav-caret" aria-hidden="true">▼</span></button>
+        <div class="oy-nav-drop-menu">
+          <a href="08%20Odunde%20Festival.dc.html">Ọdúndé Festival</a>
+          <a href="09%20End-of-Year%20Gala.dc.html">End-of-Year Gala</a>
+        </div>
+      </div>
+      <a data-nav="programs" href="10%20Programs.dc.html">Programs</a>
+      <a data-nav="involved" href="13%20Get%20Involved.dc.html">Get Involved</a>
+      <a data-nav="impact" href="14%20Impact.dc.html">Impact</a>
+      <a data-nav="about" href="15%20People%20and%20History.dc.html">Our Story</a>
+    </div>
+    <button class="oy-btn oy-btn--primary oy-btn--sm" type="button" style="flex:none" onClick="{{ give }}">Donate</button>
+    <button class="oy-nav-burger" type="button" aria-label="Open menu" onClick="{{ toggleMenu }}"><span></span><span></span><span></span></button>
+  </div>
+  <sc-if value="{{ menuOpen }}">
+    <div class="oy-nav-menu oy-dark" role="dialog" aria-label="Menu">
+      <button class="oy-nav-close" type="button" aria-label="Close menu" onClick="{{ closeMenu }}">×</button>
+      <span class="oy-nav-group">Events</span>
+      <a class="oy-nav-nested" href="08%20Odunde%20Festival.dc.html" onClick="{{ closeMenu }}">Ọdúndé Festival</a>
+      <a class="oy-nav-nested" href="09%20End-of-Year%20Gala.dc.html" onClick="{{ closeMenu }}">End-of-Year Gala</a>
+      <a href="10%20Programs.dc.html" onClick="{{ closeMenu }}">Programs</a>
+      <a href="13%20Get%20Involved.dc.html" onClick="{{ closeMenu }}">Get Involved</a>
+      <a href="14%20Impact.dc.html" onClick="{{ closeMenu }}">Impact</a>
+      <a href="15%20People%20and%20History.dc.html" onClick="{{ closeMenu }}">Our Story</a>
+      <div style="margin-top:24px"><button class="oy-btn oy-btn--primary" type="button" onClick="{{ giveFromMenu }}">Donate</button></div>
+    </div>
+  </sc-if>
+</nav>
+<dc-import name="Give Dialog" hint-size="100%,0"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:72},&quot;current&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;&quot;,&quot;options&quot;:[&quot;&quot;,&quot;odunde&quot;,&quot;gala&quot;,&quot;programs&quot;,&quot;school&quot;,&quot;collective&quot;,&quot;involved&quot;,&quot;impact&quot;,&quot;news&quot;,&quot;gallery&quot;,&quot;about&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  constructor(props){ super(props); this.state = { menuOpen:false }; }
+  renderVals(){
+    return {
+      current: this.props.current || '',
+      menuOpen: this.state.menuOpen,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen:false }),
+      give: (e) => { window.dispatchEvent(new CustomEvent('oy:give', { detail:{ trigger: e.currentTarget } })); },
+      giveFromMenu: (e) => { this.setState({ menuOpen:false }); window.dispatchEvent(new CustomEvent('oy:give', { detail:{ trigger:null } })); },
+    };
+  }
+}
+</script>
+</body>
+</html>

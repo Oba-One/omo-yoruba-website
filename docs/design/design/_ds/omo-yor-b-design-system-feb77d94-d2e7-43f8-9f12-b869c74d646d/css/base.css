@@ -1,0 +1,28 @@
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--font-body);font-size:var(--text-body-size);line-height:var(--leading-body);color:var(--text-body);background:var(--surface-page);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-display);line-height:var(--leading-heading);color:var(--text-heading);margin:0;text-wrap:pretty}
+h1{font-size:var(--text-hero);font-weight:var(--weight-heading)}
+h2{font-size:var(--text-h2);font-weight:var(--weight-heading)}
+h3{font-size:var(--text-h3);font-weight:var(--weight-heading-2)}
+h4{font-size:var(--text-h4);font-weight:var(--weight-heading-2)}
+p{margin:0}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:var(--link-hover)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:4px}
+::selection{background:var(--gold-300);color:var(--indigo-900)}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit}
+/* dark scope: drop onto any dark band so children adapt */
+.oy-dark{color:var(--text-on-dark);--text-heading:var(--white);--text-body:var(--text-on-dark-soft);--text-muted:var(--text-on-dark-soft);--accent-kicker:var(--accent-kicker-on-dark);--link:var(--gold-300);--link-hover:var(--white);--focus-ring:var(--gold-300);--border-soft:var(--border-on-dark)}
+.oy-dark h1,.oy-dark h2,.oy-dark h3,.oy-dark h4{color:var(--white)}
+/* layout primitives */
+.oy-wrap{max-width:var(--content-width);margin:0 auto;padding:0 var(--gutter)}
+.oy-section{padding:var(--section-pad) 0}
+.oy-section--alt{background:var(--section-alt-surface,var(--paper))}
+.oy-sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:30px;flex-wrap:wrap}
+.oy-sec-head h2{margin:0}
+.oy-sec-head .oy-sec-link{margin-left:auto}
+/* texture utilities: pattern as texture, never costume */
+.oy-texture{position:relative;isolation:isolate}
+.oy-texture::before{content:"";position:absolute;inset:0;z-index:-1;background-image:var(--pattern-adire-white);background-size:var(--adire-dot-size) var(--adire-dot-size);opacity:var(--band-texture-opacity,var(--adire-opacity-dark));pointer-events:none}
+.oy-texture--light::before{background-image:var(--pattern-adire-indigo);opacity:var(--adire-opacity-light)}

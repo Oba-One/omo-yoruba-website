@@ -1,0 +1,16 @@
+{
+  "$comment": "Bare Yoruba forms and their correct spelling with marks. Source: docs/design/QUALITY.md section 1. proseOnly terms are exempt inside identifiers, attribute values and keys; caseSensitive terms match only as written.",
+  "terms": [
+    { "bare": "Oja Balogun", "correct": "Ọjà Balógun" },
+    { "bare": "Agbala Omode", "correct": "Àgbàlá Ọmọde" },
+    { "bare": "Egbe Ibile", "correct": "Ẹgbẹ́ Ìbílẹ̀" },
+    { "bare": "E kaabo", "correct": "Ẹ káàbọ̀" },
+    { "bare": "E se", "correct": "Ẹ ṣé" },
+    { "bare": "Omo Yoruba", "correct": "Omo Yorùbá" },
+    { "bare": "Odun de", "correct": "Odunde" },
+    { "bare": "aso oke", "correct": "aṣọ òkè" },
+    { "bare": "adire", "correct": "àdìrẹ", "proseOnly": true },
+    { "bare": "gele", "correct": "gèlè", "proseOnly": true },
+    { "bare": "Ife", "correct": "Ifẹ̀", "caseSensitive": true }
+  ]
+}

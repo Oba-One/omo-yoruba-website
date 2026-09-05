@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    .gi-doors{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+    .oy-home[data-doors="rows"] .gi-doors{grid-template-columns:1fr;gap:14px}
+    .oy-home[data-doors="rows"] .gi-doors .oy-card{flex-direction:row;align-items:stretch}
+    .oy-home[data-doors="rows"] .gi-doors .oy-ph,.oy-home[data-doors="rows"] .gi-doors img{width:260px;height:auto;flex:none}
+    .oy-home[data-hta="hidden"] .gi-hta{display:none}
+    .gi-bullets{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;width:100%}
+    .gi-bullets li{display:flex;gap:11px;font-size:15px;line-height:1.55;color:var(--text-muted)}
+    .gi-bullets li::before{content:"•";color:var(--gold-500);font-weight:700}
+    @media(max-width:820px){.gi-doors,.oy-home[data-doors="rows"] .gi-doors{grid-template-columns:1fr}.oy-home[data-doors="rows"] .gi-doors .oy-card{flex-direction:column}.oy-home[data-doors="rows"] .gi-doors .oy-ph,.oy-home[data-doors="rows"] .gi-doors img{width:100%;height:190px}}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-doors="{{ doors }}" data-hta="{{ hta }}" data-screen-label="Get Involved" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="involved" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--slim" id="top">
+    <div class="oy-wrap oy-phead-inner">
+      <span class="oy-kicker">Ẹ dara pọ̀ mọ́ wa<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Join us</span></span>
+      <h1>Raise your hand</h1>
+      <p class="oy-phead-lead">Àgbájọ ọwọ́ la fi ń sọ̀yà. Many hands make the load light. Four ways in. Each one explains what it asks of you before you fill anything in.</p>
+    </div>
+  </header>
+
+  <section class="oy-section" id="doors">
+    <div class="oy-wrap">
+      <div class="gi-doors">
+
+        <article class="oy-card v2-card" id="member">
+          <img src="images/w2/community-table.jpg" alt="Members talking across a registration table" style="display:block;width:100%;height:190px;object-fit:cover;object-position:50% 42%">
+          <div class="oy-card-body oy-door">
+            <span class="oy-person-role">Membership</span>
+            <h3>Become a member</h3>
+            <p>Members carry the school, the festival, and each other. Dues run the year between events, when nothing is being sold and the bills still arrive.</p>
+            <ul class="gi-bullets">
+              <li>$75 a year for an individual, $120 for a household</li>
+              <li>A seat at the table, and a vote at the annual meeting</li>
+              <li>Early booking for Gala seats and festival booths</li>
+              <li>Dues are invoiced after you join, never taken on this page</li>
+            </ul>
+            <button class="oy-btn oy-btn--primary" type="button" id="cta-member" onClick="{{ openMember }}">Become a member<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+
+        <article class="oy-card v2-card" id="volunteer">
+          <img src="images/w2/kids-art-day.jpg" alt="Children showing their finished art pieces" style="display:block;width:100%;height:190px;object-fit:cover;object-position:50% 55%">
+          <div class="oy-card-body oy-door">
+            <span class="oy-person-role">Volunteering</span>
+            <h3>Volunteer</h3>
+            <p>One short form. You tell us when you are free and what you can do, and Tunde Bakare places you where the gap is.</p>
+            <ul class="gi-bullets">
+              <li>A second adult on a language lesson call, ninety minutes at a time</li>
+              <li>A shift at Odunde in June, or set-up for the Gala</li>
+              <li>Under 18 welcome, with a guardian consent form</li>
+              <li>Someone writes back within a week</li>
+            </ul>
+            <button class="oy-btn oy-btn--primary" type="button" id="cta-volunteer" onClick="{{ openVolunteer }}">Raise your hand<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+
+        <article class="oy-card v2-card" id="vendor">
+          <img src="images/w2/festival-food.jpg" alt="Festival food being plated at long tables" style="display:block;width:100%;height:190px;object-fit:cover;object-position:50% 50%">
+          <div class="oy-card-body oy-door">
+            <span class="oy-person-role">Vendors</span>
+            <h3>Sell at Ọdúndé</h3>
+            <p>Ọjà Balógun is the market at the heart of the festival. Food, cloth, craft, and books, in front of four thousand people on one Saturday in June.</p>
+            <ul class="gi-bullets">
+              <li>Standard booth $150, double $275, food truck $325</li>
+              <li>Applications close 1 April, decisions by 20 April</li>
+              <li>LA County health permit needed for anything cooked on site</li>
+              <li>A booth is held once the fee is paid</li>
+            </ul>
+            <button class="oy-btn oy-btn--primary" type="button" id="cta-vendor" onClick="{{ openVendor }}">Apply for a booth<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+
+        <article class="oy-card v2-card" id="partner">
+          <img src="images/w2/odunde-2026-president-receiving-gift.jpg" alt="A gift is presented to the association's leaders during the opening of Odunde 2026" style="display:block;width:100%;height:190px;object-fit:cover;object-position:50% 22%">
+          <div class="oy-card-body oy-door">
+            <span class="oy-person-role">Partnership</span>
+            <h3>Partner or sponsor</h3>
+            <p>For organizations and funders. Sponsorship is what keeps Odunde free and open to all of Leimert Park, and what carries the school between terms.</p>
+            <ul class="gi-bullets">
+              <li>Three levels, from $2,500 to $10,000</li>
+              <li>One enquiry covers Odunde, the Gala, or both</li>
+              <li>The deck and impact numbers arrive within a working day</li>
+              <li>Four questions. This is a conversation, not an application</li>
+            </ul>
+            <button class="oy-btn oy-btn--primary" type="button" id="cta-partner" onClick="{{ openSponsor }}">Partner with us<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt gi-hta" id="associations">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <h2>Hometown associations</h2>
+          <div class="oy-prose" style="margin-top:16px">
+            <p>Nine hometown associations sit inside this community. They are the older structure underneath Omo Yorùbá: family and town networks that predate the organization in Southern California and still do much of the work of holding people together, from naming ceremonies to funerals.</p>
+            <p>You do not have to belong to one to be a member here. If you already do, say so when you join and we will connect you to the others from your town.</p>
+          </div>
+        </div>
+        <div class="oy-glance" data-cols="3" style="align-self:start">
+          <div><b>Associations</b><span>9</span></div>
+          <div><b>Listed publicly</b><span>Not yet</span></div>
+          <div><b>To connect</b><span>Ask when you join</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="talk">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <h2>Or just talk to someone</h2>
+          <p class="oy-sec-lead">A phone call or an email works just as well as any form on this page.</p>
+          <div style="margin-top:22px;display:flex;gap:14px;flex-wrap:wrap">
+            <a class="oy-btn oy-btn--secondary" href="tel:+13235550148">Call (323) 555-0148</a>
+            <button class="oy-btn oy-btn--quiet" type="button" id="cta-contact" onClick="{{ openContact }}">Send a message<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+          </div>
+        </div>
+        <div class="oy-facts" style="grid-template-columns:1fr">
+          <div class="oy-fact"><b>Email</b><span><a href="mailto:info@omoyorubaofsocal.org">info@omoyorubaofsocal.org</a></span></div>
+          <div class="oy-fact"><b>Phone</b><span>(323) 555-0148</span></div>
+          <div class="oy-fact"><b>Who answers</b><span>Folasade Adeyemi, membership</span></div>
+          <div class="oy-fact"><b>Response time</b><span>Three working days</span></div>
+        </div>
+      </div>
+      <div class="oy-handoff" style="margin-top:24px">
+        <span>Meet the people you are writing to.</span>
+        <a class="oy-btn oy-btn--quiet" href="15%20People%20and%20History.dc.html">People &amp; history<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-handoff" style="margin-top:14px">
+        <span>Would rather give than join? That takes about a minute.</span>
+        <button class="oy-btn oy-btn--primary" type="button" data-give="true" onClick="{{ give }}">Donate<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+  <dc-import name="Enquiry Modal" open="{{ modalOpen }}" kind="{{ modalKind }}" onClose="{{ closeModal }}" hint-size="100%,0"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;doors&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;cards&quot;,&quot;options&quot;:[&quot;cards&quot;,&quot;rows&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Four doors&quot;},&quot;hta&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Hometown associations&quot;}}">
+class Component extends DCLogic {
+  constructor(props){ super(props); this.state = { modalOpen:false, modalKind:'member' }; this.trigger = null; }
+  open(kind){ return (e) => { this.trigger = e.currentTarget.id; this.setState({ modalOpen:true, modalKind:kind }); }; }
+  renderVals(){
+    const p = this.props || {}, s = this.state;
+    return {
+      give: (e) => { window.dispatchEvent(new CustomEvent('oy:give', { detail:{ trigger: e.currentTarget } })); },
+      doors: p.doors || 'cards',
+      hta: p.hta || 'shown',
+      modalOpen: s.modalOpen, modalKind: s.modalKind,
+      openMember: this.open('member'),
+      openVolunteer: this.open('volunteer'),
+      openVendor: this.open('vendor'),
+      openSponsor: this.open('sponsor'),
+      openContact: this.open('contact'),
+      closeModal: () => {
+        this.setState({ modalOpen:false });
+        const id = this.trigger;
+        if (id) setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 30);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

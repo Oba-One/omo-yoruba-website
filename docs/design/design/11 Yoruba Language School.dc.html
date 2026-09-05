@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    .oy-home[data-lesson="hidden"] #lesson{display:none}
+    @media(max-width:860px){.ls-teacher{grid-template-columns:1fr !important}}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-portraits="{{ portraits }}" data-lesson="{{ lesson }}" data-screen-label="Yoruba Language Lessons" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="school" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--slim" id="top">
+    <div class="oy-wrap oy-phead-inner">
+      <span class="oy-kicker">Ẹ̀kọ́ èdè Yorùbá<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Yoruba lessons</span></span>
+      <h1>Yoruba Language Lessons</h1>
+      <p class="oy-phead-lead">Live online lessons with one teacher, for children and adults who want to speak, read, and carry the language forward. Times are set with her, one learner or one family at a time.</p>
+      <div class="oy-phead-cta">
+        <button class="oy-btn oy-btn--primary" type="button" id="head-enrol" onClick="{{ openEnrol }}">Write to the teacher<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </header>
+
+  <section style="background:var(--white);padding:40px 0 8px" id="glance">
+    <div class="oy-wrap">
+      <div class="oy-glance" data-cols="4">
+        <div><b>Format</b><span>Online, live</span><small>Video call, one-to-one or small group</small></div>
+        <div><b>When</b><span>Set with the teacher</span><small>Evenings and weekends available</small></div>
+        <div><b>Ages</b><span>5 to adult</span><small>Placed by level, not age</small></div>
+        <div><b>Cost</b><span>Agreed with her</span><small>Settled after the first lesson</small></div>
+      </div>
+      <p style="margin:14px 0 0;font-size:14px;color:var(--muted)">No family is turned away over the fee, so say so when you write.</p>
+    </div>
+  </section>
+
+  <section class="oy-section" id="teacher">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Olùkọ́ wa<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Our teacher</span></span></div>
+          <h2 style="margin-top:6px">One teacher, and you start by writing to her</h2>
+          <p class="oy-sec-lead">There is no sign-up form and no fixed timetable. You write, she places the learner and proposes a time, and the first lesson follows.</p>
+        </div>
+      </div>
+      <div class="oy-split ls-teacher" style="grid-template-columns:320px 1fr;gap:28px;align-items:stretch">
+        <article class="oy-person"><div class="oy-person-media"><div class="oy-ph oy-ph--indigo" role="img" aria-label="Placeholder for a future portrait of the teacher"><span>[ Portrait ]</span></div></div><div class="oy-person-body"><span class="oy-person-role">Teacher, all levels</span><span class="oy-person-name">Yetunde Ojo</span><p class="oy-person-bio">Taught in Ibadan for eleven years before Los Angeles. Teaches every level, from first words to conversation, live over video call, and writes the curriculum herself.</p></div></article>
+        <div class="oy-card" style="justify-content:center"><div class="oy-card-body" style="padding:30px 30px 32px;gap:12px">
+          <h3 style="font-size:24px">Write to the teacher</h3>
+          <p style="font-size:16px;line-height:1.65;max-width:52ch">The learner's name, age, how much Yoruba they already understand, and when suits you. She replies within a few days with a level, a time, and the link for the call. Nothing is charged online.</p>
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+            <button class="oy-btn oy-btn--primary" type="button" id="teacher-enrol" onClick="{{ openEnrol }}">Write to the teacher<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+            <span style="font-size:14.5px;color:var(--muted)">Or email <a href="mailto:lessons@omoyorubaofsocal.org">lessons@omoyorubaofsocal.org</a></span>
+          </div>
+          <p class="oy-pend-line" style="margin-top:8px"><b>Pending from you</b>How the teacher wants enquiries to reach her: this form, email, or a phone number. Confirm with her before launch.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="learn">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ohun tí a ń kọ́<span class="oy-kicker-dot" aria-hidden="true">•</span><span>What we teach</span></span></div>
+          <h2 style="margin-top:6px">What you learn</h2>
+          <div class="oy-prose" style="margin-top:16px">
+            <p>Tone marks and underdots are taught from the first lesson. Ẹ, ọ, ṣ, and the three tones are the difference between one word and another, so we never skip them.</p>
+            <p>Three levels. Learners move up when the teacher says they are ready, not on a calendar.</p>
+          </div>
+        </div>
+        <div class="oy-list" style="align-self:start;width:100%">
+          <div class="oy-lrow" style="grid-template-columns:1fr"><div class="oy-lrow-body"><h3>Level one, first words</h3><p>Greetings, family, numbers, and the alphabet with its marks. By the end you can greet an elder correctly and say who your people are.</p></div></div>
+          <div class="oy-lrow" style="grid-template-columns:1fr"><div class="oy-lrow-body"><h3>Level two, reading and tone</h3><p>Reading aloud with the right tone, writing with marks, and everyday sentences. By the end you can read a short passage and be understood.</p></div></div>
+          <div class="oy-lrow" style="grid-template-columns:1fr"><div class="oy-lrow-body"><h3>Level three, conversation</h3><p>Proverbs, storytelling, and holding a conversation for ten minutes without switching to English. By the end you can call home and stay in Yoruba.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="lesson">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ẹ̀kọ́ kan<span class="oy-kicker-dot" aria-hidden="true">•</span><span>One lesson</span></span></div>
+          <h2 style="margin-top:6px">What a lesson looks like</h2>
+          <p class="oy-sec-lead">About an hour on a call. So a first-time parent knows what to expect.</p>
+        </div>
+      </div>
+      <div class="oy-sched oy-sched--day" style="max-width:820px">
+        <div class="oy-sched-row"><span class="oy-sched-time">Before</span><div class="oy-sched-what"><b>Join the call</b><p>The link is the same every time. Everyone is greeted in Yoruba as they arrive, learners and parents alike.</p></div></div>
+        <div class="oy-sched-row"><span class="oy-sched-time">First half</span><div class="oy-sched-what"><b>Lesson by level</b><p>New words, tone practice, and reading aloud. Parents are welcome to sit beside a younger child.</p></div></div>
+        <div class="oy-sched-row"><span class="oy-sched-time">Break</span><div class="oy-sched-what"><b>Ten minutes off camera</b><p>Water, a stretch, and a chance for parents to ask the teacher a quick question.</p></div></div>
+        <div class="oy-sched-row"><span class="oy-sched-time">Second half</span><div class="oy-sched-what"><b>Speaking</b><p>Conversation with the teacher, and song for younger children. Nobody leaves without speaking.</p></div></div>
+        <div class="oy-sched-row"><span class="oy-sched-time">After</span><div class="oy-sched-what"><b>Homework by email</b><p>A page of practice, about fifteen minutes' worth, sent the same day.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="faq">
+    <div class="oy-wrap" style="max-width:900px">
+      <h2>Questions parents ask</h2>
+      <p class="oy-sec-lead" style="margin-bottom:22px">The five we hear most often.</p>
+      <div class="oy-faq">
+        <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="5">
+          <div class="oy-faq-item">
+            <button class="oy-faq-q" type="button" aria-expanded="{{ q.expanded }}" onClick="{{ q.toggle }}">{{ q.q }}<span class="oy-faq-mark" aria-hidden="true">{{ q.mark }}</span></button>
+            <sc-if value="{{ q.open }}"><div class="oy-faq-a">{{ q.a }}</div></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="take-part">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ẹ dara pọ̀ mọ́ wa<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Join us</span></span></div>
+          <h2 style="margin-top:6px">Take part</h2>
+        </div>
+      </div>
+      <div class="oy-takepart">
+        <div class="oy-path" data-accent="volunteer">
+          <span class="oy-path-chip">Volunteer</span>
+          <div class="oy-path-body"><h3>Help with lessons</h3><p>A second adult on a children's call helps it run. No teaching experience needed, a few hours a month.</p></div>
+          <button class="oy-btn oy-btn--primary" type="button" id="tp-volunteer" onClick="{{ openVolunteer }}">Raise your hand<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="performer">
+          <span class="oy-path-chip">Membership</span>
+          <div class="oy-path-body"><h3>Become a member</h3><p>$75 a year. Members carry the lessons and every other program, and get a vote at the annual meeting.</p></div>
+          <button class="oy-btn oy-btn--secondary" type="button" id="tp-member" onClick="{{ openMember }}">Become a member<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="give">
+          <span class="oy-path-chip">Give</span>
+          <div class="oy-path-body"><h3>Give toward the lessons</h3><p>Books, materials, and the teacher's time. A gift can cover a learner whose family cannot pay.</p></div>
+          <button class="oy-btn oy-btn--quiet" type="button" data-give="true" onClick="{{ give }}">Donate<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </div>
+      <div class="oy-handoff" style="margin-top:22px">
+        <span>Back to the programs hub, or across to Kids &amp; STEM.</span>
+        <a class="oy-btn oy-btn--quiet" href="10%20Programs.dc.html">All programs<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+  <dc-import name="Enquiry Modal" open="{{ modalOpen }}" kind="{{ modalKind }}" onClose="{{ closeModal }}" hint-size="100%,0"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;lesson&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;CMS: what a lesson looks like&quot;},&quot;portraits&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Teacher portrait&quot;},&quot;faq&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;closed&quot;,&quot;options&quot;:[&quot;closed&quot;,&quot;open&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;FAQ default&quot;}}">
+const QUESTIONS = [
+  ['How much does it cost?', 'Fees are agreed with the teacher and depend on whether the lesson is one-to-one or shared with a sibling or friend. Nothing is paid online, and no family is turned away over the fee, so say so when you write.'],
+  ['When are the lessons?', 'There is no fixed timetable. You tell the teacher what suits you, evenings or weekends, and she proposes a time. Lessons run year-round.'],
+  ['Can a parent sit in?', 'Yes, beside the child on the call, any time. Several parents who came to watch ended up taking lessons themselves.'],
+  ['What does a child need?', 'A notebook, a pencil, a quiet corner, and a device with a camera and microphone. Books are sent as PDFs before the first lesson.'],
+  ['What if my child already understands some Yoruba?', 'Say so when you write. The teacher spends ten minutes with them on the first call and starts them at the right level, which is often not the one their age suggests.']
+];
+
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { openFaq:null, modalOpen:false, modalKind:'enrol' };
+    this.trigger = null;
+  }
+  open(kind){ return (e) => { this.trigger = e.currentTarget.id; this.setState({ modalOpen:true, modalKind:kind }); }; }
+  renderVals(){
+    const s = this.state, p = this.props || {};
+    const faqDefault = (p.faq || 'closed') === 'open' ? [0] : [];
+    const open = s.openFaq === null ? faqDefault : s.openFaq;
+    return {
+      give: (e) => { window.dispatchEvent(new CustomEvent('oy:give', { detail:{ trigger: e.currentTarget } })); },
+      portraits: p.portraits || 'shown',
+      lesson: p.lesson || 'shown',
+      faqs: QUESTIONS.map((pair, i) => {
+        const isOpen = open.indexOf(i) > -1;
+        return {
+          q: pair[0], a: pair[1], open: isOpen,
+          expanded: isOpen ? 'true' : 'false', mark: isOpen ? '−' : '+',
+          toggle: () => this.setState(st => {
+            const cur = st.openFaq === null ? faqDefault : st.openFaq;
+            return { openFaq: cur.indexOf(i) > -1 ? cur.filter(x => x !== i) : cur.concat([i]) };
+          })
+        };
+      }),
+      modalOpen: s.modalOpen, modalKind: s.modalKind,
+      openEnrol: this.open('enrol'),
+      openVolunteer: this.open('volunteer'),
+      openMember: this.open('member'),
+      closeModal: () => {
+        this.setState({ modalOpen:false });
+        const id = this.trigger;
+        if (id) setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 30);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

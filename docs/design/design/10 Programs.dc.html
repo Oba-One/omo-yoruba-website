@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    .pg-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+    .oy-home[data-cards="pairs"] .pg-cards{grid-template-columns:repeat(2,1fr);gap:22px}
+    .oy-home[data-cards="three"] .pg-cards{grid-template-columns:repeat(3,1fr);gap:22px}
+    .oy-home[data-cards="three"] .pg-card--exchange,.oy-home[data-cards="three"] #exchange{display:none}
+    .oy-home[data-cards="three"] .pg-cards .oy-card img,.oy-home[data-cards="three"] .pg-cards .oy-card .oy-ph{height:200px}
+    .oy-home[data-yearstrip="hidden"] .pg-year{display:none}
+    .pg-when{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--terra-600)}
+    @media(max-width:1000px){.pg-cards{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:620px){.pg-cards,.oy-home[data-cards="pairs"] .pg-cards{grid-template-columns:1fr}}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-cards="{{ cards }}" data-yearstrip="{{ yearstrip }}" data-screen-label="Programs" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="programs" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--slim" id="top">
+    <div class="oy-wrap oy-phead-inner">
+      <span class="oy-kicker">Ohun tí a ń ṣe<span class="oy-kicker-dot" aria-hidden="true">•</span><span>What we do</span></span>
+      <h1>Our programs</h1>
+      <p class="oy-phead-lead">What runs through the year, for children, teenagers, and adults, across Los Angeles. Two programs have their own page. The rest are described in full below.</p>
+    </div>
+  </header>
+
+  <section class="oy-section" id="four">
+    <div class="oy-wrap">
+      <div class="pg-cards">
+        <article class="oy-card v2-card">
+          <img src="images/w2/odunde-2026-attendees-learning-yoruba.jpg" alt="Two women in gele listen to a Yoruba lesson at Odunde 2026" style="display:block;width:100%;height:160px;object-fit:cover;object-position:60% 35%">
+          <div class="oy-card-body">
+            <div class="pg-when"><span>Online, by arrangement</span><span>All ages</span></div>
+            <h3>Yoruba Language Lessons</h3>
+            <p>Speaking, reading, and tone marks, taught one-to-one or in small groups over video call by our teacher. Times are set with her.</p>
+            <a class="oy-btn oy-btn--quiet" href="11%20Yoruba%20Language%20School.dc.html" style="padding:10px 0">Enroll a learner<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+        <article class="oy-card v2-card">
+          <img src="images/w2/odunde-2026-attendee-smiling-2.jpg" alt="A young man in a purple and teal print shirt and cap smiles on Degnan Boulevard at Odunde 2026. Interim image until a Collective photograph exists." style="display:block;width:100%;height:160px;object-fit:cover;object-position:50% 25%">
+          <div class="oy-card-body">
+            <div class="pg-when"><span>Monthly</span><span>Adults</span></div>
+            <h3>Yoruba Cultural Collective</h3>
+            <p>Members who put culture to work: the Solar Hub, Green Goods, and a monthly circle that keeps ideas moving.</p>
+            <a class="oy-btn oy-btn--quiet" href="12%20Yoruba%20Cultural%20Collective.dc.html" style="padding:10px 0;color:var(--green-600)">Meet the Collective<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+        <article class="oy-card v2-card">
+          <img src="images/w2/odunde-2026-kids-doing-crafts.jpg" alt="Children at the craft tables in Àgbàlá Ọmọde, Odunde 2026" style="display:block;width:100%;height:160px;object-fit:cover;object-position:60% 55%">
+          <div class="oy-card-body">
+            <div class="pg-when"><span>Ages 4 to 14</span><span>Saturdays</span></div>
+            <h3>Kids &amp; STEM</h3>
+            <p>Àgbàlá Ọmọde, the children's compound, and the STEM Hub. From ayo boards to robotics.</p>
+            <a class="oy-btn oy-btn--quiet" href="#kids" style="padding:10px 0">On this page<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+        <article class="oy-card v2-card pg-card--exchange">
+          <img src="images/w2/odunde-2026-president-receiving-gift.jpg" alt="A gift is presented to the association's leaders during the opening of Odunde 2026" style="display:block;width:100%;height:160px;object-fit:cover;object-position:50% 22%">
+          <div class="oy-card-body">
+            <div class="pg-when"><span>Twice a year</span><span>Ages 16+</span></div>
+            <h3>Cultural Exchange</h3>
+            <p>Between Los Angeles and Ọ̀yọ́ State. Members travel, host, and come back with something to teach.</p>
+            <a class="oy-btn oy-btn--quiet" href="#exchange" style="padding:10px 0">On this page<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+      </div>
+      <p style="margin-top:18px;font-size:14.5px;color:var(--muted);max-width:74ch">Each card says who it is for and when it runs, so you can find the right one at a glance.</p>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="kids">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Àwọn ọmọ<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The children</span></span></div>
+          <h2 style="margin-top:6px">Kids &amp; STEM</h2>
+        </div>
+        <button class="oy-btn oy-btn--quiet" type="button" style="margin-left:auto" onClick="{{ toggleKids }}">{{ kidsLabel }}</button>
+      </div>
+      <sc-if value="{{ kidsOpen }}" hint-placeholder-val="{{ true }}">
+        <div class="oy-prose" style="max-width:74ch;margin-bottom:26px">
+          <p>Kids &amp; STEM is two things under one name. Àgbàlá Ọmọde is the children's compound: it runs at the Odunde Festival and through the year, and it is where the youngest members of this community meet each other. The STEM Hub is the technical half, from ayo boards to robotics, built on the belief that a child who knows where they come from carries that into everything else they learn.</p>
+        </div>
+        <div class="oy-g2">
+          <article class="oy-card v2-card">
+            <img src="images/w2/odunde-2026-mom-playing-games-with-kids.jpg" alt="A mother and her two children play ayo and Ludo at the Àgbàlá Ọmọde table, Odunde 2026" style="display:block;width:100%;height:190px;object-fit:cover;object-position:50% 45%">
+            <div class="oy-card-body oy-door">
+              <h3>Àgbàlá Ọmọde</h3>
+              <p>The children's compound. Games, art, and ayo, at the festival and through the year.</p>
+              <div class="oy-facts" style="grid-template-columns:1fr;width:100%">
+                <div class="oy-fact"><b>Ages</b><span>4 to 10</span></div>
+                <div class="oy-fact"><b>When</b><span>Saturdays, and all day at Odunde</span></div>
+              </div>
+              <a class="oy-btn oy-btn--secondary" href="08%20Odunde%20Festival.dc.html#zones">See it at Odunde<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+              <div class="v2-rule" aria-hidden="true"></div>
+            </div>
+          </article>
+          <article class="oy-card v2-card">
+            <img src="images/w2/odunde-2026-kids-doing-paint-art.jpg" alt="Children build with craft sticks at a long table lined with small blue robots, Àgbàlá Ọmọde 2026" style="display:block;width:100%;height:190px;object-fit:cover;object-position:50% 35%">
+            <div class="oy-card-body oy-door">
+              <h3>STEM Hub</h3>
+              <p>The technical half of the children's program.</p>
+              <div class="oy-facts" style="grid-template-columns:1fr;width:100%">
+                <div class="oy-fact"><b>Ages</b><span>10 to 14</span></div>
+                <div class="oy-fact"><b>What they build</b><span>Robotics, solar kits, and a coding club</span></div>
+              </div>
+              <a class="oy-btn oy-btn--secondary" href="15%20People%20and%20History.dc.html#contact">Ask about joining<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+              <div class="v2-rule" aria-hidden="true"></div>
+            </div>
+          </article>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <section class="oy-section" id="exchange">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ìpàdé àṣà<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Meeting of cultures</span></span></div>
+          <h2 style="margin-top:6px">Cultural Exchange</h2>
+        </div>
+        <button class="oy-btn oy-btn--quiet" type="button" style="margin-left:auto" onClick="{{ toggleEx }}">{{ exLabel }}</button>
+      </div>
+      <sc-if value="{{ exOpen }}" hint-placeholder-val="{{ true }}">
+        <div class="oy-split">
+          <div>
+            <div class="oy-facts" style="grid-template-columns:1fr;margin-top:22px">
+              <div class="oy-fact"><b>Who it is for</b><span>Members aged 16 and over</span></div>
+              <div class="oy-fact"><b>Between</b><span>Los Angeles and Ọ̀yọ́ State</span></div>
+              <div class="oy-fact"><b>Cadence</b><span>Twice a year, spring and summer</span></div>
+              <div class="oy-fact"><b>How to join</b><span>Open to members, applications each January</span></div>
+            </div>
+          </div>
+          <img src="images/w2/summer-camp-fila-hat-teaching.jpg" alt="A man in embroidered agbada adjusts his fila while a teenager tries on his own at a Citrus College summer camp" style="display:block;width:100%;height:280px;object-fit:cover;object-position:50% 30%;border-radius:6px">
+        </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt pg-year" id="year">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ọdún kan<span class="oy-kicker-dot" aria-hidden="true">•</span><span>One year</span></span></div>
+          <h2 style="margin-top:6px">When things run</h2>
+          <p class="oy-sec-lead">One line per program, across one year. Worth a screenshot.</p>
+        </div>
+      </div>
+      <div class="oy-year" data-cols="5">
+        <div><div class="oy-year-mark" aria-hidden="true"></div><b>Year-round</b><strong>Yoruba Language Lessons</strong><span>Online, scheduled with the teacher</span></div>
+        <div><div class="oy-year-mark" aria-hidden="true"></div><b>June</b><strong>Odunde Festival</strong><span>Leimert Park Plaza</span></div>
+        <div><div class="oy-year-mark" aria-hidden="true"></div><b>Nov or Dec</b><strong>End-of-Year Gala</strong><span>Date pending</span></div>
+        <div><div class="oy-year-mark" aria-hidden="true"></div><b>Saturdays</b><strong>Kids &amp; STEM</strong><span>Àgbàlá Ọmọde runs at the festival</span></div>
+        <div><div class="oy-year-mark" aria-hidden="true"></div><b>Monthly</b><strong>Cultural Collective</strong><span>Solar Hub, Green Goods</span></div>
+      </div>
+      <div class="oy-handoff" style="margin-top:24px">
+        <span>What these programs have produced, with a source line under every number.</span>
+        <a class="oy-btn oy-btn--quiet" href="14%20Impact.dc.html">See our impact<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="take-part">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ẹ dara pọ̀ mọ́ wa<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Join us</span></span></div>
+          <h2 style="margin-top:6px">Take part</h2>
+          <p class="oy-sec-lead">Three ways to be part of the programs.</p>
+        </div>
+      </div>
+      <div class="oy-takepart">
+        <div class="oy-path" data-accent="performer">
+          <span class="oy-path-chip">Enroll</span>
+          <div class="oy-path-body"><h3>Start Yoruba lessons</h3><p>Online lessons for children and adults, scheduled with the teacher. Write to her to start.</p></div>
+          <a class="oy-btn oy-btn--primary" href="11%20Yoruba%20Language%20School.dc.html#enrol">Enroll a learner<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="oy-path" data-accent="volunteer">
+          <span class="oy-path-chip">Volunteer</span>
+          <div class="oy-path-body"><h3>Help with a program</h3><p>Classroom helpers, festival hands, and the children's compound. One form, and we place you.</p></div>
+          <a class="oy-btn oy-btn--secondary" href="13%20Get%20Involved.dc.html#volunteer">Volunteer<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="oy-path" data-accent="give">
+          <span class="oy-path-chip">Give</span>
+          <div class="oy-path-body"><h3>Give toward the programs</h3><p>Gifts hold up the language lessons, the children's programs, and the festival.</p></div>
+          <button class="oy-btn oy-btn--quiet" type="button" data-give="true" onClick="{{ give }}">Donate<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;cards&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;four&quot;,&quot;options&quot;:[&quot;four&quot;,&quot;three&quot;,&quot;pairs&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Program cards (CMS count)&quot;},&quot;inline&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;expanded&quot;,&quot;options&quot;:[&quot;expanded&quot;,&quot;collapsed&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Inline programs&quot;},&quot;yearstrip&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Year strip&quot;}}">
+class Component extends DCLogic {
+  constructor(props){ super(props); this.state = { kids:null, ex:null }; }
+  renderVals(){
+    const p = this.props || {}, s = this.state;
+    const def = (p.inline || 'expanded') === 'expanded';
+    const kidsOpen = s.kids === null ? def : s.kids;
+    const exOpen = s.ex === null ? def : s.ex;
+    return {
+      give: (e) => { window.dispatchEvent(new CustomEvent('oy:give', { detail:{ trigger: e.currentTarget } })); },
+      cards: p.cards || 'four',
+      yearstrip: p.yearstrip || 'shown',
+      kidsOpen, exOpen,
+      kidsLabel: kidsOpen ? 'Hide details' : 'Show details',
+      exLabel: exOpen ? 'Hide details' : 'Show details',
+      toggleKids: () => this.setState({ kids: !kidsOpen }),
+      toggleEx: () => this.setState({ ex: !exOpen }),
+    };
+  }
+}
+</script>
+</body>
+</html>

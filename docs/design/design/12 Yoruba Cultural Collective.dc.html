@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    .cc-status{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1C5C41;background:#E4F0E9;border:1px solid #A9CDBB;border-radius:999px;padding:7px 14px}
+    .cc-status i{width:8px;height:8px;border-radius:50%;background:var(--green-600);display:block}
+    .oy-home[data-status="hidden"] .cc-status{display:none}
+    .oy-home[data-green="strong"] .oy-phead--slim{background:#EDF5F0;border-bottom-color:#C7DFD2}
+    .oy-home[data-green="strong"] .oy-section--alt{background:#EDF5F0}
+    .oy-home[data-green="strong"] .cc-mark{background:linear-gradient(90deg,var(--green-600) 0 60%,var(--gold-500) 60%)}
+    .oy-home[data-init="stacked"] .cc-init{grid-template-columns:1fr;gap:26px}
+    .cc-init{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .oy-home[data-events="hidden"] #events{display:none}
+    .cc-memberled{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-600);background:#DDEFE5;border-radius:999px;padding:6px 12px}
+    @media(max-width:900px){.cc-init{grid-template-columns:1fr}}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-green="{{ green }}" data-status="{{ status }}" data-init="{{ initiatives }}" data-events="{{ events }}" data-screen-label="Yoruba Cultural Collective" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="collective" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--slim" id="top">
+    <div class="oy-wrap oy-phead-inner">
+      <span class="oy-kicker">Ẹgbẹ́ àṣà<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The cultural collective</span></span>
+      <h1>Yoruba Cultural Collective</h1>
+      <p class="oy-phead-lead">Culture put to work. A monthly circle of members who meet, host events through the year, and run two member-led projects, the Solar Hub and Green Goods.</p>
+      <div class="oy-phead-cta">
+        <button class="oy-btn oy-btn--primary" type="button" id="head-partner" onClick="{{ openSponsor }}">Partner with the Collective<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        <a class="oy-btn oy-btn--secondary" href="#events">See what is on</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="oy-section" id="why">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span class="cc-mark" aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ìdí rẹ̀<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Why</span></span></div>
+          <h2 style="margin-top:6px">Why culture and sustainability sit together</h2>
+          <div class="oy-prose" style="margin-top:18px;max-width:56ch"><p>The Collective is about thirty members: engineers, growers, traders, and teachers, who meet monthly. It exists because the two things this community worries about, losing the language and losing the ground under its feet, turned out to be one worry.</p><p>Yoruba life never separated the farm from the market from the shrine. Putting solar on a community roof and teaching a child to greet an elder properly are the same work: keeping ourselves, here, without asking permission.</p></div>
+        </div>
+        <img src="images/w2/odunde-2026-attendee-smiling-2.jpg" alt="A young man in a purple and teal print shirt and cap smiles on Degnan Boulevard at Odunde 2026. Interim image until a Collective photograph exists." style="display:block;width:100%;height:280px;object-fit:cover;object-position:50% 30%;border-radius:6px"><span>[ The Collective at work, future photo ]</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="events">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span class="cc-mark" aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ohun tí ń bọ̀<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Coming up</span></span></div>
+          <h2 style="margin-top:6px">Collective events</h2>
+          <p class="oy-sec-lead">Talks, workshops, and site visits through the year. Everyone is welcome.</p>
+        </div>
+      </div>
+      <div class="oy-list">
+        <div class="oy-lrow">
+          <div class="oy-lrow-date"><b>Sep</b><span>20</span></div>
+          <div class="oy-lrow-body"><h3>Monthly circle: solar site walk</h3><p>Members and guests walk the second Solar Hub site and hear what the install taught us.</p><div class="oy-lrow-where">Saturday, 10am • Vision Theatre annex</div></div>
+          <button class="oy-btn oy-btn--quiet" type="button" id="ev-1" onClick="{{ openContact }}">Ask to join<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-lrow">
+          <div class="oy-lrow-date"><b>Oct</b><span>18</span></div>
+          <div class="oy-lrow-body"><h3>Black soap and shea: a Green Goods workshop</h3><p>Hands-on, materials provided. Twelve places, members first.</p><div class="oy-lrow-where">Saturday, 1pm • Leimert Park</div></div>
+          <button class="oy-btn oy-btn--quiet" type="button" id="ev-2" onClick="{{ openContact }}">Ask to join<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-lrow">
+          <div class="oy-lrow-date"><b>Nov</b><span>15</span></div>
+          <div class="oy-lrow-body"><h3>Monthly circle: planning 2027</h3><p>What the Collective takes on next year, decided by the people who will do it.</p><div class="oy-lrow-where">Saturday, 10am • Online</div></div>
+          <button class="oy-btn oy-btn--quiet" type="button" id="ev-3" onClick="{{ openContact }}">Ask to join<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="solar">
+    <div class="oy-wrap">
+      <div class="cc-init">
+        <div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="cc-status"><i aria-hidden="true"></i>Piloting since 2024</span><span class="cc-memberled">Member-led project</span></div>
+          <h2 style="margin-top:14px">Solar Hub</h2>
+          <p class="oy-sec-lead" style="max-width:52ch">Rooftop solar and battery storage on community buildings in South Los Angeles, installed by members who are trained on the job. Two sites are live.</p>
+          <div class="oy-glance" data-cols="4" style="margin-top:20px">
+            <div><b>Status</b><span>Piloting</span></div>
+            <div><b>Serves</b><span>Two community buildings</span></div>
+            <div><b>Since</b><span>2024</span></div>
+            <div><b>Next</b><span>A third site in 2027</span></div>
+          </div>
+        </div>
+        <img src="images/w2/summer-camp-teacher-teaching.jpg" alt="Two members lead a session from behind a laptop at a Citrus College summer camp. Interim image until a Solar Hub photograph exists." style="display:block;width:100%;height:340px;object-fit:cover;object-position:40% 30%;border-radius:6px">
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="green-goods">
+    <div class="oy-wrap">
+      <div class="cc-init">
+        <div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="cc-status"><i aria-hidden="true"></i>Planned for 2027</span><span class="cc-memberled">Member-led project</span></div>
+          <h2 style="margin-top:14px">Green Goods</h2>
+          <p class="oy-sec-lead" style="max-width:52ch">Household goods made without plastic: soap, black soap, shea butter, and cloth bags, sourced through Yoruba producers. It launches at the market at Odunde 2027, and proceeds return to the Collective.</p>
+          <div class="oy-glance" data-cols="4" style="margin-top:20px">
+            <div><b>Status</b><span>Planned</span></div>
+            <div><b>Serves</b><span>Vendors and members</span></div>
+            <div><b>Since</b><span>Design began 2026</span></div>
+            <div><b>Next</b><span>First goods at Odunde 2027</span></div>
+          </div>
+        </div>
+        <img src="images/w2/odunde-2026-vendor-garri-food.jpg" alt="Bags of garri, lebu and plantain flour from a Yoruba producer on a vendor table at Odunde 2026" style="display:block;width:100%;height:340px;object-fit:cover;object-position:50% 50%;border-radius:6px">
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="voice">
+    <div class="oy-wrap">
+      <figure class="oy-quote" style="max-width:760px">
+        <div class="oy-divider-ayo" aria-hidden="true"><i></i><i></i><i></i></div>
+        <blockquote>Our grandparents did not separate the farm from the shrine from the market. Putting solar on a community roof is the same work as teaching a child to greet an elder properly. It is all keeping ourselves.</blockquote>
+        <figcaption>Olumide Ayanwale • Solar Hub lead, Yoruba Cultural Collective</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="take-part">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span class="cc-mark" aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ẹ bá wa kọ́<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Build with us</span></span></div>
+          <h2 style="margin-top:6px">Build with the Collective</h2>
+          <p class="oy-sec-lead">The projects above are led by members and open to any member who wants in. Three ways to join them.</p>
+        </div>
+      </div>
+      <div class="oy-takepart">
+        <div class="oy-path" data-accent="sponsor">
+          <span class="oy-path-chip">Partner</span>
+          <div class="oy-path-body"><h3>Partner or fund a project</h3><p>Organizations, funders, and civic partners. Four questions and we send the deck.</p></div>
+          <button class="oy-btn oy-btn--primary" type="button" id="tp-partner" onClick="{{ openSponsor }}">Talk to us<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="volunteer">
+          <span class="oy-path-chip">Skills</span>
+          <div class="oy-path-body"><h3>Bring a skill</h3><p>Engineering, supply, permitting, and design. Tell us what you can do and we will find where it fits.</p></div>
+          <button class="oy-btn oy-btn--secondary" type="button" id="tp-skill" onClick="{{ openVolunteer }}">Volunteer a skill<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="give">
+          <span class="oy-path-chip">Updates</span>
+          <div class="oy-path-body"><h3>Follow the Collective</h3><p>Collective news goes out with our newsletter, once or twice a month.</p></div>
+          <a class="oy-btn oy-btn--quiet" href="#footer-newsletter">Subscribe<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <div class="oy-handoff" style="margin-top:22px">
+        <span>See what the Collective has built so far.</span>
+        <a class="oy-btn oy-btn--quiet" href="14%20Impact.dc.html">See our impact<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-newsletter"></div>
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+  <dc-import name="Enquiry Modal" open="{{ modalOpen }}" kind="{{ modalKind }}" onClose="{{ closeModal }}" hint-size="100%,0"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;initiatives&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;side&quot;,&quot;options&quot;:[&quot;side&quot;,&quot;stacked&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Initiatives layout&quot;},&quot;green&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;signal&quot;,&quot;options&quot;:[&quot;signal&quot;,&quot;strong&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Green accent&quot;},&quot;status&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Status lines&quot;},&quot;events&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;CMS: events&quot;}}">
+class Component extends DCLogic {
+  constructor(props){ super(props); this.state = { modalOpen:false, modalKind:'sponsor' }; this.trigger = null; }
+  open(kind){ return (e) => { this.trigger = e.currentTarget.id; this.setState({ modalOpen:true, modalKind:kind }); }; }
+  renderVals(){
+    const p = this.props || {}, s = this.state;
+    return {
+      green: p.green || 'signal',
+      status: p.status || 'shown',
+      initiatives: p.initiatives || 'side',
+      events: p.events || 'shown',
+      modalOpen: s.modalOpen, modalKind: s.modalKind,
+      openSponsor: this.open('sponsor'),
+      openVolunteer: this.open('volunteer'),
+      openContact: this.open('contact'),
+      closeModal: () => {
+        this.setState({ modalOpen:false });
+        const id = this.trigger;
+        if (id) setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 30);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

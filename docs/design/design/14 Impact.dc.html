@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    .im-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;background:var(--white)}
+    .im-stats > div{padding:26px 22px 22px;border-left:1px solid var(--border-soft)}
+    .im-stats > div:first-child{border-left:none}
+    .im-stats b{display:block;font-family:var(--font-display);font-weight:700;font-size:44px;line-height:1.05;color:var(--indigo-700)}
+    .im-stats span{display:block;margin-top:6px;font-size:14.5px;line-height:1.45;color:var(--text-muted)}
+    .im-s5,.im-s6{display:none}
+    .oy-home[data-stats="six"] .im-stats{grid-template-columns:repeat(3,1fr)}
+    .oy-home[data-stats="six"] .im-s5,.oy-home[data-stats="six"] .im-s6{display:block}
+    .oy-home[data-stats="six"] .im-stats > div:nth-child(4){border-left:none}
+    .oy-home[data-stats="six"] .im-stats > div:nth-child(n+4){border-top:1px solid var(--border-soft)}
+    .oy-home[data-outcomes="rows"] .im-out{grid-template-columns:1fr;gap:14px}
+    .oy-home[data-outcomes="rows"] .im-out .oy-outcome{flex-direction:row;align-items:baseline;gap:26px;flex-wrap:wrap}
+    .oy-home[data-outcomes="rows"] .im-out .oy-outcome h3{min-width:220px}
+    .oy-home[data-outcomes="rows"] .im-out .oy-source{width:100%;margin-top:6px}
+    .oy-home[data-funders="hidden"] .im-funders{display:none}
+    @media(max-width:1000px){.im-stats,.oy-home[data-stats="six"] .im-stats{grid-template-columns:1fr 1fr}.im-stats > div{border-left:none;border-top:1px solid var(--border-soft)}.im-stats > div:first-child,.im-stats > div:nth-child(2){border-top:none}}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-stats="{{ stats }}" data-sources="{{ sources }}" data-outcomes="{{ outcomes }}" data-funders="{{ funders }}" data-screen-label="Impact" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="impact" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--slim" id="top">
+    <div class="oy-wrap oy-phead-inner">
+      <span class="oy-kicker">Iṣẹ́ wa<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Our work</span></span>
+      <h1>What we have built since 1997</h1>
+      <p class="oy-phead-lead">A 501(c)(3) serving the Yoruba community of Southern California through language, festival, and family programs.</p>
+      <div class="oy-phead-cta">
+        <button class="oy-btn oy-btn--primary" type="button" id="head-deck" onClick="{{ openSponsor }}">Sponsor or partner<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        <button class="oy-btn oy-btn--secondary" type="button" id="head-talk" onClick="{{ openContact }}">Talk to us</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="oy-section" id="numbers">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ní ṣókí<span class="oy-kicker-dot" aria-hidden="true">•</span><span>In brief</span></span></div>
+          <h2 style="margin-top:6px">Headline numbers</h2>
+          <p class="oy-sec-lead">Every number carries a source line: the year it covers and how it was counted.</p>
+        </div>
+      </div>
+      <div class="im-stats">
+        <div><b>29</b><span>years serving Southern California</span><div class="oy-source">Founded 1997, counted to 2026.</div></div>
+        <div><b>3,000+</b><span>Yoruba community in Southern California</span><div class="oy-source">US Census ancestry data for LA County, 2020, cross-checked with hometown association rolls.</div></div>
+        <div><b>9</b><span>hometown associations in the community</span><div class="oy-source">Associations formally affiliated with Omo Yorùbá, 2026.</div></div>
+        <div><b>4</b><span>festival zones at Odunde</span><div class="oy-source">Omo Yorùbá festival plan. Two zones were named for the site; the drum house name is provisional.</div></div>
+        <div class="im-s5"><b>4,200</b><span>came to Odunde in June 2026</span><div class="oy-source">Gate count by volunteers at three entrances, 2026.</div></div>
+        <div class="im-s6"><b>137</b><span>learners taught since 2019</span><div class="oy-source">Enrollment records, fall 2019 to spring 2026.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="how">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <h2>How we work</h2>
+          <div class="oy-prose" style="margin-top:16px">
+            <p>Omo Yorùbá runs online Yoruba language lessons and an annual public festival, and the two hold each other up. The school keeps a small group of families in contact with the language every week. The festival puts that work in front of thousands of people in Leimert Park for one day, in public, for free.</p>
+          </div>
+        </div>
+        <figure class="v2-mo" style="margin:0;border-radius:6px;overflow:hidden;position:relative;height:320px">
+          <img src="images/w2/community-table.jpg" alt="Members talking across a registration table at a community event" style="width:100%;height:100%;object-fit:cover;object-position:50% 42%">
+          <figcaption style="position:absolute;left:0;right:0;bottom:0;padding:40px 18px 14px;background:linear-gradient(180deg,transparent,rgba(20,29,64,.86));color:var(--white);font-size:13px;font-weight:600">Àjọṣe <span style="color:var(--gold-300)">•</span> Partners and friends at the table</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="outcomes">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Èsì<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Results</span></span></div>
+          <h2 style="margin-top:6px">What each program produced</h2>
+          <p class="oy-sec-lead">Where a program has no number yet, we say what is being measured this year.</p>
+        </div>
+      </div>
+      <div class="oy-g4 im-out">
+        <div class="oy-outcome">
+          <h3>Yoruba Language Lessons</h3>
+          <span class="oy-outcome-fig">137</span>
+          <p>Learners taught since 2019, with 71 percent returning for a second term. Retention is the number that matters here.</p>
+          <div class="oy-source">Enrollment records, fall 2019 to spring 2026.</div>
+        </div>
+        <div class="oy-outcome">
+          <h3>Ọdúndé Festival</h3>
+          <span class="oy-outcome-fig">4,200</span>
+          <p>Attendance in June 2026 across four zones, with 38 vendors hosted at Ọjà Balógun.</p>
+          <div class="oy-source">Volunteer gate count and vendor register, 2026.</div>
+        </div>
+        <div class="oy-outcome">
+          <h3>Kids &amp; STEM</h3>
+          <span class="oy-outcome-fig">210</span>
+          <p>Children through Àgbàlá Ọmọde and the STEM Hub in 2026. Return rate is being measured for the first time this year.</p>
+          <div class="oy-source">Sign-in sheets, festival day and Saturday sessions, 2026.</div>
+        </div>
+        <div class="oy-outcome">
+          <h3>Yoruba Cultural Collective</h3>
+          <span class="oy-outcome-fig">2 sites</span>
+          <p>Solar Hub is piloting on two community buildings. Green Goods is planned for 2027. Our newest work.</p>
+          <div class="oy-source">Collective status report, June 2026.</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:16px;flex-wrap:wrap">
+        <a class="oy-btn oy-btn--quiet" href="11%20Yoruba%20Language%20School.dc.html">The school<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        <a class="oy-btn oy-btn--quiet" href="08%20Odunde%20Festival.dc.html">The festival<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        <a class="oy-btn oy-btn--quiet" href="10%20Programs.dc.html">Kids &amp; STEM<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        <a class="oy-btn oy-btn--quiet" href="12%20Yoruba%20Cultural%20Collective.dc.html">The Collective<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="civic">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <h2>Ọdúndé as civic infrastructure</h2>
+          <div class="oy-prose" style="margin-top:16px">
+            <p>Odunde is a free public cultural day held in Leimert Park Plaza. It is open to the whole neighborhood, not only to Yoruba families, and it is one of the few days in the year when that plaza is programmed end to end by a community organization rather than rented out.</p>
+          </div>
+          <a class="oy-btn oy-btn--quiet" href="08%20Odunde%20Festival.dc.html" style="margin-top:10px">The festival page<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="oy-glance" data-cols="4" style="align-self:start">
+          <div><b>Attendance</b><span>4,200</span><small>June 2026</small></div>
+          <div><b>Vendors hosted</b><span>38</span><small>Of which 24 are Black-owned LA businesses</small></div>
+          <div><b>Partners</b><span>5</span><small>Civic, health, and business</small></div>
+          <div><b>Cost to attend</b><span>Free</span><small>Every year since 2003</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="voices">
+    <div class="oy-wrap">
+      <h2>In their words</h2>
+      <p class="oy-sec-lead" style="margin-bottom:24px">A parent, an elder, and a vendor, in their own words.</p>
+      <div class="oy-g3">
+        <figure class="oy-card v2-card" style="margin:0;min-height:270px">
+          <div class="oy-card-body" style="gap:14px">
+            <div class="oy-divider-ayo" aria-hidden="true"><i></i><i></i><i></i></div>
+            <blockquote style="margin:0;font-family:var(--font-display);font-weight:600;font-size:19px;line-height:1.5;color:var(--indigo-700);">[ Quote from a Language Lessons parent, two or three sentences on what Saturday mornings changed at home. ]</blockquote>
+            <figcaption style="margin-top:auto;font-size:14px;color:var(--muted)">Name pending • Parent, Language Lessons</figcaption>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </figure>
+        <figure class="oy-card v2-card" style="margin:0;min-height:270px">
+          <div class="oy-card-body" style="gap:14px">
+            <div class="oy-divider-ayo" aria-hidden="true"><i></i><i></i><i></i></div>
+            <blockquote style="margin:0;font-family:var(--font-display);font-weight:600;font-size:19px;line-height:1.5;color:var(--indigo-700);">[ Quote from an elder of Ẹgbẹ́ Ìbílẹ̀, two or three sentences on passing the language to the grandchildren. ]</blockquote>
+            <figcaption style="margin-top:auto;font-size:14px;color:var(--muted)">Name pending • Elder, Ẹgbẹ́ Ìbílẹ̀</figcaption>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </figure>
+        <figure class="oy-card v2-card" style="margin:0;min-height:270px">
+          <div class="oy-card-body" style="gap:14px">
+            <div class="oy-divider-ayo" aria-hidden="true"><i></i><i></i><i></i></div>
+            <blockquote style="margin:0;font-family:var(--font-display);font-weight:600;font-size:19px;line-height:1.5;color:var(--indigo-700);">[ Quote from a vendor at Ọjà Balógun, two or three sentences on what festival day does for the business. ]</blockquote>
+            <figcaption style="margin-top:auto;font-size:14px;color:var(--muted)">Name pending • Vendor, Ọjà Balógun</figcaption>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="photographs">
+    <div class="oy-wrap">
+      <h2>The work, in photographs</h2>
+      <p class="oy-sec-lead" style="margin-bottom:22px">Across years and programs, captioned with the year and what is happening.</p>
+      <div class="oy-mosaic">
+        <figure class="v2-mo"><img src="images/w2/odunde-2026-procession-zoomed.jpg" alt="Women in white with green and white sashes dance in the opening procession" style="object-position:50% 35%"><figcaption>Odunde <span style="color:var(--gold-300)">•</span> 2026</figcaption></figure>
+        <figure class="v2-mo"><img src="images/w2/odunde-2026-mom-playing-games-with-kids.jpg" alt="A mother and her two children play ayo and Ludo at the Àgbàlá Ọmọde table" style="object-position:50% 45%"><figcaption>Àgbàlá Ọmọde <span style="color:var(--gold-300)">•</span> 2026</figcaption></figure>
+        <figure class="v2-mo"><img src="images/w2/odunde-2026-attendees-learning-yoruba.jpg" alt="Two women in gele listen to the Yoruba lesson beside the market stalls" style="object-position:60% 35%"><figcaption>Yoruba class <span style="color:var(--gold-300)">•</span> Odunde 2026</figcaption></figure>
+        <figure class="v2-mo"><img src="images/w2/odunde-2026-vendor-selling-suya.jpg" alt="A vendor in indigo adire serves suya to a guest in white" style="object-position:50% 40%"><figcaption>Ọjà Balógun <span style="color:var(--gold-300)">•</span> 2026</figcaption></figure>
+        <figure class="v2-mo"><img src="images/w2/gala-2025-attendees-group-photo.jpg" alt="Three women in gold, green and copper gele and lace at the End-of-Year Gala" style="object-position:50% 30%"><figcaption>End-of-Year Gala <span style="color:var(--gold-300)">•</span> 2025</figcaption></figure>
+        <figure class="v2-mo"><img src="images/w2/summer-camp-kids-art-class.jpg" alt="An elder in gele sits among children holding up their drawings in front of the Omo Yorùbá banner" style="object-position:50% 45%"><figcaption>Summer camp <span style="color:var(--gold-300)">•</span> Citrus College</figcaption></figure>
+      </div>
+      <a class="oy-btn oy-btn--secondary" href="18%20Photo%20Gallery.dc.html" style="margin-top:22px">Open the gallery<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <section class="oy-section" id="governance">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ìdúró<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Standing</span></span></div>
+          <h2 style="margin-top:6px">Governance and accountability</h2>
+          <p class="oy-sec-lead">What we are, how we are governed, and what we publish. Where a document is not ready yet, we say when it will be.</p>
+        </div>
+      </div>
+      <div class="oy-glance" data-cols="4">
+        <div><b>Tax status</b><span>501(c)(3)</span><small>Since 1997</small></div>
+        <div><b>EIN</b><span>95-4612387</span><small>On file with the IRS</small></div>
+        <div><b>Board</b><span>Listed in full</span><small><a href="15%20People%20and%20History.dc.html">People &amp; history</a></small></div>
+        <div><b>Financials</b><span>Not yet published</span><small>First annual report due March 2027</small></div>
+      </div>
+      <div class="oy-facts" style="margin-top:26px">
+        <div class="oy-fact"><b>Mailing address</b><span>4343 Leimert Boulevard, Suite 210, Los Angeles, CA 90008</span></div>
+        <div class="oy-fact"><b>Form 990</b><span>Filed annually. Copies on request until they are posted here.</span></div>
+        <div class="oy-fact"><b>Annual report</b><span>First edition due March 2027</span></div>
+        <div class="oy-fact"><b>Audit</b><span>Not yet audited. Books reviewed by the board each January.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt im-funders" id="funders">
+    <div class="oy-wrap">
+      <h2>Partners and funders</h2>
+      <p class="oy-sec-lead" style="margin-bottom:22px">Everyone who has supported the work.</p>
+      <div class="oy-partners">
+        <span class="oy-partner">LA County Arts</span>
+        <span class="oy-partner">California Arts Council</span>
+        <span class="oy-partner">Council District 8</span>
+        <span class="oy-partner">Kaiser Permanente</span>
+        <span class="oy-partner">Leimert Park Village</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-dark" style="position:relative;overflow:hidden;background:var(--indigo-900);padding:var(--section-pad,72px) 0" id="fund">
+    <div class="v2-dots v2-dots--drift" aria-hidden="true"></div>
+    <div class="oy-wrap" style="position:relative">
+      <span class="oy-kicker">Ọdún tí ń bọ̀<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The year ahead</span></span>
+      <h2 style="margin-top:10px;max-width:20ch">Fund the next year</h2>
+      <p style="margin-top:14px;max-width:58ch;font-size:17.5px;line-height:1.65;color:rgba(255,255,255,.86)">Adebayo Ogunlesi, our partnerships lead, answers within a working day.</p>
+      <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap">
+        <button class="oy-btn oy-btn--primary" type="button" id="fund-deck" onClick="{{ openSponsor }}">Sponsor or partner<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        <button class="oy-btn oy-btn--secondary" type="button" id="fund-talk" onClick="{{ openContact }}">Write to Adebayo Ogunlesi</button>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+  <dc-import name="Enquiry Modal" open="{{ modalOpen }}" kind="{{ modalKind }}" onClose="{{ closeModal }}" hint-size="100%,0"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;stats&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;four&quot;,&quot;options&quot;:[&quot;four&quot;,&quot;six&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Stat strip&quot;},&quot;outcomes&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;cards&quot;,&quot;options&quot;:[&quot;cards&quot;,&quot;rows&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Outcomes layout&quot;},&quot;sources&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Source lines&quot;},&quot;funders&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Funder block&quot;}}">
+class Component extends DCLogic {
+  constructor(props){ super(props); this.state = { modalOpen:false, modalKind:'sponsor' }; this.trigger = null; }
+  open(kind){ return (e) => { this.trigger = e.currentTarget.id; this.setState({ modalOpen:true, modalKind:kind }); }; }
+  renderVals(){
+    const p = this.props || {}, s = this.state;
+    return {
+      stats: p.stats || 'four',
+      sources: p.sources || 'shown',
+      outcomes: p.outcomes || 'cards',
+      funders: p.funders || 'shown',
+      modalOpen: s.modalOpen, modalKind: s.modalKind,
+      openSponsor: this.open('sponsor'),
+      openContact: this.open('contact'),
+      closeModal: () => {
+        this.setState({ modalOpen:false });
+        const id = this.trigger;
+        if (id) setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 30);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

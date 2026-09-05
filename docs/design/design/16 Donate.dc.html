@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    .oy-home[data-impact="hidden"] .dn-impact{display:none}
+    @media(max-width:900px){.oy-home #give .oy-split{grid-template-columns:1fr}}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-impact="{{ impact }}" data-screen-label="Donate" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--slim" id="top">
+    <div class="oy-wrap oy-phead-inner">
+      <span class="oy-kicker">Ẹ ṣe àánú<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Give</span></span>
+      <h1>Give to Omo Yorùbá</h1>
+      <p class="oy-phead-lead">Gifts hold up the language lessons, the festival at Leimert Park, and the children's programs. Every dollar reaches us: Zeffy charges no platform or card fees.</p>
+      <div class="oy-phead-cta"><button class="oy-btn oy-btn--primary" type="button" data-give="true" onClick="{{ give }}" id="head-give">Give now<span class="oy-btn-arrow" aria-hidden="true">→</span></button><button class="oy-btn oy-btn--secondary" type="button" id="head-sponsor" onClick="{{ openSponsor }}">Partner or sponsor</button></div>
+    </div>
+  </header>
+
+  <section class="oy-section" id="give">
+    <div class="oy-wrap">
+      <div class="oy-split" style="grid-template-columns:1.1fr .9fr;gap:44px;align-items:center">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ẹ ṣe àánú<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Give</span></span></div>
+          <h2 style="margin-top:6px">Give now</h2>
+          <div class="oy-prose" style="margin-top:16px">
+            <p>Choose an amount, one time or monthly, and pay securely through Zeffy without leaving this page. Your receipt arrives by email straight away.</p>
+            <p>Zeffy takes nothing from the gift. At the last step it asks for an optional tip to keep the platform free; that tip goes to Zeffy, not to us, and it can be set to zero.</p>
+          </div>
+          <div style="margin-top:26px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+            <button class="oy-btn oy-btn--primary" type="button" data-give="true" onClick="{{ give }}" id="give-main">Give now<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+            <span style="font-size:14.5px;color:var(--muted)">About a minute. Monthly is a toggle inside the form.</span>
+          </div>
+        </div>
+        <div class="oy-facts" style="grid-template-columns:1fr">
+          <div class="oy-fact"><b>Fees</b><span>None. 100% of the gift reaches us.</span></div>
+          <div class="oy-fact"><b>Receipt</b><span>Emailed by Zeffy on completion, tax receipt included.</span></div>
+          <div class="oy-fact"><b>Monthly</b><span>Chosen inside the form, visible from the start.</span></div>
+          <div class="oy-fact"><b>If the form fails</b><span>The dialog offers contact and a mailing address instead.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="larger">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Àtìlẹ́yìn<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Support</span></span></div>
+          <h2 style="margin-top:6px">Giving at a larger scale</h2>
+          <p class="oy-sec-lead">Organizations, funders, and civic partners. Named levels, recognition, and a conversation with a person. Four questions and we send the deck.</p>
+        </div>
+      </div>
+      <div class="oy-g2">
+        <article class="oy-card v2-card">
+          <img src="images/w2/festival-elders.jpg" alt="Members in front of the Omo Yorùbá banner at the festival" style="display:block;width:100%;height:190px;object-fit:cover;object-position:50% 30%">
+          <div class="oy-card-body oy-door">
+            <h3>Sponsor Ọdúndé or the Gala</h3>
+            <p>Three levels from $2,500. The festival stays free because sponsors pay for it, and the Gala funds the year.</p>
+            <button class="oy-btn oy-btn--secondary" type="button" id="door-sponsor" onClick="{{ openSponsor }}">Sponsor an event<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+        <article class="oy-card v2-card">
+          <img src="images/w2/summer-camp-kids-art-class.jpg" alt="An elder in gele sits among children holding up their drawings in front of the Omo Yorùbá banner" style="display:block;width:100%;height:190px;object-fit:cover;object-position:50% 45%">
+          <div class="oy-card-body oy-door">
+            <h3>Fund a program or project</h3>
+            <p>The language lessons, Kids &amp; STEM, or a member-led project at the Collective. Restricted gifts are welcome; say what it is for.</p>
+            <button class="oy-btn oy-btn--secondary" type="button" id="door-partner" onClick="{{ openSponsor }}">Partner with us<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+            <div class="v2-rule" aria-hidden="true"></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section dn-impact" id="what">
+    <div class="oy-wrap">
+      <h2>What your gift does</h2>
+      <p class="oy-sec-lead" style="margin-bottom:24px">What the preset amounts pay for.</p>
+      <div class="oy-g3">
+        <div class="oy-outcome"><span class="oy-outcome-fig">$25</span><p>Buys one learner’s books and workbook for a term.</p><div class="oy-source">Supplier invoice, fall term 2026.</div></div>
+        <div class="oy-outcome"><span class="oy-outcome-fig">$100</span><p>Covers half a term’s fee for a family who cannot pay it.</p><div class="oy-source">Term fee of $180, hardship places, 2026.</div></div>
+        <div class="oy-outcome"><span class="oy-outcome-fig">$500</span><p>Pays for one zone at Odunde: tents, chairs, water, and the shade a whole afternoon depends on.</p><div class="oy-source">Festival cost breakdown, June 2026.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="other">
+    <div class="oy-wrap">
+      <h2>Other ways to give</h2>
+      <p class="oy-sec-lead" style="margin-bottom:24px">If a card online is not for you.</p>
+      <div class="oy-list">
+        <div class="oy-lrow" style="grid-template-columns:1fr auto">
+          <div class="oy-lrow-body"><h3>By check</h3><p>Made out to Omo Yorùbá of Southern California and posted to our mailing address.</p><div class="oy-lrow-where">4343 Leimert Boulevard, Suite 210, Los Angeles, CA 90008</div></div>
+        </div>
+        <div class="oy-lrow" style="grid-template-columns:1fr auto">
+          <div class="oy-lrow-body"><h3>Employer matching</h3><p>Many employers match gifts to a 501(c)(3). Members often send this page to their matching-gift committee.</p><div class="oy-lrow-where">Registered with Benevity and Double the Donation. EIN 95-4612387.</div></div>
+        </div>
+        <div class="oy-lrow" style="grid-template-columns:1fr auto">
+          <div class="oy-lrow-body"><h3>In-kind goods</h3><p>Materials, equipment, and supplies for the festival and the school.</p><div class="oy-lrow-where">Tents, chairs, water, printing, and cloth. Ask for Tunde Bakare.</div></div>
+        </div>
+        <div class="oy-lrow" style="grid-template-columns:1fr auto">
+          <div class="oy-lrow-body"><h3>Donor-advised funds</h3><p>If you give through a DAF, our EIN is what your sponsor will ask for.</p><div class="oy-lrow-where">Yes. Our EIN is 95-4612387 and our legal name is Omo Yorùbá of Southern California.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="trust">
+    <div class="oy-wrap">
+      <h2>Tax-deductible, and where it goes</h2>
+      <p class="oy-sec-lead" style="margin-bottom:24px">The details your accountant or your employer's matching program will ask for.</p>
+      <div class="oy-glance" data-cols="4">
+        <div><b>Tax status</b><span>501(c)(3)</span><small>Since 1997</small></div>
+        <div><b>EIN</b><span>95-4612387</span><small>On file with the IRS</small></div>
+        <div><b>Deductible</b><span>To the extent allowed by law</span></div>
+        <div><b>Receipt</b><span>By email</span><small>Sent by Zeffy on completion</small></div>
+      </div>
+      <div class="oy-handoff" style="margin-top:24px">
+        <span>What your gift has built so far, with a source line under every number.</span>
+        <a class="oy-btn oy-btn--quiet" href="14%20Impact.dc.html">See our impact<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+  <dc-import name="Enquiry Modal" open="{{ modalOpen }}" kind="{{ modalKind }}" onClose="{{ closeModal }}" hint-size="100%,0"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;impact&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;What your gift does&quot;}}">
+class Component extends DCLogic {
+  constructor(props){ super(props); this.state = { modalOpen:false, modalKind:'sponsor' }; this.trigger = null; }
+  renderVals(){
+    const s = this.state, p = this.props || {};
+    return {
+      impact: p.impact || 'shown',
+      give: (e) => { window.dispatchEvent(new CustomEvent('oy:give', { detail:{ trigger: e.currentTarget } })); },
+      modalOpen: s.modalOpen, modalKind: s.modalKind,
+      openSponsor: (e) => { this.trigger = e.currentTarget.id; this.setState({ modalOpen:true, modalKind:'sponsor' }); },
+      closeModal: () => { this.setState({ modalOpen:false }); const id = this.trigger; if (id) setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 30); },
+    };
+  }
+}
+</script>
+</body>
+</html>

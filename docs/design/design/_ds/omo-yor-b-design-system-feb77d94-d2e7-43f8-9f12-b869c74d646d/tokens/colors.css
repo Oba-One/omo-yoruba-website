@@ -1,0 +1,45 @@
+/* Omo Yorùbá color tokens, v0.1 (design.md section 3). Indigo dominates 60-70%. Gold = action + celebration only. */
+:root{
+/* base palette */
+--indigo-900:#141D40; /* darkest ground: footers, dark heroes */
+--indigo-700:#1E2A5A; /* primary brand: headings, nav text, links */
+--indigo-100:#E8ECF6; /* light card tint, quiet sections */
+--gold-500:#E8A13A;   /* primary action: buttons, key highlights only */
+--gold-600:#D08A22;   /* hover shade of gold-500 (derived) */
+--gold-300:#F4C66D;   /* soft gold accents on dark backgrounds */
+--terra-600:#B4552D;  /* kickers, festival warmth, secondary accents */
+--terra-700:#8F3F1E;  /* deep terracotta for festival gradients (from mockup) */
+--green-600:#2E7D5B;  /* YCC/sustainability content ONLY */
+--paper:#FAF5EC;      /* warm section background, alternates with white */
+--white:#FFFFFF;
+--ink:#22222A;        /* body text */
+--muted:#6B6B76;      /* captions, secondary text */
+/* semantic: surfaces */
+--surface-page:var(--white);
+--surface-alt:var(--paper);
+--surface-card:var(--white);
+--surface-tint:var(--indigo-100);
+--surface-dark:var(--indigo-900);
+--surface-dark-2:var(--indigo-700);
+/* semantic: text */
+--text-heading:var(--indigo-700);
+--text-body:var(--ink);
+--text-muted:var(--muted);
+--text-on-dark:var(--white);
+--text-on-dark-soft:#C8CDE8;
+--text-on-dark-faint:#8890B5;
+/* semantic: actions + accents */
+--accent-action:var(--gold-500);
+--accent-action-hover:var(--gold-600);
+--accent-action-text:var(--indigo-900);
+--accent-kicker:var(--terra-600);
+--accent-kicker-on-dark:var(--gold-300);
+--accent-sustain:var(--green-600);
+--link:var(--indigo-700);
+--link-hover:var(--terra-600);
+--error:var(--terra-600);
+/* semantic: lines + focus */
+--border-soft:#ECE2CD;
+--border-on-dark:rgba(255,255,255,.18);
+--focus-ring:var(--indigo-700); /* dark scopes override to gold-300 */
+}

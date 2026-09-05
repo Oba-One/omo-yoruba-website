@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+</helmet>
+<sc-if value="{{ isOpen }}">
+  <div class="oy-modal-scrim" onClick="{{ onScrim }}">
+    <div class="oy-modal" role="dialog" aria-modal="true" aria-label="{{ title }}" ref="{{ rootRef }}">
+      <div class="oy-modal-top" aria-hidden="true"></div>
+      <div class="oy-modal-grab" aria-hidden="true"></div>
+      <div class="oy-modal-head">
+        <div>
+          <h2>{{ title }}</h2>
+          <p>{{ blurb }}</p>
+        </div>
+        <button class="oy-modal-close" type="button" aria-label="Close" onClick="{{ onClose }}">×</button>
+      </div>
+      <div class="oy-modal-body">
+        <sc-if value="{{ done }}">
+          <div class="oy-ok">
+            <b>{{ okTitle }}</b>
+            <p>{{ okBody }}</p>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="oy-btn oy-btn--secondary" type="button" onClick="{{ onClose }}">Close</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+          <form onSubmit="{{ onSubmit }}" noValidate="{{ true }}" style="display:flex;flex-direction:column;gap:16px">
+            <sc-if value="{{ hasError }}"><div class="oy-errsum" role="alert">{{ errorText }}</div></sc-if>
+            <div class="oy-form-grid">
+              <sc-for list="{{ fields }}" as="f" hint-placeholder-count="4">
+                <div class="oy-field {{ f.wide }}">
+                  <label class="oy-label" for="{{ f.id }}">{{ f.label }}</label>
+                  <sc-if value="{{ f.isText }}"><input id="{{ f.id }}" class="oy-input" type="{{ f.type }}" value="{{ f.value }}" onChange="{{ f.set }}"></sc-if>
+                  <sc-if value="{{ f.isSelect }}">
+                    <select id="{{ f.id }}" class="oy-input" value="{{ f.value }}" onChange="{{ f.set }}">
+                      <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="2"><option value="{{ o }}">{{ o }}</option></sc-for>
+                    </select>
+                  </sc-if>
+                  <sc-if value="{{ f.isArea }}"><textarea id="{{ f.id }}" class="oy-input" value="{{ f.value }}" onChange="{{ f.set }}"></textarea></sc-if>
+                  <sc-if value="{{ f.hasHint }}"><span class="oy-field-hint">{{ f.hint }}</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasFoot }}"><p style="font-size:14px;line-height:1.6;color:var(--text-muted)">{{ foot }}</p></sc-if>
+            <div class="oy-form-actions">
+              <button class="oy-btn oy-btn--primary" type="submit" disabled="{{ busy }}">{{ submitLabel }}</button>
+              <button class="oy-btn oy-btn--quiet" type="button" onClick="{{ onClose }}">Cancel</button>
+              <p class="oy-form-help">Rather speak to a person? <a href="mailto:info@omoyorubaofsocal.org">info@omoyorubaofsocal.org</a></p>
+            </div>
+          </form>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:700,&quot;height&quot;:620},&quot;open&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;sponsor&quot;,&quot;options&quot;:[&quot;sponsor&quot;,&quot;performer&quot;,&quot;table&quot;,&quot;member&quot;,&quot;volunteer&quot;,&quot;enrol&quot;,&quot;vendor&quot;,&quot;contact&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;onClose&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+const T = (id, label, extra) => Object.assign({ id, label, kind:'text', type:'text' }, extra || {});
+const SEL = (id, label, options, extra) => Object.assign({ id, label, kind:'select', options }, extra || {});
+const AREA = (id, label, extra) => Object.assign({ id, label, kind:'area', wide:true }, extra || {});
+const MAIL = (id, label, extra) => Object.assign({ id, label, kind:'text', type:'email', email:true, required:true }, extra || {});
+
+const FORMS = {
+  sponsor: {
+    title: 'Sponsor Omo Yorùbá',
+    blurb: 'Four questions, then we send the deck and the impact numbers. One enquiry covers Odunde, the Gala, the Collective, or all of it.',
+    submit: 'Send enquiry',
+    ok: 'Ẹ ṣé! ✓ The deck is on its way.',
+    okBody: 'Adebayo Ogunlesi, our partnerships lead, sends it within one working day and follows up to talk through levels and recognition.',
+    fields: [
+      T('org', 'Organization', { required:true, wide:true, req:'an organization' }),
+      T('who', 'Your name and role', { required:true, req:'your name and role' }),
+      MAIL('mail', 'Email', { req:'an email address' }),
+      SEL('interest', 'What are you interested in', ['Odunde Festival', 'End-of-Year Gala', 'Both events', 'Yoruba Cultural Collective', 'Programs', 'General, tell me more'], { wide:true })
+    ]
+  },
+  performer: {
+    title: 'Ask about performing',
+    blurb: 'Drummers, dancers, and cultural groups. Five questions, and the program committee sees every one.',
+    submit: 'Send enquiry',
+    ok: 'Ẹ ṣé! ✓ We have your details.',
+    okBody: 'The festival program is decided in March. You will hear from us either way, whether or not there is a slot this year.',
+    fields: [
+      T('group', 'Group or artist name', { required:true, wide:true, req:'a group or artist name' }),
+      T('who', 'Contact name', { required:true, req:'a contact name' }),
+      MAIL('mail', 'Email', { req:'an email address' }),
+      T('what', 'What you perform'),
+      T('link', 'Link to video or Instagram'),
+      T('size', 'How many people')
+    ]
+  },
+  table: {
+    title: 'Reserve a table of ten',
+    blurb: 'Tell us who is coming and we place your table. Nothing is charged here.',
+    submit: 'Reserve a table',
+    ok: 'Ẹ ṣé! ✓ Your table is held.',
+    okBody: 'We hold it for you and send an invoice by email within two working days. Check or card is fine, and seating is arranged with you in the week before the night.',
+    fields: [
+      T('name', 'Your name', { required:true, req:'your name' }),
+      T('org', 'Organization, if any'),
+      MAIL('mail', 'Email', { req:'an email address' }),
+      T('phone', 'Phone', { type:'tel' }),
+      SEL('count', 'Number of tables', ['One table', 'Two tables', 'Three or more']),
+      AREA('guests', 'Guest names, if you have them')
+    ]
+  },
+  member: {
+    title: 'Become a member',
+    blurb: 'Eight questions, about two minutes. Dues are not paid here. We tell you exactly what happens next.',
+    submit: 'Become a member',
+    ok: 'Ẹ ṣé! ✓ Welcome.',
+    okBody: 'Dues are not paid here. Folasade Adeyemi will call or write within five working days to arrange payment, and you are on the members list from today.',
+    fields: [
+      T('name', 'Full name', { required:true, req:'your full name' }),
+      MAIL('mail', 'Email', { req:'an email address we can reach you at' }),
+      T('phone', 'Phone', { type:'tel' }),
+      T('city', 'City', { required:true, req:'the city you live in' }),
+      SEL('household', 'Household', ['Individual, $75 a year', 'Family, $120 a year']),
+      T('hta', 'Hometown association, if any'),
+      T('heard', 'How did you hear about us', { wide:true }),
+      AREA('why', 'What draws you to Omo Yorùbá')
+    ]
+  },
+  volunteer: {
+    title: 'Volunteer with us',
+    blurb: 'One short form. Tell us when you are free and what you can do, and we place you.',
+    submit: 'Raise your hand',
+    ok: 'Ẹ ṣé! ✓',
+    okBody: 'Tunde Bakare, who places volunteers, writes within a week. Most people start at a single event and go from there.',
+    fields: [
+      T('name', 'Full name', { required:true, req:'your full name' }),
+      MAIL('mail', 'Email', { req:'an email address we can reach you at' }),
+      T('phone', 'Phone', { type:'tel' }),
+      SEL('age', 'Age', ['Adult', 'Under 18']),
+      SEL('avail', 'Availability', ['Event days', 'Weekends', 'Weekdays', 'Any of these'], { wide:true }),
+      T('where', 'Where you would like to help', { wide:true }),
+      T('skills', 'Skills or languages', { wide:true }),
+      AREA('notes', 'Anything we should know')
+    ],
+    foot: 'Volunteers under 18 are welcome. We send a guardian consent form before a first shift.'
+  },
+  enrol: {
+    title: 'Write to the teacher',
+    blurb: 'Lessons are arranged directly with our teacher. Tell her about the learner and she replies with a level, a time that works, and a start date.',
+    submit: 'Send to the teacher',
+    ok: 'Ẹ ṣé! ✓ Your message is with the teacher.',
+    okBody: 'Yetunde Ojo replies within a few days with a level, a time, and the link for the call. Nothing is charged online: fees are agreed with her and settled after the first lesson.',
+    fields: [
+      T('learner', 'Learner name', { required:true, req:'the learner name' }),
+      T('age', 'Age', { required:true, req:'an age' }),
+      SEL('level', 'How much Yoruba do they have', ['Not sure, let the teacher place them', 'None yet', 'Understands but does not speak', 'Speaks a little', 'Speaks well, wants to read and write']),
+      SEL('when', 'When suits you', ['Weekday evenings', 'Weekend mornings', 'Weekend afternoons', 'Flexible, let the teacher propose']),
+      T('guardian', 'Your name, if the learner is under 18'),
+      MAIL('mail', 'Email', { req:'an email address she can reply to' }),
+      T('phone', 'Phone, if you would rather talk', { type:'tel' }),
+      AREA('notes', 'Anything she should know', { hint:'Siblings, time zone, one-to-one or with others, or the best time to reach you.' })
+    ]
+  },
+  vendor: {
+    title: 'Apply for a booth at Ọjà Balógun',
+    blurb: 'The market at Odunde. Applications close 1 April, and a booth is not held until the fee is paid.',
+    submit: 'Send application',
+    ok: 'Ẹ ṣé! ✓ Your application is in.',
+    okBody: 'We review applications in the order they arrive and write to every applicant by 20 April. If you are accepted, the booth fee is invoiced and a place is held once it is paid.',
+    fields: [
+      T('biz', 'Business name', { required:true, wide:true, req:'a business name' }),
+      T('who', 'Contact name', { required:true, req:'a contact name' }),
+      MAIL('mail', 'Email', { req:'an email address' }),
+      T('phone', 'Phone', { type:'tel' }),
+      SEL('cat', 'What you sell', ['Food, cooked on site', 'Packaged food and drink', 'Cloth and clothing', 'Craft and art', 'Books and media', 'Something else']),
+      SEL('size', 'Booth size', ['Standard, 10 by 10, $150', 'Double, 10 by 20, $275', 'Food truck, $325']),
+      SEL('power', 'Do you need power', ['No', 'Yes']),
+      T('permit', 'Food permit number, if food', { hint:'LA County health permit, required for anything cooked on site.' }),
+      T('social', 'Instagram or website', { wide:true })
+    ],
+    foot: 'Photographs of your setup help us place you well. Email them to vendors@omoyorubaofsocal.org once you have sent this.'
+  },
+  contact: {
+    title: 'Send us a message',
+    blurb: 'For anything else. We read everything.',
+    submit: 'Send message',
+    ok: 'Ẹ ṣé! ✓ We have your message.',
+    okBody: 'Someone replies within three working days. If it is urgent, calling (323) 555-0148 reaches a person faster than email does.',
+    fields: [
+      T('name', 'Name', { required:true, req:'your name' }),
+      MAIL('mail', 'Email', { req:'an email address we can reply to' }),
+      T('subject', 'What is this about', { wide:true }),
+      AREA('message', 'Message', { required:true, req:'a message' })
+    ]
+  }
+};
+
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { values:{}, busy:false, done:false, error:'' };
+    this.rootRef = React.createRef();
+    this.onKey = (e) => {
+      if (!this.props.open) return;
+      if (e.key === 'Escape'){ e.stopPropagation(); this.close(); return; }
+      if (e.key !== 'Tab') return;
+      const root = this.rootRef.current; if (!root) return;
+      const items = root.querySelectorAll('a[href],button:not([disabled]),input,select,textarea');
+      if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    };
+  }
+  componentDidMount(){ document.addEventListener('keydown', this.onKey, true); this.focusFirst(); }
+  componentWillUnmount(){ document.removeEventListener('keydown', this.onKey, true); }
+  componentDidUpdate(prev){
+    if (!prev.open && this.props.open){
+      this.setState({ values:{}, busy:false, done:false, error:'' });
+      this.focusFirst();
+    }
+  }
+  focusFirst(){
+    if (!this.props.open) return;
+    setTimeout(() => {
+      const root = this.rootRef.current; if (!root) return;
+      const el = root.querySelector('input,select,textarea'); if (el) el.focus();
+    }, 40);
+  }
+  close(){ if (typeof this.props.onClose === 'function') this.props.onClose(); }
+  spec(){ return FORMS[this.props.kind] || FORMS.sponsor; }
+  val(f){
+    const v = this.state.values[f.id];
+    if (v !== undefined) return v;
+    return f.kind === 'select' ? f.options[0] : '';
+  }
+  renderVals(){
+    const s = this.state, spec = this.spec();
+    return {
+      isOpen: !!this.props.open,
+      rootRef: this.rootRef,
+      title: spec.title, blurb: spec.blurb,
+      okTitle: spec.ok, okBody: spec.okBody,
+      hasFoot: !!spec.foot, foot: spec.foot || '',
+      fields: spec.fields.map(f => ({
+        id: 'eq-' + f.id, label: f.label,
+        wide: f.wide || f.kind === 'area' ? 'oy-field--wide' : '',
+        isText: f.kind === 'text', isSelect: f.kind === 'select', isArea: f.kind === 'area',
+        type: f.type || 'text', options: f.options || [],
+        hasHint: !!f.hint, hint: f.hint || '',
+        value: this.val(f),
+        set: (e) => { const v = e.target.value; this.setState(st => ({ values: Object.assign({}, st.values, { [f.id]: v }), error:'' })); }
+      })),
+      busy: s.busy, done: s.done, notDone: !s.done,
+      hasError: !!s.error, errorText: s.error,
+      submitLabel: s.busy ? 'Sending...' : spec.submit,
+      onClose: () => this.close(),
+      onScrim: (e) => { if (e.target === e.currentTarget) this.close(); },
+      onSubmit: (e) => {
+        e.preventDefault();
+        const missing = spec.fields.filter(f => f.required && !String(this.val(f) || '').trim()).map(f => f.req || f.label.toLowerCase());
+        if (missing.length){
+          this.setState({ error: 'We still need ' + missing.join(', ') + '. Nothing you typed has been cleared.' });
+          return;
+        }
+        const mail = spec.fields.filter(f => f.email)[0];
+        if (mail && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(this.val(mail)).trim())){
+          this.setState({ error: 'That email address does not look right. Check it and send again.' });
+          return;
+        }
+        this.setState({ busy:true, error:'' });
+        setTimeout(() => this.setState({ busy:false, done:true }), 700);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

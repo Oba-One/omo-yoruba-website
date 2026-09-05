@@ -1,0 +1,17 @@
+{
+  "name": "@oy/ui",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "storybook": "echo 'Storybook is stood up in Phase 1 with @storybook-astro/framework; config lives in packages/ui/.storybook. See docs/design/COMPONENT-MAP.md.' && exit 1",
+    "build-storybook": "echo 'Storybook is stood up in Phase 1.' && exit 1"
+  }
+}

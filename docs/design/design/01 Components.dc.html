@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0;background:#EFEBE1}
+    .cx-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+    .cx-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .cx-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+    .cx-swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+    @media (max-width:900px){.cx-grid3,.cx-grid2{grid-template-columns:1fr}.cx-swatches{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-motion="true" data-pattern="rich" data-highlight="festival" data-newsletter="footer" style="max-width:1240px;margin:0 auto;padding:48px 40px 80px;font-family:var(--font-body);color:var(--ink)">
+
+  <header style="margin-bottom:8px">
+    <span class="oy-kicker">Ohun èlò wa<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Our building blocks</span></span>
+    <h1 style="margin:10px 0 8px;font-family:var(--font-display);font-weight:700;font-size:40px;color:var(--indigo-700)">Component canvas</h1>
+    <p style="margin:0;max-width:720px;font-size:16px;line-height:1.6;color:var(--muted)">Every part the site is built from, in one place. Structure and tokens come from the design system. The nav, hero, and footer live here as the reference copy, and the interaction layer, hover, press, sticky, and the woven rule, lives in <b>oy-components.css</b>: change either here and it carries into the pages.</p>
+  </header>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Logo</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">The Ifẹ̀ bronze head is the mark, background removed. In the nav: mark at 40px, then the full name in Source Serif, indigo, on two lines. "of Southern California" drops away under 1060px so it never collides with the menu. Footer: the light lockup at 58px. Never on a busy photo without a panel behind it.</p>
+    <div class="cx-grid2">
+      <div style="background:var(--white);border:1px solid var(--border-soft);border-radius:6px;padding:28px;display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+        <img src="images/logo-mark.png" alt="Omo Yorùbá mark" style="height:76px;width:auto;display:block">
+        <img src="images/logo-mark.png" alt="" aria-hidden="true" style="height:40px;width:auto;display:block">
+        <div style="font-size:13.5px;color:var(--muted)">Mark on light<br>images/logo-mark.png</div>
+      </div>
+      <div class="oy-dark" style="background:var(--indigo-700);border-radius:6px;padding:28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+        <img src="images/logo-lockup-light.png" alt="Omo Yorùbá of Southern California" style="height:58px;width:auto;display:block">
+        <div style="font-size:13.5px;color:rgba(255,255,255,.72)">Light lockup on dark<br>images/logo-lockup-light.png</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Site chrome</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Nav, hero, and footer live here, in the component canvas. This is the reference copy: change it here first, then carry it into the pages. Shared styling and behaviour sit in <b>oy-components.css</b>, so hover, sticky, and pattern rules only need changing once.</p>
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div style="border:1px solid var(--border-soft);border-radius:6px;overflow-x:auto"><div style="min-width:1000px">
+  <nav class="oy-nav" aria-label="Main">
+    <div class="oy-wrap oy-nav-inner">
+      <a class="oy-logo" href="#top"><img class="oy-logo-img" src="images/logo-mark.png" alt="" aria-hidden="true"><span class="oy-logo-text">Omo Yorùbá <span class="oy-logo-sub">of Southern California</span></span></a>
+      <div class="oy-nav-links">
+        <div class="oy-nav-drop">
+          <button class="oy-nav-trigger" type="button" data-nav="events" aria-haspopup="true">Events<span class="oy-nav-caret" aria-hidden="true">▼</span></button>
+          <div class="oy-nav-drop-menu">
+            <a href="08%20Odunde%20Festival.dc.html">Odunde Festival</a>
+            <a href="09%20End-of-Year%20Gala.dc.html">End-of-Year Gala</a>
+          </div>
+        </div>
+        <a data-nav="programs" href="10%20Programs.dc.html">Programs</a>
+        <a data-nav="involved" href="13%20Get%20Involved.dc.html">Get Involved</a>
+        <a data-nav="impact" href="14%20Impact.dc.html">Impact</a>
+        <div class="oy-nav-drop">
+          <button class="oy-nav-trigger" type="button" data-nav="about" aria-haspopup="true">About<span class="oy-nav-caret" aria-hidden="true">▼</span></button>
+          <div class="oy-nav-drop-menu">
+            <a href="15%20People%20and%20History.dc.html">People &amp; History</a>
+          </div>
+        </div>
+      </div>
+      <a class="oy-btn oy-btn--primary oy-btn--sm" href="#donate" style="flex:none">Donate</a>
+      <button class="oy-nav-burger" type="button" aria-label="Open menu" onClick="{{ toggleMenu }}"><span></span><span></span><span></span></button>
+    </div>
+    <sc-if value="{{ menuOpen }}">
+      <div class="oy-nav-menu oy-dark" role="dialog" aria-label="Menu">
+        <button class="oy-nav-close" type="button" aria-label="Close menu" onClick="{{ closeMenu }}">×</button>
+        <a href="#odunde" onClick="{{ closeMenu }}">Odunde Festival</a>
+        <a href="#programs" onClick="{{ closeMenu }}">Programs</a>
+        <a href="#get-involved" onClick="{{ closeMenu }}">Get Involved</a>
+        <a href="#impact" onClick="{{ closeMenu }}">Impact</a>
+        <a href="#news" onClick="{{ closeMenu }}">News</a>
+        <div style="margin-top:24px"><a class="oy-btn oy-btn--primary" href="#donate" onClick="{{ closeMenu }}">Donate</a></div>
+      </div>
+    </sc-if>
+  </nav>
+      </div></div>
+      <div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden"><div style="min-width:1000px">
+  <header class="oy-dark v2-hero" id="top">
+    <img class="v2-kb" src="images/w2/community-dance.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:35% 35%">
+    <div class="v2-hero-scrim" aria-hidden="true"></div>
+    <div class="v2-dots" aria-hidden="true"></div>
+    <div class="oy-wrap" style="position:relative;width:100%;padding-top:64px;padding-bottom:72px;box-sizing:border-box">
+      <div style="max-width:640px">
+        <span class="oy-kicker v2-rise">Ẹ káàbọ̀<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Welcome</span></span>
+        <h1 class="v2-rise" style="animation-delay:.12s;font-family:var(--font-display);font-weight:700;font-size:clamp(34px,4.8vw,56px);line-height:1.12;color:var(--white);margin:18px 0 14px">Yoruba culture, <em style="color:var(--gold-300)">alive</em> in Southern California</h1>
+        <p class="v2-rise" style="animation-delay:.24s;font-size:18px;color:rgba(255,255,255,.85);margin:0 0 30px">Language, festival, family. Since 1997.</p>
+        <div class="v2-hero-cta v2-rise" style="animation-delay:.36s">
+          <a class="oy-btn oy-btn--primary v2-cta v2-cta--festival" href="#odunde">See the Odunde Festival<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          <a class="oy-btn oy-btn--primary v2-cta v2-cta--school" href="#enroll">Enroll at the Language School<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          <a class="oy-btn oy-btn--primary v2-cta v2-cta--collective" href="#ycc">Meet the Cultural Collective<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          <a class="oy-btn oy-btn--secondary" href="#get-involved">Get involved</a>
+        </div>
+        <p class="v2-rise" style="animation-delay:.5s;margin:36px 0 0;display:flex;align-items:baseline;gap:11px;flex-wrap:wrap">
+          <span style="font-family:var(--font-display);font-style:italic;font-size:17px;color:var(--gold-300)">Oòdúà á gbè wá o!</span>
+          <span aria-hidden="true" style="color:rgba(255,255,255,.38)">•</span>
+          <span style="font-size:14px;color:rgba(255,255,255,.72)">May Odùduwà bless us</span>
+        </p>
+      </div>
+    </div>
+    <div class="oy-divider-asoke" aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0"></div>
+  </header>
+      </div></div>
+      <div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden">
+  <footer class="oy-footer oy-dark v2-footer" style="position:relative;overflow:hidden;padding-bottom:0">
+    <div class="v2-dots v2-dots--drift" aria-hidden="true"></div>
+    <div class="oy-wrap oy-footer-grid" style="position:relative">
+      <div>
+        <img src="images/logo-lockup-light.png" alt="Omo Yorùbá of Southern California" style="display:block;height:58px;width:auto;margin-bottom:6px">
+        <div class="oy-footer-trust">501(c)(3) nonprofit since 1997 • EIN XX-XXXXXXX<br>Los Angeles, California • <a href="mailto:info@omoyorubaofsocal.org" style="display:inline;margin:0">info@omoyorubaofsocal.org</a></div>
+        <div class="oy-socials">
+          <a href="#instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"></rect><circle cx="12" cy="12" r="4.1"></circle><circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"></circle></svg></a>
+          <a href="#facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.6 21v-7.3h2.5l.4-2.9h-2.9V8.9c0-.8.2-1.4 1.4-1.4h1.6V4.9c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.1H8v2.9h2.5V21h3.1z"></path></svg></a>
+          <a href="#linkedin" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5.2 9h2.7v10H5.2V9zm1.35-4.4a1.6 1.6 0 110 3.2 1.6 1.6 0 010-3.2zM10.3 9H13v1.4h.05c.4-.75 1.35-1.6 2.85-1.6 2.25 0 3.2 1.45 3.2 3.85V19h-2.7v-4.9c0-1.2-.4-2.05-1.45-2.05-.95 0-1.5.65-1.75 1.3-.1.25-.1.55-.1.85V19h-2.7V9z"></path></svg></a>
+        </div>
+        <div class="v2-nl--footer" style="margin-top:30px;max-width:440px">
+          <h4>Festival news and updates, in your inbox</h4>
+          <p style="margin:0 0 12px;font-size:13.5px;color:var(--text-on-dark-faint)">Once or twice a month. Save-the-dates, program news, and ways to help.</p>
+          <form class="oy-signup" onSubmit="{{ onSubFooter }}">
+            <label class="oy-label" for="cx-nl-footer" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Email address</label>
+            <input id="cx-nl-footer" class="oy-input" type="email" required placeholder="Email address" style="min-width:200px;flex:1">
+            <button class="oy-btn oy-btn--primary" type="submit" style="{{ footerBtnStyle }}"><sc-if value="{{ subFooter }}">Ẹ ṣé! ✓</sc-if><sc-if value="{{ notSubFooter }}" hint-placeholder-val="{{ true }}">Subscribe</sc-if></button>
+          </form>
+        </div>
+      </div>
+      <div><h4>Take part</h4><a href="#member">Become a member</a><a href="#volunteer">Volunteer</a><a href="#sponsor">Sponsor</a><a href="#donate">Donate</a></div>
+      <div><h4>Learn more</h4><a href="#impact">Our impact</a><a href="#about">Board &amp; history</a><a href="#financials">501(c)(3) &amp; financials</a><a href="#contact">Contact</a></div>
+    </div>
+    <div class="v2-motif" aria-hidden="true" style="position:relative;height:50px;background-size:60px 50px;border-top:2px solid var(--gold-500);margin-top:48px"></div>
+  </footer>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Buttons</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Full-round, 44px minimum target. Hover darkens or fills, press settles 1.5%. No lift.</p>
+    <div style="background:var(--white);border:1px solid var(--border-soft);border-radius:6px;padding:28px">
+      <div class="cx-row">
+        <a class="oy-btn oy-btn--primary" href="#x">Become a member<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        <a class="oy-btn oy-btn--secondary" href="#x">Get involved</a>
+        <a class="oy-btn oy-btn--quiet" href="#x">All programs<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        <a class="oy-btn oy-btn--primary oy-btn--sm" href="#x">Donate</a>
+        <a class="oy-btn oy-btn--primary" href="#x" aria-disabled="true">Sold out</a>
+      </div>
+      <div class="cx-row oy-dark" style="margin-top:22px;background:var(--indigo-900);border-radius:6px;padding:22px">
+        <a class="oy-btn oy-btn--primary" href="#x">Tables &amp; sponsorships<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        <a class="oy-btn oy-btn--secondary" href="#x">Vendors &amp; sponsors</a>
+        <span style="font-size:13.5px;color:rgba(255,255,255,.7)">On dark: outline fills white on hover, focus ring turns gold.</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px" id="card-lab">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Card texture, pick one</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Four takes on the same card, same content. A is the current one. B adds paper grain so the ground reads as real paper. C is grain with a stronger àdìrẹ dot field. D is grain with a soft indigo wash pooling in one corner, like dye at the edge of cloth. C is the pick (2 Sep 2026) and is now set on every page via <code>data-card="grain-dots"</code>, cards only, sections untouched.</p>
+    <div class="cx-grid2" style="gap:26px;grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cx-cardlab" data-card="none" style="min-width:0;display:flex;flex-direction:column;gap:12px">
+        <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-600)">A. Current: faint dots</p>
+        <article class="oy-card v2-card">
+          <img src="images/w2/festival-elders.jpg" alt="Members share plates in front of the banner" style="display:block;width:100%;height:150px;object-fit:cover;object-position:50% 30%">
+          <div class="oy-card-body"><h3>Ọdúndé Festival</h3><p>Four zones at Leimert Park Plaza, one Saturday in June. Free entry.</p><a class="oy-btn oy-btn--quiet" href="#x" style="padding:10px 0">Plan your day<span class="oy-btn-arrow" aria-hidden="true">→</span></a><div class="v2-rule" aria-hidden="true"></div></div>
+        </article>
+        <div class="oy-path" data-accent="sponsor"><span class="oy-path-chip" style="width:124px;justify-content:center">Sponsors</span><div class="oy-path-body"><h3>Keep the day free</h3><p>Three levels from $2,500.</p></div><a class="oy-btn oy-btn--secondary" href="#x">Sponsor</a></div>
+      </div>
+      <div class="cx-cardlab" data-card="grain" style="min-width:0;display:flex;flex-direction:column;gap:12px">
+        <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-600)">B. Paper grain</p>
+        <article class="oy-card v2-card">
+          <img src="images/w2/festival-elders.jpg" alt="Members share plates in front of the banner" style="display:block;width:100%;height:150px;object-fit:cover;object-position:50% 30%">
+          <div class="oy-card-body"><h3>Ọdúndé Festival</h3><p>Four zones at Leimert Park Plaza, one Saturday in June. Free entry.</p><a class="oy-btn oy-btn--quiet" href="#x" style="padding:10px 0">Plan your day<span class="oy-btn-arrow" aria-hidden="true">→</span></a><div class="v2-rule" aria-hidden="true"></div></div>
+        </article>
+        <div class="oy-path" data-accent="sponsor"><span class="oy-path-chip" style="width:124px;justify-content:center">Sponsors</span><div class="oy-path-body"><h3>Keep the day free</h3><p>Three levels from $2,500.</p></div><a class="oy-btn oy-btn--secondary" href="#x">Sponsor</a></div>
+      </div>
+      <div class="cx-cardlab" data-card="grain-dots" style="min-width:0;display:flex;flex-direction:column;gap:12px">
+        <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-600)">C. Grain + àdìrẹ dots • Chosen</p>
+        <article class="oy-card v2-card">
+          <img src="images/w2/festival-elders.jpg" alt="Members share plates in front of the banner" style="display:block;width:100%;height:150px;object-fit:cover;object-position:50% 30%">
+          <div class="oy-card-body"><h3>Ọdúndé Festival</h3><p>Four zones at Leimert Park Plaza, one Saturday in June. Free entry.</p><a class="oy-btn oy-btn--quiet" href="#x" style="padding:10px 0">Plan your day<span class="oy-btn-arrow" aria-hidden="true">→</span></a><div class="v2-rule" aria-hidden="true"></div></div>
+        </article>
+        <div class="oy-path" data-accent="sponsor"><span class="oy-path-chip" style="width:124px;justify-content:center">Sponsors</span><div class="oy-path-body"><h3>Keep the day free</h3><p>Three levels from $2,500.</p></div><a class="oy-btn oy-btn--secondary" href="#x">Sponsor</a></div>
+      </div>
+      <div class="cx-cardlab" data-card="grain-wash" style="min-width:0;display:flex;flex-direction:column;gap:12px">
+        <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-600)">D. Grain + indigo wash</p>
+        <article class="oy-card v2-card">
+          <img src="images/w2/festival-elders.jpg" alt="Members share plates in front of the banner" style="display:block;width:100%;height:150px;object-fit:cover;object-position:50% 30%">
+          <div class="oy-card-body"><h3>Ọdúndé Festival</h3><p>Four zones at Leimert Park Plaza, one Saturday in June. Free entry.</p><a class="oy-btn oy-btn--quiet" href="#x" style="padding:10px 0">Plan your day<span class="oy-btn-arrow" aria-hidden="true">→</span></a><div class="v2-rule" aria-hidden="true"></div></div>
+        </article>
+        <div class="oy-path" data-accent="sponsor"><span class="oy-path-chip" style="width:124px;justify-content:center">Sponsors</span><div class="oy-path-body"><h3>Keep the day free</h3><p>Three levels from $2,500.</p></div><a class="oy-btn oy-btn--secondary" href="#x">Sponsor</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Cards</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Polish pass 2. Paper ground, indigo hairline, a 6px aṣọ òkè edge on top (the same weave as the dialog header), and a faint àdìrẹ dot field in the ground. Corners are 6px, image containers square. Hover: border deepens, title warms, arrow slides, rule draws. Nothing lifts, nothing zooms.</p>
+    <div class="cx-grid3">
+      <article class="oy-card v2-card">
+        <img src="images/w2/community-dance.jpg" alt="Adults laughing during a lesson" style="display:block;width:100%;height:170px;object-fit:cover;object-position:15% 40%">
+        <div class="oy-card-body">
+          <h3>Program card</h3>
+          <p>Photo, title, two lines, one quiet action. Used for programs and get-involved doors.</p>
+          <a class="oy-btn oy-btn--quiet" href="#x" style="padding:10px 0">Enroll a learner<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          <div class="v2-rule" aria-hidden="true"></div>
+        </div>
+      </article>
+      <article class="oy-card v2-card">
+        <div class="oy-card-body">
+          <span class="oy-card-date">August 2026</span>
+          <h3>News card</h3>
+          <p>Date, headline, one line. No image needed. Three across in News &amp; events.</p>
+          <a class="oy-btn oy-btn--quiet" href="#x" style="padding:10px 0">Read more<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          <div class="v2-rule" aria-hidden="true"></div>
+        </div>
+      </article>
+      <figure class="oy-card v2-card" style="margin:0">
+        <div class="oy-card-body" style="gap:14px">
+          <div class="oy-divider-ayo" aria-hidden="true"><i></i><i></i><i></i></div>
+          <blockquote style="margin:0;font-family:var(--font-display);font-weight:600;font-size:20px;line-height:1.4;color:var(--indigo-700)">Quote card, two or three sentences from a member.</blockquote>
+          <figcaption style="font-size:14px;color:var(--muted)">Name • Language Lessons parent</figcaption>
+          <div class="v2-rule" aria-hidden="true"></div>
+        </div>
+      </figure>
+    </div>
+    <div class="cx-grid2" style="margin-top:22px">
+      <article class="oy-card v2-card">
+        <div class="oy-ph oy-ph--indigo" role="img" aria-label="Placeholder for future photo" style="height:180px"><span>[ Photo placeholder, names the future photo ]</span></div>
+        <div class="oy-card-body oy-door">
+          <h3>Door card</h3>
+          <p>One clear way in. Photo or placeholder, a title, two lines, one real button.</p>
+          <a class="oy-btn oy-btn--primary" href="#x">Partner with us<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          <div class="v2-rule" aria-hidden="true"></div>
+        </div>
+      </article>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="oy-path">
+          <span class="oy-path-chip">Membership</span>
+          <div class="oy-path-body"><h3>Path row</h3><p>Chip, one line, one action. The compact alternative to door cards.</p></div>
+          <a class="oy-btn oy-btn--primary" href="#x">Join<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="oy-path">
+          <span class="oy-path-chip">Partnership</span>
+          <div class="oy-path-body"><h3>Path row</h3><p>Hover deepens the border. No rule, no lift.</p></div>
+          <a class="oy-btn oy-btn--secondary" href="#x">Talk to us<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Photo tiles</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Caption over a scrim, Yoruba first. Square corners, no zoom on hover. Placeholders carry the dot field until photos land.</p>
+    <div class="cx-grid3">
+      <figure class="v2-mo" style="margin:0;position:relative;overflow:hidden;height:200px">
+        <img src="images/w2/festival-elders.jpg" alt="Members share plates in front of the banner" style="display:block;width:100%;height:100%;object-fit:cover;object-position:50% 30%">
+        <figcaption style="position:absolute;left:0;right:0;bottom:0;padding:36px 16px 12px;background:linear-gradient(180deg,transparent,rgba(20,29,64,.82));color:var(--white);font-size:13px;font-weight:600">Odúndé! <span style="color:var(--gold-300)">•</span> Festival day</figcaption>
+      </figure>
+      <div class="oy-ph oy-ph--adire" role="img" aria-label="Àdìrẹ placeholder" style="height:200px"><span>[ Àdìrẹ placeholder ]</span></div>
+      <div class="oy-ph oy-ph--terra" role="img" aria-label="Terracotta placeholder" style="height:200px"><span>[ Terracotta placeholder ]</span></div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Event band</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">The festival frame: chevron rows and stripe seams top and bottom, motif columns on the edges. One band at a time, whichever event is next.</p>
+    <div class="oy-dark" style="background:var(--indigo-900);border-radius:6px;overflow:hidden">
+      <div aria-hidden="true" style="height:12px;background:url('images/patterns/chevron-band.svg');background-size:20px 12px"></div>
+      <div aria-hidden="true" style="height:7px;background:linear-gradient(180deg,var(--terra-600) 0 2px,transparent 2px 4px,var(--gold-500) 4px 6px,transparent 6px)"></div>
+      <div style="display:flex;align-items:stretch">
+        <div aria-hidden="true" style="width:54px;background:url('images/patterns/motif-band.svg');background-size:54px 45px;opacity:.85"></div>
+        <div style="flex:1;padding:38px 36px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+          <div>
+            <span class="oy-kicker">Odúndé<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The new year has arrived</span></span>
+            <h3 style="margin:10px 0 6px;font-family:var(--font-display);color:var(--white);font-size:28px">Ọdúndé Festival 2027</h3>
+            <p style="margin:0;color:rgba(255,255,255,.82)">Leimert Park Plaza • June 2027</p>
+          </div>
+          <a class="oy-btn oy-btn--primary" href="#x" style="margin-left:auto">Vendors &amp; sponsors<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div aria-hidden="true" style="width:54px;background:url('images/patterns/motif-band.svg');background-size:54px 45px;opacity:.85"></div>
+      </div>
+      <div aria-hidden="true" style="height:7px;background:linear-gradient(0deg,var(--terra-600) 0 2px,transparent 2px 4px,var(--gold-500) 4px 6px,transparent 6px)"></div>
+      <div aria-hidden="true" style="height:12px;background:url('images/patterns/chevron-band.svg');background-size:20px 12px;transform:scaleY(-1)"></div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Stats, kickers, dividers</h2>
+    <div style="background:var(--white);border:1px solid var(--border-soft);border-radius:6px;overflow:hidden">
+      <div class="oy-stat-strip">
+        <div class="oy-stat"><b>29</b><span>years serving SoCal</span></div>
+        <div class="oy-stat"><b>3,000+</b><span>Yoruba community in SoCal</span></div>
+        <div class="oy-stat"><b>4</b><span>festival zones at Odunde</span></div>
+        <div class="oy-stat"><b>9</b><span>hometown associations</span></div>
+      </div>
+      <div style="padding:26px 28px;border-top:1px solid var(--border-soft);display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span>
+          <span class="oy-kicker">Ẹ káàbọ̀<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Welcome</span></span>
+          <span style="font-size:13.5px;color:var(--muted)">Section kicker with its woven tick. Yoruba leads, English supports.</span>
+        </div>
+        <div class="oy-divider-asoke" aria-hidden="true"></div>
+        <div class="oy-divider-ayo" aria-hidden="true"><i></i><i></i><i></i></div>
+        <img src="images/patterns/ornament-divider.svg" alt="" aria-hidden="true" style="display:block;width:280px">
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Form and socials</h2>
+    <div class="oy-dark" style="background:var(--indigo-700);border-radius:6px;padding:30px 32px;position:relative;overflow:hidden">
+      <div aria-hidden="true" style="position:absolute;inset:0;background-image:var(--pattern-adire-white);background-size:26px 26px;opacity:.13"></div>
+      <div style="position:relative;max-width:440px">
+        <h4 style="margin:0 0 12px;color:var(--white);font-size:15px">Festival news and updates, in your inbox</h4>
+        <form class="oy-signup" onSubmit="{{ onSub }}" style="margin-left:0">
+          <label class="oy-label" for="cx-nl" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Email address</label>
+          <input id="cx-nl" class="oy-input" type="email" required placeholder="Email address" style="min-width:200px;flex:1">
+          <button class="oy-btn oy-btn--primary" type="submit" style="{{ btnStyle }}"><sc-if value="{{ subbed }}">Ẹ ṣé! ✓</sc-if><sc-if value="{{ notSubbed }}" hint-placeholder-val="{{ true }}">Subscribe</sc-if></button>
+        </form>
+        <div class="oy-socials">
+          <a href="#instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:18px;height:18px;display:block" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"></rect><circle cx="12" cy="12" r="4.1"></circle><circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"></circle></svg></a>
+          <a href="#facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;display:block" aria-hidden="true"><path d="M13.6 21v-7.3h2.5l.4-2.9h-2.9V8.9c0-.8.2-1.4 1.4-1.4h1.6V4.9c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.1H8v2.9h2.5V21h3.1z"></path></svg></a>
+          <a href="#linkedin" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;display:block" aria-hidden="true"><path d="M5.2 9h2.7v10H5.2V9zm1.35-4.4a1.6 1.6 0 110 3.2 1.6 1.6 0 010-3.2zM10.3 9H13v1.4h.05c.4-.75 1.35-1.6 2.85-1.6 2.25 0 3.2 1.45 3.2 3.85V19h-2.7v-4.9c0-1.2-.4-2.05-1.45-2.05-.95 0-1.5.65-1.75 1.3-.1.25-.1.55-.1.85V19h-2.7V9z"></path></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Colour and pattern</h2>
+    <div class="cx-swatches">
+      <div><div style="height:76px;border-radius:4px;background:var(--indigo-900)"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">indigo-900</div></div>
+      <div><div style="height:76px;border-radius:4px;background:var(--indigo-700)"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">indigo-700</div></div>
+      <div><div style="height:76px;border-radius:4px;background:var(--gold-500)"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">gold-500, actions only</div></div>
+      <div><div style="height:76px;border-radius:4px;background:var(--terra-600)"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">terra-600, kickers</div></div>
+      <div><div style="height:76px;border-radius:4px;background:var(--green-600)"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">green-600, YCC only</div></div>
+      <div><div style="height:76px;border-radius:4px;background:var(--paper);border:1px solid var(--border-soft)"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">paper</div></div>
+    </div>
+    <div class="cx-grid3" style="margin-top:22px">
+      <div><div style="height:96px;border-radius:4px;background:var(--indigo-900);background-image:var(--pattern-adire-white);background-size:26px 26px"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">Àdìrẹ dot field on dark</div></div>
+      <div><div style="height:96px;border-radius:4px;background:var(--paper) url('images/patterns/batik-wash.svg');background-size:260px 260px"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">Batik wash on paper</div></div>
+      <div><div style="height:96px;border-radius:4px;background:url('images/patterns/motif-band.svg');background-size:60px 50px;background-color:var(--indigo-900)"></div><div style="margin-top:8px;font-size:12.5px;color:var(--muted)">Motif banner strip</div></div>
+    </div>
+  </section>
+
+  <section style="margin-top:72px;padding-top:40px;border-top:2px solid var(--indigo-700)">
+    <span class="oy-kicker">Ilé ìkẹ́kọ̀ọ́<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The page library</span></span>
+    <h2 style="margin:10px 0 8px;font-family:var(--font-display);font-size:30px;color:var(--indigo-700)">Built for the eleven inner pages</h2>
+    <p style="margin:0;max-width:760px;font-size:16px;line-height:1.65;color:var(--muted)">Everything below is used on more than one page, so it is built once, here, and the pages only supply layout and copy. Add a variant here before using it on a page. Styling lives in <b>oy-components.css</b>.</p>
+  </section>
+
+  <section style="margin-top:44px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Page header</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Slim on nine pages, photo band on the two event pages. Kicker, H1, one line, up to two buttons. <b>Used on:</b> all eleven.</p>
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden">
+        <header class="oy-phead oy-phead--slim">
+          <div class="oy-wrap oy-phead-inner">
+            <span class="oy-kicker">Ohun tí a ń ṣe<span class="oy-kicker-dot" aria-hidden="true">•</span><span>What we do</span></span>
+            <h1>Our programs</h1>
+            <p class="oy-phead-lead">What runs year-round, for whom, and when. Two programs have their own page, two are answered in full below.</p>
+            <div class="oy-phead-cta"><a class="oy-btn oy-btn--primary" href="#x">Enroll a learner<span class="oy-btn-arrow" aria-hidden="true">→</span></a><a class="oy-btn oy-btn--secondary" href="#x">Volunteer</a></div>
+          </div>
+        </header>
+      </div>
+      <div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden">
+        <header class="oy-phead oy-phead--photo oy-dark">
+          <div class="oy-phead-media" aria-hidden="true"><img src="images/w2/festival-elders.jpg" alt="" style="object-position:50% 34%"></div>
+          <div class="oy-phead-scrim" aria-hidden="true"></div>
+          <div class="v2-dots" aria-hidden="true"></div>
+          <div class="oy-wrap oy-phead-inner">
+            <div class="oy-phead-hold">
+              <span class="oy-kicker">Odúndé<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The new year has arrived</span></span>
+              <h1>Ọdúndé Festival</h1>
+              <p class="oy-phead-lead">A free day of Yoruba culture at Leimert Park Plaza, held each June.</p>
+              <div class="oy-phead-cta"><a class="oy-btn oy-btn--primary" href="#x">Plan your day<span class="oy-btn-arrow" aria-hidden="true">→</span></a><a class="oy-btn oy-btn--secondary" href="#x">Apply as a vendor</a></div>
+            </div>
+          </div>
+          <div class="oy-phead-rule" aria-hidden="true"></div>
+        </header>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">At a glance strip</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">The hard facts a visitor needs before scrolling. Five columns, four when there is no fifth fact. <b>Used on:</b> Odunde, Gala, Language School, Collective, Impact, Donate.</p>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="oy-glance">
+        <div><b>Date</b><span>June 2027</span><small>Day pending</small></div>
+        <div><b>Time</b><span class="oy-pend">Pending</span></div>
+        <div><b>Where</b><span>Leimert Park Plaza</span></div>
+        <div><b>Cost</b><span class="oy-pend">Pending</span></div>
+        <div><b>Family</b><span>All ages</span></div>
+      </div>
+      <div class="oy-glance" data-cols="4">
+        <div><b>Status</b><span class="oy-pend">Pending</span></div>
+        <div><b>Serves</b><span class="oy-pend">Pending</span></div>
+        <div><b>Since</b><span class="oy-pend">Pending</span></div>
+        <div><b>Next</b><span class="oy-pend">Pending</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Take-part band</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">The closing ask on nine pages. Same rows, reordered per page. Chips of different widths pushed the text out of line, so the band now has three label treatments. Pick one per site, not per page. <b>Used on:</b> both event pages, all three program pages, Get Involved, Impact, People &amp; History, Donate.</p>
+    <div style="display:flex;flex-direction:column;gap:30px">
+    <div>
+    <p style="margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-600)">A. No labels</p>
+    <div class="oy-takepart" data-labels="none">
+      <div class="oy-path oy-tp--vendor">
+        <span class="oy-path-chip">Vendors</span>
+        <div class="oy-path-body"><h3>Sell at Ọà Balógun</h3><p>Vendor application. Opens here, four questions.</p></div>
+        <a class="oy-btn oy-btn--primary" href="#x">Apply for a booth<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path oy-tp--sponsor">
+        <span class="oy-path-chip">Sponsors</span>
+        <div class="oy-path-body"><h3>Sponsor the day</h3><p>Short enquiry, we send the deck.</p></div>
+        <a class="oy-btn oy-btn--secondary" href="#x">Sponsor<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path">
+        <span class="oy-path-chip">Volunteers</span>
+        <div class="oy-path-body"><h3>Volunteer on the day</h3><p>One form, we place you.</p></div>
+        <a class="oy-btn oy-btn--secondary" href="#x">Raise your hand<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    </div>
+    <div>
+    <p style="margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-600)">B. Fixed-width label column</p>
+    <div class="oy-takepart" data-labels="column">
+      <div class="oy-path oy-tp--vendor">
+        <span class="oy-path-chip">Vendors</span>
+        <div class="oy-path-body"><h3>Sell at Ọà Balógun</h3><p>Vendor application. Opens here, four questions.</p></div>
+        <a class="oy-btn oy-btn--primary" href="#x">Apply for a booth<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path oy-tp--sponsor">
+        <span class="oy-path-chip">Sponsors</span>
+        <div class="oy-path-body"><h3>Keep the day free and open</h3><p>Short enquiry, we send the deck.</p></div>
+        <a class="oy-btn oy-btn--secondary" href="#x">Sponsor<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path">
+        <span class="oy-path-chip">Volunteers</span>
+        <div class="oy-path-body"><h3>Raise your hand</h3><p>One form, we place you.</p></div>
+        <a class="oy-btn oy-btn--secondary" href="#x">Volunteer<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path">
+        <span class="oy-path-chip">Give</span>
+        <div class="oy-path-body"><h3>Give what you can</h3><p>Any amount, one time or monthly.</p></div>
+        <a class="oy-btn oy-btn--quiet" href="#x">Donate<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    </div>
+    <div>
+    <p style="margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terra-600)">C. Kicker labels</p>
+    <div class="oy-takepart" data-labels="kicker">
+      <div class="oy-path oy-tp--vendor">
+        <span class="oy-path-chip">Vendors</span>
+        <div class="oy-path-body"><h3>Sell at Ọà Balógun</h3><p>Vendor application. Opens here, four questions.</p></div>
+        <a class="oy-btn oy-btn--primary" href="#x">Apply for a booth<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path oy-tp--sponsor">
+        <span class="oy-path-chip">Sponsors</span>
+        <div class="oy-path-body"><h3>Keep the day free and open</h3><p>Short enquiry, we send the deck.</p></div>
+        <a class="oy-btn oy-btn--secondary" href="#x">Sponsor<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path">
+        <span class="oy-path-chip">Volunteers</span>
+        <div class="oy-path-body"><h3>Raise your hand</h3><p>One form, we place you.</p></div>
+        <a class="oy-btn oy-btn--secondary" href="#x">Volunteer<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    </div>
+    </div>
+    <div class="oy-takepart" style="display:none">
+      <div class="oy-path oy-tp--vendor">
+        <span class="oy-path-chip">Vendors</span>
+        <div class="oy-path-body"><h3>Sell at Ọjà Balógun</h3><p>Full application, opens in place on the festival page.</p></div>
+        <a class="oy-btn oy-btn--primary" href="#x">Apply for a booth<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path oy-tp--sponsor">
+        <span class="oy-path-chip">Sponsors</span>
+        <div class="oy-path-body"><h3>Keep the day free and open</h3><p>Short enquiry, we send the deck.</p></div>
+        <a class="oy-btn oy-btn--secondary" href="#x">Get the deck<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path">
+        <span class="oy-path-chip">Volunteers</span>
+        <div class="oy-path-body"><h3>Raise your hand</h3><p>One form, we place you.</p></div>
+        <a class="oy-btn oy-btn--secondary" href="#x">Volunteer<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-path">
+        <span class="oy-path-chip">Give</span>
+        <div class="oy-path-body"><h3>Give what you can</h3><p>Any amount, one time or monthly.</p></div>
+        <a class="oy-btn oy-btn--quiet" href="#x">Donate<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Person card</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">With a portrait, without one, and compact. The no-portrait variant is a real design, not a broken one: a woven tick replaces the face. <b>Used on:</b> People &amp; History, Language School.</p>
+    <div class="cx-grid3">
+      <article class="oy-person">
+        <div class="oy-person-media"><div class="oy-ph oy-ph--indigo" role="img" aria-label="Placeholder for a future portrait"><span>[ Portrait ]</span></div></div>
+        <div class="oy-person-body">
+          <span class="oy-person-role">Role pending</span>
+          <span class="oy-person-name">Name pending</span>
+          <p class="oy-person-bio">Two lines on what they carry for this organization, in their own words where possible.</p>
+        </div>
+      </article>
+      <article class="oy-person oy-person--nophoto">
+        <div class="oy-person-body">
+          <span class="oy-person-role">Role pending</span>
+          <span class="oy-person-name">Name pending</span>
+          <p class="oy-person-bio">Without a portrait the card tightens, name and role forward, so a grid of them still reads as intentional.</p>
+        </div>
+      </article>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <article class="oy-person oy-person--compact oy-person--nophoto"><div class="oy-person-body"><span class="oy-person-role">Volunteer</span><span class="oy-person-name">Name pending</span></div></article>
+        <article class="oy-person oy-person--compact oy-person--nophoto"><div class="oy-person-body"><span class="oy-person-role">Teacher</span><span class="oy-person-name">Name pending</span></div></article>
+        <p style="font-size:13.5px;color:var(--muted);margin:0">Compact, for staff and long-serving volunteers.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Schedule row</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Time-led for the festival and the Gala, day-led for a Saturday at the school. <b>Used on:</b> Odunde, Gala, Language School.</p>
+    <div class="cx-grid2">
+      <div class="oy-sched">
+        <div class="oy-sched-row"><span class="oy-sched-time">00:00</span><div class="oy-sched-what"><b>Opening procession</b><p>Pending. Drummers lead the walk in.</p></div><span class="oy-sched-tag">Ẹgbẹ́ Ìbílẹ̀</span></div>
+        <div class="oy-sched-row"><span class="oy-sched-time">00:00</span><div class="oy-sched-what"><b>Market opens</b><p>Pending.</p></div><span class="oy-sched-tag">Ọjà Balógun</span></div>
+      </div>
+      <div class="oy-sched oy-sched--day">
+        <div class="oy-sched-row"><span class="oy-sched-time">Arrival</span><div class="oy-sched-what"><b>Doors and greeting</b><p>Pending.</p></div></div>
+        <div class="oy-sched-row"><span class="oy-sched-time">First hour</span><div class="oy-sched-what"><b>Class by level</b><p>Pending.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Zone card</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Yoruba name, English translation, one line, one photo. The card that carries the festival's Yoruba surface. Five across, three-up grid, or list. <b>Used on:</b> Odunde.</p>
+    <div class="oy-zones" data-layout="grid">
+      <article class="oy-zone">
+        <div class="oy-zone-media"><img src="images/w2/festival-food.jpg" alt="Food being plated at long tables"></div>
+        <div class="oy-zone-body"><span class="oy-zone-tr">The market</span><span class="oy-zone-name">Ọjà Balógun</span><p class="oy-zone-line">Vendors, food, and cloth. Where the day starts and the money moves.</p></div>
+      </article>
+      <article class="oy-zone">
+        <div class="oy-zone-media"><img src="images/w2/kids-art-day.jpg" alt="Children showing their finished art pieces"></div>
+        <div class="oy-zone-body"><span class="oy-zone-tr">The children's compound</span><span class="oy-zone-name">Àgbàlá Ọmọde</span><p class="oy-zone-line">Ayo boards, art, and games. Where the children are kept and known.</p></div>
+      </article>
+      <article class="oy-zone">
+        <div class="oy-zone-media"><div class="oy-ph oy-ph--adire" role="img" aria-label="Placeholder for future photo"><span>[ Zone photo ]</span></div></div>
+        <div class="oy-zone-body"><span class="oy-zone-tr">Name pending</span><span class="oy-zone-name">Zone four</span><p class="oy-zone-line"><span class="oy-pend">Pending: name and line</span></p></div>
+      </article>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">List row</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">One row shape, four uses: an upcoming event, a recurring item, a sponsor tier, a news entry. <b>Used on:</b> News &amp; Events, Gala, Get Involved, Impact.</p>
+    <div class="oy-list">
+      <div class="oy-lrow">
+        <div class="oy-lrow-date"><b>Jun</b><span>2027</span></div>
+        <div class="oy-lrow-body"><h3>Ọdúndé Festival</h3><p>A free day of Yoruba culture, four zones, all ages.</p><div class="oy-lrow-where">Leimert Park Plaza</div></div>
+        <a class="oy-btn oy-btn--quiet" href="#x">Details<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-lrow">
+        <div class="oy-lrow-date"><b>Every</b><span>Sat</span></div>
+        <div class="oy-lrow-body"><h3>Yoruba Language Lessons</h3><p>Weekly classes for children and adults. Recurring items appear once with a cadence.</p></div>
+        <a class="oy-btn oy-btn--quiet" href="#x">Enroll<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-lrow oy-lrow--tier">
+        <div class="oy-lrow-tier"><b>Tier name pending</b><span class="oy-pend">Pending: amount</span></div>
+        <ul class="oy-incl"><li>Seats at the table</li><li>Program recognition</li><li>Stage mention</li><li>Logo placement</li></ul>
+        <a class="oy-btn oy-btn--secondary" href="#x">Get the deck<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Filter chip row</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">A view, not a decision: filtering happens in place, writes itself into the address, and never reloads. Dropped from the gallery, where all albums now sit in one mosaic. <b>Used on:</b> News.</p>
+    <div style="background:var(--white);border:1px solid var(--border-soft);border-radius:6px;padding:24px;display:flex;flex-direction:column;gap:18px">
+      <div class="oy-chips">
+        <button class="oy-chip" type="button" aria-pressed="true">All</button>
+        <button class="oy-chip" type="button" aria-pressed="false">Odunde</button>
+        <button class="oy-chip" type="button" aria-pressed="false">Gala</button>
+        <button class="oy-chip" type="button" aria-pressed="false">Language School</button>
+        <select class="oy-select" aria-label="Year"><option>All years</option><option>2026</option><option>2025</option></select>
+        <span class="oy-filter-count">9 posts, all years</span>
+      </div>
+      <div class="oy-empty">No posts match that combination yet. <a href="#x">Show everything</a>.</div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">FAQ accordion</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Single open by default, multiple open where people compare answers. Closed rows keep their 44px target. <b>Used on:</b> Language School, and any page that grows a questions block.</p>
+    <div style="background:var(--white);border:1px solid var(--border-soft);border-radius:6px;padding:6px 24px 10px">
+      <div class="oy-faq">
+        <div class="oy-faq-item">
+          <button class="oy-faq-q" type="button" aria-expanded="true">What does a term cost?<span class="oy-faq-mark" aria-hidden="true">−</span></button>
+          <div class="oy-faq-a"><span class="oy-pend">Pending: the answer</span></div>
+        </div>
+        <div class="oy-faq-item">
+          <button class="oy-faq-q" type="button" aria-expanded="false">Can a parent sit in on a class?<span class="oy-faq-mark" aria-hidden="true">+</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Ticket tier card</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Two variants: buy now, which leaves for Eventbrite in a new tab, and enquiry, which we invoice by hand. Our card, their checkout. <b>Used on:</b> Gala.</p>
+    <div class="oy-tiers">
+      <div class="oy-tier">
+        <span class="oy-tier-name">Single seat</span>
+        <span class="oy-tier-price oy-pend">Price pending</span>
+        <ul class="oy-incl"><li>One seat, dinner included</li><li>Pending: what else is in it</li></ul>
+        <a class="oy-btn oy-btn--secondary" href="#x">Get tickets<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-tier oy-tier--featured">
+        <span class="oy-tier-name">Couple</span>
+        <span class="oy-tier-price oy-pend">Price pending</span>
+        <ul class="oy-incl"><li>Two seats together</li><li>Pending: what else is in it</li></ul>
+        <a class="oy-btn oy-btn--primary" href="#x">Get tickets<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="oy-tier">
+        <span class="oy-tier-name">Table of ten</span>
+        <span class="oy-tier-price oy-pend">Price pending</span>
+        <span class="oy-tier-note">Placed by hand and invoiced. Nothing is charged on this page.</span>
+        <ul class="oy-incl"><li>Ten seats together</li><li>Named on the table card</li></ul>
+        <a class="oy-btn oy-btn--secondary" href="#x">Reserve a table<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Amount selector</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Retired. Zeffy's embed owns the amount step (their API is read-only, so the checkout cannot be rebuilt in our UI). Kept here as the visual reference for how the embed should sit inside our card. <b>Used on:</b> Donate, as the embed frame.</p>
+    <div class="cx-grid2">
+      <div style="background:var(--white);border:1px solid var(--border-soft);border-radius:6px;padding:24px;display:flex;flex-direction:column;gap:18px">
+        <div class="oy-freq"><button type="button" aria-pressed="true">One time</button><button type="button" aria-pressed="false">Monthly</button></div>
+        <div class="oy-amounts">
+          <button class="oy-amount" type="button" aria-pressed="false">Price pending</button>
+          <button class="oy-amount" type="button" aria-pressed="true">Price pending</button>
+          <button class="oy-amount" type="button" aria-pressed="false">Price pending</button>
+          <button class="oy-amount" type="button" aria-pressed="false">Other</button>
+        </div>
+        <span class="oy-pend">Pending: the four amounts</span>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border-soft);border-radius:6px;padding:24px;display:flex;flex-direction:column;gap:18px">
+        <div class="oy-freqtabs"><button type="button" aria-selected="true">One time</button><button type="button" aria-selected="false">Monthly</button></div>
+        <div class="oy-amounts" data-count="6">
+          <button class="oy-amount" type="button" aria-pressed="false">Price pending</button>
+          <button class="oy-amount" type="button" aria-pressed="false">Price pending</button>
+          <button class="oy-amount" type="button" aria-pressed="false">Price pending</button>
+          <button class="oy-amount" type="button" aria-pressed="false">Price pending</button>
+          <button class="oy-amount" type="button" aria-pressed="false">Price pending</button>
+          <button class="oy-amount" type="button" aria-pressed="false">Other</button>
+        </div>
+        <span style="font-size:13.5px;color:var(--muted)">Second variant: tabs and six presets.</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Enquiry modal shell</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">One shell, eight field sets: sponsor, performer, Gala table, membership, volunteer, enrollment, vendor application, and general contact. Every form on the site except the newsletter is this dialog. Escape closes, focus is trapped while open, focus returns to the button that opened it, and failure never closes it. Shown here out of its overlay. <b>Used on:</b> all eleven pages.</p>
+    <div class="cx-grid2">
+      <div class="oy-modal" style="max-width:none">
+        <div class="oy-modal-top" aria-hidden="true"></div>
+        <div class="oy-modal-head"><div><h2>Sponsor Omo Yorùbá</h2><p>Four questions, then we send the deck and the impact numbers.</p></div><button class="oy-modal-close" type="button" aria-label="Close">×</button></div>
+        <div class="oy-modal-body">
+          <div class="oy-errsum" role="alert">We still need an organization, an email address. Nothing you typed has been cleared.</div>
+          <div class="oy-form-grid">
+            <div class="oy-field oy-field--wide"><label class="oy-label" for="cx-eq1">Organization</label><input id="cx-eq1" class="oy-input" type="text"></div>
+            <div class="oy-field"><label class="oy-label" for="cx-eq2">Your name and role</label><input id="cx-eq2" class="oy-input" type="text"></div>
+            <div class="oy-field"><label class="oy-label" for="cx-eq3">Email</label><input id="cx-eq3" class="oy-input" type="email"></div>
+          </div>
+          <div class="oy-form-actions"><span class="oy-btn oy-btn--primary">Send</span><span class="oy-btn oy-btn--quiet">Cancel</span><p class="oy-form-help">Rather write to a person? <a href="mailto:info@omoyorubaofsocal.org">info@omoyorubaofsocal.org</a></p></div>
+        </div>
+      </div>
+      <div class="oy-modal" style="max-width:none">
+        <div class="oy-modal-top" aria-hidden="true"></div>
+        <div class="oy-modal-head"><div><h2>Ask about performing</h2><p>Same shell, different field list.</p></div><button class="oy-modal-close" type="button" aria-label="Close">×</button></div>
+        <div class="oy-modal-body">
+          <div class="oy-ok"><b>Ẹ ṣé! ✓ We have your details.</b><p>The festival program is decided in the spring. You will hear from us either way.</p></div>
+          <p class="oy-pend-line"><b>Pending from you</b>The named contact who follows this up, and how long they take to reply.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Multi-step inline form</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Retired. Every form now opens as a dialog from a card that explains what it asks of you first, and the newsletter in the footer is the only place a visitor types directly into the page. The field, error, upload, and success states below still govern what the dialog looks like inside. <b>Used by:</b> the enquiry dialog.</p>
+    <div class="oy-form">
+      <div class="oy-steps">
+        <span class="oy-step" data-state="done"><b>✓</b>Business and contact</span>
+        <span class="oy-step" data-state="current"><b>2</b>What you sell</span>
+        <span class="oy-step"><b>3</b>Fees and terms</span>
+      </div>
+      <div class="oy-form-grid">
+        <div class="oy-field"><label class="oy-label" for="cx-f1">What you sell</label><input id="cx-f1" class="oy-input" type="text"></div>
+        <div class="oy-field oy-field--error"><label class="oy-label" for="cx-f2">Booth size needed</label><input id="cx-f2" class="oy-input" type="text"><span class="oy-field-error">Tell us which booth size you need. We keep everything else you have typed.</span></div>
+        <div class="oy-field oy-field--wide"><span class="oy-label">Photographs of your setup</span><div class="oy-upload">Drop files here, or <a href="#x">choose from your device</a>. Up to 5 MB each.</div></div>
+      </div>
+      <div class="oy-form-actions"><span class="oy-btn oy-btn--secondary">Back</span><span class="oy-btn oy-btn--primary">Continue<span class="oy-btn-arrow" aria-hidden="true">→</span></span><p class="oy-form-help">Stuck? <a href="mailto:info@omoyorubaofsocal.org">info@omoyorubaofsocal.org</a></p></div>
+    </div>
+    <div style="margin-top:16px" class="oy-ok"><b>Ẹ ṣé! ✓ Your application is in.</b><p>Success opens in Yoruba, then says plainly what happens next. Every form on the site ends this way.</p></div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Outcome and legitimacy blocks</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">An outcome card carries a figure where one exists and says plainly where it does not. The source line under each number is what separates this from marketing. <b>Used on:</b> Impact, Donate.</p>
+    <div class="cx-grid3">
+      <div class="oy-outcome">
+        <h3>Yoruba Language Lessons</h3>
+        <span class="oy-outcome-fig oy-pend">Pending</span>
+        <p>Learners enrolled, terms completed, and how many return the following term.</p>
+        <div class="oy-source">Source: pending. Name the year it covers and how it was counted.</div>
+      </div>
+      <div class="oy-outcome">
+        <h3>Ọdúndé Festival</h3>
+        <span class="oy-outcome-fig">5</span>
+        <p>Festival zones at Leimert Park Plaza, each with its own program.</p>
+        <div class="oy-source">Source: Omo Yorùbá program, 2026. Counted from the site plan.</div>
+      </div>
+      <div class="oy-outcome">
+        <h3>Financial documents</h3>
+        <span class="oy-outcome-fig" style="font-size:22px">Not yet published</span>
+        <p>Naming a gap and dating the fix reads as competence. A missing heading reads as concealment.</p>
+        <div class="oy-source">Pending: when the first annual report and 990 will be posted.</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Album tile and lightbox</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">Albums get pages, photographs get an overlay. Captions can be always on or on hover. The overlay puts itself in the address bar so one photograph can be shared. <b>Used on:</b> Photo Gallery.</p>
+    <div class="oy-albums" data-cols="4" style="margin-bottom:22px">
+      <button class="oy-album" type="button"><div class="oy-album-media"><img src="images/w2/festival-elders.jpg" alt="Members share plates in front of the banner"></div><div class="oy-album-meta"><b>Odunde</b><span>2026 • photo count pending</span></div></button>
+      <button class="oy-album" type="button"><div class="oy-album-media"><div class="oy-ph oy-ph--adire" role="img" aria-label="Album cover placeholder"><span>[ Gala album cover ]</span></div></div><div class="oy-album-meta"><b>End-of-Year Gala</b><span>Year pending</span></div></button>
+      <button class="oy-album" type="button"><div class="oy-album-media"><div class="oy-ph oy-ph--terra" role="img" aria-label="Album cover placeholder"><span>[ Language School cover ]</span></div></div><div class="oy-album-meta"><b>Language School</b><span>Year pending</span></div></button>
+      <button class="oy-album" type="button"><div class="oy-album-media"><div class="oy-ph oy-ph--green" role="img" aria-label="Album cover placeholder"><span>[ Collective cover ]</span></div></div><div class="oy-album-meta"><b>Cultural Collective</b><span>Year pending</span></div></button>
+    </div>
+    <div style="position:relative;border-radius:6px;overflow:hidden;background:rgba(10,15,34,.95);padding:18px">
+      <div class="oy-lb-stage" style="padding:6px">
+        <button class="oy-lb-btn" type="button" aria-label="Previous">‹</button>
+        <div class="oy-lb-frame" style="max-width:520px"><img src="images/w2/festival-food.jpg" alt="Festival food being plated"></div>
+        <button class="oy-lb-btn" type="button" aria-label="Next">›</button>
+      </div>
+      <div class="oy-lb-bar" style="padding:14px 6px 0"><span class="oy-lb-cap">Caption naming year, zone, and what is happening. Photographer credit pending.</span><span class="oy-lb-count">2 of 12</span></div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Year strip</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">The program cadence across one year. The block a new family screenshots. <b>Used on:</b> Programs.</p>
+    <div class="oy-year" data-cols="5">
+      <div><div class="oy-year-mark" aria-hidden="true"></div><b>Every Saturday</b><strong>Yoruba Language Lessons</strong><span>Term dates pending</span></div>
+      <div><div class="oy-year-mark" aria-hidden="true"></div><b>June</b><strong>Odunde Festival</strong><span>Leimert Park Plaza</span></div>
+      <div><div class="oy-year-mark" aria-hidden="true"></div><b>Nov or Dec</b><strong>End-of-Year Gala</strong><span>Date pending</span></div>
+      <div><div class="oy-year-mark" aria-hidden="true"></div><b>Cadence pending</b><strong>Kids &amp; STEM</strong><span class="oy-pend">Pending</span></div>
+      <div><div class="oy-year-mark" aria-hidden="true"></div><b>Cadence pending</b><strong>Cultural Collective</strong><span class="oy-pend">Pending</span></div>
+    </div>
+  </section>
+
+  <section style="margin-top:52px;margin-bottom:20px">
+    <h2 style="font-family:var(--font-display);font-size:24px;color:var(--indigo-700);margin:0 0 6px">Pending placeholders</h2>
+    <p style="margin:0 0 20px;font-size:14.5px;color:var(--muted)">The eleven pages now carry stand-in content instead of these chips, so they read as finished. Every invented value is listed in the <a href="19%20Mock%20Content%20Register.dc.html">mock content register</a>. The chips stay in the library for the next block that has nothing real behind it yet.</p>
+    <div class="cx-grid2">
+      <div style="background:var(--white);border:1px solid var(--border-soft);border-radius:6px;padding:24px;display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+        <span class="oy-pend">Pending: 2027 date</span>
+        <span class="oy-pend">Pending: fee and deadline</span>
+        <p class="oy-pend-line"><b>Pending from you</b>The founding story, in your words. Who started it, what was missing in Southern California, and what the first year looked like. Around 180 words.</p>
+      </div>
+      <div class="oy-dark" style="background:var(--indigo-900);border-radius:6px;padding:24px;display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+        <span class="oy-pend">Pending: venue</span>
+        <p class="oy-pend-line"><b>Pending from you</b>On dark bands the same two forms flip to gold, so a pending item is never invisible against the header photo.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { subbed:false, subFooter:false, menuOpen:false };
+  }
+  renderVals(){
+    const s = this.state;
+    return {
+      menuOpen: s.menuOpen,
+      toggleMenu: () => this.setState(x => ({ menuOpen: !x.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen:false }),
+      onSub: (e) => { e.preventDefault(); this.setState({ subbed:true }); },
+      onSubFooter: (e) => { e.preventDefault(); this.setState({ subFooter:true }); },
+      subFooter: s.subFooter, notSubFooter: !s.subFooter,
+      footerBtnStyle: s.subFooter ? { background:'var(--gold-300)' } : undefined,
+      subbed: s.subbed,
+      notSubbed: !s.subbed,
+      btnStyle: s.subbed ? { background:'var(--gold-300)' } : undefined,
+    };
+  }
+}
+</script>
+</body>
+</html>
