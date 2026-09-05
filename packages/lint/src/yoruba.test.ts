@@ -41,7 +41,7 @@ describe('findBareTerms', () => {
     const text = [
       'https://omoyorubaofsocal.org/oja-balogun?ref=omo-yoruba',
       'images/odunde-2026-oja-balogun.jpg and design/Oja-Balogun.dc.html and /programs/oja-balogun',
-      '.oy-adire and --adire-opacity-dark and .oy-aso-oke',
+      '.oy-adire and --adire-opacity-dark and .oy-aso-oke and .oy-ph--adire and .oy-band--aso-oke',
       'const adireDots = 1; const aso_oke = 2; const OmoYoruba = 3;',
     ].join('\n');
     expect(findBareTerms(text, terms)).toEqual([]);
@@ -54,7 +54,7 @@ describe('findBareTerms', () => {
 
   it('masks kebab-case identifiers in code files but reads hyphens as prose in markdown', () => {
     expect(
-      findBareTerms('<div class="oy-card adire-dots">', terms, { markdown: false }),
+      findBareTerms('<div class="oy-card adire-dots oy-ph--adire">', terms, { markdown: false }),
     ).toHaveLength(0);
     expect(findBareTerms('an adire-print shirt', terms)).toHaveLength(1);
     expect(findBareTerms('the Omo Yoruba-led team', terms)).toHaveLength(1);
