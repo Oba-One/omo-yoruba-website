@@ -1,0 +1,52 @@
+# CI on every pull request and on pushes to main. Spec: docs/design/QUALITY.md section 5.
+# Phase 0 wires install (cached), `bun check` (typecheck, lint, unit tests) and the web build.
+# Later phases add, in order: Storybook build and Chromatic (Phase 1), the TypeGen drift
+# check (Phase 2), Playwright with axe against the Vercel preview (Phase 3), Lighthouse CI
+# against the preview (Phase 4), and the nightly content-lint workflow (Phase 9).
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Typecheck, lint, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node 22 (Astro and Vercel runtime)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Bun (install and scripts)
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - name: Cache Bun downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Typecheck, lint, unit tests
+        run: bun run check
+
+      - name: Build apps/web
+        run: bun run build

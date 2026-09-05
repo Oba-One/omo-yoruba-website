@@ -141,3 +141,14 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Omo Yorùbá repo additions
+.DS_Store
+*.zip
+design_handoff_astro_sanity/
+.astro/
+.vercel/
+storybook-static/
+test-results/
+playwright-report/
+.lighthouseci/

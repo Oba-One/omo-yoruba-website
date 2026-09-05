@@ -1,0 +1,9 @@
+{
+  "name": "@oy/storybook",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "storybook": "echo 'Storybook is stood up in Phase 1 with @storybook-astro/framework. See docs/design/COMPONENT-MAP.md.' && exit 1",
+    "build-storybook": "echo 'Storybook is stood up in Phase 1.' && exit 1"
+  }
+}

@@ -1,0 +1,40 @@
+# Pre-commit and pre-push gates. Rules: docs/design/QUALITY.md section 4.
+# Install once with `bun install` (the root prepare script runs `lefthook install`).
+# Biome runs first because it rewrites staged files; the checks then run in parallel.
+
+pre-commit:
+  piped: true
+  skip:
+    - merge
+    - rebase
+  jobs:
+    - name: biome
+      glob: '*.{ts,tsx,js,mjs,cjs,json,jsonc,css,astro}'
+      run: bunx biome check --write --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+    - group:
+        parallel: true
+        jobs:
+          - name: em dash
+            run: bun packages/lint/src/cli.ts dash {staged_files}
+          - name: yoruba diacritics
+            run: bun packages/lint/src/cli.ts yoruba {staged_files}
+          - name: colour literals
+            glob: '{apps,packages}/**/*.{astro,css,ts,tsx,js,mjs}'
+            run: bun packages/lint/src/cli.ts colors {staged_files}
+          - name: typecheck touched packages
+            glob: '*.{ts,tsx,astro}'
+            run: bash scripts/typecheck-touched.sh {staged_files}
+          - name: vitest related
+            glob: '*.{ts,tsx}'
+            run: bunx vitest related --run {staged_files}
+
+pre-push:
+  jobs:
+    - name: check
+      run: bun run check
+
+commit-msg:
+  jobs:
+    - name: conventional message without em dashes
+      run: bun packages/lint/src/cli.ts commit-msg {1}

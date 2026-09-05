@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    .gy-photo{border:none;padding:0;background:var(--indigo-900);border-radius:6px;overflow:hidden;cursor:pointer;position:relative;display:block;width:100%}
+    .gy-photo .gy-frame{height:200px;overflow:hidden}
+    .gy-photo img,.gy-photo .oy-ph{width:100%;height:100%;object-fit:cover}
+    .gy-photo{transition:box-shadow .2s ease}
+    .gy-photo:hover{box-shadow:inset 0 0 0 2px var(--gold-500)}
+    /* album mosaic: the newest album leads at double size, the rest tile around it */
+    .gy-mosaic{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:210px;gap:16px}
+    .gy-mosaic .oy-album{height:100%}
+    .gy-mosaic .oy-album-media{height:100%}
+    .gy-mosaic .oy-album:first-child{grid-column:span 2;grid-row:span 2}
+    .gy-mosaic .oy-album:nth-child(4){grid-column:span 2}
+    .gy-mosaic .oy-album:first-child .oy-album-meta b{font-size:26px}
+    @media(max-width:900px){.gy-mosaic{grid-template-columns:1fr 1fr;grid-auto-rows:180px}.gy-mosaic .oy-album:nth-child(4){grid-column:span 1}}
+    @media(max-width:560px){.gy-mosaic{grid-template-columns:1fr}.gy-mosaic .oy-album:first-child{grid-column:span 1;grid-row:span 1}}
+    .gy-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 14px 12px;background:linear-gradient(180deg,transparent,rgba(20,29,64,.88));color:var(--white);font-size:12.5px;font-weight:600;text-align:left}
+    .oy-home[data-state="soon"] .gy-albums{display:none}
+    .gy-soon{display:none}
+    .oy-home[data-state="soon"] .gy-soon{display:block}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-state="{{ state }}" data-screen-label="Photo Gallery" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="gallery" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--slim" id="top">
+    <div class="oy-wrap oy-phead-inner">
+      <span class="oy-kicker">Àwòrán<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Photographs</span></span>
+      <h1>Photographs</h1>
+      <p class="oy-phead-lead">Odunde, the Gala, the lessons, and the Collective, year by year. Open an album and start looking.</p>
+    </div>
+  </header>
+
+  <section class="oy-section" id="albums">
+    <div class="oy-wrap">
+      <div class="gy-soon"><p style="max-width:78ch;font-size:17px;line-height:1.7;color:var(--ink)">The gallery goes live once Red Carpet Media delivers the 2026 set. Until then this page stays out of the navigation, and the two event pages carry their own photographs.</p></div><div class="gy-soon-x" style="display:none">
+      </div>
+
+      <div class="gy-albums">
+        <sc-if value="{{ inAlbum }}">
+          <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:22px">
+            <button class="oy-btn oy-btn--quiet" type="button" onClick="{{ closeAlbum }}">← All albums</button>
+            <h2 style="margin:0">{{ albumTitle }}</h2>
+            <span style="font-size:14.5px;color:var(--muted)">{{ albumMeta }}</span>
+          </div>
+          <p style="margin-bottom:20px;font-size:14.5px;color:var(--muted);max-width:74ch">{{ albumCredit }}</p>
+          <div class="oy-g3">
+            <sc-for list="{{ photos }}" as="ph" hint-placeholder-count="6">
+              <figure class="gy-photo" style="margin:0" role="button" tabIndex="0" onClick="{{ ph.open }}" onKeyDown="{{ ph.key }}">
+                <div class="gy-frame">
+                  <sc-if value="{{ ph.hasImg }}"><img src="{{ ph.src }}" alt="{{ ph.alt }}"></sc-if>
+                  <sc-if value="{{ ph.noImg }}"><div class="oy-ph oy-ph--adire" role="img" aria-label="{{ ph.alt }}"><span>{{ ph.label }}</span></div></sc-if>
+                </div>
+                <figcaption>{{ ph.caption }}</figcaption>
+              </figure>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ notInAlbum }}" hint-placeholder-val="{{ true }}">
+          <div class="oy-albums gy-mosaic" data-caption="{{ captions }}">
+            <sc-for list="{{ albums }}" as="a" hint-placeholder-count="6">
+              <button class="oy-album" type="button" onClick="{{ a.open }}">
+                <div class="oy-album-media">
+                  <sc-if value="{{ a.hasImg }}"><img src="{{ a.src }}" alt="{{ a.alt }}" style="object-position:{{ a.pos }}"></sc-if>
+                  <sc-if value="{{ a.noImg }}"><div class="oy-ph oy-ph--adire" role="img" aria-label="{{ a.alt }}"><span>{{ a.label }}</span></div></sc-if>
+                </div>
+                <div class="oy-album-meta"><b>{{ a.title }}</b><span>{{ a.meta }}</span></div>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="credit">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <h2>Photography credit and permissions</h2>
+          <p class="oy-sec-lead">These photographs show real people, including children. Here is how we credit them, how we ask permission, and how to ask for a photograph to be removed.</p>
+        </div>
+        <div class="oy-facts" style="grid-template-columns:1fr">
+          <div class="oy-fact"><b>Credits</b><span>Given per album, and per photograph where they differ. Many festival sets are by Red Carpet Media, Los Angeles; others are by members and volunteers, named in the caption.</span></div>
+          <div class="oy-fact"><b>Consent policy</b><span>Signs at every entrance say photographs are taken. Children are only published where a guardian has given written consent at registration.</span></div>
+          <div class="oy-fact"><b>Removal requests</b><span><a href="mailto:info@omoyorubaofsocal.org">info@omoyorubaofsocal.org</a></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <sc-if value="{{ lightbox }}">
+    <div class="oy-lightbox" role="dialog" aria-modal="true" aria-label="Photograph">
+      <button class="oy-lb-btn oy-lb-close" type="button" aria-label="Close" onClick="{{ closeLb }}">×</button>
+      <div class="oy-lb-stage">
+        <button class="oy-lb-btn" type="button" aria-label="Previous photograph" onClick="{{ prev }}">‹</button>
+        <div class="oy-lb-frame">
+          <sc-if value="{{ lbHasImg }}"><img src="{{ lbSrc }}" alt="{{ lbAlt }}"></sc-if>
+          <sc-if value="{{ lbNoImg }}"><div class="oy-ph oy-ph--adire" role="img" aria-label="{{ lbAlt }}"><span>{{ lbLabel }}</span></div></sc-if>
+        </div>
+        <button class="oy-lb-btn" type="button" aria-label="Next photograph" onClick="{{ next }}">›</button>
+      </div>
+      <div class="oy-lb-bar">
+        <span class="oy-lb-cap">{{ lbCaption }} <span style="opacity:.6">• {{ lbCredit }}</span></span>
+        <span class="oy-lb-count">{{ lbCount }}</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;open&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;viewer&quot;,&quot;options&quot;:[&quot;viewer&quot;,&quot;grid&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Album opens into&quot;},&quot;captions&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;always&quot;,&quot;options&quot;:[&quot;always&quot;,&quot;hover&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Captions&quot;},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;built&quot;,&quot;options&quot;:[&quot;built&quot;,&quot;soon&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Page state&quot;}}">
+const ALBUMS = [
+  { id:'odunde-2026', title:'Ọdúndé', event:'Odunde', year:'2026', meta:'2026 • 43 photographs', credit:'Red Carpet Media', src:'images/w2/odunde-2026-kid-playing-with-elder.jpg', pos:'50% 68%', alt:'An elder in white with a green sash high-fives a toddler on the painted plaza', photos:[
+    { src:'images/w2/odunde-2026-kid-playing-with-elder.jpg', alt:'An elder in white with a green sash high-fives a toddler on the painted plaza', caption:'Ẹgbẹ́ Ìbílẹ̀ • Odunde 2026' },
+    { src:'images/w2/odunde-2026-procession-begins.jpg', alt:'Members in white and green gather on Degnan Boulevard as the opening procession begins', caption:'Opening procession • Odunde 2026' },
+    { src:'images/w2/odunde-2026-procession-with-drummer.jpg', alt:'The procession moves down Degnan Boulevard led by a gángan drummer in white', caption:'Opening procession • Odunde 2026' },
+    { src:'images/w2/odunde-2026-procession-zoomed.jpg', alt:'Women in white with green and white sashes dance in the procession', caption:'Opening procession • Odunde 2026' },
+    { src:'images/w2/odunde-2026-president-receiving-gift.jpg', alt:'A gift is presented to the association\'s leaders at the opening', caption:'Opening • Odunde 2026' },
+    { src:'images/w2/odunde-2026-performer-speaking-with-theater-backdrop.jpg', alt:'A woman in white speaks into a microphone on the plaza below the Vision Theatre tower', caption:'Leimert Park Plaza • Odunde 2026' },
+    { src:'images/w2/odunde-2026-performer-gele-speaking.jpg', alt:'A woman in blue adire and a blue gele speaks into a microphone', caption:'Àwọn Eré • Odunde 2026' },
+    { src:'images/w2/odunde-2026-performer-doing-gele-tying.jpg', alt:'A woman in blue adire ties a green and white gele on a seated guest', caption:'Gèlè, the art of head-tying • Odunde 2026' },
+    { src:'images/w2/odunde-2026-gangan-drummer.jpg', alt:'An elder in white plays the gángan talking drum', caption:'Gángan • Odunde 2026' },
+    { src:'images/w2/odunde-2026-kid-playing-with-masquerade-performer.jpg', alt:'A dancer in a raffia skirt plays with a young girl, the masquerade beside them', caption:'Ijó Ìbílẹ̀ • Odunde 2026' },
+    { src:'images/w2/odunde-2026-masquerade-performer-being-cooled-down.jpg', alt:'A raffia masquerade dances in front of the Àgbàlá Ọmọde tent while a man fans it', caption:'Igúnnukó • Odunde 2026' },
+    { src:'images/w2/odunde-2026-masquerade-performer-at-vendor-booth.jpg', alt:'The raffia masquerade rests beside a food stall', caption:'Igúnnukó • Odunde 2026' },
+    { src:'images/w2/odunde-2026-masquerade-signage.jpg', alt:'A tall cylindrical masquerade covered in yellow flowers stands between the tents', caption:'Igúnnukó • Odunde 2026' },
+    { src:'images/w2/odunde-2026-attendee-smiling.jpg', alt:'An elder in a green and white gele and sunglasses smiles at the market', caption:'Faces of the festival • Odunde 2026' },
+    { src:'images/w2/odunde-2026-attendee-smiling-2.jpg', alt:'A man in a purple and teal print shirt and cap smiles on Degnan Boulevard', caption:'Faces of the festival • Odunde 2026' },
+    { src:'images/w2/odunde-2026-attendee-with-daughter-smiling.jpg', alt:'A father in a purple and teal print holds his young daughter beside the art stalls', caption:'Faces of the festival • Odunde 2026' },
+    { src:'images/w2/odunde-2026-sitting-attendee-smiling.jpg', alt:'An elder in a pale aṣọ òkè agbada and cap smiles at a vendor stall', caption:'Faces of the festival • Odunde 2026' },
+    { src:'images/w2/odunde-2026-group-guests-smiling.jpg', alt:'A mother, daughter and son in matching festival dress smile together', caption:'Faces of the festival • Odunde 2026' },
+    { src:'images/w2/odunde-2026-cool-kid-and-mom-with-glasses.jpg', alt:'A mother crouches beside her toddler, who wears sunglasses in his stroller, at the STEM tent', caption:'Faces of the festival • Odunde 2026' },
+    { src:'images/w2/odunde-2026-attendees-sitting-at-market.jpg', alt:'Elders in aṣọ òkè and lace rest at a round table under the Ọjà Balógun sign', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-attendees-learning-yoruba.jpg', alt:'Two women in gele listen to the Yoruba lesson beside the market stalls', caption:'Yoruba class • Odunde 2026' },
+    { src:'images/w2/odunde-2026-yoruba-language-teaching-session.jpg', alt:'A whiteboard from the Yoruba class: the alphabet, vowels, consonants and the three tones', caption:'Yoruba class • Odunde 2026' },
+    { src:'images/w2/odunde-2026-mom-playing-games-with-kids.jpg', alt:'A mother and her two children play ayo and Ludo at the Àgbàlá Ọmọde table', caption:'Àgbàlá Ọmọde • Odunde 2026' },
+    { src:'images/w2/odunde-2026-kids-doing-crafts.jpg', alt:'Children at the craft tables in Àgbàlá Ọmọde with a Ludo board and paper crafts', caption:'Àgbàlá Ọmọde • Odunde 2026' },
+    { src:'images/w2/odunde-2026-kids-doing-paint-art.jpg', alt:'Children build with craft sticks at a long table lined with small blue robots', caption:'STEM Hub • Odunde 2026' },
+    { src:'images/w2/odunde-2026-kid-playing-with-vendor.jpg', alt:'A toddler sits at a jewelry stall while the vendor reaches over the beads', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-ayo-game.jpg', alt:'A wooden ayo board with stones beside the Ayo Olopon rules card', caption:'Ayo • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendor-selling-suya.jpg', alt:'A vendor in indigo adire serves suya to a guest in white', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendor-necklaces.jpg', alt:'A vendor shows cowrie necklaces to an elder in white agbada', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendor-selling-paintings.jpg', alt:'A booth of indigo cyanotype prints and jewelry', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendor-showcasing-art.jpg', alt:'A vendor booth of cyanotype hangings, prints and jewelry', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendor-selling-jewelry.jpg', alt:'Trays of necklaces and beads on black velvet', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendor-selling-books.jpg', alt:'Books on Ifá and Yoruba language laid out on a gold cloth', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendors-instruments.jpg', alt:'Beaded shekere gourds hang from a tent frame', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendors-setup.jpg', alt:'Vendor tents with drums set out on the pavement below the Vision Theatre', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-vendor-garri-food.jpg', alt:'Bags of garri, lebu and plantain flour on a vendor table', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-spice-pap-food.jpg', alt:'Bags of golden spice pap on a vendor table', caption:'Ọjà Balógun • Odunde 2026' },
+    { src:'images/w2/odunde-2026-traditional-breakfast.jpg', alt:'A tray of akara under foil', caption:'Oúnjẹ • Odunde 2026' },
+    { src:'images/w2/odunde-2026-dj-playing-music.jpg', alt:'The DJ works his mixer under the tent before the seats fill', caption:'Sound • Odunde 2026' },
+    { src:'images/w2/odunde-2026-festival-flag.jpg', alt:'The Odunde feather flag beside the plaza, the Vision Theatre behind', caption:'Set-up • Odunde 2026' },
+    { src:'images/w2/odunde-2026-sign-setup.jpg', alt:'A volunteer sets the Ẹ Káàbọ̀ welcome sign on the plaza', caption:'Set-up • Odunde 2026' },
+    { src:'images/w2/odunde-2026-performances-sign.jpg', alt:'The Àwọn Eré performances board: oríkì, gángan, gèlè, ijó ìbílẹ̀, igúnnukó', caption:'Signage • Odunde 2026' },
+    { src:'images/w2/odunde-2026-thank-you-sign.jpg', alt:'The Ẹ Ṣé thank-you board with the donation QR code', caption:'Signage • Odunde 2026' }
+  ]},
+  { id:'gala', title:'End-of-Year Gala', event:'Gala', year:'2025', meta:'2025 • 6 photographs', credit:'Members and volunteers (phone photographs)', src:'images/w2/gala-2025-attendees-group-photo.jpg', pos:'50% 30%', alt:'Three women in gold, green and copper gele and lace at the 2025 gala', photos:[
+    { src:'images/w2/gala-2025-attendees-group-photo.jpg', alt:'Three women in gold, green and copper gele and lace stand together in the hall', caption:'Gele and lace • Gala 2025' },
+    { src:'images/w2/gala-2025-three-friends-selfie.jpg', alt:'Three women take a selfie in front of the red, silver and green balloon arch', caption:'By the balloon arch • Gala 2025' },
+    { src:'images/w2/gala-2025-attendees-smiling.jpg', alt:'Two women and a man in dark aṣọ òkè smile at their table, a gala program in hand', caption:'At the table • Gala 2025' },
+    { src:'images/w2/gala-2025-group-photo.jpg', alt:'Six guests in agbada, gele and a wide-brimmed hat stand arm in arm', caption:'Friends and members • Gala 2025' },
+    { src:'images/w2/gala-2025-attendees-sitting.jpg', alt:'Guests in aṣọ òkè and gele seated at round tables under white drapes and chandeliers', caption:'The room • Gala 2025' },
+    { src:'images/w2/gala-2025-attendees-getting-food.jpg', alt:'Guests seated at round tables in the hall, chandeliers above', caption:'The room • Gala 2025' }
+  ]},
+  { id:'camp', title:'Summer camp at Citrus College', event:'Summer camp', year:'Archive', meta:'Archive • 14 photographs • year to confirm', credit:'Omo Yorùbá archive (photographer to confirm)', src:'images/w2/summer-camp-kids-art-class.jpg', alt:'An elder in gele sits among children holding up their drawings in front of the Omo Yorùbá banner', photos:[
+    { src:'images/w2/summer-camp-kids-art-class.jpg', alt:'An elder in gele sits among a dozen children holding up their coloured drawings in front of the banner', caption:'Children\'s art class • Summer camp' },
+    { src:'images/w2/summer-camp-kids-art.jpg', alt:'The children and their teacher show their drawings outdoors on the lawn', caption:'Children\'s art class • Summer camp' },
+    { src:'images/w2/summer-camp-kid-learning.jpg', alt:'A teacher leads a class of young children in a lecture hall; one girl raises her hand', caption:'Children\'s class • Summer camp' },
+    { src:'images/w2/summer-camp-fila-hat-teaching.jpg', alt:'A man in embroidered agbada adjusts his fila while a teenager tries on his own', caption:'Fìlà, how to wear the cap • Summer camp' },
+    { src:'images/w2/summer-camp-gele-woman-dressing.jpg', alt:'Women are dressed in aṣọ òkè wrappers in a science classroom', caption:'Aṣọ òkè and gele • Summer camp' },
+    { src:'images/w2/summer-camp-teacher-cooking-class.jpg', alt:'Two women lead a cooking class at the lab bench', caption:'Cooking class • Summer camp' },
+    { src:'images/w2/summer-camp-teacher-hands-raised.jpg', alt:'A teacher in green print throws his hands up in front of the summer camp slide', caption:'Session • Summer camp' },
+    { src:'images/w2/summer-camp-teacher-teaching.jpg', alt:'Two teachers speak from behind a laptop in the lecture room', caption:'Session • Summer camp' },
+    { src:'images/w2/summer-camp-teaching-session-raised-hands.jpg', alt:'A woman in green print and gele laughs with her arms out as the room sings', caption:'Session • Summer camp' },
+    { src:'images/w2/summer-camp-students-learning.jpg', alt:'Young women listen from the front rows of the lecture hall', caption:'Session • Summer camp' },
+    { src:'images/w2/summer-camp-group-backdrop-photo.jpg', alt:'Four members hold plates of jollof rice in front of the Omo Yorùbá banner', caption:'Lunch • Summer camp' },
+    { src:'images/w2/summer-camp-group-backdrop-2.jpg', alt:'Three members in front of the Omo Yorùbá banner', caption:'Members • Summer camp' },
+    { src:'images/w2/summer-camp-registration.jpg', alt:'Members at the registration table under the breezeway', caption:'Registration • Summer camp' },
+    { src:'images/w2/summer-camp-traditional-lunch.jpg', alt:'Trays of puff-puff and stewed meat at the lunch table', caption:'Lunch • Summer camp' }
+  ]},
+  { id:'kids', title:'Àgbàlá Ọmọde', event:'Odunde', year:'2026', meta:'2026 • 5 photographs', credit:'Red Carpet Media (assumed)', src:'images/w2/odunde-2026-mom-playing-games-with-kids.jpg', alt:'A mother and her two children play ayo and Ludo at the Àgbàlá Ọmọde table', photos:[
+    { src:'images/w2/odunde-2026-mom-playing-games-with-kids.jpg', alt:'A mother and her two children play ayo and Ludo at the Àgbàlá Ọmọde table', caption:'Ayo and Ludo • Àgbàlá Ọmọde 2026' },
+    { src:'images/w2/odunde-2026-kids-doing-crafts.jpg', alt:'Children at the craft tables with a Ludo board and paper crafts', caption:'Crafts • Àgbàlá Ọmọde 2026' },
+    { src:'images/w2/odunde-2026-kids-doing-paint-art.jpg', alt:'Children build with craft sticks at a long table lined with small blue robots', caption:'STEM Hub • Àgbàlá Ọmọde 2026' },
+    { src:'images/w2/odunde-2026-kid-playing-with-masquerade-performer.jpg', alt:'A dancer in a raffia skirt plays with a young girl on the painted plaza', caption:'Dance • Àgbàlá Ọmọde 2026' },
+    { src:'images/w2/odunde-2026-ayo-game.jpg', alt:'A wooden ayo board with stones beside the Ayo Olopon rules card', caption:'Ayo boards • Àgbàlá Ọmọde 2026' }
+  ]}
+];
+
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { album:null, photo:-1 };
+    this.onKey = (e) => {
+      if (this.state.photo < 0) return;
+      if (e.key === 'Escape'){ this.closeLb(); }
+      else if (e.key === 'ArrowRight'){ this.step(1); }
+      else if (e.key === 'ArrowLeft'){ this.step(-1); }
+    };
+  }
+  componentDidMount(){ document.addEventListener('keydown', this.onKey, true); }
+  componentWillUnmount(){ document.removeEventListener('keydown', this.onKey, true); }
+  url(hash){ try { window.history.replaceState({}, '', window.location.pathname + window.location.search + hash); } catch (e) {} }
+  current(){ return ALBUMS.filter(a => a.id === this.state.album)[0] || null; }
+  step(d){
+    const a = this.current(); if (!a) return;
+    const n = (this.state.photo + d + a.photos.length) % a.photos.length;
+    this.setState({ photo:n });
+    this.url('#photo-' + a.id + '-' + (n + 1));
+  }
+  closeLb(){ const a = this.current(); this.setState({ photo:-1 }); this.url(a ? '#album-' + a.id : '#albums'); }
+  renderVals(){
+    const s = this.state, p = this.props || {};
+    const list = ALBUMS;
+    const album = this.current();
+    const ph = album && s.photo > -1 ? album.photos[s.photo] : null;
+    return {
+      state: p.state || 'built',
+      captions: p.captions || 'always',
+
+      albums: list.map(a => ({
+        title:a.title, meta:a.meta,
+        hasImg: !!a.src, noImg: !a.src, src:a.src || '', alt:a.alt, label:a.label || '', pos:a.pos || '50% 40%',
+        open: () => { const direct = (p.open || 'viewer') === 'viewer'; this.setState({ album:a.id, photo: direct ? 0 : -1 }); this.url(direct ? '#photo-' + a.id + '-1' : '#album-' + a.id); }
+      })),
+
+      inAlbum: !!album, notInAlbum: !album,
+      albumTitle: album ? album.title : '',
+      albumMeta: album ? album.meta : '',
+      albumCredit: album ? 'Photographs: ' + album.credit + '. Each album has its own address, so a recap post can link straight to it.' : '',
+      lbCredit: album ? album.credit : '',
+      closeAlbum: () => { this.setState({ album:null, photo:-1 }); this.url('#albums'); },
+      photos: album ? album.photos.map((x, i) => ({
+        hasImg: !!x.src, noImg: !x.src, src:x.src || '', alt:x.alt, label:x.label || '', caption:x.caption,
+        open: () => { this.setState({ photo:i }); this.url('#photo-' + album.id + '-' + (i + 1)); },
+        key: (e) => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.setState({ photo:i }); this.url('#photo-' + album.id + '-' + (i + 1)); } }
+      })) : [],
+
+      lightbox: !!ph,
+      lbHasImg: !!(ph && ph.src), lbNoImg: !!(ph && !ph.src),
+      lbSrc: ph && ph.src ? ph.src : '', lbAlt: ph ? ph.alt : '',
+      lbLabel: ph && ph.label ? ph.label : '',
+      lbCaption: ph ? ph.caption : '',
+      lbCount: album && ph ? (s.photo + 1) + ' of ' + album.photos.length : '',
+      prev: () => this.step(-1),
+      next: () => this.step(1),
+      closeLb: () => this.closeLb()
+    };
+  }
+}
+</script>
+</body>
+</html>

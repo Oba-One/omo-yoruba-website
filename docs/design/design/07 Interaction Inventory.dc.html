@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="oy-wireframe.css">
+  <style>
+    html,body{margin:0;background:#e8eaef}
+    a{color:#2c437f}
+    a:hover{color:#8a3f1c}
+  </style>
+</helmet>
+<div class="wf" data-notes="{{ notes }}">
+
+<section class="wf-page" data-screen-label="Interaction inventory">
+  <div class="wf-pagehead">
+    <span class="wf-num">▣</span>
+    <div>
+      <h2>Interaction inventory</h2>
+      <div class="wf-slug">Every flow across the nine pages</div>
+      <p class="wf-purpose">Fourteen interactions. Four patterns. The rule I applied, then each flow with its trigger, fields, success, and failure.</p>
+    </div>
+  </div>
+  <div class="wf-cols">
+    <div class="wf-stack">
+
+      <div class="wf-b" data-n="0">
+        <span class="wf-lab">The rule</span>
+        <h3>How I chose between page, inline, modal, and handoff</h3>
+        <ul>
+          <li><b>Inline on the page</b> when the form is long, carries an upload or a fee, or needs the surrounding page as context. Losing a modal loses the work.</li>
+          <li><b>Modal</b> only when a form is short, identical everywhere, and triggered from many pages. Exactly two qualify: the sponsor enquiry and the performer enquiry. Plus the lightbox, which holds no data at all.</li>
+          <li><b>Its own page</b> when the thing has a URL people share or return to: an album, a filtered news view.</li>
+          <li><b>Handoff out</b> only where money changes hands. Our page collects the decision, the platform collects the card.</li>
+        </ul>
+      </div>
+
+      <div class="wf-b" data-n="1">
+        <span class="wf-lab">Group one, on our pages, no money</span>
+        <h3>Forms we own end to end</h3>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Newsletter subscribe</h3><span class="wf-pat wf-pat--inline">Inline, in place</span><span class="wf-chip">Footer, every page</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Already present in the footer. No button opens it.</p></div>
+          <div><h5>They fill in</h5><p>Email. One field, nothing else.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">Button becomes "Ẹ ṣé! ✓" in place. No page change, no redirect.</p></div>
+          <div><h5>Error</h5><p>Message under the field: "That email address does not look right. Check it and try again." Their text stays.</p></div>
+        </div>
+        <div class="wf-why"><b>Why not a modal:</b> a pop-up asking for an email is the single most disliked pattern on nonprofit sites, and it lands on elders and first-time visitors hardest. It stays in the footer.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Membership join</h3><span class="wf-pat wf-pat--inline">Inline block</span><span class="wf-chip">/get-involved block 3</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Become a member, from the nav, the door cards, the homepage, and three take-part bands. All scroll to the same block.</p></div>
+          <div><h5>They fill in</h5><p>Name, email, phone, city, individual or family, hometown association, how they heard, why they are joining. Eight fields, three required.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">"Ẹ ṣé! ✓ Welcome." Then a plain paragraph: dues are not paid here, someone will contact them within [pending] days about paying, and here is who.</p></div>
+          <div><h5>Error</h5><p>Field-level messages, entries kept, one summary line at the top naming what is missing. Failure to send shows the email address to write to instead.</p></div>
+        </div>
+        <div class="wf-why"><b>The risk:</b> without an explicit next-step sentence, people believe they have joined and paid. That sentence is content I need from you.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Volunteer sign-up</h3><span class="wf-pat wf-pat--inline">Inline block</span><span class="wf-chip">/get-involved block 4</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Volunteer, from the footer, the take-part band on five pages, and the festival page. All arrive at the same block.</p></div>
+          <div><h5>They fill in</h5><p>Name, email, phone, adult or under 18, availability, where they would like to help, skills or languages, notes. One general form, you place them.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">"Ẹ ṣé! ✓" and a line on when someone will be in touch and what usually happens next.</p></div>
+          <div><h5>Error</h5><p>As above. Under-18 selection shows a line about guardian consent rather than blocking the form.</p></div>
+        </div>
+        <div class="wf-why"><b>One form, not a role picker.</b> You said you place people. A role picker would ask volunteers to guess at an org chart they cannot see, and roles would go stale.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Class enrolment</h3><span class="wf-pat wf-pat--inline">Inline, two steps</span><span class="wf-chip">/programs/language-school block 8</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Enrol a learner, from the page header, the programs hub, the homepage, and news posts about term dates.</p></div>
+          <div><h5>They fill in</h5><p>Step one, the learner: name, age, level or not sure, term. Step two, the guardian: name, email, phone, notes. An add-another-learner control repeats step one for siblings.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">"Ẹ ṣé! ✓ [name] is enrolled for [term]." Then what to bring, where to arrive, and how fees are settled.</p></div>
+          <div><h5>Error</h5><p>Step-level validation before advancing. Nothing is lost moving between steps. If a term is full, a plain message and a waiting-list option rather than a dead end.</p></div>
+        </div>
+        <div class="wf-why"><b>Add-another-learner is the whole design.</b> Most families enrol two or three children and will not complete the form three times.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Vendor application</h3><span class="wf-pat wf-pat--inline">Inline, three steps</span><span class="wf-chip">/odunde block 8</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Apply for a booth, from the festival header, the take-part band, and a signpost on Get Involved. Get Involved links here rather than duplicating the form.</p></div>
+          <div><h5>They fill in</h5><p>Step one, business and contact. Step two, what they sell, booth size, power, food permit, photographs of their setup. Step three, fees and terms, accepted by checkbox.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">"Ẹ ṣé! ✓ Your application is in." Then the review timeline, when they will hear, and that a place is not held until the fee is paid.</p></div>
+          <div><h5>Error</h5><p>Per-step validation. Uploads show progress and a clear message on files that are too large. A failed submission keeps everything and offers the email address.</p></div>
+        </div>
+        <div class="wf-why"><b>Never a modal.</b> Uploads, a fee, and terms to read. People start this on a phone and finish it later, so the block also holds what they typed if they navigate away.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>General contact</h3><span class="wf-pat wf-pat--inline">Inline block</span><span class="wf-chip">/about block 5</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Contact, from the footer and the fallback block on Get Involved.</p></div>
+          <div><h5>They fill in</h5><p>Name, email, subject, message. Four fields.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">"Ẹ ṣé! ✓ We have your message." Plus expected response time.</p></div>
+          <div><h5>Error</h5><p>Field-level. The email address and phone number sit beside the form at all times, so a broken form is never a dead end.</p></div>
+        </div>
+        <div class="wf-why"><b>The elder test.</b> Address, phone, and email visible next to the form, not hidden behind it.</div>
+      </div>
+
+      <div class="wf-b" data-n="2">
+        <span class="wf-lab">Group two, short and everywhere</span>
+        <h3>The only two modals with fields in them</h3>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Sponsorship enquiry</h3><span class="wf-pat wf-pat--modal">Modal dialog</span><span class="wf-chip">Triggered from 5 pages</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Get the deck, or Sponsor, on Odunde, the Gala, Impact, Get Involved, and the homepage partner door.</p></div>
+          <div><h5>They fill in</h5><p>Organisation, name and role, email, and what they are interested in: Odunde, the Gala, programs, general. Four fields.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">"Ẹ ṣé! ✓ The deck is on its way." Named contact and when they will hear. Modal stays open on the confirmation, they close it themselves.</p></div>
+          <div><h5>Error</h5><p>Inline, modal never closes on failure, nothing retyped. Focus returns to the trigger button on close.</p></div>
+        </div>
+        <div class="wf-why"><b>Why this one earns a modal:</b> four fields, identical wherever it appears, and it is triggered mid-read on a page the funder is still evaluating. Sending them to a separate page loses the argument they were reading.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Performer enquiry</h3><span class="wf-pat wf-pat--modal">Modal dialog</span><span class="wf-chip">/odunde block 7</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Ask about performing, from the festival take-part band.</p></div>
+          <div><h5>They fill in</h5><p>Group or artist name, contact, what they perform, a link to video or Instagram, how many people. Five fields.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">"Ẹ ṣé! ✓" and when the programme is decided.</p></div>
+          <div><h5>Error</h5><p>As the sponsor enquiry. Same shell, different fields.</p></div>
+        </div>
+        <div class="wf-why"><b>One component, two configurations.</b> Build the sponsor modal well and this is a field list.</div>
+      </div>
+
+      <div class="wf-b" data-n="3">
+        <span class="wf-lab">Group three, money</span>
+        <h3>Where we hand off, and exactly where the seam falls</h3>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Donation, amount and recurring</h3><span class="wf-pat wf-pat--inline">Inline choice</span><span class="wf-pat wf-pat--out">Then Zeffy</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>The gold Donate button in the nav on every page, plus take-part rows.</p></div>
+          <div><h5>They fill in</h5><p>On our page: one-time or monthly, then an amount or a custom figure. On Zeffy: name, email, card.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">Zeffy confirms and receipts. They return to a short thank-you on our site: "Ẹ ṣé! ✓" and one line on what happens next.</p></div>
+          <div><h5>Error</h5><p>Card failures belong to Zeffy. Our side handles only a missing or invalid custom amount, inline.</p></div>
+        </div>
+        <div class="wf-why"><b>The seam:</b> the decision is ours, the card is theirs. Amount and frequency are where donors drop out, so that screen stays on your page in your design. Monthly is a toggle above the amounts, never an upsell after they choose.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Gala tickets, seats</h3><span class="wf-pat wf-pat--out">Handoff to Eventbrite</span><span class="wf-chip">/gala block 4</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Get tickets in the header, or a tier card. Opens Eventbrite in a new tab so your page is still there behind it.</p></div>
+          <div><h5>They fill in</h5><p>Everything on Eventbrite: quantity, names, card.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">Eventbrite emails the ticket. Our page shows a short "coming back?" line for anyone who returns to the tab.</p></div>
+          <div><h5>Error</h5><p>Eventbrite's. If the event is not yet published, the tier cards show "on sale [date]" rather than a broken link.</p></div>
+        </div>
+        <div class="wf-why"><b>Our tier cards, their checkout.</b> An embedded Eventbrite widget is the worst of both: it neither matches your design nor behaves like a native form. A styled card leading out is cleaner and reads as deliberate.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Gala tables</h3><span class="wf-pat wf-pat--modal">Modal enquiry</span><span class="wf-chip">Invoiced, not checkout</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>Reserve a table, from the table tier card.</p></div>
+          <div><h5>They fill in</h5><p>Name, organisation, email, phone, number of tables, names of guests if known. Six fields.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">"Ẹ ṣé! ✓ Your table is held." Plus how the invoice arrives and by when it must be settled.</p></div>
+          <div><h5>Error</h5><p>Inline. Sold out shows a waiting-list option, not a disabled button with no explanation.</p></div>
+        </div>
+        <div class="wf-why"><b>Tables are not tickets.</b> Buyers are usually organisations, they want to speak to someone, and they often pay by check. This one is the most likely to be argued about, so it is the one I would most like your view on.</div>
+      </div>
+
+      <div class="wf-b" data-n="4">
+        <span class="wf-lab">Group four, browsing</span>
+        <h3>No forms, no data to lose</h3>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Photo gallery browsing</h3><span class="wf-pat wf-pat--page">Album page</span><span class="wf-pat wf-pat--modal">Lightbox</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>An album tile opens a page. A photograph inside opens the full-screen overlay.</p></div>
+          <div><h5>They do</h5><p>Arrow keys, swipe, click the background or press Escape to close. Caption stays visible.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">Not applicable. Closing returns them to the same scroll position, on the photograph they opened.</p></div>
+          <div><h5>Error</h5><p>A photograph that fails to load shows its caption in a frame rather than an empty box.</p></div>
+        </div>
+        <div class="wf-why"><b>Albums get pages, photographs get an overlay.</b> An album is worth linking to from a news post. A single photograph is worth linking to as well, so the overlay puts itself in the address bar.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Filtering news and photographs</h3><span class="wf-pat wf-pat--inline">Inline, no reload</span><span class="wf-chip">/news, /gallery</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>A chip row for programme or event, and a year dropdown beside it.</p></div>
+          <div><h5>They do</h5><p>Tap chips, which combine. The current filter is written into the address, so a filtered view can be sent to someone.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">The list updates in place with a count: "6 posts, 2024". No jump, no scroll reset.</p></div>
+          <div><h5>Error</h5><p>An empty combination says so in a sentence and offers one tap back to everything. Never a blank area.</p></div>
+        </div>
+        <div class="wf-why"><b>Filters are a view, not a decision.</b> Never a modal, never a page load, always shareable.</div>
+      </div>
+
+      <div class="wf-int">
+        <div class="wf-int-head"><h3>Mobile navigation</h3><span class="wf-pat wf-pat--modal">Full-screen overlay</span><span class="wf-chip">Exists</span></div>
+        <div class="wf-int-grid">
+          <div><h5>Trigger</h5><p>The burger. Already built on the homepage.</p></div>
+          <div><h5>They do</h5><p>Six items plus Donate. The two dropdowns become plain nested items rather than a second level of tapping.</p></div>
+          <div><h5>Success</h5><p class="wf-ok">Not applicable.</p></div>
+          <div><h5>Error</h5><p>Not applicable. Every target stays at 44px or larger.</p></div>
+        </div>
+        <div class="wf-why"><b>Change needed:</b> the existing menu has five items and no dropdowns. Events and About need nesting, flattened on mobile.</div>
+      </div>
+
+      <div class="wf-b" data-n="5">
+        <span class="wf-lab">Applies to all fourteen</span>
+        <h3>Shared conventions</h3>
+        <ul>
+          <li><b>Success in Yoruba, next steps in English.</b> "Ẹ ṣé! ✓" opens every confirmation on a form we own, followed by a plain sentence saying what happens next. Money handoffs get the mark on return, not mid-flow.</li>
+          <li><b>Errors are sentences, not codes.</b> Named field, said plainly, entries never cleared. Colour never carries the message alone.</li>
+          <li><b>Every form has a human fallback.</b> An email address beside it, so a broken form never ends the relationship.</li>
+          <li><b>Nothing opens on load.</b> No entry pop-up, no scroll-triggered newsletter, no exit intent.</li>
+          <li><b>Modals return focus</b> to the button that opened them, close on Escape, and trap focus while open.</li>
+          <li><b>44px targets, 17px body, AA contrast</b> in every state, including error text and disabled buttons.</li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="wf-rail">
+      <div class="wf-note wf-note--aud">
+        <h4>Count</h4>
+        <p>Fourteen interactions. Six inline forms we own, three modals, three handoffs, two browsing behaviours.</p>
+        <p>The wireframes call for around two dozen new components in total. Six of them carry all fourteen interactions: the enquiry modal, the multi-step inline form, the filter chip row, the amount selector, the tier card, and the lightbox. Build those six first.</p>
+      </div>
+      <div class="wf-note wf-note--new">
+        <h4>Where we can only go so far</h4>
+        <p>You asked for third-party forms in your styling. Where we own the form and submit behind the scenes, that is exact. Where money moves, Eventbrite and Zeffy own the card screen and accept limited styling.</p>
+        <p>So the seam is placed where it costs least: your design covers the decision, theirs covers the payment. Only two flows cross it, tickets and donations.</p>
+      </div>
+      <div class="wf-note wf-note--hand">
+        <h4>Three I would argue about</h4>
+        <p><b>Gala tables as an enquiry</b> rather than a purchase. Cash flow versus conversion.</p>
+        <p><b>Vendor application inline</b> rather than a Google Form. More to build, far better completion.</p>
+        <p><b>No newsletter pop-up anywhere.</b> Costs you sign-ups. Worth it.</p>
+      </div>
+      <div class="wf-note">
+        <h4>Pending from you</h4>
+        <p>Membership next-step sentence, vendor fee and review timeline, term-full behaviour for enrolment, donation preset amounts, and your photo consent policy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;notes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Notes rail&quot;}}">
+class Component extends DCLogic {
+  renderVals(){
+    const p = this.props || {};
+    return { notes: (p.notes === false || p.notes === 'false') ? 'off' : 'on' };
+  }
+}
+</script>
+</body>
+</html>

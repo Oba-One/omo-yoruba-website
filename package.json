@@ -1,0 +1,39 @@
+{
+  "name": "omo-yoruba",
+  "private": true,
+  "type": "module",
+  "description": "Website for Omo Yorùbá of Southern California: Astro 7 on Vercel, Sanity at /admin, Storybook, Bun workspaces.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "packageManager": "bun@1.3.10",
+  "engines": {
+    "node": "22.x",
+    "bun": ">=1.3.0"
+  },
+  "scripts": {
+    "dev": "bun run --filter @oy/web dev",
+    "build": "bun run --filter @oy/web build",
+    "storybook": "bun run --filter @oy/storybook storybook",
+    "test": "vitest run",
+    "e2e": "bun run --filter @oy/web e2e",
+    "lint": "biome check . && bun packages/lint/src/cli.ts all",
+    "lint:dash": "bun packages/lint/src/cli.ts dash",
+    "lint:yoruba": "bun packages/lint/src/cli.ts yoruba",
+    "lint:colors": "bun packages/lint/src/cli.ts colors",
+    "format": "biome format --write .",
+    "typecheck": "bun run --filter '*' typecheck",
+    "typegen": "bun run --filter @oy/content typegen",
+    "seed": "bun run --filter @oy/content seed",
+    "check": "bun run typecheck && bun run lint && bun run test",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.12",
+    "@types/node": "22.20.1",
+    "lefthook": "2.1.12",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

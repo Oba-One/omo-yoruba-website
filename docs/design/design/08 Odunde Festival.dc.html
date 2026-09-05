@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ext-resource-dependency" content="images/w2/odunde-2026-procession-begins.jpg" data-resource-id="past1" />
+<meta name="ext-resource-dependency" content="images/w2/odunde-2026-kid-playing-with-elder.jpg" data-resource-id="past2" />
+<meta name="ext-resource-dependency" content="images/w2/odunde-2026-masquerade-performer-being-cooled-down.jpg" data-resource-id="past3" />
+<meta name="ext-resource-dependency" content="images/w2/odunde-2026-performer-doing-gele-tying.jpg" data-resource-id="past4" />
+<meta name="ext-resource-dependency" content="images/w2/odunde-2026-kids-doing-paint-art.jpg" data-resource-id="past5" />
+<meta name="ext-resource-dependency" content="images/w2/odunde-2026-performer-speaking-with-theater-backdrop.jpg" data-resource-id="past6" />
+<script src="./support.js"></script>
+</head>
+<template id="__bundler_thumbnail" data-bg-color="#141d40"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#141d40"/><text x="100" y="118" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="56" fill="#E8A13A">Ọ</text><circle cx="70" cy="150" r="4" fill="#E8A13A"/><circle cx="100" cy="150" r="4" fill="#E8A13A"/><circle cx="130" cy="150" r="4" fill="#E8A13A"/></svg></template>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    .od-head-slim{display:none}
+    .oy-home[data-phead="slim"] .od-head-slim{display:block}
+    .oy-home[data-phead="slim"] .od-head-photo{display:none}
+    .oy-home[data-schedule="hidden"] #schedule{display:none}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-phead="{{ phead }}" data-schedule="{{ schedule }}" data-screen-label="Odunde Festival" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="odunde" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--slim od-head-slim" id="top-slim">
+    <div class="oy-wrap oy-phead-inner">
+      <span class="oy-kicker">Odúndé<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The new year has arrived</span></span>
+      <h1>Ọdúndé Festival</h1>
+      <p class="oy-phead-lead">A day of Yoruba culture at Leimert Park Plaza, held each June. Four zones, one village, open to everyone.</p>
+      <div class="oy-phead-cta">
+        <a class="oy-btn oy-btn--primary" href="#plan">Plan your day<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        <button class="oy-btn oy-btn--secondary" type="button" id="head-vendor-slim" onClick="{{ openVendor }}">Apply as a vendor</button>
+      </div>
+      <p style="margin:24px 0 0;font-size:15px;color:var(--muted)">Saturday 12 June 2027 • 11am to 7pm • Free entry</p>
+    </div>
+  </header>
+
+  <header class="oy-phead oy-phead--photo oy-dark od-head-photo" id="top">
+    <div class="oy-phead-media" aria-hidden="true"><img class="v2-kb" src="images/w2/odunde-2026-procession-with-drummer.jpg" alt="" style="object-position:50% 45%"></div>
+    <div class="oy-phead-scrim" aria-hidden="true"></div>
+    <div class="v2-dots" aria-hidden="true"></div>
+    <div class="oy-wrap oy-phead-inner">
+      <div class="oy-phead-hold">
+        <span class="oy-kicker">Odúndé<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The new year has arrived</span></span>
+        <h1>Ọdúndé Festival</h1>
+        <p class="oy-phead-lead">A day of Yoruba culture at Leimert Park Plaza, held each June. Four zones, one village, open to everyone.</p>
+        <div class="oy-phead-cta">
+          <a class="oy-btn oy-btn--primary" href="#plan">Plan your day<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          <button class="oy-btn oy-btn--secondary" type="button" id="head-vendor" onClick="{{ openVendor }}">Apply as a vendor</button>
+        </div>
+        <p style="margin:26px 0 0;font-size:15px;color:rgba(255,255,255,.8)">Saturday 12 June 2027 • 11am to 7pm • Free entry</p>
+      </div>
+    </div>
+    <div class="oy-phead-rule" aria-hidden="true"></div>
+  </header>
+
+  <section style="background:var(--white);padding:40px 0 8px" id="glance">
+    <div class="oy-wrap">
+      <div class="oy-glance">
+        <div><b>Date</b><span>Sat 12 June 2027</span><small>Rain or shine</small></div>
+        <div><b>Time</b><span>11am to 7pm</span><small>Procession at 11 sharp</small></div>
+        <div><b>Where</b><span>Leimert Park Plaza</span><small>43rd Place at Degnan Blvd</small></div>
+        <div><b>Cost</b><span>Free entry</span><small>Food and market goods are sold</small></div>
+        <div><b>Family</b><span>All ages</span><small>Children's compound on site</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" style="background:var(--white)" id="about-festival">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ìtàn ọjọ́ náà<span class="oy-kicker-dot" aria-hidden="true">•</span><span>What the day is</span></span></div>
+          <h2 style="margin-top:8px">What Ọdúndé is</h2>
+          <div class="oy-prose" style="margin-top:18px">
+            <p>Odunde marks the Yoruba new year. It has been held in June at Leimert Park Plaza since 2003, and it is open to the whole neighborhood, not only to Yoruba families. The plaza is laid out as a village for the day, with four zones and a program that runs from the opening procession at eleven to the last drum at seven.</p>
+            <p>If you have never been: this sits alongside Lunar New Year, Diwali, and Nowruz. Communities that pause the world for a day to celebrate who they are, in public, with their neighbours, and with anyone who wants to come and eat.</p>
+          </div>
+          <div style="margin-top:26px;display:flex;gap:14px;flex-wrap:wrap">
+            <a class="oy-btn oy-btn--quiet" href="14%20Impact.dc.html">What the festival produces<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+            <a class="oy-btn oy-btn--quiet" href="09%20End-of-Year%20Gala.dc.html">The other half of our year, the Gala<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+        <figure class="v2-mo" style="margin:0;border-radius:6px;overflow:hidden;position:relative;height:360px">
+          <img src="images/w2/odunde-2026-kid-playing-with-masquerade-performer.jpg" alt="A dancer in a raffia skirt plays with a young girl on the painted plaza at Odunde 2026, the masquerade beside them" style="width:100%;height:100%;object-fit:cover;object-position:45% 50%">
+          <figcaption style="position:absolute;left:0;right:0;bottom:0;padding:40px 18px 14px;background:linear-gradient(180deg,transparent,rgba(20,29,64,.86));color:var(--white);font-size:13px;font-weight:600">Festival day <span style="color:var(--gold-300)">•</span> Leimert Park</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="zones">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ìlú kan<span class="oy-kicker-dot" aria-hidden="true">•</span><span>One village</span></span></div>
+          <h2 style="margin-top:6px">Four zones, one village</h2>
+          <p class="oy-sec-lead">The plaza is divided the way a Yoruba town is divided. Each zone has its own name, its own people, and its own reason to stand there all day. The blocks below sit roughly as they do on the ground: the market runs the length of Degnan, everything else gathers around it.</p>
+        </div>
+      </div>
+      <div class="oy-zones" data-layout="{{ zones }}">
+        <article class="oy-zone">
+          <div class="oy-zone-media"><img src="images/w2/odunde-2026-vendor-selling-suya.jpg" alt="A vendor in indigo adire serves suya to a guest at Ọjà Balógun" style="object-position:50% 40%"></div>
+          <div class="oy-zone-body">
+            <span class="oy-zone-tr">The market</span>
+            <span class="oy-zone-name">Ọjà Balógun</span>
+            <p class="oy-zone-line">Forty vendors along Degnan: jollof and suya, aṣọ òkè by the yard, books, soap, and beads. It opens at half past eleven and does not stop.</p>
+          </div>
+        </article>
+        <article class="oy-zone">
+          <div class="oy-zone-media"><img src="images/w2/odunde-2026-mom-playing-games-with-kids.jpg" alt="A mother and her two children play ayo and Ludo at the Àgbàlá Ọmọde table" style="object-position:50% 45%"></div>
+          <div class="oy-zone-body">
+            <span class="oy-zone-tr">The children's compound</span>
+            <span class="oy-zone-name">Àgbàlá Ọmọde</span>
+            <p class="oy-zone-line">Ayo boards, adire dyeing, drumming lessons, and a shaded tent where a tired child can rest with someone who knows their name.</p>
+          </div>
+        </article>
+        <article class="oy-zone">
+          <div class="oy-zone-media"><img src="images/w2/odunde-2026-attendee-smiling.jpg" alt="An elder in a green and white gele and sunglasses smiles at the festival" style="object-position:50% 30%"></div>
+          <div class="oy-zone-body">
+            <span class="oy-zone-tr">Elders and tradition</span>
+            <span class="oy-zone-name">Ẹgbẹ́ Ìbílẹ̀</span>
+            <p class="oy-zone-line">Where the day is opened and blessed. Seating in shade, the welcome at two, and the elders who can still tell you which town your surname comes from.</p>
+          </div>
+        </article>
+        <article class="oy-zone">
+          <div class="oy-zone-media"><img src="images/w2/odunde-2026-gangan-drummer.jpg" alt="An elder in white plays the gángan talking drum" style="object-position:50% 10%"></div>
+          <div class="oy-zone-body">
+            <span class="oy-zone-tr">The drum house</span>
+            <span class="oy-zone-name">Ilé Onílù</span>
+            <p class="oy-zone-line">Talking drums, bàtá, and the main stage. Performances run from four, and anyone who wants to try a dùndún can.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="schedule">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ètò ọjọ́<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Order of the day</span></span></div>
+          <h2 style="margin-top:6px">The day, hour by hour</h2>
+          <p class="oy-sec-lead">Enough for a family to decide when to arrive and what not to miss. Times are confirmed each spring.</p>
+        </div>
+        <button class="oy-btn oy-btn--quiet" type="button" style="margin-left:auto" onClick="{{ toggleSched }}">{{ schedLabel }}</button>
+      </div>
+      <sc-if value="{{ schedOpen }}" hint-placeholder-val="{{ true }}">
+        <div class="oy-sched">
+          <div class="oy-sched-row"><span class="oy-sched-time">11:00</span><div class="oy-sched-what"><b>Opening procession</b><p>Drummers lead the walk from Degnan into the plaza and the day is declared open.</p></div><span class="oy-sched-tag">Ẹgbẹ́ Ìbílẹ̀</span></div>
+          <div class="oy-sched-row"><span class="oy-sched-time">11:30</span><div class="oy-sched-what"><b>Market opens</b><p>Forty stalls: food, cloth, craft, and books.</p></div><span class="oy-sched-tag">Ọjà Balógun</span></div>
+          <div class="oy-sched-row"><span class="oy-sched-time">12:30</span><div class="oy-sched-what"><b>Children's program</b><p>Ayo, adire dyeing, and a first drumming lesson.</p></div><span class="oy-sched-tag">Àgbàlá Ọmọde</span></div>
+          <div class="oy-sched-row"><span class="oy-sched-time">14:00</span><div class="oy-sched-what"><b>Elders' welcome</b><p>The formal greeting, and the naming of families who have travelled.</p></div><span class="oy-sched-tag">Ẹgbẹ́ Ìbílẹ̀</span></div>
+          <div class="oy-sched-row"><span class="oy-sched-time">15:00</span><div class="oy-sched-what"><b>Language Lessons showcase</b><p>Learners from the online lessons, youngest first, saying what they have learned this year.</p></div><span class="oy-sched-tag">Ilé Onílù</span></div>
+          <div class="oy-sched-row"><span class="oy-sched-time">16:00</span><div class="oy-sched-what"><b>Main stage performances</b><p>Bàtá, dance groups, and guest artists. Program confirmed each May.</p></div><span class="oy-sched-tag">Ilé Onílù</span></div>
+          <div class="oy-sched-row"><span class="oy-sched-time">18:30</span><div class="oy-sched-what"><b>Closing drums</b><p>Everyone on their feet, and the plaza handed back at seven.</p></div><span class="oy-sched-tag">Ilé Onílù</span></div>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="plan">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ẹ múra<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Get ready</span></span></div>
+          <h2 style="margin-top:6px">Plan your visit</h2>
+          <p class="oy-sec-lead">Everything you need on the day, from getting there to what to bring.</p>
+        </div>
+      </div>
+      <div class="oy-facts">
+        <div class="oy-fact"><b>Getting there</b><span>Leimert Park Plaza, 43rd Place at Degnan Boulevard, Los Angeles.</span></div>
+        <div class="oy-fact"><b>Parking</b><span>Street parking on Leimert Boulevard, and a paid lot on 43rd Street. Arrive before noon.</span></div>
+        <div class="oy-fact"><b>Transit</b><span>Metro K Line to Leimert Park station, then a four minute walk.</span></div>
+        <div class="oy-fact"><b>Accessibility</b><span>Step-free throughout. Accessible toilets on the plaza.</span></div>
+        <div class="oy-fact"><b>Seating</b><span>Shaded seating at Ẹgbẹ́ Ìbílẹ̀ and the main stage. Bring a folding chair if you want your own.</span></div>
+        <div class="oy-fact"><b>What to bring</b><span>Water, sunscreen, cash for the market, and a bag for what you buy.</span></div>
+        <div class="oy-fact"><b>What not to bring</b><span>No alcohol, no glass, no pets except service animals.</span></div>
+        <div class="oy-fact"><b>Lost children</b><span>The welcome desk at the plaza entrance. Wristbands with your number are free there.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="take-part">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ẹ dara pọ̀ mọ́ wa<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Join us</span></span></div>
+          <h2 style="margin-top:6px">Take part in Ọdúndé</h2>
+          <p class="oy-sec-lead">Four ways in. Each one says what it asks of you, then opens a short form.</p>
+        </div>
+      </div>
+      <div class="oy-takepart" data-order="{{ takepart }}" data-labels="{{ labels }}">
+        <div class="oy-path oy-tp--vendor" data-accent="vendor">
+          <span class="oy-path-chip">Vendors</span>
+          <div class="oy-path-body"><h3>Sell at Ọjà Balógun</h3><p>Standard booth $150, double $275, food truck $325. Applications close 1 April, decisions by 20 April, and a booth is held once the fee is paid.</p></div>
+          <button class="oy-btn oy-btn--primary" type="button" id="tp-vendor" onClick="{{ openVendor }}">Apply for a booth<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path oy-tp--sponsor" data-accent="sponsor">
+          <span class="oy-path-chip">Sponsors</span>
+          <div class="oy-path-body"><h3>Keep the day free and open</h3><p>Three levels from $2,500 to $10,000. Four questions, and the deck with our impact numbers arrives within a working day.</p></div>
+          <button class="oy-btn oy-btn--secondary" type="button" id="tp-sponsor" onClick="{{ openSponsor }}">Sponsor Odunde<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="performer">
+          <span class="oy-path-chip">Performers</span>
+          <div class="oy-path-body"><h3>Drummers, dancers, cultural groups</h3><p>The main stage runs from four. Five questions, and the program committee decides in March.</p></div>
+          <button class="oy-btn oy-btn--secondary" type="button" id="tp-performer" onClick="{{ openPerformer }}">Ask about performing<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="volunteer">
+          <span class="oy-path-chip">Volunteers</span>
+          <div class="oy-path-body"><h3>Festival day needs hands</h3><p>Set-up from seven, shifts of three hours, and a shirt that makes you findable. We place you where the gap is.</p></div>
+          <button class="oy-btn oy-btn--secondary" type="button" id="tp-volunteer" onClick="{{ openVolunteer }}">Volunteer<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </div>
+      <div class="oy-handoff" style="margin-top:20px">
+        <span>Too small to sponsor, but want the day to happen? A gift does the same work.</span>
+        <button class="oy-btn oy-btn--quiet" type="button" data-give="true" onClick="{{ give }}">Donate<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="past">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ọdún tí ó kọjá<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Years past</span></span></div>
+          <h2 style="margin-top:6px">Ọdúndé in past years</h2>
+          <p class="oy-sec-lead">Four thousand two hundred people came through the plaza in June 2026, our largest day yet.</p>
+        </div>
+      </div>
+      <dc-import name="Photo Carousel" label="Ọdúndé in past years" slides="{{ pastSlides }}" hint-size="100%,620px"></dc-import>
+      <div style="margin-top:24px;display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+        <a class="oy-btn oy-btn--secondary" href="18%20Photo%20Gallery.dc.html">All Odunde albums<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="partners">
+    <div class="oy-wrap">
+      <h2>Partners and sponsors of Ọdúndé</h2>
+      <p class="oy-sec-lead" style="margin-bottom:22px">The day is free and open because these organizations help pay for it.</p>
+      <div class="oy-partners">
+        <span class="oy-partner">Leimert Park Village</span>
+        <span class="oy-partner">LA County Arts</span>
+        <span class="oy-partner">Council District 8</span>
+        <span class="oy-partner">Kaiser Permanente</span>
+        <span class="oy-partner">Ade &amp; Sons Foods</span>
+      </div>
+      <div class="oy-handoff" style="margin-top:24px">
+        <span>Want the day to happen again next June? Give now, or sponsor and join this row.</span>
+        <div style="margin-left:auto;display:flex;gap:12px;flex-wrap:wrap">
+          <button class="oy-btn oy-btn--primary" type="button" data-give="true" onClick="{{ give }}">Donate<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+          <button class="oy-btn oy-btn--secondary" type="button" id="partners-sponsor" onClick="{{ openSponsor }}">Sponsor Odunde</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+  <dc-import name="Enquiry Modal" open="{{ modalOpen }}" kind="{{ modalKind }}" onClose="{{ closeModal }}" hint-size="100%,0"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;phead&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;photo&quot;,&quot;options&quot;:[&quot;photo&quot;,&quot;slim&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Page header&quot;},&quot;zones&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;mosaic&quot;,&quot;options&quot;:[&quot;mosaic&quot;,&quot;five&quot;,&quot;grid&quot;,&quot;list&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Zone cards&quot;},&quot;schedule&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;collapsed&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Schedule (CMS: hidden until set)&quot;},&quot;takepart&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;vendor&quot;,&quot;options&quot;:[&quot;vendor&quot;,&quot;sponsor&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Take-part order&quot;},&quot;labels&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;column&quot;,&quot;options&quot;:[&quot;column&quot;,&quot;none&quot;,&quot;kicker&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Take-part labels&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { schedOpen:null, modalOpen:false, modalKind:'vendor' };
+    this.trigger = null;
+  }
+  open(kind){ return (e) => { this.trigger = e.currentTarget.id; this.setState({ modalOpen:true, modalKind:kind }); }; }
+  renderVals(){
+    const s = this.state, p = this.props || {};
+    const schedDefault = (p.schedule || 'shown') === 'shown';
+    const schedOpen = s.schedOpen === null ? schedDefault : s.schedOpen;
+    return {
+      give: (e) => { window.dispatchEvent(new CustomEvent('oy:give', { detail:{ trigger: e.currentTarget } })); },
+      phead: p.phead || 'photo',
+      zones: p.zones || 'mosaic',
+      schedule: p.schedule || 'shown',
+      labels: p.labels || 'column',
+      pastSlides: [
+        { src:(window.__resources && window.__resources.past1) || 'images/w2/odunde-2026-procession-begins.jpg', alt:'Members in white and green gather on Degnan Boulevard as the opening procession begins', cap:'Opening procession, 2026. The association gathers on Degnan Boulevard.', pos:'50% 55%' },
+        { src:(window.__resources && window.__resources.past2) || 'images/w2/odunde-2026-kid-playing-with-elder.jpg', alt:'An elder in white with a green sash high-fives a toddler on the painted plaza', cap:'Ẹgbẹ́ Ìbílẹ̀, 2026. An elder and a toddler meet on the plaza.', pos:'50% 55%' },
+        { src:(window.__resources && window.__resources.past3) || 'images/w2/odunde-2026-masquerade-performer-being-cooled-down.jpg', alt:'A raffia masquerade dances in front of the Àgbàlá Ọmọde tent while a man fans it', cap:'Igúnnukó, 2026. The masquerade dances in front of Àgbàlá Ọmọde.', pos:'50% 50%' },
+        { src:(window.__resources && window.__resources.past4) || 'images/w2/odunde-2026-performer-doing-gele-tying.jpg', alt:'A woman in blue adire ties a green and white gele on a seated guest', cap:'Gèlè, 2026. The art of head-tying, demonstrated at the market.', pos:'50% 40%' },
+        { src:(window.__resources && window.__resources.past5) || 'images/w2/odunde-2026-kids-doing-paint-art.jpg', alt:'Children build with craft sticks at a long table lined with small blue robots', cap:'Àgbàlá Ọmọde, 2026. Crafts and robots at the STEM table.', pos:'50% 35%' },
+        { src:(window.__resources && window.__resources.past6) || 'images/w2/odunde-2026-performer-speaking-with-theater-backdrop.jpg', alt:'A woman in white speaks into a microphone on the plaza below the Vision Theatre tower', cap:'Leimert Park Plaza, 2026. Opening words below the Vision Theatre.', pos:'50% 75%' }
+      ],
+      takepart: p.takepart || 'vendor',
+      schedOpen,
+      schedLabel: schedOpen ? 'Hide the schedule' : 'Show the schedule',
+      toggleSched: () => this.setState({ schedOpen: !schedOpen }),
+      modalOpen: s.modalOpen, modalKind: s.modalKind,
+      openVendor: this.open('vendor'),
+      openSponsor: this.open('sponsor'),
+      openPerformer: this.open('performer'),
+      openVolunteer: this.open('volunteer'),
+      closeModal: () => {
+        this.setState({ modalOpen:false });
+        const id = this.trigger;
+        if (id) setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 30);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

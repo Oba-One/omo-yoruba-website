@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+  <style>
+    html,body{margin:0}
+    a{color:var(--indigo-700)}
+    a:hover{color:var(--terra-600)}
+    /* formal is the default: indigo carries the evening. warm turns the ground to paper
+       and lets terracotta into the header and the seams. */
+    .oy-home[data-treatment="warm"] .oy-section{background:var(--paper)}
+    .oy-home[data-treatment="warm"] .oy-section--alt{background:var(--white)}
+    .oy-home[data-treatment="warm"] .oy-phead-scrim{background:linear-gradient(90deg,rgba(60,24,10,.94) 0 34%,rgba(90,40,18,.76) 58%,rgba(143,63,30,.34))}
+    .oy-home[data-treatment="warm"] .gl-seam{background:linear-gradient(180deg,var(--terra-600) 0 3px,transparent 3px 6px,var(--gold-500) 6px 9px)}
+    .oy-home[data-awards="hidden"] .gl-awards{display:none}
+    .oy-home[data-schedule="hidden"] .gl-sched{display:none}
+    .oy-home[data-past="hidden"] #past{display:none}
+    .oy-home[data-emphasis="tables"] .gl-tier--table{order:-1}
+  </style>
+</helmet>
+<div class="oy-home" data-card="grain-dots" data-theme="adire" data-pattern="rich" data-treatment="{{ treatment }}" data-awards="{{ awards }}" data-schedule="{{ schedule }}" data-past="{{ past }}" data-emphasis="{{ emphasis }}" data-screen-label="End-of-Year Gala" style="font-family:var(--font-body)">
+
+  <dc-import name="Site Nav" current="gala" hint-size="100%,68px"></dc-import>
+
+  <header class="oy-phead oy-phead--photo oy-dark" id="top">
+    <div class="oy-phead-media" aria-hidden="true"><img class="v2-kb" src="images/w2/gala-2025-attendees-group-photo.jpg" alt="" style="object-position:50% 20%"></div>
+    <div class="oy-phead-scrim" aria-hidden="true"></div>
+    <div class="oy-wrap oy-phead-inner">
+      <div class="oy-phead-hold">
+        <span class="oy-kicker">Àsè ọdún<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The year's celebration</span></span>
+        <h1>End-of-Year Gala</h1>
+        <p class="oy-phead-lead">An evening of culture, community, and celebration, held each year in November or December.</p>
+        <div class="oy-phead-cta">
+          <a class="oy-btn oy-btn--primary" href="#seats">Get tickets<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+          <button class="oy-btn oy-btn--secondary" type="button" id="head-sponsor" onClick="{{ openSponsor }}">Sponsor the evening</button>
+        </div>
+        <p style="margin:26px 0 0;font-size:15px;color:rgba(255,255,255,.8)">Saturday 5 December 2026 • The Ebell of Los Angeles • Seats from $125</p>
+      </div>
+    </div>
+    <div class="oy-phead-rule" aria-hidden="true"></div>
+  </header>
+
+  <section style="background:var(--white);padding:40px 0 8px" id="glance">
+    <div class="oy-wrap">
+      <div class="oy-glance">
+        <div><b>Date</b><span>Sat 5 Dec 2026</span><small>Held each November or December</small></div>
+        <div><b>Doors</b><span>6pm</span><small>Dinner served at 7:30</small></div>
+        <div><b>Venue</b><span>The Ebell of LA</span><small>4400 Wilshire Boulevard</small></div>
+        <div><b>Dress</b><span>Aṣọ òkè or black tie</span><small>Gele encouraged</small></div>
+        <div><b>Seats from</b><span>$125</span><small>Tables of ten from $1,100</small></div>
+      </div>
+      <p style="margin:14px 0 0;font-size:14px;color:var(--muted)">Everything you need to say yes: the date, the dress, and the price.</p>
+    </div>
+  </section>
+
+  <section class="oy-section" id="evening">
+    <div class="oy-wrap">
+      <div class="oy-split">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Alẹ́ náà<span class="oy-kicker-dot" aria-hidden="true">•</span><span>The evening</span></span></div>
+          <h2 style="margin-top:6px">The evening</h2>
+          <div class="oy-prose" style="margin-top:16px">
+            <p>The Gala closes our year. It is the night the community dresses, sits down together, and pays for the work of the next twelve months: the language lessons, the children's programs, and a festival that stays free because this evening is not.</p>
+          </div>
+        </div>
+        <div class="gl-sched">
+          <div class="oy-sched">
+            <div class="oy-sched-row"><span class="oy-sched-time">18:00</span><div class="oy-sched-what"><b>Reception</b><p>Arrival, greeting, and photographs in the foyer.</p></div></div>
+            <div class="oy-sched-row"><span class="oy-sched-time">19:30</span><div class="oy-sched-what"><b>Dinner</b><p>Seated, by table. Yoruba menu with a vegetarian option.</p></div></div>
+            <div class="oy-sched-row gl-awards"><span class="oy-sched-time">20:30</span><div class="oy-sched-what"><b>Recognitions</b><p>Three honorees, ten minutes each.</p></div></div>
+            <div class="oy-sched-row"><span class="oy-sched-time">21:00</span><div class="oy-sched-what"><b>Performance</b><p>Bàtá drummers and a guest artist, announced in October.</p></div></div>
+            <div class="oy-sched-row"><span class="oy-sched-time">21:45</span><div class="oy-sched-what"><b>Dancing</b><p>Until midnight.</p></div></div>
+          </div>
+          <p class="oy-caption">The running order is confirmed in October and posted here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gl-seam" aria-hidden="true" style="height:9px;background:linear-gradient(180deg,var(--indigo-700) 0 3px,transparent 3px 6px,var(--gold-500) 6px 9px)"></div>
+
+  <section class="oy-section oy-section--alt" id="seats">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ìjókòó<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Seats</span></span></div>
+          <h2 style="margin-top:6px">Seats and tables</h2>
+          <p class="oy-sec-lead">Single seats and couples are sold through Eventbrite, which opens in a new tab. A table of ten is arranged with us directly: tell us who is coming and we place the table and send an invoice.</p>
+        </div>
+      </div>
+      <div class="oy-tiers" data-layout="{{ tiers }}">
+        <div class="oy-tier">
+          <div class="oy-tier-head"><span class="oy-tier-name">Single seat</span></div>
+          <span class="oy-tier-price">$125</span>
+          <ul class="oy-incl"><li>One seat, dinner included</li><li>Two drinks from the bar</li><li>Program and keepsake</li></ul>
+          <a class="oy-btn oy-btn--secondary" href="#seats" target="_blank" rel="noopener">Get tickets<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="oy-tier oy-tier--featured">
+          <div class="oy-tier-head"><span class="oy-tier-name">Couple</span></div>
+          <span class="oy-tier-price">$225</span>
+          <ul class="oy-incl"><li>Two seats together</li><li>Four drinks from the bar</li><li>Seated with friends on request</li></ul>
+          <a class="oy-btn oy-btn--primary" href="#seats" target="_blank" rel="noopener">Get tickets<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="oy-tier gl-tier--table">
+          <div class="oy-tier-head"><span class="oy-tier-name">Table of ten</span></div>
+          <span class="oy-tier-price">$1,100</span>
+          <span class="oy-tier-note">Placed by hand and invoiced. Nothing is charged on this page.</span>
+          <ul class="oy-incl"><li>Ten seats together</li><li>Named on the table card</li></ul>
+          <button class="oy-btn oy-btn--secondary" type="button" id="tier-table" onClick="{{ openTable }}">Reserve a table<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </div>
+      <p style="margin-top:18px;font-size:14.5px;color:var(--muted);max-width:74ch">Tickets go on sale once the date is confirmed. If the room sells out, a waiting list opens here.</p>
+    </div>
+  </section>
+
+  <section class="oy-section" id="sponsor">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Àtìlẹ́yìn<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Support</span></span></div>
+          <h2 style="margin-top:6px">Sponsor the Gala</h2>
+          <p class="oy-sec-lead">Three levels. One enquiry covers this evening, Odunde, or both: just tick which.</p>
+        </div>
+      </div>
+      <div class="oy-list">
+        <div class="oy-lrow oy-lrow--tier">
+          <div class="oy-lrow-tier"><b>Ọ̀ṣun</b><span>$10,000</span></div>
+          <ul class="oy-incl"><li>Seats at the dinner</li><li>Program recognition</li><li>Stage mention</li><li>Logo placement</li></ul>
+        </div>
+        <div class="oy-lrow oy-lrow--tier">
+          <div class="oy-lrow-tier"><b>Ògún</b><span>$5,000</span></div>
+          <ul class="oy-incl"><li>Seats at the dinner</li><li>Program recognition</li><li>Stage mention</li></ul>
+        </div>
+        <div class="oy-lrow oy-lrow--tier">
+          <div class="oy-lrow-tier"><b>Ṣàngó</b><span>$2,500</span></div>
+          <ul class="oy-incl"><li>Seats at the dinner</li><li>Program recognition</li></ul>
+        </div>
+      </div>
+      <div style="margin-top:22px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <button class="oy-btn oy-btn--primary" type="button" id="sponsor-gala" onClick="{{ openSponsor }}">Sponsor the Gala<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        <span style="font-size:14.5px;color:var(--muted)">Four questions. The deck and the impact numbers arrive within a working day.</span>
+      </div>
+      <div class="oy-handoff" style="margin-top:22px">
+        <span>Want the numbers before you commit? The impact page has them, with a source line under each one.</span>
+        <a class="oy-btn oy-btn--quiet" href="14%20Impact.dc.html">See our impact<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt gl-awards" id="honorees">
+    <div class="oy-wrap">
+      <h2>Honorees and recognitions</h2>
+      <p class="oy-sec-lead" style="margin-bottom:22px">Who we are honoring this year, and who has been honored before.</p>
+      <div class="oy-g3">
+        <article class="oy-person oy-person--nophoto"><div class="oy-person-body"><span class="oy-person-role">This year</span><span class="oy-person-name">Chief Adekunle Balogun</span><p class="oy-person-bio">Forty years of hometown association work in South Los Angeles.</p></div></article>
+        <article class="oy-person oy-person--nophoto"><div class="oy-person-body"><span class="oy-person-role">Previously honored</span><span class="oy-person-name">Dr Aduke Sofolahan</span><p class="oy-person-bio">2025. Founded the Saturday school.</p></div></article>
+        <article class="oy-person oy-person--nophoto"><div class="oy-person-body"><span class="oy-person-role">Previously honored</span><span class="oy-person-name">Ade &amp; Sons Foods</span><p class="oy-person-bio">2024. Fed the festival for a decade.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section" id="past">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ọdún tí ó kọjá<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Years past</span></span></div>
+          <h2 style="margin-top:6px">Past galas</h2>
+        </div>
+      </div>
+      <dc-import name="Photo Carousel" label="Past galas" slides="{{ pastSlides }}" hint-size="100%,620px"></dc-import>
+      <div style="margin-top:22px;display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+        <a class="oy-btn oy-btn--secondary" href="18%20Photo%20Gallery.dc.html">All gala albums<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+        <a class="oy-btn oy-btn--quiet" href="08%20Odunde%20Festival.dc.html">The other half of our year, Odunde<span class="oy-btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="oy-section oy-section--alt" id="take-part">
+    <div class="oy-wrap">
+      <div class="oy-sec-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px"><span aria-hidden="true" style="display:inline-block;width:26px;height:10px;background:var(--pattern-asoke);flex:none"></span><span class="oy-kicker">Ẹ dara pọ̀ mọ́ wa<span class="oy-kicker-dot" aria-hidden="true">•</span><span>Join us</span></span></div>
+          <h2 style="margin-top:6px">Take part</h2>
+          <p class="oy-sec-lead">Four ways to be part of the evening, whether or not you can be in the room.</p>
+        </div>
+      </div>
+      <div class="oy-takepart" data-labels="{{ labels }}">
+        <div class="oy-path" data-accent="sponsor">
+          <span class="oy-path-chip">Sponsors</span>
+          <div class="oy-path-body"><h3>Sponsor the evening</h3><p>Four questions and we send the deck. One enquiry covers the Gala, Odunde, or both.</p></div>
+          <button class="oy-btn oy-btn--primary" type="button" id="tp-sponsor" onClick="{{ openSponsor }}">Sponsor the Gala<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="table">
+          <span class="oy-path-chip">Tables</span>
+          <div class="oy-path-body"><h3>Bring your table</h3><p>Ten seats together, placed by hand and invoiced afterwards.</p></div>
+          <button class="oy-btn oy-btn--secondary" type="button" id="tp-table" onClick="{{ openTable }}">Reserve a table<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="volunteer">
+          <span class="oy-path-chip">Volunteers</span>
+          <div class="oy-path-body"><h3>The night needs hands</h3><p>Registration, seating, and set-up. One form, and we place you.</p></div>
+          <button class="oy-btn oy-btn--secondary" type="button" id="tp-volunteer" onClick="{{ openVolunteer }}">Volunteer<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+        <div class="oy-path" data-accent="give">
+          <span class="oy-path-chip">Give</span>
+          <div class="oy-path-body"><h3>Cannot come this year?</h3><p>A gift does the same work as a seat, and monthly does more.</p></div>
+          <button class="oy-btn oy-btn--quiet" type="button" data-give="true" onClick="{{ give }}">Donate<span class="oy-btn-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Site Footer" hint-size="100%,420px"></dc-import>
+  <dc-import name="Enquiry Modal" open="{{ modalOpen }}" kind="{{ modalKind }}" onClose="{{ closeModal }}" hint-size="100%,0"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;treatment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;formal&quot;,&quot;options&quot;:[&quot;formal&quot;,&quot;warm&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Treatment&quot;},&quot;tiers&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;columns&quot;,&quot;options&quot;:[&quot;columns&quot;,&quot;rows&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Ticket tiers&quot;},&quot;emphasis&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;seats&quot;,&quot;options&quot;:[&quot;seats&quot;,&quot;tables&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Ticket emphasis&quot;},&quot;awards&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;CMS: honorees&quot;},&quot;schedule&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;CMS: running order&quot;},&quot;past&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;shown&quot;,&quot;options&quot;:[&quot;shown&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;CMS: past galas&quot;},&quot;labels&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;column&quot;,&quot;options&quot;:[&quot;column&quot;,&quot;none&quot;,&quot;kicker&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Take-part labels&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { modalOpen:false, modalKind:'sponsor' };
+    this.trigger = null;
+  }
+  open(kind, id){ this.trigger = id; this.setState({ modalOpen:true, modalKind:kind }); }
+  renderVals(){
+    const p = this.props || {}, s = this.state;
+    return {
+      give: (e) => { window.dispatchEvent(new CustomEvent('oy:give', { detail:{ trigger: e.currentTarget } })); },
+      treatment: p.treatment || 'formal',
+      tiers: p.tiers || 'columns',
+      awards: p.awards || 'shown',
+      schedule: p.schedule || 'shown',
+      past: p.past || 'shown',
+      labels: p.labels || 'column',
+      pastSlides: [
+        { src:'images/w2/gala-2025-attendees-group-photo.jpg', alt:'Three women in gold, green and copper gele and lace stand together in the hall', cap:'Gele and lace, 2025. Three guests before dinner.', pos:'50% 35%' },
+        { src:'images/w2/gala-2025-attendees-sitting.jpg', alt:'Guests in aṣọ òkè and gele seated at round tables under white drapes and chandeliers', cap:'The room, seated for dinner, 2025.', pos:'50% 60%' },
+        { src:'images/w2/gala-2025-attendees-smiling.jpg', alt:'Two women and a man in dark aṣọ òkè smile at their table, a gala program in hand', cap:'At the table, 2025. The program in hand.', pos:'50% 30%' },
+        { src:'images/w2/gala-2025-group-photo.jpg', alt:'Six guests in agbada, gele and a wide-brimmed hat stand arm in arm', cap:'Friends and members, 2025.', pos:'50% 45%' },
+        { src:'images/w2/gala-2025-three-friends-selfie.jpg', alt:'Three women take a selfie in front of the red, silver and green balloon arch', cap:'By the balloon arch, 2025.', pos:'35% 40%' }
+      ],
+      openVolunteer: (e) => this.open('volunteer', e.currentTarget.id),
+      emphasis: p.emphasis || 'seats',
+      modalOpen: s.modalOpen, modalKind: s.modalKind,
+      openSponsor: (e) => this.open('sponsor', e.currentTarget.id),
+      openTable: (e) => this.open('table', e.currentTarget.id),
+      closeModal: () => {
+        this.setState({ modalOpen:false });
+        const id = this.trigger;
+        if (id) setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 30);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

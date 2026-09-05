@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/patterns.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/base.css">
+  <link rel="stylesheet" href="_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d/css/components.css">
+  <link rel="stylesheet" href="oy-components.css">
+</helmet>
+<div class="oy-carousel" role="region" aria-roledescription="carousel" aria-label="{{ label }}" style="font-family:var(--font-body)">
+  <div class="oy-carousel-top" aria-hidden="true"></div>
+  <div class="oy-carousel-stage">
+    <sc-for list="{{ slides }}" as="s" hint-placeholder-count="1">
+      <figure class="oy-carousel-slide" data-active="{{ s.active }}" aria-hidden="{{ s.hidden }}">
+        <sc-if value="{{ s.hasImg }}" hint-placeholder-val="{{ true }}"><img src="{{ s.src }}" alt="{{ s.alt }}" style="object-position:{{ s.pos }}"></sc-if>
+        <sc-if value="{{ s.hasPh }}"><div class="oy-ph {{ s.ph }}" role="img" aria-label="{{ s.alt }}"><span>{{ s.phLabel }}</span></div></sc-if>
+      </figure>
+    </sc-for>
+    <button class="oy-carousel-btn oy-carousel-btn--prev" type="button" aria-label="Previous photo" onClick="{{ prev }}">‹</button>
+    <button class="oy-carousel-btn oy-carousel-btn--next" type="button" aria-label="Next photo" onClick="{{ next }}">›</button>
+  </div>
+  <div class="oy-carousel-bar">
+    <span class="oy-carousel-cap">{{ caption }}</span>
+    <div class="oy-carousel-dots" role="tablist" aria-label="Choose a photo">
+      <sc-for list="{{ slides }}" as="s" hint-placeholder-count="5">
+        <button class="oy-carousel-dot" type="button" role="tab" aria-selected="{{ s.active }}" aria-label="{{ s.dotLabel }}" onClick="{{ s.go }}"></button>
+      </sc-for>
+    </div>
+    <span class="oy-carousel-count">{{ count }}</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1100,&quot;height&quot;:640},&quot;slides&quot;:{&quot;editor&quot;:null,&quot;default&quot;:[],&quot;tsType&quot;:&quot;{src?:string,ph?:string,alt:string,cap:string,pos?:string}[]&quot;},&quot;label&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Photos&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  constructor(props){ super(props); this.state = { i:0 }; }
+  renderVals(){
+    const raw = this.props.slides || [];
+    const n = raw.length || 1;
+    const i = ((this.state.i % n) + n) % n;
+    const slides = raw.map((s, k) => ({
+      ...s,
+      active: k === i,
+      hidden: k !== i,
+      hasImg: !!s.src, hasPh: !s.src,
+      ph: s.ph || 'oy-ph--adire',
+      phLabel: '[ ' + (s.alt || 'Photo pending') + ' ]',
+      pos: s.pos || '50% 40%',
+      dotLabel: 'Photo ' + (k + 1) + ' of ' + n,
+      go: () => this.setState({ i:k })
+    }));
+    return {
+      label: this.props.label || 'Photos',
+      slides,
+      caption: (raw[i] && raw[i].cap) || '',
+      count: (i + 1) + ' of ' + n,
+      prev: () => this.setState({ i: i - 1 }),
+      next: () => this.setState({ i: i + 1 })
+    };
+  }
+}
+</script>
+</body>
+</html>

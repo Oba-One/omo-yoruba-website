@@ -1,0 +1,13 @@
+{
+  "name": "@oy/lint",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./yoruba-terms.json": "./yoruba-terms.json"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run"
+  }
+}

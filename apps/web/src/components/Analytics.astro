@@ -1,0 +1,35 @@
+---
+// PostHog, loaded after first paint. SiteLayout only renders this component when
+// PUBLIC_POSTHOG_KEY is set. Public variables are inlined at build time, so a key added on
+// Vercel takes effect on the next deploy (docs/runbook.md). Pageviews only for now; the named
+// events arrive with the forms in Phase 3 (docs/design/ROUTES-AND-INTERACTIONS.md section 2).
+// No autocapture, no session recording.
+---
+
+<script>
+  import { PUBLIC_POSTHOG_HOST, PUBLIC_POSTHOG_KEY } from 'astro:env/client';
+
+  function start() {
+    if (!PUBLIC_POSTHOG_KEY) return;
+    import('posthog-js')
+      .then(({ default: posthog }) => {
+        posthog.init(PUBLIC_POSTHOG_KEY, {
+          api_host: PUBLIC_POSTHOG_HOST,
+          defaults: '2026-05-30',
+          capture_pageview: 'history_change',
+          autocapture: false,
+          disable_session_recording: true,
+          person_profiles: 'identified_only',
+        });
+      })
+      .catch(() => {
+        // Analytics never block the page; a failed chunk fetch is not worth reporting.
+      });
+  }
+
+  if (document.readyState === 'complete') {
+    setTimeout(start, 0);
+  } else {
+    window.addEventListener('load', () => setTimeout(start, 0), { once: true });
+  }
+</script>
