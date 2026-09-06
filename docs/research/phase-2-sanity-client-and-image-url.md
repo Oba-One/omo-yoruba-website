@@ -1,12 +1,12 @@
 # Phase 2: @sanity/client 8.5.0, @sanity/image-url 2.1.1 and groq 6.12.0 verified before pinning
 
 Date: 5 September 2026. Method: `npm view <pkg> version|peerDependencies|engines|dependencies|time` against
-the npm registry; the packages installed into a scratch directory with Bun 1.4.2 (not the repo) so the shipped
-`dist/*.d.ts`, `lib/*.d.ts`, `src/*.ts`, minified `dist/*.js` and READMEs could be read (paths of the form
-`node_modules/...` refer to that install; `bun add` lands the same files in the repo); throwaway scripts run
-under Bun 1.4.2 and Node 22.22.1 that import the packages, build URLs and send uploads to a closed local port
-(`apiHost: 'http://127.0.0.1:9'`, never the Sanity API); the primary docs named per bullet; the sanity-io
-GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exact (`bunfig.toml` sets `exact = true`).
+the npm registry; the packages installed into a scratch directory with Bun 1.4.2 so the shipped `dist/*.d.ts`,
+`lib/*.d.ts`, `src/*.ts`, `dist/*.js` and READMEs could be read (`node_modules/...` paths refer to that install;
+`bun add` lands the same files in the repo); throwaway scripts under Bun 1.4.2 and Node 22.22.1 that import the
+packages, build URLs and send uploads to a closed local port (`apiHost: 'http://127.0.0.1:9'`, never the Sanity
+API); the primary docs named per bullet; the sanity-io GitHub CHANGELOG, migration guide and release list
+(`gh api`). Every pin is exact (`bunfig.toml` sets `exact = true`).
 
 | Package | Pinned | Latest on registry | Why this pin |
 | --- | --- | --- | --- |
@@ -24,17 +24,15 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   `eventsource ^5.1.1`, `obug ^2.1.4`, no peers; 8.0.0 shipped 2026-08-12 and the 7.x line still gets releases
   (7.27.0 on 2026-09-03). Source: `npm view @sanity/client version engines dependencies time`, `gh api repos/sanity-io/client/releases`.
 - 8.0.0 breaking changes: "require node 22.12 or higher, use fetch"; "ESM-only and no longer ships CommonJS
-  runtime or declaration files"; UMD bundle, `main`, `module` and `typesVersions` removed ("Consumers must
-  resolve the package through `exports`"); `requester` config and per request `proxy` removed; "Observable
-  asset uploads emit progress events only in browsers. Node and edge runtimes emit only the terminal response
-  event"; `ClientError` and `ServerError` messages now include the HTTP status text. 8.5.0: result types are
-  read "from a global `SanityQueries` interface". Source: https://raw.githubusercontent.com/sanity-io/client/main/CHANGELOG.md.
+  runtime or declaration files"; UMD bundle, `main`, `module`, `typesVersions`, the `requester` option and the
+  per request `proxy` option removed; "Observable asset uploads emit progress events only in browsers. Node and
+  edge runtimes emit only the terminal response event"; error messages now include the HTTP status text. 8.5.0:
+  result types are read "from a global `SanityQueries` interface". Source: https://raw.githubusercontent.com/sanity-io/client/main/CHANGELOG.md.
 - `exports`: `.` maps `bun`, `deno`, `workerd`, `worker`, `react-server`, `sanity-function` and `default` to
   `./dist/index.js` and `node` to `./dist/index.node.js`; subpaths `./csm`, `./stega`, `./media-library`;
   `"type": "module"`. Under Bun 1.4.2 `import.meta.resolve('@sanity/client')` gives `dist/index.js`, under Node
-  22.22.1 `dist/index.node.js`; that split decides upload bodies, proxies and env reads (below). The README
-  documents Bun (`bun add @sanity/client`, `bun run index.ts`).
-  Source: `node_modules/@sanity/client/package.json`, README (Bun), scratch `which-build.mjs`.
+  22.22.1 `dist/index.node.js`; that split decides upload bodies, proxies and env reads (below). The README has
+  a Bun section (`bun add @sanity/client`). Source: `node_modules/@sanity/client/package.json`, README (Bun), scratch `which-build.mjs`.
 
 ### createClient options
 
@@ -61,9 +59,8 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   dynamic value"; the docs: "Use today's date when you start something new, written as a static string", `v1`
   is the outdated fallback, `vX` is experimental. The validator accepts `1`, `X` or `YYYY-MM-DD` with or without
   a leading `v` (`'v2026-09-05'` is stored as `'2026-09-05'`); anything else throws "Invalid API version string,
-  expected `1` or date in format `YYYY-MM-DD`"; `2099-01-01` passes the client (server behaviour unverified);
-  omitting it warns and uses `1`. Pin `apiVersion: '2026-09-05'`. Source: README (Specifying API version),
-  https://www.sanity.io/docs/api-versioning, `dist/config-CgJ16jET.js`, scratch `version-test.mjs`.
+  expected `1` or date in format `YYYY-MM-DD`"; omitting it warns and uses `1`. Pin `apiVersion: '2026-09-05'`.
+  Source: README (Specifying API version), https://www.sanity.io/docs/api-versioning, `dist/config-CgJ16jET.js`, scratch `version-test.mjs`.
 - `perspective`: `ClientPerspective = 'previewDrafts' | 'published' | 'drafts' | 'raw' | StackablePerspective[]`,
   `StackablePerspective = 'published' | 'drafts' | (string & {})`; `previewDrafts` is `@deprecated use 'drafts'
   instead`; JSDoc: "As of API version `v2025-02-19`, the default perspective has changed from `raw` to
@@ -72,10 +69,9 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   renamed to `drafts` and will be removed in a future API version".
   Source: `dist/types-CtHEe8SF.d.ts` lines 7819 to 7827, scratch `version-test.mjs`.
 - Docs values: `published` "Excludes all unpublished changes and draft documents"; `drafts` "Treats all drafts as
-  published, deduplicating in favor of draft versions" and adds `_originalId`; `raw` returns every variant and
-  with a token "will cause both drafts and versions to appear"; release id arrays "automatically appends the
-  `published` perspective" but not `drafts`. "Drafts and versions will not be visible to queries as long as the
-  client is unauthenticated." Source: https://www.sanity.io/docs/perspectives, README (Using perspectives).
+  published, deduplicating in favor of draft versions" and adds `_originalId`; `raw` with a token "will cause
+  both drafts and versions to appear"; release id arrays "automatically appends the `published` perspective" but
+  not `drafts`; unauthenticated queries never see drafts. Source: https://www.sanity.io/docs/perspectives, README (Using perspectives).
 - `useCdn` rule: `useCdn = (options.useCdn ?? config.useCdn) && canUseCdn`, and `canUseCdn` holds only for
   `GET`/`HEAD` data requests, so mutations and uploads always use the Live API. With `drafts`, `previewDrafts` or
   a release array the client forces `useCdn = false` per request and warns "The Live API will be used instead.
@@ -110,8 +106,7 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   https://www.sanity.io/docs/apis-and-sdks/sanity-typegen.
 - `getDocument(id, {signal?, tag?, releaseId?, includeAllVersions?})` resolves to the document or `undefined`;
   `getDocuments(ids, {signal?, tag?})` keeps input order with `null` for misses; `documentsExists(ids)` resolves
-  to a `Set<string>`. All use the Doc endpoint, which "should be used sparingly".
-  Source: `dist/types-CtHEe8SF.d.ts` (class body), README (Fetch a single document).
+  to a `Set<string>`; the Doc endpoint "should be used sparingly". Source: `dist/types-CtHEe8SF.d.ts` (class body), README.
 
 ### Stega
 
@@ -120,9 +115,8 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   when stega.enabled is true". "The code that handles stega is lazy loaded on demand when `client.fetch` is
   called, if `client.config().stega.enabled` is `true`"; per call `{stega: false}` or a `StegaConfig`;
   `client.withConfig({stega: {...}})` derives a client. `@sanity/client/stega` re-exports the client and adds
-  `stegaClean`, `vercelStegaCleanAll`, `stegaBrand`, `StegaBranded`, `ClientReturnStega`, `stegaEncodeSourceMap`;
-  `stegaClean` runs under Bun. Source: `dist/types-CfGzbXrl.d.ts`, `dist/stega.d.ts`, README (Using Visual
-  editing with steganography), scratch `import-test.mjs`.
+  `stegaClean` (runs under Bun), `stegaBrand`, `ClientReturnStega` and `stegaEncodeSourceMap`.
+  Source: `dist/types-CfGzbXrl.d.ts`, `dist/stega.d.ts`, README (Using Visual editing with steganography), scratch `import-test.mjs`.
 - Docs: stega "Encodes source metadata into every string value in the query result as invisible zero-width
   Unicode characters"; enable it only for preview through the documented `getClient(perspective)` pattern
   (`useCdn: !isPreview, stega: {enabled: isPreview}`); "stega in HTML attributes, `<head>`, `<script>`/`<style>`
@@ -147,10 +141,9 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
 - Body types by runtime (a request that reached the closed socket proves the body was accepted): under Bun
   (`dist/index.js`, global `fetch`) `Buffer`, `Uint8Array`, `Blob`, `File`, `Bun.file()` and a web
   `ReadableStream` all reach the network; a Node `fs.createReadStream` fails first with "Unsupported body type:
-  object". Under Node (`dist/index.node.js`) Node streams also work because a `beforeRequest` middleware converts
-  them with `Readable.toWeb`. Read each JPEG with `Bun.file(path)` or `readFileSync`, never `createReadStream`.
-  Progress events need `XMLHttpRequest`; Node and Bun get only the terminal response.
-  Source: scratch `upload-test.mjs`, `dist/index.node.js` (`isNodeReadableStream`, `XMLHttpRequest`).
+  object". Under Node (`dist/index.node.js`) Node streams also work (a `beforeRequest` middleware applies
+  `Readable.toWeb`). Read each JPEG with `Bun.file(path)` or `readFileSync`, never `createReadStream`. Progress
+  events need `XMLHttpRequest`. Source: scratch `upload-test.mjs`, `dist/index.node.js` (`isNodeReadableStream`, `XMLHttpRequest`).
 - Response: `SanityImageAssetDocument = {_id, _type, _rev, _createdAt, _updatedAt, url, path, size, assetId,
   mimeType, sha1hash, extension, uploadId?, originalFilename?, metadata: {_type: 'sanity.imageMetadata', hasAlpha,
   isOpaque, lqip?, blurHash?, thumbHash?, dimensions: {aspectRatio, height, width}, palette?, image?, exif?}}`.
@@ -172,10 +165,9 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   centre; crop values are the fraction cut from each edge, the docs example being `top: 0.028, bottom: 0.150,
   left: 0.019, right: 0.009`). Source: https://www.sanity.io/docs/content-lake/manage-assets,
   https://www.sanity.io/docs/image-type (canonical https://www.sanity.io/docs/image), `node_modules/@sanity/image-url/lib/index.d.ts`.
-- `client.delete(assetDocumentId)` "will also trigger deletion of the actual asset"; "the CDN might have your
-  asset cached so it may not disappear immediately". Limits: "Maximum image size: 256 megapixels"; dataset
-  uploads are capped at 5 minutes; JPG, PNG, WebP, HEIF and AVIF are accepted. Source: README (Deleting an
-  asset), https://www.sanity.io/docs/content-lake/manage-assets, https://www.sanity.io/docs/technical-limits.
+- `client.delete(assetDocumentId)` "will also trigger deletion of the actual asset" ("the CDN might have your
+  asset cached so it may not disappear immediately"). Limits: "Maximum image size: 256 megapixels"; dataset
+  uploads are capped at 5 minutes. Source: README (Deleting an asset), https://www.sanity.io/docs/technical-limits.
 
 ### Mutations and transactions
 
@@ -190,7 +182,7 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   returning a `Patch` (`set`, `setIfMissing`, `unset`, `inc`, `dec`, `insert`, `append`, `prepend`, `splice`,
   `diffMatchPatch`, `ifRevisionId`, `commit`); `transaction(ops?)` returning a `Transaction` (`create`,
   `createIfNotExists`, `createOrReplace`, `delete`, `patch(id, builder | ops | Patch)`, `transactionId(id)`,
-  `commit(options?)`). Stubs need `_type`; the `Identified...` stubs also need `_id`.
+  `commit(options?)`); documents need `_type`, and `_id` for the three `Identified...` stubs.
   Source: `dist/types-CtHEe8SF.d.ts` (class body, `BasePatch` from line 5052, `BaseTransaction` from line 5152).
 - `BaseMutationOptions`: `visibility?: 'sync' | 'async' | 'deferred'` (default `sync`; `async` returns once
   committed; `deferred` "bypasses real-time indexing completely" for bulk imports), `returnDocuments?`,
@@ -216,11 +208,9 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
 - The Bun build reads no `process.env` at all. The Node build reads `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` at
   startup and `X_SANITY_LINEAGE` per request. Neither reads a project id, dataset or token; the seed reads its
   own env and passes values explicitly. Once per process warnings cover a missing `useCdn`, a missing
-  `apiVersion`, drafts on the CDN, the `previewDrafts` rename and a token in the browser ("You have configured
-  Sanity client to use a token in the browser", printed only when `window.location` is localhost, silenced by
-  `ignoreBrowserTokenWarning`); `ignoreWarnings` (substring or RegExp) silences chosen ones; dataset names must be
-  lowercase letters, numbers, underscores and dashes, at most 64 characters, or `createClient` throws.
-  Source: `grep process.env node_modules/@sanity/client/dist/*.js`, `dist/index.node.js` line 4546, `dist/config-CgJ16jET.js`.
+  `apiVersion`, drafts on the CDN, the `previewDrafts` rename and "You have configured Sanity client to use a
+  token in the browser" (localhost only, silenced by `ignoreBrowserTokenWarning`); `ignoreWarnings` (substring or
+  RegExp) silences chosen ones. Source: `grep process.env node_modules/@sanity/client/dist/*.js`, `dist/index.node.js` line 4546, `dist/config-CgJ16jET.js`.
 
 ## Document ids and publishing
 
@@ -237,9 +227,8 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
 - "Drafts are saved in a document with an id beginning with the path `drafts.`"; "When you publish a document it
   is copied from the draft into a document without the `drafts.`-prefix"; "When you publish a document it
   becomes available on the public APIs". A `createOrReplace` with a plain `_id` writes that root document
-  directly, so it is published as soon as the transaction commits, with no draft step; the README states the
-  reverse ("To create a draft document, prefix the document ID with `drafts.`").
-  Source: https://www.sanity.io/docs/drafts, https://www.sanity.io/docs/content-lake/ids, README (Creating documents).
+  directly, so it is published as soon as the transaction commits, with no draft step (the README: "To create a
+  draft document, prefix the document ID with `drafts.`"). Source: https://www.sanity.io/docs/drafts, README (Creating documents).
 
 ## @sanity/image-url 2.1.1
 
@@ -250,17 +239,16 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   only"; types come from the main entry instead of `/lib` paths; Node minimum 10.0.0 to 20.19.0; "all builder
   API methods remain the same, and URLs generated will be identical given the same inputs". A default export
   still exists in 2.1.1, typed `@deprecated Use the named export`. Source: `npm view @sanity/image-url`,
-  `node_modules/@sanity/image-url/package.json`, `gh api repos/sanity-io/image-url/releases`, `lib/index.d.ts`,
-  https://raw.githubusercontent.com/sanity-io/image-url/main/CHANGELOG.md, https://raw.githubusercontent.com/sanity-io/image-url/main/MIGRATE-v1-to-v2.md.
+  `node_modules/@sanity/image-url/package.json`, `lib/index.d.ts`, https://raw.githubusercontent.com/sanity-io/image-url/main/CHANGELOG.md,
+  https://raw.githubusercontent.com/sanity-io/image-url/main/MIGRATE-v1-to-v2.md.
 - Import and chain: `import {createImageUrlBuilder} from '@sanity/image-url'`; `createImageUrlBuilder(options?:
   SanityClientLike | SanityProjectDetails | SanityModernClientLike)` where `SanityModernClientLike = { config():
   SanityClientConfig }` (an 8.x client) and `SanityProjectDetails = { projectId, dataset, baseUrl? }`. Methods:
   `image(source)`, `width`, `height`, `size`, `fit('clip' | 'crop' | 'fill' | 'fillmax' | 'max' | 'scale' |
   'min')`, `crop('top' | 'bottom' | 'left' | 'right' | 'center' | 'focalpoint' | 'entropy')`, `auto('format')`,
   `quality(0 to 100)`, `dpr`, `format('jpg' | 'pjpg' | 'png' | 'webp')`, `rect`, `focalPoint`, `blur`, `sharpen`,
-  `orientation`, `bg`, `pad`, `vanityName`, `frame`, `ignoreImageParams`, `withClient`, `url()`, `toString()`.
-  `image()` accepts "a Sanity `image` record, an `asset` record, or just the asset id as a string".
-  Source: `node_modules/@sanity/image-url/README.md`, `lib/index.d.ts`.
+  `orientation`, `ignoreImageParams`, `withClient`, `url()`, `toString()`. `image()` accepts "a Sanity `image`
+  record, an `asset` record, or just the asset id as a string". Source: `node_modules/@sanity/image-url/README.md`, `lib/index.d.ts`.
 - Hotspot and crop: "In order for hotspot/crop processing to be applied, the `image` record must be supplied, as
   well as both width and height." The crop fractions become a pixel `rect` from the dimensions parsed out of the
   asset id; with `width` and `height` the rect is narrowed around the hotspot centre; `rect`, `focalPoint`,
@@ -273,10 +261,9 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
 
 - Registry: 6.12.0 (2026-09-01), `engines.node >=22.12`, no dependencies or peers, dual `exports` (`groq.js` for
   `import`, `groq.cjs` for `require`), versioned in the `sanity` monorepo. `export declare function
-  defineQuery<const Q extends string>(query: Q): Q` ("This is a no-op, but it helps editor integrations ... we
-  cannot infer types from [the tag] until microsoft/TypeScript#33304 is resolved") and default `groq(strings,
-  ...keys): string`; both return the input unchanged at runtime (verified under Bun). Source: `npm view groq`,
-  `node_modules/groq/package.json`, `node_modules/groq/groq.d.ts`, `node_modules/groq/README.md`, scratch `import-test.mjs`.
+  defineQuery<const Q extends string>(query: Q): Q` ("This is a no-op ... we cannot infer types from [the tag]
+  until microsoft/TypeScript#33304 is resolved") and default `groq(strings, ...keys): string`; both return the
+  input unchanged at runtime (verified under Bun). Source: `npm view groq`, `node_modules/groq/package.json`, `node_modules/groq/groq.d.ts`, scratch `import-test.mjs`.
 
 ## Tokens and permissions
 
@@ -284,21 +271,20 @@ GitHub CHANGELOG, migration guide and release list (`gh api`). Every pin is exac
   unauthenticated users have read access to published documents (with some exceptions like private datasets)".
   API tokens on every plan come as "Editor Token (read+write)" or "Viewer Token (read-only)"; Editor has "Read
   and write access to all datasets", Viewer "Read-only access to all datasets", Contributor "Can write but not
-  publish documents"; custom roles are Enterprise. "Manipulating documents requires read+write access permission
-  for the affected document type." So uploads and `createOrReplace` of published ids need an Editor token; a
-  Viewer token covers draft reads. A "Deploy Studio" token permission is not in the roles or auth pages fetched:
-  unverified. Source: https://www.sanity.io/docs/http-auth (canonical https://www.sanity.io/docs/authentication-and-tokens),
+  publish documents". "Manipulating documents requires read+write access permission for the affected document
+  type." So uploads and `createOrReplace` of published ids need an Editor token; a Viewer token covers draft
+  reads. A "Deploy Studio" token permission is not in the roles or auth pages fetched: unverified.
+  Source: https://www.sanity.io/docs/http-auth (canonical https://www.sanity.io/docs/authentication-and-tokens),
   https://www.sanity.io/docs/content-lake/roles-concepts (canonical https://www.sanity.io/docs/roles-and-permissions),
   https://www.sanity.io/docs/user-guides/roles (canonical https://www.sanity.io/docs/roles), https://www.sanity.io/docs/http-mutations.
 
 ## Repo fit
 
-- `docs/research/phase-0-stack-versions.md` already lists `@sanity/client` 8.5.0 for Phase 2 and
-  `@sanity/image-url` 2.1.1 for Phase 4; both are still the latest. `packages/content` has `typegen` and `seed`
-  placeholder scripts and no dependencies yet. `sanity` 6.12.0 depends on `@sanity/client ^8.4.0`,
-  `@sanity/image-url ^2.1.1` and `@sanity/types 6.12.0`, `@sanity/codegen` 8.1.0 on `groq ^6.0.0`, so 8.5.0, 2.1.1
-  and 6.12.0 keep one copy of each under Bun's isolated linker; Node 22.22.1 and Bun 1.4.2 satisfy every
-  `engines` field. Source: repo files, `npm view sanity dependencies`, `npm view @sanity/codegen dependencies`.
+- `docs/research/phase-0-stack-versions.md` already lists `@sanity/client` 8.5.0 and `@sanity/image-url` 2.1.1;
+  both are still the latest. `packages/content` has `typegen` and `seed` placeholders and no dependencies yet.
+  `sanity` 6.12.0 depends on `@sanity/client ^8.4.0`, `@sanity/image-url ^2.1.1` and `@sanity/types 6.12.0`,
+  `@sanity/codegen` 8.1.0 on `groq ^6.0.0`, so the pins keep one copy of each under Bun's isolated linker; Node
+  22.22.1 and Bun 1.4.2 satisfy every `engines` field. Source: repo files, `npm view sanity dependencies`, `npm view @sanity/codegen dependencies`.
 - Seed shape that follows: one client with `useCdn: false`, `token` from the environment, `apiVersion:
   '2026-09-05'`, `perspective: 'published'`, a low `maxRetries`; read each JPEG with `Bun.file`; hash locally,
   look up `sha1hash`, upload only missing files with `filename`, `contentType: 'image/jpeg'`, `creditLine` and
