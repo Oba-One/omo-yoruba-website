@@ -49,8 +49,7 @@ API); the primary docs named per bullet; the sanity-io GitHub CHANGELOG, migrati
     /** @defaultValue true */ useCdn?: boolean;  /** @defaultValue 'published' */ perspective?: ClientPerspective;
     proxy?: string /* "Node.js only" */; requestTagPrefix?: string; headers?: Record<string, string>;
     ignoreBrowserTokenWarning?: boolean; ignoreWarnings?: string | RegExp | Array<string | RegExp>;
-    withCredentials?: boolean; timeout?: number; maxRetries?: number /* "Defaults to 5." */;
-    resultSourceMap?: boolean | 'withKeyArraySelector'; stega?: StegaConfig | boolean;
+    withCredentials?: boolean; timeout?: number; maxRetries?: number /* "Defaults to 5." */; resultSourceMap?: boolean | 'withKeyArraySelector'; stega?: StegaConfig | boolean;
     /** @deprecated set `cache` and `next` options on `client.fetch` instead */ fetch?: {...} | boolean;
   }
   ```
@@ -295,7 +294,6 @@ API); the primary docs named per bullet; the sanity-io GitHub CHANGELOG, migrati
 ## Open questions for the session
 
 - Published only, or also `drafts.<id>` copies; how the Studio shows a never drafted published document is unverified. Source: https://www.sanity.io/docs/drafts.
-- Local SHA-1 skip versus server dedupe for all 68 files (dedupe still transfers the bytes). Source: https://www.sanity.io/docs/content-lake/manage-assets.
+- Local SHA-1 skip versus server dedupe for all 68 files (dedupe still transfers the bytes); and whether the asset id hash is that SHA-1 (unverified). Source: https://www.sanity.io/docs/content-lake/manage-assets.
 - Stega for the `/admin` Presentation routes in Phase 2, or wait for Visual Editing (per request client, `useCdn: !isPreview`). Source: https://www.sanity.io/docs/stega.
 - Transaction batching: measure the serialised body before commit; 4 MB is the limit. Source: https://www.sanity.io/docs/technical-limits.
-- The `Deploy Studio` token permission and the derivation of the asset id hash stay unverified. Source: https://www.sanity.io/docs/content-lake/roles-concepts, https://www.sanity.io/docs/image-urls.
