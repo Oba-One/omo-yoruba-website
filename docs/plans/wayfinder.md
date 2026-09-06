@@ -53,6 +53,11 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   the owner merged pull request #2 on 5 September 2026; the stubs and workarounds carry in the
   ticket's answer; no pivot (ADR 0002).
 
+- [Sanity Studio v6, not the v5 line the brief named](../tickets/wayfinder/issues/14-sanity-studio-major.md):
+  `sanity` 6.12.0 with `@sanity/astro` 3.5.1; the v6 breaking changes touch nothing the repo
+  configures; pins and the facts that contradict the brief are in the ticket's answer and
+  `docs/research/phase-2-*.md` (Phase 2, the owner's yes gates the install).
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.
@@ -63,7 +68,6 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 17 | Run `scripts/setup-wizard.sh` (Sanity, Vercel, Resend, PostHog, Chromatic) | Phase 2 seed, Phase 4 preview |
 | 18 | Accept the em dash lint carve-out for `docs/design/` | Phase 0 sign-off |
 | 11 | Storybook hosting: separate Vercel project or a path under the site | Phase 1 |
-| 14 | Sanity Studio major: v5 in the brief, v6 current | Phase 2 |
 | 02 | EIN, mailing address, phone, routing email per enquiry kind | Phase 2 seed, Phase 3 routing |
 | 05 | The two unnamed festival zones | Phase 2 seed, Phase 5 |
 | 09 | Photo credits to confirm | Phase 2 seed |
