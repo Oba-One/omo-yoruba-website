@@ -7,7 +7,8 @@
     "./studio": "./src/studio/config.ts",
     "./enquiry-kinds": "./src/enquiry-kinds.ts",
     "./enquiry-zod": "./src/enquiry-zod.ts",
-    "./pending": "./src/pending.ts"
+    "./pending": "./src/pending.ts",
+    "./routes": "./src/routes.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

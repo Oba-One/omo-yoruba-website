@@ -53,6 +53,9 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   the owner merged pull request #2 on 5 September 2026; the stubs and workarounds carry in the
   ticket's answer; no pivot (ADR 0002).
 
+- `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` are required at build time since Phase 2
+  (the data layer exists); CI builds with placeholder values (`docs/runbook.md`).
+
 - [Sanity Studio v6, not the v5 line the brief named](../tickets/wayfinder/issues/14-sanity-studio-major.md):
   `sanity` 6.12.0 with `@sanity/astro` 3.5.1; the v6 breaking changes touch nothing the repo
   configures; pins and the facts that contradict the brief are in the ticket's answer and
@@ -98,8 +101,6 @@ webhook after Phase 4). Ticket 19 (fonts) was resolved in Phase 1.
 - Page-section stories for every layout option: how fixtures represent a whole page
   without mock names or prices.
 - Content Release naming and who may publish one; depends on ticket 22.
-- Whether `PUBLIC_SANITY_*` variables become required at build time in Phase 2 (they are
-  optional in Phase 0 so the repo builds before the wizard runs).
 
 ## Out of scope
 
