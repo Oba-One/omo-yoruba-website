@@ -30,7 +30,7 @@ const PHOTOGRAPHERS: Record<PhotographerId, { name: string; credit: string }> = 
 
 const ALBUMS: Record<AlbumId, { title: string; event?: string; cover: string }> = {
   'odunde-2026': {
-    title: 'Ọdúndé 2026',
+    title: 'Odunde 2026',
     event: 'event-odunde-2026',
     cover: 'odunde-2026-kid-playing-with-elder.jpg',
   },
@@ -216,9 +216,9 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     _id: 'event-odunde-2027',
     _type: 'event',
     kind: 'festival',
-    title: 'Ọdúndé Festival 2027',
+    title: 'Odunde Festival 2027',
     edition: 2027,
-    venue: { name: 'Leimert Park Plaza' },
+    venue: { name: 'Leimert Park' },
   });
   docs.push({
     _id: 'event-gala-2026',
@@ -231,9 +231,9 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     _id: 'event-odunde-2026',
     _type: 'event',
     kind: 'festival',
-    title: 'Ọdúndé Festival 2026',
+    title: 'Odunde Festival 2026',
     edition: 2026,
-    venue: { name: 'Leimert Park Plaza' },
+    venue: { name: 'Leimert Park' },
     heroImage: image(assets, 'odunde-2026-procession-with-drummer.jpg'),
     album: ref('album-odunde-2026'),
   });
@@ -250,7 +250,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
   const posts = [
     {
       id: 'news-odunde-2026-recap',
-      title: 'Ọdúndé 2026: the recap',
+      title: 'Odunde 2026: the recap',
       slug: 'odunde-2026-recap',
       date: '2026-07-01',
       summary:
@@ -403,14 +403,14 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     page('festivalPage', {
       header: {
         kicker: bilingual('Ọdúndé', 'The new year has arrived'),
-        title: 'Ọdúndé Festival',
-        line: 'A day of Yoruba culture at Leimert Park Plaza, held each June. Four zones, one village, open to everyone.',
+        title: 'Odunde Festival',
+        line: 'A day of Yoruba culture at Leimert Park, held each June. Four zones, one village, open to everyone.',
         image: image(assets, 'odunde-2026-procession-with-drummer.jpg'),
       },
       extraFacts: withKeys('fact', [fact('Family', 'All ages', "Children's compound on site")]),
       whatItIs: blocks(
-        'Odunde marks the Yoruba new year. It is held in June at Leimert Park Plaza, and it is open to the whole neighborhood, not only to Yoruba families. The plaza is laid out as a village for the day, with four zones and a program that runs from the opening procession to the last drum.',
-        'If you have never been: this sits alongside Lunar New Year, Diwali, and Nowruz. Communities that pause the world for a day to celebrate who they are, in public, with their neighbours, and with anyone who wants to come and eat.',
+        'Odunde marks the Yoruba new year. It is held in June at Leimert Park, and it is open to the whole neighborhood, not only to Yoruba families. The park is laid out as a village for the day, with four zones and a program that runs from the opening procession to the last drum.',
+        'If you have never been: this sits alongside Lunar New Year, Diwali, and Nowruz. Communities that pause the world for a day to celebrate who they are, in public, with their neighbors, and with anyone who wants to come and eat.',
       ),
       zonesIntro:
         'The plaza is divided the way a Yoruba town is divided. Each zone has its own name, its own people, and its own reason to stand there all day.',
@@ -493,13 +493,13 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           _type: 'yearStripRow',
           when: 'June',
           event: ref('event-odunde-2027'),
-          note: 'Leimert Park Plaza',
+          note: 'Leimert Park',
         },
         { _type: 'yearStripRow', when: 'Nov or Dec', event: ref('event-gala-2026') },
         { _type: 'yearStripRow', program: ref('program-kids-stem') },
         { _type: 'yearStripRow', program: ref('program-cultural-collective') },
       ]),
-      primaryAction: cta('Enroll a learner', 'enquiry', 'enrol'),
+      primaryAction: cta('Enrol a learner', 'enquiry', 'enrol'),
     }),
   );
 
@@ -587,7 +587,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         stats.map((stat) => ref(stat.id)),
       ),
       civicInfra: blocks(
-        'Odunde is a public cultural day held in Leimert Park Plaza. It is open to the whole neighborhood, not only to Yoruba families, and it is one of the few days in the year when that plaza is programmed end to end by a community organization rather than rented out.',
+        'Odunde is a public cultural day held in Leimert Park. It is open to the whole neighborhood, not only to Yoruba families, and it is one of the few days in the year when the park is programmed end to end by a community organization rather than rented out.',
       ),
       photos: withKeys('photo', [
         image(assets, 'odunde-2026-procession-begins.jpg'),

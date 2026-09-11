@@ -19,7 +19,7 @@ export const contactRole = defineType({
       name: 'name',
       title: 'Name',
       type: 'string',
-      description: 'Named in the form’s success copy. Empty names the role instead.',
+      description: "Named in the form's success copy. Empty names the role instead.",
       validation: voice.text,
     }),
     defineField({

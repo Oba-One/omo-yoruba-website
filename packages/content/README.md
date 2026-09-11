@@ -60,3 +60,14 @@ Decided with the owner on 11 September 2026; each has its ADR.
   and lists the `lintReport` documents the content-lint function writes (ADR 0014).
 - `stat` stores its figure flat (`value`, `label`, `source`, `asOf`); `outcome.figure` is a
   `sourcedFigure` object.
+- Fields the prototypes carry beyond the spec's tables: `event.attendance` (the past-years
+  figure), `initiative.serves`, `since`, `next` (the status block), `givingLevel.source` (the line
+  under each amount), `programsPage.culturalExchange.howToJoin`, `siteSettings.newsletterBlurb`,
+  `oyImage.creditNote` (the free text half of "credit: reference or free text"). Each renders
+  Pending while empty.
+- `scheduleItem.title` is `bilingual` (English required, Yoruba optional), as section 2 asks.
+- Site settings and the Inbox are hidden from everyone but administrators and their documents
+  lose every action for other roles (the plan fallback in CONTENT-MODEL section 5; wayfinder
+  ticket 22 decides the real roles).
+- The seed accepts `SANITY_WRITE_TOKEN` as an alias of `SANITY_API_WRITE_TOKEN` with a warning,
+  because the owner's `packages/web/.env` predates the wizard's names.

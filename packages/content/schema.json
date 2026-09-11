@@ -7346,14 +7346,8 @@
         "title": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
-          },
-          "optional": true
-        },
-        "titleYo": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
+            "type": "inline",
+            "name": "bilingual"
           },
           "optional": true
         },

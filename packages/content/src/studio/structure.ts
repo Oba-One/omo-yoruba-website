@@ -5,8 +5,10 @@ import type {
 } from 'sanity/structure';
 import { ENQUIRY_KINDS, KIND_TITLES } from '../enquiry-kinds';
 import { PENDING, pendingFilter, pendingTitle } from '../pending';
-import { SINGLETON_NAMES, singletonTypes } from '../schema/singletons';
+import { EVENT_KINDS } from '../schema/documents';
+import { singletonTypes } from '../schema/singletons';
 import { STUDIO_API_VERSION } from './config';
+import { isAdministrator, STUDIO_HIDDEN_TYPES } from './document-options';
 import { PendingPresencePane } from './pending-pane';
 
 const GROUPS: { title: string; types: string[] }[] = [
@@ -22,20 +24,21 @@ const GROUPS: { title: string; types: string[] }[] = [
 ];
 
 const GROUPED = new Set(GROUPS.flatMap((group) => group.types));
-const HIDDEN = new Set([...SINGLETON_NAMES, 'enquiry', 'subscriber', 'lintReport']);
 
-function singletonItems(S: StructureBuilder) {
-  return singletonTypes.map((type) =>
-    S.listItem()
-      .title(type.title ?? type.name)
-      .id(type.name)
-      .child(
-        S.document()
-          .schemaType(type.name)
-          .documentId(type.name)
-          .title(type.title ?? type.name),
-      ),
-  );
+function singletonItems(S: StructureBuilder, administrator: boolean) {
+  return singletonTypes
+    .filter((type) => administrator || type.name !== 'siteSettings')
+    .map((type) =>
+      S.listItem()
+        .title(type.title ?? type.name)
+        .id(type.name)
+        .child(
+          S.document()
+            .schemaType(type.name)
+            .documentId(type.name)
+            .title(type.title ?? type.name),
+        ),
+    );
 }
 
 function groupItem(S: StructureBuilder, title: string, types: string[]) {
@@ -50,7 +53,7 @@ function groupItem(S: StructureBuilder, title: string, types: string[]) {
 }
 
 function eventsItem(S: StructureBuilder) {
-  const byKind = ['festival', 'gala', 'collective', 'other'].map((kind) =>
+  const byKind = EVENT_KINDS.map((kind) =>
     S.listItem()
       .title(`${kind.charAt(0).toUpperCase()}${kind.slice(1)} editions`)
       .id(`events-${kind}`)
@@ -163,28 +166,33 @@ function pendingItem(S: StructureBuilder) {
     );
 }
 
-/** docs/design/CONTENT-MODEL.md section 5 as amended by ADR 0013 and ADR 0014. */
-export const structure: StructureResolver = (S) =>
-  S.list()
+/**
+ * docs/design/CONTENT-MODEL.md section 5 as amended by ADR 0013 and ADR 0014. Site settings and
+ * the Inbox show for administrators only (the role fallback in document-options.ts).
+ */
+export const structure: StructureResolver = (S, context) => {
+  const administrator = isAdministrator(context);
+  return S.list()
     .title('Content')
     .items([
       S.listItem()
         .title('Pages')
         .id('pages')
-        .child(S.list().title('Pages').items(singletonItems(S))),
+        .child(S.list().title('Pages').items(singletonItems(S, administrator))),
       S.divider(),
       eventsItem(S),
       ...GROUPS.filter((group) => group.title !== 'Events').map((group) =>
         groupItem(S, group.title, group.types),
       ),
       S.divider(),
-      inboxItem(S),
+      ...(administrator ? [inboxItem(S)] : []),
       pendingItem(S),
       S.divider(),
       // Anything registered later and not yet grouped still shows, so nothing is unreachable.
       ...S.documentTypeListItems().filter(
-        (item) => !GROUPED.has(item.getId() ?? '') && !HIDDEN.has(item.getId() ?? ''),
+        (item) => !GROUPED.has(item.getId() ?? '') && !STUDIO_HIDDEN_TYPES.has(item.getId() ?? ''),
       ),
     ]);
+};
 
 export const defaultDocumentNode: DefaultDocumentNodeResolver = (S) => S.document();

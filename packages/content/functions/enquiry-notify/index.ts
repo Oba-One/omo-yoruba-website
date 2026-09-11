@@ -1,7 +1,8 @@
 /**
  * enquiry-notify (ADR 0004): on `create` of an enquiry without `notifiedAt`, read the routing
  * contacts from siteSettings, send the email through Resend with an idempotency key, then patch
- * notifiedAt (or notifyError) locked to the revision the event carried. Locally
+ * notifiedAt (or notifyError) locked to the revision the event carried. The sender (ENQUIRY_FROM) and
+ * the key (RESEND_API_KEY) are function environment variables; neither lives in code (ADR 0016). Locally
  * (`sanity functions test`) nothing is sent or written; the email is printed instead.
  */
 import { createClient } from '@sanity/client';
@@ -10,7 +11,6 @@ import { Resend } from 'resend';
 import { buildEmail, type Contact, type EnquiryDocument, routeFor } from './email';
 
 const API_VERSION = '2026-09-11';
-const FROM = process.env.ENQUIRY_FROM ?? 'Omo Yorùbá website <enquiries@omoyorubaofsocal.org>';
 
 interface Settings {
   contacts?: Contact[];
@@ -55,6 +55,18 @@ export const handler = documentEventHandler<EnquiryDocument>(async ({ context, e
   }
 
   if (!client) return;
+  const from = process.env.ENQUIRY_FROM;
+  if (!from) {
+    await client
+      .patch(enquiry._id)
+      .set({
+        notifyError:
+          'ENQUIRY_FROM is not set on the function (a sender on the verified Resend domain).',
+      })
+      .commit();
+    console.error('enquiry-notify: ENQUIRY_FROM is not set');
+    return;
+  }
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     await client
@@ -67,7 +79,7 @@ export const handler = documentEventHandler<EnquiryDocument>(async ({ context, e
 
   const resend = new Resend(key);
   const { data, error } = await resend.emails.send(
-    { from: FROM, to: email.to, replyTo: email.replyTo, subject: email.subject, text: email.text },
+    { from, to: email.to, replyTo: email.replyTo, subject: email.subject, text: email.text },
     { idempotencyKey: `enquiry-notify/${enquiry._id}` },
   );
   let patch = client.patch(enquiry._id);

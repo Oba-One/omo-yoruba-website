@@ -24,20 +24,17 @@ export const scheduleItem = defineType({
     defineField({
       name: 'title',
       title: 'Title',
-      type: 'string',
-      validation: voice.requiredHeading,
-    }),
-    defineField({
-      name: 'titleYo',
-      title: 'Title in Yoruba',
-      type: 'string',
-      validation: voice.text,
+      type: 'bilingual',
+      validation: (rule) => rule.required(),
     }),
     defineField({ name: 'detail', title: 'Detail', type: 'text', rows: 2, validation: voice.text }),
     defineField({ name: 'zone', title: 'Zone', type: 'reference', to: [{ type: 'zone' }] }),
   ],
   preview: {
-    select: { time: 'time', day: 'day', title: 'title' },
-    prepare: ({ time, day, title }) => ({ title, subtitle: time ?? day }),
+    select: { time: 'time', day: 'day', en: 'title.en', yo: 'title.yo' },
+    prepare: ({ time, day, en, yo }) => ({
+      title: yo ? `${yo} • ${en}` : en,
+      subtitle: time ?? day,
+    }),
   },
 });

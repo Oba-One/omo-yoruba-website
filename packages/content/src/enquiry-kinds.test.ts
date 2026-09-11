@@ -95,14 +95,14 @@ describe('successCopy', () => {
     expect(
       successCopy(
         'contact',
-        { name: 'Someone', responds: 'within three working days' },
+        { name: 'A. Person', responds: 'within three working days' },
         { phone: '(323) 000-0000' },
       ).body,
     ).toBe(
-      'Someone replies within three working days. If it is urgent, calling (323) 000-0000 reaches a person faster than email does.',
+      'A. Person, from our team, replies within three working days. If it is urgent, calling (323) 000-0000 reaches a person faster than email does.',
     );
     expect(successCopy('contact').body).toBe(
-      'Someone replies. If it is urgent, calling reaches a person faster than email does.',
+      'Our team replies. If it is urgent, calling reaches a person faster than email does.',
     );
   });
 });

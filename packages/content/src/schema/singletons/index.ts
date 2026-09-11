@@ -1,20 +1,8 @@
 import { defineField } from 'sanity';
 import { voice } from '../../validation/rules';
+import { facts, refs, text } from '../helpers';
 import { definePage } from './page';
 import { siteSettings } from './siteSettings';
-
-const text = (name: string, title: string, rows = 3, description?: string) =>
-  defineField({ name, title, type: 'text', rows, description, validation: voice.text });
-const refs = (name: string, title: string, to: string, description?: string) =>
-  defineField({
-    name,
-    title,
-    type: 'array',
-    of: [{ type: 'reference', to: [{ type: to }] }],
-    description,
-  });
-const facts = (name: string, title: string, description?: string) =>
-  defineField({ name, title, type: 'array', of: [{ type: 'fact' }], description });
 
 export const WAY_INS = ['vendor', 'sponsor', 'performer', 'volunteer', 'table', 'give'] as const;
 
@@ -98,7 +86,12 @@ export const homepage = definePage({
       options: ['auto', 'gala', 'odunde'],
       description: 'Which event leads; auto picks by date.',
     },
-    { name: 'highlight', title: 'Highlight', options: ['festival', 'school', 'collective'] },
+    // The prototype's value is "school"; the Studio shows the repo's word for it (AGENTS.md: never "School").
+    {
+      name: 'highlight',
+      title: 'Highlight',
+      options: ['festival', { value: 'school', title: 'lessons' }, 'collective'],
+    },
     { name: 'gallery', title: 'Gallery tiles', options: ['7', '5', '3'] },
     { name: 'involved', title: 'Get involved', options: ['doors', 'rows'] },
     { name: 'newsletter', title: 'Newsletter', options: ['footer', 'band'] },
@@ -245,7 +238,7 @@ export const programsPage = definePage({
               name: 'when',
               title: 'When',
               type: 'string',
-              description: '"June", "Saturdays", "Year-round".',
+              description: '"June", "Nov or Dec", "Year-round".',
               validation: voice.text,
             }),
             defineField({

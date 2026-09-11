@@ -3,34 +3,47 @@ import {
   defineLocations,
   type PresentationPluginOptions,
 } from 'sanity/presentation';
-import { PUBLIC_ROUTES, ROUTE_SINGLETONS } from '../routes';
+import { PUBLIC_ROUTES, type PublicRoute, ROUTE_SINGLETONS, TYPE_ROUTES } from '../routes';
+import { singletonTypes } from '../schema/singletons';
 
-const PAGE_TITLES: Record<string, string> = {
-  homepage: 'Homepage',
-  festivalPage: 'Odunde Festival',
-  galaPage: 'End-of-Year Gala',
-  programsPage: 'Programs',
-  lessonsPage: 'Yoruba Language Lessons',
-  collectivePage: 'Yoruba Cultural Collective',
-  getInvolvedPage: 'Get Involved',
-  impactPage: 'Impact',
-  storyPage: 'Our Story',
-  donatePage: 'Donate',
-  galleryPage: 'Photo Gallery',
-  newsPage: 'News & Events',
-};
+/** The page title of each static route, from the singleton that owns it. */
+const ROUTE_TITLES: Record<string, string> = Object.fromEntries(
+  Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [
+    route,
+    singletonTypes.find((t) => t.name === type)?.title ?? route,
+  ]),
+);
 
-const page = (name: string) => ({
-  title: PAGE_TITLES[name] ?? name,
-  href: ROUTE_SINGLETONS[name] ?? '/',
+interface Location {
+  title: string;
+  href: string;
+}
+
+const location = (route: string): Location => ({
+  title: ROUTE_TITLES[route] ?? route,
+  href: route,
 });
-const fixed = (...names: string[]) => ({ locations: names.map(page) });
+const isStatic = (route: PublicRoute) => !route.includes('[');
+
+/** The static routes a type reaches, from the one route map, so no page is missed here. */
+function locationsFor(type: string): Location[] {
+  return (TYPE_ROUTES[type] ?? []).filter(isStatic).map(location);
+}
+
+/** The same list with one route moved to the front. */
+function leadWith(type: string, first: string | undefined): Location[] {
+  const all = locationsFor(type);
+  if (!first) return all;
+  return [...all.filter((l) => l.href === first), ...all.filter((l) => l.href !== first)];
+}
+
 const unlisted = (message: string) => ({ message, tone: 'caution' as const, locations: [] });
 
 /**
  * Where each document shows, so click-to-edit and the locations banner work from /admin
- * (docs/design/CONTENT-MODEL.md section 5). The main documents resolve a route to the
- * document that owns it. Routes and types come from src/routes.ts.
+ * (docs/design/CONTENT-MODEL.md section 5). Every type's list comes from src/routes.ts; the
+ * resolvers below only reorder it by the document (an edition's kind, a program's page) or add
+ * the document's own dynamic route (a post, an album).
  */
 export const presentationOptions: PresentationPluginOptions = {
   previewUrl: {
@@ -46,75 +59,65 @@ export const presentationOptions: PresentationPluginOptions = {
       { route: '/news/:slug', filter: '_type == "newsPost" && slug.current == $slug' },
     ]),
     locations: {
-      ...Object.fromEntries(Object.keys(ROUTE_SINGLETONS).map((name) => [name, fixed(name)])),
+      ...Object.fromEntries(
+        Object.keys(TYPE_ROUTES)
+          .filter((type) => (TYPE_ROUTES[type] ?? []).length > 0)
+          .map((type) => [type, { locations: locationsFor(type) }]),
+      ),
       siteSettings: {
         message: 'Site settings show on every page.',
         tone: 'caution',
-        locations: PUBLIC_ROUTES.filter((route) => !route.includes('[')).map((route) => ({
-          title: route,
-          href: route,
-        })),
+        locations: PUBLIC_ROUTES.filter(isStatic).map(location),
       },
       event: defineLocations({
-        select: { kind: 'kind', title: 'title' },
+        select: { kind: 'kind' },
         resolve: (doc) => ({
-          locations: [
+          locations: leadWith(
+            'event',
             doc?.kind === 'gala'
-              ? page('galaPage')
+              ? '/gala'
               : doc?.kind === 'collective'
-                ? page('collectivePage')
-                : page('festivalPage'),
-            page('homepage'),
-            page('programsPage'),
-          ],
+                ? '/programs/cultural-collective'
+                : '/odunde',
+          ),
         }),
       }),
-      zone: fixed('festivalPage'),
-      ticketTier: fixed('galaPage'),
       sponsorLevel: defineLocations({
         select: { scope: 'scope' },
         resolve: (doc) => ({
-          locations: [doc?.scope === 'odunde' ? page('festivalPage') : page('galaPage')],
+          locations: leadWith('sponsorLevel', doc?.scope === 'odunde' ? '/odunde' : '/gala'),
         }),
       }),
-      honoree: fixed('galaPage'),
       program: defineLocations({
-        select: { page: 'page', name: 'name' },
+        select: { page: 'page' },
         resolve: (doc) => ({
           locations: [
-            page('programsPage'),
-            page('homepage'),
-            ...(doc?.page === 'lessons'
-              ? [page('lessonsPage')]
-              : doc?.page === 'collective'
-                ? [page('collectivePage')]
-                : []),
+            ...(doc?.page === 'lessons' ? [location('/programs/yoruba-lessons')] : []),
+            ...(doc?.page === 'collective' ? [location('/programs/cultural-collective')] : []),
+            ...locationsFor('program'),
           ],
         }),
       }),
-      initiative: fixed('collectivePage'),
       person: defineLocations({
         select: { group: 'group' },
         resolve: (doc) => ({
-          locations: [
-            page('storyPage'),
-            ...(doc?.group === 'teacher' ? [page('lessonsPage')] : []),
-          ],
+          locations: leadWith(
+            'person',
+            doc?.group === 'teacher' ? '/programs/yoruba-lessons' : '/our-story',
+          ),
         }),
       }),
-      timelineEntry: fixed('storyPage'),
       testimonial: defineLocations({
         select: { context: 'context' },
         resolve: (doc) => ({
-          locations: [
-            page('homepage'),
-            page('impactPage'),
-            ...(doc?.context === 'lessons'
-              ? [page('lessonsPage')]
+          locations: leadWith(
+            'testimonial',
+            doc?.context === 'lessons'
+              ? '/programs/yoruba-lessons'
               : doc?.context === 'collective'
-                ? [page('collectivePage')]
-                : []),
-          ],
+                ? '/programs/cultural-collective'
+                : '/',
+          ),
         }),
       }),
       newsPost: defineLocations({
@@ -122,8 +125,7 @@ export const presentationOptions: PresentationPluginOptions = {
         resolve: (doc) => ({
           locations: [
             ...(doc?.slug ? [{ title: doc.title ?? 'This post', href: `/news/${doc.slug}` }] : []),
-            page('newsPage'),
-            page('homepage'),
+            ...locationsFor('newsPost'),
           ],
         }),
       }),
@@ -134,18 +136,10 @@ export const presentationOptions: PresentationPluginOptions = {
             ...(doc?.slug
               ? [{ title: doc.title ?? 'This album', href: `/gallery/${doc.slug}` }]
               : []),
-            page('galleryPage'),
+            ...locationsFor('album'),
           ],
         }),
       }),
-      photographer: fixed('galleryPage'),
-      partner: fixed('festivalPage', 'impactPage'),
-      outcome: fixed('impactPage'),
-      stat: fixed('homepage', 'impactPage'),
-      door: fixed('homepage', 'getInvolvedPage', 'donatePage'),
-      hometownAssociation: fixed('getInvolvedPage'),
-      givingLevel: fixed('donatePage'),
-      governanceDoc: fixed('impactPage'),
       enquiry: unlisted('Enquiries are not shown on the site.'),
       subscriber: unlisted('Subscribers are not shown on the site.'),
       lintReport: unlisted('Lint reports are not shown on the site.'),

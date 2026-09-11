@@ -47,9 +47,10 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'siteSettings',
-    fields: ['contacts[]'],
+    condition:
+      '!defined(contacts) || count(contacts) == 0 || count(contacts[!defined(email) || !defined(name) || !defined(responds)]) > 0',
     where: 'Every form',
-    what: 'named contacts and response times',
+    what: 'named contacts, their emails and response times',
   },
   { type: 'siteSettings', fields: ['socials[]'], where: 'Footer', what: 'social links' },
   { type: 'siteSettings', fields: ['zeffyEmbedUrl'], where: 'Donate', what: 'the Zeffy link' },
@@ -156,6 +157,7 @@ export const PENDING: readonly PendingEntry[] = [
   },
 
   // Programs and lessons
+  { type: 'program', fields: ['blurb'], where: 'Programs, cards', what: 'what the program is' },
   { type: 'program', fields: ['cadence'], where: 'Programs, cards', what: 'the cadence' },
   { type: 'program', fields: ['ages'], where: 'Programs, cards', what: 'the ages' },
   {
@@ -230,6 +232,12 @@ export const PENDING: readonly PendingEntry[] = [
     fields: ['voice'],
     where: 'Collective, one voice',
     what: 'the quote and who said it',
+  },
+  {
+    type: 'initiative',
+    fields: ['blurb'],
+    where: 'Collective, initiatives',
+    what: 'what the initiative is',
   },
   {
     type: 'initiative',
@@ -313,7 +321,7 @@ export const PRESENCE: readonly PresenceEntry[] = [
     what: 'three prices and what each includes',
   },
   { type: 'sponsorLevel', minimum: 1, where: 'Sponsorship', what: 'level names and amounts' },
-  { type: 'honoree', minimum: 1, where: 'Gala, honourees', what: 'whether awards exist, and who' },
+  { type: 'honoree', minimum: 1, where: 'Gala, honorees', what: 'whether awards exist, and who' },
   {
     type: 'testimonial',
     minimum: 1,

@@ -1,10 +1,10 @@
 import { defineField, defineType, type FieldDefinition } from 'sanity';
-import { layoutOption } from '../objects/layoutOption';
+import { type LayoutValue, layoutOption } from '../objects/layoutOption';
 
 export interface LayoutSpec {
   name: string;
   title: string;
-  options: readonly string[];
+  options: readonly LayoutValue[];
   description?: string;
 }
 

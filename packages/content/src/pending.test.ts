@@ -70,7 +70,11 @@ describe('PENDING', () => {
       PENDING.some((e) => e.type === type && e.fields?.includes(field));
     expect(covered('siteSettings', 'ein')).toBe(true);
     expect(covered('siteSettings', 'address')).toBe(true);
-    expect(covered('siteSettings', 'contacts[]')).toBe(true);
+    expect(
+      PENDING.some(
+        (e) => e.type === 'siteSettings' && e.condition?.includes('contacts[!defined(email)'),
+      ),
+    ).toBe(true);
     expect(covered('event', 'start')).toBe(true);
     expect(covered('event', 'schedule[]')).toBe(true);
     expect(covered('zone', 'line')).toBe(true);

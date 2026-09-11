@@ -113,9 +113,11 @@ installed from each function's `package.json`.
 Deploy, once per change, from the repo root with a logged-in CLI (`bunx sanity login`):
 `bunx sanity blueprints init` the first time (it writes `.sanity/blueprint.config.json`, keep it),
 then `bunx sanity blueprints plan` and `bunx sanity blueprints deploy`. After the first deploy set
-the key: `bunx sanity functions env add enquiry-notify RESEND_API_KEY <value>` (wizard stage 4
-stores the value in `packages/content/.env` for local runs) and, if the sender differs from
-`enquiries@omoyorubaofsocal.org`, `ENQUIRY_FROM`. Logs: `bunx sanity functions logs <name>`.
+the two variables the function needs: `bunx sanity functions env add enquiry-notify
+RESEND_API_KEY <value>` (wizard stage 4 stores the value in `packages/content/.env` for local
+runs) and `bunx sanity functions env add enquiry-notify ENQUIRY_FROM "<Name> <address on the
+verified Resend domain>"`. Neither lives in code; without them the function records
+`notifyError` on the enquiry instead of sending. Logs: `bunx sanity functions logs <name>`.
 Functions run on Node 24 in production and on this machine's Node 22 locally.
 
 ## Rollback

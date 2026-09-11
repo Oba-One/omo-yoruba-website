@@ -11,9 +11,11 @@ Spec: `docs/design/CONTENT-MODEL.md`, amended by ADR 0013 to ADR 0017 (the delta
 
 ## Conventions
 
-- Every type is `defineType` with `defineField`; every query is `defineQuery` with a unique
-  exported constant name. GROQ lives only in `packages/content/src/queries/` (from Phase 4) and
-  in the Studio structure.
+- Every type is `defineType` with `defineField`; every page query is `defineQuery` with a unique
+  exported constant name in `packages/content/src/queries/` (from Phase 4). GROQ lives only in
+  `packages/content` and the root Blueprint manifest: page queries, the structure and Pending
+  filters, the Presentation resolvers, the seed and the functions. Nothing in `packages/web` or
+  `packages/ui` writes GROQ.
 - Reuse the shared objects before adding a field: `bilingual`, `cta`, `oyImage`, `seo`, `fact`,
   `sourcedFigure`, `scheduleItem`, `faqItem`, `contactRole`, `pageHeader`, `blockContent`, and
   the `layoutOption` helper.

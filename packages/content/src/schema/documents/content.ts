@@ -1,22 +1,6 @@
 import { defineField, defineType } from 'sanity';
 import { voice } from '../../validation/rules';
-
-const text = (name: string, title: string, rows = 3, description?: string) =>
-  defineField({ name, title, type: 'text', rows, description, validation: voice.text });
-const order = defineField({
-  name: 'order',
-  title: 'Order',
-  type: 'number',
-  description: 'Lower shows first.',
-});
-const slug = (source: string) =>
-  defineField({
-    name: 'slug',
-    title: 'Slug',
-    type: 'slug',
-    options: { source, maxLength: 96 },
-    validation: (rule) => rule.required(),
-  });
+import { lines, order, slug, text } from '../helpers';
 
 export const EVENT_KINDS = ['festival', 'gala', 'collective', 'other'] as const;
 
@@ -44,6 +28,7 @@ export const event = defineType({
       title: 'Title',
       type: 'string',
       group: 'edition',
+      description: '"Odunde Festival 2027": one word, no marks, in display text (ADR 0009).',
       validation: voice.requiredHeading,
     }),
     defineField({
@@ -220,7 +205,7 @@ export const ticketTier = defineType({
       description: '"$125"',
       validation: voice.text,
     }),
-    defineField({ name: 'includes', title: 'Includes', type: 'array', of: [{ type: 'string' }] }),
+    lines('includes', 'Includes'),
     defineField({
       name: 'variant',
       title: 'How it is bought',
@@ -256,12 +241,7 @@ export const sponsorLevel = defineType({
     defineField({ name: 'event', title: 'Edition', type: 'reference', to: [{ type: 'event' }] }),
     defineField({ name: 'name', title: 'Name', type: 'string', validation: voice.requiredText }),
     defineField({ name: 'amount', title: 'Amount', type: 'string', validation: voice.text }),
-    defineField({
-      name: 'recognition',
-      title: 'Recognition',
-      type: 'array',
-      of: [{ type: 'string' }],
-    }),
+    lines('recognition', 'Recognition'),
     order,
   ],
   orderings: [{ title: 'Order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
@@ -716,13 +696,11 @@ export const door = defineType({
       validation: voice.requiredHeading,
     }),
     text('blurb', 'Blurb', 3),
-    defineField({
-      name: 'bullets',
-      title: 'What it asks and gives',
-      type: 'array',
-      of: [{ type: 'string' }],
-      description: 'Empty rows show Pending where the register lists them.',
-    }),
+    lines(
+      'bullets',
+      'What it asks and gives',
+      'Empty rows show Pending where the register lists them.',
+    ),
     defineField({ name: 'action', title: 'Action', type: 'cta' }),
     defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
     order,

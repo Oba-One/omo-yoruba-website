@@ -9,7 +9,7 @@ export const siteSettings = defineType({
   title: 'Site settings',
   type: 'document',
   groups: [
-    { name: 'org', title: 'Organisation', default: true },
+    { name: 'org', title: 'Organization', default: true },
     { name: 'contacts', title: 'Contacts' },
     { name: 'footer', title: 'Footer' },
     { name: 'services', title: 'Services' },
@@ -17,7 +17,7 @@ export const siteSettings = defineType({
   fields: [
     defineField({
       name: 'orgName',
-      title: 'Organisation name',
+      title: 'Organization name',
       type: 'string',
       group: 'org',
       validation: voice.requiredText,

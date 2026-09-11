@@ -5,6 +5,7 @@ import {
   type EnquiryKind,
   type FieldSpec,
   KIND_TITLES,
+  SENDER_FIELDS,
 } from '../../enquiry-kinds';
 
 /** The object type name that holds one kind's fields. */
@@ -35,9 +36,7 @@ export const enquiryFieldTypes = ENQUIRY_KINDS.map((kind) =>
 /** The name the Inbox shows for an enquiry: the first name-like field of its kind. */
 export function enquiryTitleField(kind: EnquiryKind): string {
   const ids = ENQUIRY_SPECS[kind].fields.map((f) => f.id);
-  return (
-    ['org', 'biz', 'group', 'name', 'learner'].find((id) => ids.includes(id)) ?? (ids[0] as string)
-  );
+  return SENDER_FIELDS.find((id) => ids.includes(id)) ?? (ids[0] as string);
 }
 
 const previewSelect: Record<string, string> = {

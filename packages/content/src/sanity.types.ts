@@ -1084,8 +1084,7 @@ export type ScheduleItem = {
   _type: "scheduleItem";
   time?: string;
   day?: string;
-  title?: string;
-  titleYo?: string;
+  title?: Bilingual;
   detail?: string;
   zone?: ZoneReference;
 };

@@ -107,6 +107,7 @@ export interface KindSpec {
   contactUnnamed: string;
 }
 
+// The four helpers keep the prototype's FORMS names (T, SEL, AREA, MAIL) so the port reads side by side.
 const T = (id: string, label: string, extra: Partial<FieldSpec> = {}): FieldSpec => ({
   id,
   label,
@@ -344,8 +345,8 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     okBody:
       '{contact} replies{responds}. If it is urgent, calling[[ {phone}]] reaches a person faster than email does.',
     role: 'general',
-    contactNamed: '{name}',
-    contactUnnamed: 'Someone',
+    contactNamed: '{name}, from our team,',
+    contactUnnamed: 'Our team',
     fields: [
       T('name', 'Name', { required: true, req: 'your name' }),
       MAIL('mail', 'Email', 'an email address we can reply to'),
@@ -354,6 +355,9 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     ],
   },
 };
+
+/** The field that names the sender, in order of preference: the Inbox title and the email subject use it. */
+export const SENDER_FIELDS = ['org', 'biz', 'group', 'name', 'learner'] as const;
 
 /** The routing contact for a kind, as stored in `siteSettings.contacts[]`. */
 export interface RoutingContact {

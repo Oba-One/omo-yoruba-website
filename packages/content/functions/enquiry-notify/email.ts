@@ -9,6 +9,7 @@ import {
   KIND_TITLES,
   KIND_TO_ROLE,
   replyToField,
+  SENDER_FIELDS,
 } from '../../src/enquiry-kinds';
 
 export interface Contact {
@@ -71,7 +72,7 @@ function text(value: unknown): string {
 /** Who sent it, for the subject: the first name-like field the kind has. */
 function senderOf(enquiry: EnquiryDocument): string | undefined {
   const details = detailsOf(enquiry);
-  for (const id of ['org', 'biz', 'group', 'name', 'learner']) {
+  for (const id of SENDER_FIELDS) {
     const value = details[id];
     if (typeof value === 'string' && value.trim() !== '') return value.trim();
   }

@@ -3,7 +3,7 @@
  * fewer than the site expects. A field query cannot find what does not exist, so this pane
  * counts. It lives only inside the Studio at /admin.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useClient } from 'sanity';
 import { PRESENCE, type PresenceEntry, pendingTitle, presenceCountQuery } from '../pending';
 import { STUDIO_API_VERSION } from './config';
@@ -14,9 +14,9 @@ interface Row {
 }
 
 export function PendingPresencePane() {
-  const client = useClient({ apiVersion: STUDIO_API_VERSION }).withConfig({
-    perspective: 'drafts',
-  });
+  const base = useClient({ apiVersion: STUDIO_API_VERSION });
+  // withConfig returns a new client each call; memoise it or the effect below refetches forever.
+  const client = useMemo(() => base.withConfig({ perspective: 'drafts' }), [base]);
   const [rows, setRows] = useState<Row[]>(PRESENCE.map((entry) => ({ entry, count: undefined })));
   const [error, setError] = useState<string | null>(null);
 
