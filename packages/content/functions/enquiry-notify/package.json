@@ -1,0 +1,12 @@
+{
+  "name": "enquiry-notify",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "description": "Sanity Function: emails a new enquiry to its routing contact through Resend, then patches notifiedAt.",
+  "dependencies": {
+    "@sanity/client": "8.5.0",
+    "@sanity/functions": "1.7.1",
+    "resend": "6.26.0"
+  }
+}

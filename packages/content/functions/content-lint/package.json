@@ -1,0 +1,11 @@
+{
+  "name": "content-lint",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "description": "Sanity Function: checks a published document for em dashes and bare Yoruba terms and writes a lintReport.",
+  "dependencies": {
+    "@sanity/client": "8.5.0",
+    "@sanity/functions": "1.7.1"
+  }
+}

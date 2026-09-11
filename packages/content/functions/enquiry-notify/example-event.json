@@ -1,0 +1,14 @@
+{
+  "_id": "enquiry-example",
+  "_type": "enquiry",
+  "_rev": "example",
+  "kind": "sponsor",
+  "submittedAt": "2026-09-11T10:00:00Z",
+  "source": "/odunde",
+  "sponsor": {
+    "org": "Example organisation",
+    "who": "A. Person, director",
+    "mail": "person@example.org",
+    "interest": "Both events"
+  }
+}

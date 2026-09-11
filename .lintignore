@@ -13,6 +13,7 @@ docs/design/design/
 [yoruba] packages/lint/src/*.test.ts
 [yoruba] packages/content/src/validation/*.test.ts
 [yoruba] packages/content/functions/content-lint/*.test.ts
+[yoruba] packages/content/functions/content-lint/example-event.json
 
 # Third-party skill, copied as published.
 .claude/skills/git-guardrails-claude-code/
