@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { ENQUIRY_KINDS } from '../enquiry-kinds';
+import { enquiryFieldsType } from './documents';
 import { objectTypes, schemaTypes } from './index';
 
 describe('schemaTypes', () => {
@@ -23,5 +25,30 @@ describe('schemaTypes', () => {
   it('has no duplicate type names', () => {
     const names = schemaTypes.map((type) => type.name);
     expect(new Set(names).size).toBe(names.length);
+  });
+});
+
+describe('enquiry', () => {
+  it('carries one object per kind, each generated from the spec', () => {
+    const names = schemaTypes.map((type) => type.name);
+    const enquiry = schemaTypes.find((type) => type.name === 'enquiry') as {
+      fields: { name: string; type: string }[];
+    };
+    for (const kind of ENQUIRY_KINDS) {
+      expect(names).toContain(enquiryFieldsType(kind));
+      const field = enquiry.fields.find((f) => f.name === kind);
+      expect(field?.type).toBe(enquiryFieldsType(kind));
+    }
+    expect(enquiry.fields.map((f) => f.name)).toEqual(
+      expect.arrayContaining([
+        'kind',
+        'submittedAt',
+        'source',
+        'notifiedAt',
+        'notifyError',
+        'handled',
+        'notes',
+      ]),
+    );
   });
 });
