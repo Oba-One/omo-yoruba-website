@@ -18,7 +18,8 @@ import {
   normalisePath,
   repoRoot,
 } from './files';
-import { findBareTerms, loadTerms } from './yoruba';
+import { loadTerms } from './terms';
+import { findBareTerms } from './yoruba';
 
 interface CheckSpec {
   label: string;

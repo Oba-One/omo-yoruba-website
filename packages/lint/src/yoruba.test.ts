@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { findBareTerms, loadTerms } from './yoruba';
+import { loadTerms } from './terms';
+import { findBareTerms } from './yoruba';
 
 const terms = loadTerms();
 

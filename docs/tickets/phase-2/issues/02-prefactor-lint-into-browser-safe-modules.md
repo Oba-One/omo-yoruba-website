@@ -1,7 +1,7 @@
 # 02: Prefactor @oy/lint into browser-safe modules and add the proper nouns list
 
 Labels: infra
-Status: open
+Status: resolved
 Blocked by: none
 
 **What to build:** the em dash and diacritics checks importable by the browser Studio and by a
@@ -11,6 +11,6 @@ package exports `./em-dash`, `./yoruba`, `./sentence-case`, `./yoruba-terms.json
 words outside the glossary and the proper nouns) exists with tests, so the Studio warning, the
 Function and a later CLI check share one implementation.
 
-- [ ] `bun run test` passes for `@oy/lint`, the CLI behaves as before
-- [ ] `findDashes`, `findBareTerms` and `findTitleCase` import with no Node built-ins
-- [ ] `proper-nouns.json` lists the organisation, place and program names the check ignores
+- [x] `bun run test` passes for `@oy/lint`, the CLI behaves as before
+- [x] `findDashes`, `findBareTerms` and `findTitleCase` import with no Node built-ins
+- [x] `proper-nouns.json` lists the organisation, place and program names the check ignores
