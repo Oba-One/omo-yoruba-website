@@ -5,47 +5,55 @@ description: Conventions for changing the Sanity schema in @oy/content. Use for 
 
 # Changing the content model
 
-Spec: `docs/design/CONTENT-MODEL.md` (principles in section 1, shared objects in section 2,
-singletons and documents in sections 3 and 4, structure in section 5). Sanity facts come from
-the Sanity MCP server (`.mcp.json`) and the `sanity` plugin skills; do not copy them here.
+Spec: `docs/design/CONTENT-MODEL.md`, amended by ADR 0013 to ADR 0017 (the deltas are listed in
+`packages/content/README.md`). Sanity facts come from the Sanity MCP server (`.mcp.json`), the
+`sanity` plugin skills and `docs/research/phase-2-*.md`; do not copy them here.
 
 ## Conventions
 
 - Every type is `defineType` with `defineField`; every query is `defineQuery` with a unique
-  exported constant name. GROQ lives only in `packages/content/src/queries/`.
-- Reuse the shared objects before adding a field: `bilingual`, `cta`, `oyImage`,
-  `layoutOption`, `seo`, `fact`, `sourcedFigure`, `scheduleItem`, `faqItem`, `contactRole`.
-- Kickers are `{ yo, en }`, never a mixed string. Zone names are bilingual with marks.
-- Page singletons carry `seo`, `layout` (one field per tweak prop, same name as the
-  prototype) and one `primaryAction`; secondary actions are an array.
-- `oyImage` always: hotspot image, `alt` required, `caption`, `credit`, `creditConfirmed`.
-- Portable Text is minimal: normal, h3, blockquote; strong, em, link; `pullQuote` only.
+  exported constant name. GROQ lives only in `packages/content/src/queries/` (from Phase 4) and
+  in the Studio structure.
+- Reuse the shared objects before adding a field: `bilingual`, `cta`, `oyImage`, `seo`, `fact`,
+  `sourcedFigure`, `scheduleItem`, `faqItem`, `contactRole`, `pageHeader`, `blockContent`, and
+  the `layoutOption` helper.
+- Placement rule (ADR 0013): a fact that changes per edition goes on `event`; a thing shown on
+  more than one page is a document; a thing one page owns is inline on that page.
+- Page singletons go through `definePage` in `src/schema/singletons/page.ts`: header, content,
+  one `primaryAction`, `secondaryActions[]`, `layout` (one field per tweak prop, same name and
+  options as the prototype, first option as initial value), `seo`.
+- Kickers are `bilingual` (`en` required, `yo` optional). Zone names are bilingual with marks.
+- `oyImage` always: hotspot image, `alt` required, `caption`, `credit`, `creditNote`,
+  `creditConfirmed`; albums carry the credit for every photo.
+- Portable Text is `blockContent`: normal, h3, blockquote; strong, em, link; `pullQuote` only.
+- Enquiries: change `src/enquiry-kinds.ts`, never the `enquiry` type by hand; the objects, the
+  Zod schemas, the Inbox lists and the notify email all derive from it (ADR 0015, ADR 0016).
 - Removing a field is an owner decision (`docs/design/AGENT-DOCS.md` section 8).
 
 ## Validation
 
-On every string and text field: no em dash (error), a Yoruba term from
-`packages/lint/yoruba-terms.json` without its marks (warning), headings and button labels in
-sentence case (warning). `alt` required (error). Import the word list, never copy it.
+Every string and text field takes `voice.text` from `src/validation/rules.ts`; headings, titles
+and button labels take `voice.heading`; `blockContent` takes `voice.blocks`. Required variants:
+`voice.requiredText`, `voice.requiredHeading`. The checks reuse `@oy/lint` (em dash error, marks
+warning, sentence case warning) and import the word lists as JSON; never copy a list.
 
 ## Pending view
 
-A required-for-launch field that may be empty is listed in the Pending structure list with a
-GROQ `!defined(field)` query and a one-line description of what is missing, mirroring
-`docs/design/design/19 Mock Content Register.dc.html`. Add the entry in the same change as
-the field.
+A required-for-launch field gets an entry in `PENDING` in `src/pending.ts` (type, fields, the
+register's Where and What wording) in the same change; `pending.test.ts` fails on a field the
+schema does not define. A document type the site needs before launch gets a `PRESENCE` entry
+with its minimum. The site renders `<Pending what={pendingWhat(type, field)} />`.
 
-## Presentation
+## Presentation and routes
 
-Every singleton and document type has a location resolver and `mainDocuments` entry for its
-route(s) so click-to-edit works from `/admin`.
+`src/routes.ts` maps every public route to the types it reads. A type reaching a new page is
+added there once: the Presentation locations (`src/studio/presentation.ts`), `cacheTagsFor` and
+the webhook purge follow. Every document type needs a `locations` entry and every route a
+`mainDocuments` entry (`presentation.test.ts` checks both).
 
-## TypeGen and cache tags
+## TypeGen
 
-- After any schema or query change: `bun typegen`, commit `sanity.types.ts`. CI fails on
-  drift.
-- Cache tags are the document type name; the webhook posts `_type` and slug to
-  `/api/revalidate`, which purges the routes that read that type. Add the type to the
-  purge map when a new type reaches a page.
-- Validation, Pending and locations are checked in the Studio: open `/admin` and confirm
-  the new field warns, lists and locates.
+After any schema or query change: `bun typegen`, commit `packages/content/schema.json` and
+`packages/content/src/sanity.types.ts`. The CI job `TypeGen drift` fails on a difference.
+Validation, Pending and locations are checked in the Studio: open `/admin` and confirm the new
+field warns, lists and locates.

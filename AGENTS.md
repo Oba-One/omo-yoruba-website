@@ -10,8 +10,8 @@ or December).
 This file is the tool-neutral contract for every coding agent (Claude Code, Codex, Cursor,
 Copilot). `CLAUDE.md` imports it and adds the Claude Code entry points (ADR 0012).
 
-Stack: Astro 7 with `output: 'server'` on Vercel and route caching; Sanity Studio embedded
-at `/admin`; Storybook via `@storybook-astro/framework`; Bun workspaces; Node 22 runtime.
+Stack: Astro 7 with `output: 'server'` on Vercel and route caching; Sanity Studio v6 embedded
+at `/admin` (ADR 0017); Storybook via `@storybook-astro/framework`; Bun workspaces; Node 22 runtime.
 
 ## Commands
 
@@ -23,8 +23,9 @@ at `/admin`; Storybook via `@storybook-astro/framework`; Bun workspaces; Node 22
 | `bun run test` | Vitest in every package that has a `vitest.config.ts` (`bun test` is Bun's own runner) |
 | `bun e2e` | Playwright (Phase 3) |
 | `bun lint` | Biome, then the em dash, Yoruba diacritics and colour literal checks (`.lintignore` lists the exemptions) |
-| `bun typegen` | Sanity TypeGen (Phase 2) |
-| `bun seed` | seed script (Phase 2) |
+| `bun typegen` | Sanity TypeGen: extracts `packages/content/schema.json`, generates `sanity.types.ts` (CI job `TypeGen drift` checks both) |
+| `bun seed` | seeds the `development` dataset with the confirmed facts and photographs (`-- --dry-run`, `-- --replace`); needs an Editor token |
+| `bun run --filter @oy/content sanity -- <args>` | the Sanity CLI with `packages/web/.env` loaded (`documents`, `datasets`, `functions test`) |
 | `bun check` | typecheck, lint, unit tests, toolchain pins; pre-push and CI run this |
 | `bun run build` | production build of `packages/web` (`bun build` is Bun's bundler) |
 
@@ -39,13 +40,14 @@ green-goods repo (ADR 0003). The handoff's `apps/` split is not used.
 - `packages/web`: pages, layouts, actions, Sanity loading, `astro.config.ts`, the Studio mount.
 - `packages/tokens`: every colour, type, spacing, pattern and font. Tokens only.
 - `packages/ui`: every visual component (`.astro`) with its story and test; `.storybook/` config and theme.
-- `packages/content`: the content model, structure, GROQ, generated types, seed, functions.
+- `packages/content`: the content model, structure, Pending registry, enquiry spec, GROQ, generated types, seed, the two Sanity Functions (`functions/`); `sanity.blueprint.ts` at the root declares them.
 - `packages/lint`: em dash, Yoruba diacritics and colour literal checks; `yoruba-terms.json`.
 - `docs/design`: the design handoff (brief, specs, prototypes). Read-only reference.
 - `docs/adr`, `docs/plans`, `docs/tickets`, `docs/research`, `docs/runbook.md`.
 - `.claude/skills`: this repo's own skills; `.agents/skills` is a symlink to it for other tools.
 - `.mcp.json`: the Sanity MCP server for Claude Code (Codex: add it to `~/.codex/config.toml`).
 - `.github`: CI (`ci.yml`), the weekly audit, Dependabot for action pins, the PR template.
+- `sanity.blueprint.ts`: the Blueprint manifest for the Sanity Functions (kept at the root next to `bun.lock`).
 
 ## Rules that lint cannot catch
 
@@ -98,7 +100,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
 - Components: a new visual treatment goes into `@oy/ui` first, with a story; pages arrange
   library parts and own no component styling. Colours come from `@oy/tokens` only.
 - Content: never invent content (no dates, prices, figures, names, quotes). Empty renders
-  Pending. Use the Sanity MCP for content and the schema for shape.
+  Pending, and every required-for-launch field is registered in `packages/content/src/pending.ts`.
+  Use the Sanity MCP for content and the schema for shape.
 - Storybook: `.astro` components only. If the framework blocks a component, stop and ask
   the owner before any pivot. Same for anything in `docs/design/AGENT-DOCS.md` section 8.
 - Conflicts: `oy-components.css` beats `_ds/`; the Build Brief's polish passes beat the

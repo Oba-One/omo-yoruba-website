@@ -71,6 +71,53 @@ purge itself waits for Phase 4, which adds the Vercel cache provider, how to pur
 how to confirm a publish reached the site within a minute. Create the webhook at wizard stage 7
 once the route is deployed.
 
+## Seed
+
+`bun seed` (from the root) runs `packages/content/scripts/seed.ts` against the `development`
+dataset with the values in `packages/web/.env`: the confirmed facts, the copy the prototypes
+carry, and the 68 photographs from `docs/design/design/images/w2/` with the register's captions
+and `creditConfirmed: false` (CONTENT-MODEL section 6, ADR 0005). It needs
+`PUBLIC_SANITY_PROJECT_ID` and an Editor token in `SANITY_API_WRITE_TOKEN`: a Contributor token
+uploads assets but cannot create published documents, and the script stops before uploading when
+the token's role cannot publish. `bun seed -- --dry-run` prints the plan; `bun seed -- --replace`
+overwrites instead of filling missing fields (the default never overwrites an owner's edit);
+`bun seed -- --dataset production` targets production on purpose. Re-running is safe: assets are
+matched by SHA-1 and documents by id.
+
+## Functions
+
+Two Sanity Functions (ADR 0004, ADR 0014) declared in `sanity.blueprint.ts` at the repo root,
+with their code under `packages/content/functions/`:
+
+- `enquiry-notify`: on `create` of an `enquiry` without `notifiedAt`, emails the routing contact
+  for the kind's role (`siteSettings.contacts`, then the general entry, then `generalEmail`)
+  through Resend and patches `notifiedAt`, or `notifyError` when nothing routed or the send failed.
+- `content-lint`: on `create` or `update` of a content document, writes one `lintReport`
+  (empty when clean) that the Studio's Pending view lists under "Voice findings".
+
+Local test, from the repo root (the wrapper loads `packages/web/.env`):
+
+```bash
+bash packages/content/scripts/sanity.sh functions test content-lint --file functions/content-lint/example-event.json
+```
+
+```bash
+ENQUIRY_TEST_TO=you@example.org bash packages/content/scripts/sanity.sh functions test enquiry-notify --file functions/enquiry-notify/example-event.json
+```
+
+Locally nothing is written or sent; the report or the email is printed. The transpile output in
+`packages/content/functions/<name>/.build/` (ignored by git) shows that the bundle carries the
+workspace lint modules and both word lists, with only `@sanity/client` and `@sanity/functions`
+installed from each function's `package.json`.
+
+Deploy, once per change, from the repo root with a logged-in CLI (`bunx sanity login`):
+`bunx sanity blueprints init` the first time (it writes `.sanity/blueprint.config.json`, keep it),
+then `bunx sanity blueprints plan` and `bunx sanity blueprints deploy`. After the first deploy set
+the key: `bunx sanity functions env add enquiry-notify RESEND_API_KEY <value>` (wizard stage 4
+stores the value in `packages/content/.env` for local runs) and, if the sender differs from
+`enquiries@omoyorubaofsocal.org`, `ENQUIRY_FROM`. Logs: `bunx sanity functions logs <name>`.
+Functions run on Node 24 in production and on this machine's Node 22 locally.
+
 ## Rollback
 
 Vercel keeps every deployment: promote the previous production deployment from the
