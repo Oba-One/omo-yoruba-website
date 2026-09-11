@@ -6,6 +6,7 @@ export { fact } from './fact';
 export { faqItem } from './faqItem';
 export { layoutOption } from './layoutOption';
 export { oyImage } from './oyImage';
+export { pageHeader } from './pageHeader';
 export { scheduleItem } from './scheduleItem';
 export { seo } from './seo';
 export { sourcedFigure } from './sourcedFigure';
