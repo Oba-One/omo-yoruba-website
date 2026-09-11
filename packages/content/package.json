@@ -4,7 +4,10 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./studio": "./src/studio/config.ts"
+    "./studio": "./src/studio/config.ts",
+    "./enquiry-kinds": "./src/enquiry-kinds.ts",
+    "./enquiry-zod": "./src/enquiry-zod.ts",
+    "./pending": "./src/pending.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
