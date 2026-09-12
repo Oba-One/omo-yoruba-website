@@ -40,8 +40,9 @@ and a Resend API key was created.
 1. Vercel: the environment variables are set (11 September, dataset `development` for now).
    The domain waits on Cloudflare: attach `omoyorubasocal.org` (and `www`) under the project's
    Domains and create Vercel's records in Cloudflare with the proxy off. The preview build of
-   this branch failed before the variables existed; the variables must be in the Preview scope
-   as well as Production for pull request previews to build.
+   this branch passed once the variables existed (they reach the Preview scope), so the
+   production build after the merge will too. Previews sit behind Vercel Authentication, so the
+   webhook and any outside caller must use production.
 2. `packages/web/.env` still lacks `SANITY_WEBHOOK_SECRET` (wizard stage 2 generates it, or
    `openssl rand -hex 32`); `/api/revalidate` answers 500 until then. `/api/preview/enable` needs
    only the Viewer token: the Presentation tool makes and stores its own secret. The wizard's
