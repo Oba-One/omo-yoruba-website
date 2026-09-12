@@ -2,16 +2,22 @@
 
 Every visual component, as `.astro`, with a colocated `*.stories.ts` and `*.test.ts`. Layout:
 `src/<group>/<Name>/<Name>.astro`. Groups follow `docs/design/README.md` section 5: core
-(Kicker, Button, Divider, Pending), page, cards, content (the map's lists and rows), media
-(ImagePlaceholder), forms, navigation (SiteNav, SiteFooter, Logo), bands (EventBand,
-TakePartBand, PatternBand); `docs/design/COMPONENT-MAP.md` holds the inventory. `src/fixtures/`
-holds seed-shaped story data (confirmed facts and Pending states only). Imports nothing from
-`packages/web`. Components are imported by path: `@oy/ui/core/Button/Button.astro`.
+(Kicker, Button, ActionButton, Divider, Pending), page (Hero, StatStrip, Section, SectionHead,
+CardGrid, HomeRoot, ProgressBar), cards (Card, ProgramCard, DoorCard, PathRow, NewsCard,
+PullQuote), content (PathRows, ProverbLine), media (ImagePlaceholder, PhotoTile, PhotoMosaic),
+forms, navigation (SiteNav, SiteFooter, Logo), bands (EventBand, NewsletterBand, PatternBand);
+`docs/design/COMPONENT-MAP.md` holds the inventory. `src/fixtures/` holds seed-shaped story data
+(confirmed facts and Pending states only; the photographs import from `docs/design/design/images/w2`
+as URL assets). `src/pages/homepage/` holds the page-section stories, one file per layout
+option. Imports nothing from `packages/web`. Components are imported by path:
+`@oy/ui/core/Button/Button.astro`.
 
 Styling comes from `@oy/tokens` (the `.oy-*` and `.v2-*` classes); a component's own `<style>`
 adds only what the tokens do not cover, with `var(--*)` colours only (`bun lint:colors`).
-Components that take content images accept `ImageMetadata | string | SanityImageSource` per the
-component map; the Logo's two PNGs are its own. Since Phase 3 the library holds the site chrome
+Components that take content images accept `ImageInput` from `src/media/image.ts`: a URL string,
+Astro's `ImageMetadata`, or the resolved set (`src`, `srcset`, `width`, `height`, `alt`) the site
+builds from a Sanity asset reference with `createImageSet` from `@oy/content/images` (ADR 0022);
+the Logo's two PNGs are its own. Since Phase 3 the library holds the site chrome
 and the forms seam: `navigation/SiteNav` and `SiteFooter`, `forms/Field`, `NewsletterForm`,
 `EnquiryCard`, `EnquiryModal` and `GiveDialog`, `page/ProgressBar`. Field specs and every form
 sentence come from `@oy/content/enquiry-kinds` (a workspace dependency); nothing is copied.

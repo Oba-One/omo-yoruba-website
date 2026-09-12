@@ -75,6 +75,16 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   the routes table's tilde spelling was a typo; one spelling for every success state; owner's
   yes on 11 September 2026.
 
+- [Lists read through the hand-written loadQuery, not a live loader](../tickets/wayfinder/issues/20-sanity-loader-for-live-collections.md):
+  a live loader never sees the perspective cookie and `@sanity/astro` ships none; one `defineQuery`
+  per page in `packages/content/src/queries/` (Phase 4).
+
+- [Draft mode opts out of the cache per request; a preview host keeps editors off the public copy](../tickets/wayfinder/issues/21-cache-and-draft-mode.md):
+  ADR 0021; pages carry `type:` tags and `/api/revalidate` purges by type and by path (Phase 4).
+
+- [The homepage loads 18 KB of gzipped JavaScript; PostHog alone is 89 KB, deferred](../tickets/wayfinder/issues/15-analytics-bundle-vs-js-budget.md):
+  measured on the Phase 4 build; Phase 9 picks between `posthog-js`, its lite build and the snippet.
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.

@@ -14,21 +14,24 @@ Copy comes from the prototype and the Studio, never from memory.
 
 1. Read the block list. Every block maps to a component in `@oy/ui`; if one is missing,
    build it first with the `oy-component` skill.
-2. Load with `defineQuery` from `@oy/content` (the only place GROQ lives). Singletons
-   through `loadQuery`; lists (news, events, albums, people) through the live content
-   collections. Typed results come from `sanity.types.ts`; run `bun typegen` after a
-   schema change.
+2. Load with `defineQuery` in `packages/content/src/queries/` (the only place GROQ lives),
+   one composed query per page read through `loadQuery` (singletons and lists alike: a live
+   loader never sees the perspective cookie, wayfinder ticket 20). Typed results come from
+   `sanity.types.ts`; run `bun typegen` after a schema or query change.
 3. Compose in `packages/web/src/pages/<route>.astro` inside `SiteLayout`. The page arranges
    library parts and owns layout and copy only: no component styling in `packages/web`.
 4. Read every layout option from the page singleton's `layout` object (same names as the
    tweak table) and pass it down. Add a page-section story per option.
 5. Pending: any required-for-launch field that is empty renders `<Pending what="..." />`.
    Register the field in the Studio Pending view (see `oy-content-model`).
-6. Visual Editing: stega is on in the loader, so text carries `data-sanity` automatically;
-   add the Presentation location for the route in `@oy/content`.
-7. Caching: `Astro.cache.set` with `maxAge`, `swr` and one tag per document type the page
-   reads; `/api/revalidate` purges those tags. Preview, Studio and API routes call
-   `Astro.cache.set(false)`.
+6. Visual Editing: stega is on in the loader in draft mode, so text carries its edit link;
+   images and option containers take an edit attribute (`dataAttribute` in
+   `packages/web/src/lib/sanity/`) rendered in draft mode only; the route's Presentation
+   location comes from the route map in `@oy/content`.
+7. Caching: `cachePage(Astro, route, { preview })` from `packages/web/src/lib/cache.ts` sets
+   the day and week and one type tag per document type the route reads; `/api/revalidate`
+   purges by type. The middleware switches the cache off for draft mode, the preview host and
+   anything but a GET (ADR 0021).
 8. One gold primary action per screen view: the page singleton's `primaryAction` is the
    only gold button; secondary actions render as outline buttons.
 9. Handoffs: link to Impact when the page makes a claim, to Our Story when it shows a face;
