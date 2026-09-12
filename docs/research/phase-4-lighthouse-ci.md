@@ -237,11 +237,11 @@ the preview URL, the preset and the secret from the environment, so the same fil
 matrix legs and never holds the secret in git (a JSON config could not read the environment):
 
 ```js
-// packages/web/lighthouserc.cjs. Run once per preset: LHCI_PRESET=mobile and LHCI_PRESET=desktop.
-const base = process.env.LHCI_BASE_URL;
+// packages/web/lighthouserc.cjs. Run once per preset: LIGHTHOUSE_PRESET=mobile and LIGHTHOUSE_PRESET=desktop.
+const base = process.env.LIGHTHOUSE_BASE_URL;
 const secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-if (!base || !secret) throw new Error('LHCI_BASE_URL and VERCEL_AUTOMATION_BYPASS_SECRET are required');
-const desktop = process.env.LHCI_PRESET === 'desktop';
+if (!base || !secret) throw new Error('LIGHTHOUSE_BASE_URL and VERCEL_AUTOMATION_BYPASS_SECRET are required');
+const desktop = process.env.LIGHTHOUSE_PRESET === 'desktop';
 // Content routes only: /admin is the Studio and /api/* are endpoints. Later phases append theirs.
 const routes = ['/'];
 
@@ -484,6 +484,22 @@ domain once `omoyorubasocal.org` is attached (`docs/runbook.md` lines 44 to 48).
   first request), https://vercel.com/docs/deployment-protection ("How to migrate to Standard
   Protection"), `docs/runbook.md` lines 37 to 39.
 
+## Correction after installing, 12 September 2026
+
+The variable names first recommended here, `LHCI_BASE_URL` and `LHCI_PRESET`, collide with lhci's
+own configuration: `src/cli.js` line 64 calls yargs `.env('LHCI')`, so every `LHCI_*` variable
+becomes a flag for each subcommand. The first `lhci autorun` with `LHCI_PRESET=mobile` collected
+three runs and then failed in `lhci assert` with `Invalid values: Argument: preset, Given:
+"mobile"`. The config, the workflow and the runbook use `LIGHTHOUSE_BASE_URL` and
+`LIGHTHOUSE_PRESET` instead, and the blocks below are updated to match.
+
+Found in the review of the same change: a `deployment_status` run is never started for a fork's
+preview (GitHub reports a startup failure for a commit no branch or tag of the repository points
+to), so the fork remarks below about the secret being absent do not describe what happens; the
+config now also sends `x-vercel-skip-toolbar` (Vercel's documented header for automation, "presence
+of the header itself triggers Vercel to disable the toolbar"); and the header route's disclosure to
+third-party origins is now stated in the runbook where the owner creates the secret.
+
 ## Recommendation for Phase 4
 
 - Pin `@lhci/cli` 0.15.1 in `packages/web` devDependencies (Bun will keep `lighthouse` at 12.6.1
@@ -514,8 +530,8 @@ jobs:
       matrix:
         preset: [mobile, desktop]
     env:
-      LHCI_BASE_URL: ${{ github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
-      LHCI_PRESET: ${{ matrix.preset }}
+      LIGHTHOUSE_BASE_URL: ${{ github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
+      LIGHTHOUSE_PRESET: ${{ matrix.preset }}
       VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

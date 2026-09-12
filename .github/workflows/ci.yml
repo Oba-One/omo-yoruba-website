@@ -4,9 +4,10 @@
 # and shellcheck on the repo scripts. Phase 1 added the Storybook build with Chromatic.
 # Phase 2 added the TypeGen drift check. Phase 3 added Playwright with axe against the dev
 # server (preview deployments sit behind Vercel Authentication, so the suite runs locally on the
-# runner with the placeholder variables and intercepts the actions). Later phases add, in order:
-# Lighthouse CI against the preview (Phase 4) and the nightly content-lint workflow (Phase 9). Every job here is safe to require in branch
-# protection: none is path filtered, so each reports on every pull request.
+# runner with the placeholder variables and intercepts the actions). Phase 4 added Lighthouse CI
+# against each preview in its own workflow, lighthouse.yml (on deployment_status). Phase 9 adds
+# the nightly content-lint workflow. Every job here is safe to require in branch protection: none
+# is path filtered, so each reports on every pull request.
 #
 # The two PUBLIC_SANITY_* variables are required by the astro:env schema since Phase 2. The
 # build never reads content (every page is server rendered), so placeholder values let the
