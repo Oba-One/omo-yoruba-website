@@ -41,10 +41,17 @@ it. Every push to a branch gets a preview URL; `main` deploys to production at
 since Phase 2 the production build stops without `PUBLIC_SANITY_PROJECT_ID` and
 `PUBLIC_SANITY_DATASET`.
 
-Domain: `omoyorubasocal.org`, bought through Vercel on 11 September 2026 (the old
-`omoyorubaofsocal.org` is not in the owner's hands; wayfinder ticket 10 covers its redirects).
-Attach it under the project's Domains with `www` redirecting to the apex; Vercel manages the DNS,
-so Resend's records for the sending domain go there too.
+Domain: `omoyorubasocal.org`, bought on 11 September 2026 (the old `omoyorubaofsocal.org` is
+not in the owner's hands; wayfinder ticket 10 covers its redirects). Its DNS is at Cloudflare.
+Attach it under the project's Domains with `www` redirecting to the apex, create the records
+Vercel shows in Cloudflare with the proxy off (DNS only), and put Resend's records for the sending
+domain there too. Until the domain is attached the production alias serves the site.
+
+Environments: Vercel holds `PUBLIC_SANITY_DATASET=development` for now (set 11 September 2026),
+so the deployed site reads the seeded development dataset; switch it to `production` once that
+dataset is seeded and redeploy. Variables are scoped per environment in Vercel: a preview
+deployment of a pull request needs them in the Preview scope too, or its build stops at the
+astro:env check.
 
 Storybook: a second Vercel project with Root Directory `packages/ui` and "Include files outside
 the root directory" enabled; `packages/ui/vercel.json` pins the install and build commands and

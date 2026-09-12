@@ -54,9 +54,10 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   ticket's answer; no pivot (ADR 0002).
 
 - Domain: `omoyorubasocal.org`, bought by the owner on 11 September 2026 through Vercel, since the
-  old `omoyorubaofsocal.org` is registered elsewhere and not yet in the owner's hands. The repo,
-  the wizard and the Vercel project use the new name; the old one redirects here once the owner
-  controls it (ticket 10).
+  old `omoyorubaofsocal.org` is registered elsewhere and not yet in the owner's hands. Its DNS
+  is at Cloudflare. The repo, the wizard and the Vercel project use the new name; the old one
+  redirects here once the owner controls it (ticket 10). Vercel reads the `development` dataset
+  until `production` is seeded.
 
 - `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` are required at build time since Phase 2
   (the data layer exists); CI builds with placeholder values (`docs/runbook.md`).

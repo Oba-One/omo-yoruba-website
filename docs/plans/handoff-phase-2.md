@@ -37,18 +37,18 @@ token replaced the Contributor token, `bun seed` ran against `development` (42 d
 exists (linked to the GitHub repository, production at `omo-yoruba-greenpilldevguild.vercel.app`)
 and a Resend API key was created.
 
-1. Vercel: attach `omoyorubasocal.org` (and `www`) under the project's Domains; the project
-   listed only its `vercel.app` aliases on 11 September. Set the environment variables there
-   before this pull request merges, since the production build now stops without
-   `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` (wizard stage 3 pushes everything in
-   `packages/web/.env`, including the tokens and `SANITY_WEBHOOK_SECRET`).
+1. Vercel: the environment variables are set (11 September, dataset `development` for now).
+   The domain waits on Cloudflare: attach `omoyorubasocal.org` (and `www`) under the project's
+   Domains and create Vercel's records in Cloudflare with the proxy off. The preview build of
+   this branch failed before the variables existed; the variables must be in the Preview scope
+   as well as Production for pull request previews to build.
 2. `packages/web/.env` still lacks `SANITY_WEBHOOK_SECRET` (wizard stage 2 generates it, or
    `openssl rand -hex 32`); `/api/revalidate` answers 500 until then. `/api/preview/enable` needs
    only the Viewer token: the Presentation tool makes and stores its own secret. The wizard's
    `SANITY_PREVIEW_SECRET` is not read by any Phase 2 code; keep the name for later phases.
 3. Resend: the API key belongs on the deployed function, not on Vercel or in Astro; add the
-   sending domain `omoyorubasocal.org` in Resend and create its DNS records in Vercel's DNS for
-   the domain, then choose the sender for `ENQUIRY_FROM`.
+   sending domain `omoyorubasocal.org` in Resend and create its DNS records in Cloudflare, then
+   choose the sender for `ENQUIRY_FROM`.
 4. Log in at http://localhost:4321/admin (`bun dev`) and open Pending: 49 field rows list their
    documents and "Missing entirely" shows the two unnamed zones and the five absent types. The
    project's CORS origins must include `http://localhost:4321` (wizard stage 1).
