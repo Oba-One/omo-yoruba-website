@@ -1,0 +1,200 @@
+---
+/**
+ * The site footer (ROUTES section 2, Site Footer.dc.html): the indigo band with the drifting
+ * àdìrẹ dot field, the light lockup, the trust line ("501(c)(3) nonprofit since 1997 • EIN
+ * XX-XXXXXXX • Los Angeles, CA", the EIN placeholder until the settings hold it), the general
+ * email, phone and mailing address (Pending chips while empty), the social marks for the
+ * networks the settings list, the newsletter block with `NewsletterForm`, and the two link
+ * columns the prototype polished (Take part, Learn more; Contact lives here only). Volunteer and
+ * Contact are enquiry triggers, Donate a Give trigger. Renders once, last in the layout, and no
+ * page adds its own newsletter band. Where the prototype's SVG marks and two columns differ from
+ * the routes table's initials and four columns, the prototype won (the later polish).
+ */
+import Pending from '../../core/Pending/Pending.astro';
+import NewsletterForm, {
+  type NewsletterState,
+} from '../../forms/NewsletterForm/NewsletterForm.astro';
+import Logo from '../Logo/Logo.astro';
+
+export type SocialNetwork = 'instagram' | 'facebook' | 'linkedin' | 'youtube';
+
+/** The slice of `siteSettings` the footer reads; empty fields render Pending. */
+export interface FooterSettings {
+  orgName?: string | null;
+  ein?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  generalEmail?: string | null;
+  socials?: Array<{ network?: SocialNetwork | null; url?: string | null }> | null;
+  newsletterTitle?: string | null;
+  newsletterBlurb?: string | null;
+}
+
+interface Props {
+  settings?: FooterSettings;
+  newsletterState?: NewsletterState;
+  /** Where the newsletter form posts; the site passes the newsletter action's path. */
+  newsletterAction?: string;
+  newsletterError?: string;
+  newsletterValue?: string;
+  /** The page path, stored on the subscriber. */
+  source?: string;
+}
+
+const {
+  settings = {},
+  newsletterState = 'idle',
+  newsletterAction = '',
+  newsletterError,
+  newsletterValue,
+  source = '',
+} = Astro.props;
+
+const EIN_PLACEHOLDER = 'XX-XXXXXXX';
+const ein = settings.ein?.trim() || EIN_PLACEHOLDER;
+const email = settings.generalEmail?.trim();
+const phone = settings.phone?.trim();
+const addressLines = (settings.address ?? '')
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter(Boolean);
+const socials = (settings.socials ?? []).filter(
+  (social): social is { network: SocialNetwork; url: string } =>
+    Boolean(social.network && social.url),
+);
+
+const NETWORK_NAMES: Record<SocialNetwork, string> = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  linkedin: 'LinkedIn',
+  youtube: 'YouTube',
+};
+---
+
+<footer class="oy-footer oy-dark v2-footer">
+  <div class="v2-dots v2-dots--drift" aria-hidden="true"></div>
+  <div class="oy-wrap oy-footer-grid">
+    <div>
+      <Logo variant="light" />
+      <p class="oy-footer-trust">
+        501(c)(3) nonprofit since 1997 • EIN <span data-ein>{ein}</span> • Los Angeles, CA<br />
+        {email ? <a href={`mailto:${email}`}>{email}</a> : <Pending what="the general inbox" />}
+        {phone && <span> • <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a></span>}
+      </p>
+      <p class="oy-footer-address">
+        {
+          addressLines.length > 0 ? (
+            addressLines.map((line, index) => (
+              <>
+                {index > 0 && <br />}
+                {line}
+              </>
+            ))
+          ) : (
+            <Pending what="mailing address" />
+          )
+        }
+      </p>
+      <div class="oy-socials">
+        {
+          socials.length > 0 ? (
+            socials.map((social) => (
+              <a href={social.url} aria-label={NETWORK_NAMES[social.network]}>
+                {social.network === 'instagram' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                    <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5" />
+                    <circle cx="12" cy="12" r="4.1" />
+                    <circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none" />
+                  </svg>
+                )}
+                {social.network === 'facebook' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M13.6 21v-7.3h2.5l.4-2.9h-2.9V8.9c0-.8.2-1.4 1.4-1.4h1.6V4.9c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.1H8v2.9h2.5V21h3.1z" />
+                  </svg>
+                )}
+                {social.network === 'linkedin' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M5.2 9h2.7v10H5.2V9zm1.35-4.4a1.6 1.6 0 110 3.2 1.6 1.6 0 010-3.2zM10.3 9H13v1.4h.05c.4-.75 1.35-1.6 2.85-1.6 2.25 0 3.2 1.45 3.2 3.85V19h-2.7v-4.9c0-1.2-.4-2.05-1.45-2.05-.95 0-1.5.65-1.75 1.3-.1.25-.1.55-.1.85V19h-2.7V9z" />
+                  </svg>
+                )}
+                {social.network === 'youtube' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                    <rect x="2.6" y="5.4" width="18.8" height="13.2" rx="4" />
+                    <path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor" stroke="none" />
+                  </svg>
+                )}
+              </a>
+            ))
+          ) : (
+            <Pending what="social links" />
+          )
+        }
+      </div>
+      <div class="oy-footer-newsletter">
+        <h4>{settings.newsletterTitle?.trim() || <Pending what="the newsletter title" />}</h4>
+        {settings.newsletterBlurb?.trim() && <p>{settings.newsletterBlurb}</p>}
+        <NewsletterForm
+          action={newsletterAction}
+          state={newsletterState}
+          error={newsletterError}
+          value={newsletterValue}
+          source={source}
+        />
+      </div>
+    </div>
+    <div>
+      <h4>Take part</h4>
+      <a href="/get-involved#member">Become a member</a>
+      <a href="?enquiry=volunteer#enquiry" data-enquiry="volunteer">Volunteer</a>
+      <a href="/get-involved#partner">Sponsor</a>
+      <a href="/donate#give" data-give>Donate</a>
+    </div>
+    <div>
+      <h4>Learn more</h4>
+      <a href="/impact">Our impact</a>
+      <a href="/our-story">Our story</a>
+      <a href="/impact#governance">501(c)(3) &amp; financials</a>
+      <a href="?enquiry=contact#enquiry" data-enquiry="contact">Contact</a>
+    </div>
+  </div>
+  <div class="v2-motif oy-footer-motif" aria-hidden="true"></div>
+</footer>
+
+<style>
+  .oy-footer {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  .oy-footer-grid {
+    position: relative;
+  }
+  .oy-footer-trust {
+    margin: 6px 0 0;
+  }
+  .oy-footer-trust a {
+    display: inline;
+    margin: 0;
+  }
+  .oy-footer-address {
+    margin: 12px 0 0;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .oy-footer-newsletter {
+    margin-top: 30px;
+    max-width: 440px;
+  }
+  .oy-footer-newsletter p {
+    margin: 0 0 12px;
+    font-size: 13.5px;
+    color: var(--text-on-dark-faint);
+  }
+  .oy-footer-motif {
+    position: relative;
+    height: 50px;
+    background-size: 60px 50px;
+    border-top: 2px solid var(--gold-500);
+    margin-top: 48px;
+  }
+</style>

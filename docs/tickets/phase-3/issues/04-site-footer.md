@@ -1,7 +1,7 @@
 # 04: SiteFooter with the newsletter, the trust line and the socials
 
 Labels: design
-Status: open
+Status: resolved
 Blocked by: 02
 
 **What to build:** `SiteFooter` in `@oy/ui/navigation`: the indigo-700 band with the drifting
@@ -12,7 +12,16 @@ list (Pending when none), the two link columns from the prototype (Take part, Le
 Contact opening the contact enquiry), the newsletter block with the title and blurb from the
 settings and `NewsletterForm` inside, and the motif rule at the bottom.
 
-- [ ] Stories: Default with empty settings (every Pending chip visible), Filled with the confirmed facts only, each newsletter state
-- [ ] Vitest: the EIN placeholder appears while `ein` is empty and the real value when set, the social list renders one link per network with an accessible name, the Contact link is the contact trigger
-- [ ] The footer renders once, last in the layout, and no page adds its own newsletter band
-- [ ] The component map records that the prototype's SVG marks and two columns won over the routes table's initials and four columns
+- [x] Stories: Default with empty settings (every Pending chip visible), Filled with the confirmed facts only, each newsletter state
+- [x] Vitest: the EIN placeholder appears while `ein` is empty and the real value when set, the social list renders one link per network with an accessible name, the Contact link is the contact trigger
+- [x] The footer renders once, last in the layout, and no page adds its own newsletter band
+- [x] The component map records that the prototype's SVG marks and two columns won over the routes table's initials and four columns
+
+## Comments
+
+11 September 2026. The trust line follows the voice rule (one line with the EIN placeholder
+and "Los Angeles, CA"); the general email and phone sit under it, the address under that, each
+a Pending chip while empty. Take part: Become a member and Sponsor go to the Get Involved doors,
+Volunteer opens the volunteer enquiry, Donate is a Give trigger. Learn more: Impact, Our story,
+financials, Contact (the contact enquiry). The prototype's SVG marks and two columns won over
+the routes table's initials and four columns; the component map records it in ticket 10.
