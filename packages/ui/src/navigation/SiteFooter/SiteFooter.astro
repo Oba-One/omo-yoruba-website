@@ -191,6 +191,17 @@ const NETWORK_NAMES: Record<SocialNetwork, string> = {
     font-size: 13.5px;
     color: var(--text-on-dark-faint);
   }
+  /* The elder test: 44px rows for the column links and 44px social circles. */
+  .oy-footer-grid > div > a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 0;
+  }
+  .oy-socials a {
+    width: 44px;
+    height: 44px;
+  }
   .oy-footer-motif {
     position: relative;
     height: 50px;

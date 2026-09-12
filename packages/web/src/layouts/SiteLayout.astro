@@ -5,8 +5,9 @@
  * reduced motion switches off, the gold progress bar, the form bridge and the analytics bridge.
  * Site settings come from one query per render; a failed read renders Pending, never an
  * invented name, address or phone (ADR 0005). Without JavaScript `?enquiry=<kind>` opens the
- * modal, a posted result re-renders it with the values kept, and a success redirects to
- * `sent=1` (ADR 0019). `#give` opens the Give Dialog on load with JavaScript.
+ * modal and a posted error re-renders it with the values kept; the middleware redirects a
+ * success to `sent=1`, which renders the success block (ADR 0019). `#give` opens the Give
+ * Dialog on load with JavaScript.
  */
 import '@oy/tokens';
 import { actions } from 'astro:actions';
@@ -32,8 +33,6 @@ import {
   modalStateFromResult,
   modalStateFromUrl,
   newsletterStateFrom,
-  redirectAfterEnquiry,
-  redirectAfterNewsletter,
 } from '../lib/forms/modal-state';
 import type { FormResult } from '../lib/forms/result';
 import { loadQuery } from '../lib/sanity/load-query';
@@ -51,25 +50,25 @@ const contacts = contactsByRole(settings?.contacts);
 const site = { email: settings?.generalEmail ?? undefined, phone: settings?.phone ?? undefined };
 const copyFor = (kind: EnquiryKind) => successCopy(kind, contacts[KIND_TO_ROLE[kind]], site);
 
-// A posted enquiry, without JavaScript: the result of whichever kind was posted.
+// A posted enquiry without JavaScript: the middleware redirected a success, so a result here
+// is an error to re-render with the values kept.
 let modal = modalStateFromUrl(Astro.url, copyFor);
 for (const kind of ENQUIRY_KINDS) {
   const outcome = Astro.getActionResult(actions.enquiry[kind]) as
     | { data?: FormResult; error?: { message: string } }
     | undefined;
   if (!outcome) continue;
-  const posted = modalStateFromResult(kind, outcome, site);
-  if (posted.redirect) return Astro.redirect(redirectAfterEnquiry(Astro.url, kind), 303);
-  modal = posted;
+  modal = modalStateFromResult(kind, outcome, site);
   break;
 }
 
-// The newsletter, without JavaScript.
+// The newsletter, without JavaScript, the same way.
 const newsletterOutcome = Astro.getActionResult(actions.newsletter) as
   | { data?: FormResult; error?: { message: string } }
   | undefined;
-if (newsletterOutcome?.data?.ok) return Astro.redirect(redirectAfterNewsletter(Astro.url), 303);
 const newsletter = newsletterStateFrom(Astro.url, newsletterOutcome, site);
+// A posted form with errors re-renders as a 400, so the browser and the logs read it as one.
+if (modal.state === 'error' || newsletter.state === 'error') Astro.response.status = 400;
 
 const actionPaths = Object.fromEntries(
   ENQUIRY_KINDS.map((kind) => [kind, String(actions.enquiry[kind])]),

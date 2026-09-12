@@ -127,8 +127,19 @@ const ariaCurrent = (href: string) => (href === current ? 'page' : undefined);
   dialog.oy-nav-menu::backdrop {
     background: transparent;
   }
+  .oy-nav-inner :global(.oy-logo) {
+    min-height: 44px;
+  }
   .oy-nav-menu-give {
     margin-top: 24px;
+  }
+  /* The menu paints every link white at 28px; the Donate button keeps its own face. */
+  .oy-nav-menu-give :global(a.oy-btn) {
+    color: var(--accent-action-text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 11px 26px;
   }
   /* Sticky nav height: anchors land under it, never behind it. */
   :global([id]) {

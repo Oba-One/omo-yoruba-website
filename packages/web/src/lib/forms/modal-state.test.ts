@@ -35,7 +35,7 @@ describe('the modal state without JavaScript', () => {
     expect(enquiryKindFrom('drop table')).toBeUndefined();
   });
 
-  it('re-renders a posted error with its values and asks for the redirect on success', () => {
+  it('re-renders a posted error with its values and a stray success in place', () => {
     const failed = modalStateFromResult(
       'member',
       {
@@ -55,11 +55,10 @@ describe('the modal state without JavaScript', () => {
       summary: 'We still need your full name.',
       errors: { name: 'We still need your full name.' },
       values: { city: 'Inglewood' },
-      redirect: false,
     });
     expect(
-      modalStateFromResult('member', { data: { ok: true, title: 'x', body: 'y' } }, {}).redirect,
-    ).toBe(true);
+      modalStateFromResult('member', { data: { ok: true, title: 'x', body: 'y' } }, {}),
+    ).toEqual({ kind: 'member', open: true, state: 'success', success: { title: 'x', body: 'y' } });
     expect(
       modalStateFromResult('member', { error: { message: 'Server exploded' } }, {}).summary,
     ).toBe('Server exploded');

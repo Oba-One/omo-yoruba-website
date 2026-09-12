@@ -46,14 +46,19 @@ export function modalStateFromUrl(
   return { kind, open: true, state: 'empty' };
 }
 
-/** The state a POST re-renders: errors with the values kept; a success asks for the redirect. */
+/**
+ * The state a POST re-renders: errors with the values kept. The middleware redirects a success
+ * before the page renders; a success that still reaches here shows its block in place.
+ */
 export function modalStateFromResult(
   kind: EnquiryKind,
   outcome: ActionOutcome,
   site: SiteContact,
-): EnquiryPageState & { redirect: boolean } {
+): EnquiryPageState {
   const data = outcome.data;
-  if (data?.ok) return { kind, open: true, state: 'success', redirect: true };
+  if (data?.ok) {
+    return { kind, open: true, state: 'success', success: { title: data.title, body: data.body } };
+  }
   if (data && !data.ok) {
     return {
       kind,
@@ -62,7 +67,6 @@ export function modalStateFromResult(
       summary: data.summary,
       errors: data.fields,
       values: data.values,
-      redirect: false,
     };
   }
   return {
@@ -70,7 +74,6 @@ export function modalStateFromResult(
     open: true,
     state: 'error',
     summary: outcome.error?.message || fallbackSentence(site),
-    redirect: false,
   };
 }
 
