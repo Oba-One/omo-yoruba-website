@@ -11,6 +11,8 @@
     "./routes": "./src/routes.ts",
     "./queries": "./src/queries/index.ts",
     "./images": "./src/images.ts",
+    "./layout": "./src/layout.ts",
+    "./lead-event": "./src/lead-event.ts",
     "./stega": "./src/stega.ts"
   },
   "scripts": {

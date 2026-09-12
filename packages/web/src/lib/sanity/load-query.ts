@@ -4,12 +4,13 @@
  * personal data), so every read carries the Viewer token, server side only; without the token
  * every read answers null and the site renders Pending. The perspective cookie the preview
  * routes set switches a read to drafts (or the release stack the Studio asked for) with stega
- * and the source map for Visual Editing (Phase 4 wires the overlay). A page never throws because
+ * and the source map for Visual Editing (the layout mounts the overlay). A page never throws because
  * Sanity did: a failed read logs and answers null, which is also what lets the dev server and CI
  * run against a placeholder project.
  */
 import { getSecret } from 'astro:env/server';
 import { sanityClient } from 'sanity:client';
+import { stegaFilter } from '@oy/content/stega';
 import type { ClientReturn, QueryParams } from '@sanity/client';
 import type { AstroCookies } from 'astro';
 import { PERSPECTIVE_COOKIE, type PreviewPerspective, perspectiveFromCookie } from './preview';
@@ -27,11 +28,14 @@ export interface LoadQueryResult<T> {
 }
 
 // The Viewer token for the private dataset, and one retry rather than the client's five so a
-// placeholder project fails fast instead of stalling a page. This module is server only.
+// placeholder project fails fast instead of stalling a page. The stega filter keeps the keys the
+// site branches on clean whenever a read encodes (docs/research/phase-4-sanity-visual-editing.md).
+// This module is server only.
 const token = getSecret('SANITY_API_READ_TOKEN');
 const client = sanityClient.withConfig({
   maxRetries: 1,
   useCdn: false,
+  stega: { filter: stegaFilter },
   ...(token ? { token } : {}),
 });
 

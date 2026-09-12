@@ -1,4 +1,8 @@
-import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import {
+  PUBLIC_PREVIEW_ORIGIN,
+  PUBLIC_SANITY_DATASET,
+  PUBLIC_SANITY_PROJECT_ID,
+} from 'astro:env/client';
 import { createStudioConfig } from '@oy/content/studio';
 
 // @sanity/astro resolves this file from the Astro project root and mounts the Studio it
@@ -7,4 +11,5 @@ import { createStudioConfig } from '@oy/content/studio';
 export default createStudioConfig({
   projectId: PUBLIC_SANITY_PROJECT_ID,
   dataset: PUBLIC_SANITY_DATASET,
+  previewOrigin: PUBLIC_PREVIEW_ORIGIN,
 });

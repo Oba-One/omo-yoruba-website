@@ -19,7 +19,15 @@ const call = (sourcePath: (string | number)[], fallback = true) => {
 
 describe('stegaFilter', () => {
   it('keeps the discriminators and the layout values clean', () => {
-    for (const key of ['kind', 'enquiryKind', 'season', 'motion', 'context']) {
+    for (const key of [
+      'kind',
+      'enquiryKind',
+      'season',
+      'motion',
+      'context',
+      'phone',
+      'generalEmail',
+    ]) {
       expect(STEGA_LOGIC_KEYS.has(key)).toBe(true);
     }
     expect(call(['layout', 'season'])).toEqual({ encoded: false, asked: false });

@@ -1,6 +1,7 @@
 import { getSecret } from 'astro:env/server';
 import { cacheTagsFor } from '@oy/content/routes';
 import type { APIRoute } from 'astro';
+import { purgePlan } from '../../lib/sanity/purge';
 import { SIGNATURE_HEADER, verifyWebhookSignature } from '../../lib/sanity/webhook';
 
 export const prerender = false;
@@ -11,11 +12,14 @@ interface WebhookBody {
 }
 
 /**
- * The Sanity webhook target (wizard stage 7): projection `{_type, "slug": slug.current}`. Phase 2
- * verifies the signature and answers with the cache tags the document affects; Phase 4 purges
- * them through the Vercel cache provider (docs/adr/0001, docs/runbook.md).
+ * The Sanity webhook target (wizard stage 7): projection `{_type, "slug": slug.current}`. Verifies
+ * the signature, turns the document into the tags it affects (`cacheTagsFor`) and purges them
+ * through the cache provider (ADR 0021): the type tag reaches every page that carries it, and
+ * each route tag is purged as a path, which the Vercel provider maps to the path tag it attached
+ * itself. The answer lists what was purged; a failed purge answers 500 with the reason, so the
+ * webhook's delivery log shows it.
  */
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cache }) => {
   const secret = getSecret('SANITY_WEBHOOK_SECRET');
   if (!secret)
     return new Response('Webhook is not configured: SANITY_WEBHOOK_SECRET is missing.', {
@@ -33,22 +37,35 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!payload._type) return new Response('Body has no _type', { status: 400 });
   const tags = cacheTagsFor(payload._type, payload.slug ?? undefined);
+  const plan = purgePlan(tags);
+  const answer = (status: number, extra: Record<string, unknown>) =>
+    new Response(
+      JSON.stringify({ type: payload._type, slug: payload.slug ?? null, tags, ...extra }),
+      {
+        status,
+        headers: { 'content-type': 'application/json' },
+      },
+    );
+  if (tags.length === 0) {
+    console.info('[revalidate]', JSON.stringify({ type: payload._type, tags, purged: false }));
+    return answer(200, { purged: false, note: 'This type is never shown on the site.' });
+  }
+  try {
+    if (plan.tags.length > 0) await cache.invalidate({ tags: plan.tags });
+    for (const path of plan.paths) await cache.invalidate({ path });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(
+      '[revalidate]',
+      JSON.stringify({ type: payload._type, tags, purged: false, message }),
+    );
+    return answer(500, { purged: false, error: message });
+  }
   console.info(
     '[revalidate]',
-    JSON.stringify({ type: payload._type, slug: payload.slug ?? null, tags, purged: false }),
+    JSON.stringify({ type: payload._type, slug: payload.slug ?? null, tags, purged: true }),
   );
-  return new Response(
-    JSON.stringify({
-      type: payload._type,
-      tags,
-      purged: false,
-      note: 'Cache purge arrives in Phase 4.',
-    }),
-    {
-      status: 200,
-      headers: { 'content-type': 'application/json' },
-    },
-  );
+  return answer(200, { purged: true, paths: plan.paths });
 };
 
 export const ALL: APIRoute = () =>

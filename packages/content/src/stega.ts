@@ -5,7 +5,8 @@ import type { FilterDefault } from '@sanity/client/stega';
  * loader keeps them clean at the source and the page compares them safely. The client's own
  * default already skips ids, keys, slugs, dates, URLs and a denylist (`type`, `href`, `layout`,
  * `theme`, `variant` and more); this list adds the repo's discriminators and the layout option
- * values, which sit under `layout` but end in their own names.
+ * values, which sit under `layout` but end in their own names, and the settings the chrome puts
+ * into `mailto:` and `tel:` links.
  */
 export const STEGA_LOGIC_KEYS: ReadonlySet<string> = new Set([
   'kind',
@@ -14,6 +15,8 @@ export const STEGA_LOGIC_KEYS: ReadonlySet<string> = new Set([
   'context',
   'network',
   'role',
+  'generalEmail',
+  'phone',
   'page',
   'group',
   'scope',
