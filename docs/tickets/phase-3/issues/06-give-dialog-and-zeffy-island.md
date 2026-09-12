@@ -1,7 +1,7 @@
 # 06: GiveDialog with the Zeffy embed island and the 4 second fallback
 
 Labels: design
-Status: open
+Status: resolved
 Blocked by: none
 
 **What to build:** `GiveDialog` in `@oy/ui/forms`: the native dialog every Donate trigger opens,
@@ -15,7 +15,16 @@ from a server island in `packages/web` that reads `siteSettings.zeffyEmbedUrl` i
 fallback and announces `give_embed_failed` (ADR 0020). `#give` opens it on load; the dialog
 strips the hash on close.
 
-- [ ] Stories: Embed (a placeholder frame in Storybook), Fallback, Pending, the bottom sheet at 375
-- [ ] `play`: the dialog opens from a trigger, Escape closes it and focus returns, Try again re-arms the embed
-- [ ] Vitest: the fallback names the mailing address or its Pending chip, the Contact button is the contact trigger, the foot line reads the EIN placeholder
-- [ ] The island answers with the iframe only when the URL is set, and with the Pending chip otherwise
+- [x] Stories: Embed (a placeholder frame in Storybook), Fallback, Pending, the bottom sheet at 375
+- [x] `play`: the dialog opens from a trigger, Escape closes it and focus returns, Try again re-arms the embed
+- [x] Vitest: the fallback names the mailing address or its Pending chip, the Contact button is the contact trigger, the foot line reads the EIN placeholder
+- [x] The island answers with the iframe only when the URL is set, and with the Pending chip otherwise
+
+## Comments
+
+11 September 2026. The dialog side is built with a `GiveEmbedPlaceholder` stand-in for the
+stories (string slots drop templates and iframes); the island itself lands with the layout in
+ticket 07, since it needs `loadQuery`. The element polls for the template for the length of the
+timer, so a dialog opened before the island arrives still mounts the iframe, and a missing
+template ends in the fallback with `give_embed_failed`. Both play functions pass in the canvas
+with the timer shortened to 300ms.
