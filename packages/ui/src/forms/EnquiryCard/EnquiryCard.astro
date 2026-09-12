@@ -1,0 +1,57 @@
+---
+/**
+ * The card that explains a form before opening it (COMPONENT-MAP, Forms and dialogs): the
+ * kind's title and blurb from the spec, how many questions it asks, an optional line on what
+ * happens next from the page, and the trigger. The trigger is a link to the same page with the
+ * modal open (`?enquiry=<kind>#enquiry`) that the Enquiry Modal intercepts when JavaScript runs
+ * (ADR 0019). One gold action per screen view: pages pass `variant="secondary"` for the rest.
+ */
+import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
+import Button, { type ButtonVariant } from '../../core/Button/Button.astro';
+
+interface Props {
+  kind: EnquiryKind;
+  /** Overrides the spec's title. */
+  title?: string;
+  /** Overrides the spec's blurb: what the form asks. */
+  blurb?: string;
+  /** What happens next, from the page's content; nothing invented here. */
+  next?: string;
+  /** The trigger's label; the spec's submit label by default. */
+  label?: string;
+  variant?: ButtonVariant;
+  class?: string;
+}
+
+const { kind, title, blurb, next, label, variant = 'primary', class: className } = Astro.props;
+const spec = ENQUIRY_SPECS[kind];
+const questions = spec.fields.length;
+---
+
+<article class:list={['oy-card', 'oy-enquiry-card', className]} data-kind={kind}>
+  <div class="oy-card-body">
+    <h3>{title ?? spec.title}</h3>
+    <p>{blurb ?? spec.blurb}</p>
+    <p class="oy-enquiry-card-meta">
+      {questions} questions{next && <span> • {next}</span>}
+    </p>
+    <slot />
+    <div class="oy-enquiry-card-action">
+      <Button href={`?enquiry=${kind}#enquiry`} variant={variant} data-enquiry={kind} arrow>
+        {label ?? spec.submit}
+      </Button>
+    </div>
+  </div>
+</article>
+
+<style>
+  .oy-enquiry-card-meta {
+    font-size: var(--text-caption);
+    letter-spacing: var(--track-caption);
+    color: var(--text-muted);
+  }
+  .oy-enquiry-card-action {
+    margin-top: auto;
+    padding-top: 16px;
+  }
+</style>

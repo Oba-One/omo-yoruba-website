@@ -1,7 +1,7 @@
 # 05: EnquiryCard and the EnquiryModal with the eight field sets and five states
 
 Labels: design
-Status: open
+Status: resolved
 Blocked by: 02
 
 **What to build:** `EnquiryCard` in `@oy/ui/forms`: the card that explains a form before opening
@@ -17,7 +17,18 @@ and for a posted result. The inline custom element opens from any `[data-enquiry
 pre-validates with the spec's sentences, submits through the action, and renders the result
 (ADR 0018, ADR 0019).
 
-- [ ] Stories: one per kind (empty), Filled, Submitting, Success, Error, the bottom sheet at 375, with a full routing contact and with an empty one
-- [ ] `play`: a trigger opens the modal for its kind and focus lands on the first field; an empty submit shows the summary and the field sentences without a request and keeps a typed value; Escape closes and focus returns to the trigger
-- [ ] Vitest: eight forms exist with the spec's fields, ids are unique across kinds, the success copy uses `successCopy` and the foot `footCopy`, the honeypot is hidden from assistive technology and not in the tab order
-- [ ] No copy in the component beyond the fallback sentence and the button labels the spec lacks
+- [x] Stories: one per kind (empty), Filled, Submitting, Success, Error, the bottom sheet at 375, with a full routing contact and with an empty one
+- [x] `play`: a trigger opens the modal for its kind and focus lands on the first field; an empty submit shows the summary and the field sentences without a request and keeps a typed value; Escape closes and focus returns to the trigger
+- [x] Vitest: eight forms exist with the spec's fields, ids are unique across kinds, the success copy uses `successCopy` and the foot `footCopy`, the honeypot is hidden from assistive technology and not in the tab order
+- [x] No copy in the component beyond the fallback sentence and the button labels the spec lacks
+
+## Comments
+
+11 September 2026. The dialog element wears the tokens' scrim class and the panel sits inside
+it, so the bottom sheet, the grab handle and the scrim click come from the ported CSS unchanged.
+One head is shared and the eight sections carry their title and blurb in data attributes for the
+element to swap. The eight forms keep every other section in the DOM hidden, so the play
+function scopes its queries to the open section. The sentences the element speaks come from the
+content package's new templates (`requiredSentence`, `summarySentence`, `fallbackSentence`), the
+same ones the Zod schema and the actions use. The card's "how long" reads as the count of
+questions from the spec; a page adds what happens next from its own content.

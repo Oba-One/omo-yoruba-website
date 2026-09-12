@@ -1,0 +1,499 @@
+---
+/**
+ * The one dialog shell every owned form opens in (CONTEXT.md, Enquiry Modal): a native dialog
+ * carrying the eight forms generated from `enquiry-kinds.ts`, only the active kind visible.
+ * Five states: empty, filled, submitting, success (the success block replaces the fields and
+ * the Close button takes focus) and error (the summary at the top with `role="alert"`, each field
+ * named, values kept). Dialog on desktop, bottom sheet under 720px through the tokens' scrim and
+ * panel rules: the dialog element is the scrim, the panel sits inside it, so a click on the scrim
+ * closes. Every form posts to its action with `novalidate`, a honeypot and the `source` path;
+ * the server renders it open for `?enquiry=<kind>` or a posted result (ADR 0019, ADR 0020).
+ *
+ * With JavaScript the inline element opens from any `[data-enquiry]` trigger, pre-validates with
+ * the spec's sentences, hands the form to `window.oySubmit` when the site provides it, renders
+ * the action result, returns focus to the trigger on close, and announces `enquiry_opened` and
+ * `enquiry_submitted` as `oy:track` events (ADR 0018).
+ */
+import {
+  type ContactRole,
+  ENQUIRY_KINDS,
+  ENQUIRY_SPECS,
+  type EnquiryKind,
+  fallbackSentence,
+  footCopy,
+  REQUIRED_TEMPLATE,
+  type RoutingContact,
+  type SiteContact,
+  SUMMARY_TEMPLATE,
+  successCopy,
+} from '@oy/content/enquiry-kinds';
+import { EMAIL_MESSAGE } from '@oy/content/enquiry-zod';
+import Button from '../../core/Button/Button.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import Field from '../Field/Field.astro';
+
+export type EnquiryModalState = 'empty' | 'filled' | 'submitting' | 'success' | 'error';
+
+interface Props {
+  /** The kind rendered open: from `?enquiry=`, a posted result, or a story. */
+  kind?: EnquiryKind;
+  /** Renders the dialog open for `kind`. The site never opens it on load without a reason. */
+  open?: boolean;
+  state?: EnquiryModalState;
+  /** The kept values of the open kind, by field id. */
+  values?: Record<string, string>;
+  /** The error sentences of the open kind, by field id. */
+  errors?: Record<string, string>;
+  /** The summary sentence at the top of the open form. */
+  summary?: string;
+  /** The success copy for the open kind; the spec's copy filled from the contact by default. */
+  success?: { title: string; body: string };
+  /** The routing contacts by role, for the success copy and the foot notes. */
+  contacts?: Partial<Record<ContactRole, RoutingContact>>;
+  /** The general email and phone: the human fallback and the template slots. */
+  site?: SiteContact;
+  /** The action path per kind; the site passes the Astro action paths. */
+  actions?: Partial<Record<EnquiryKind, string>>;
+  /** The page path the form was opened on. */
+  source?: string;
+}
+
+const {
+  kind,
+  open = false,
+  state = 'empty',
+  values = {},
+  errors = {},
+  summary,
+  success,
+  contacts = {},
+  site = {},
+  actions = {},
+  source = '',
+} = Astro.props;
+
+const openKind = kind ?? ENQUIRY_KINDS[0];
+const head = ENQUIRY_SPECS[openKind];
+const email = site.email?.trim();
+const phone = site.phone?.trim();
+const isOpen = (k: EnquiryKind) => k === kind;
+---
+
+<oy-enquiry-modal
+  data-required-template={REQUIRED_TEMPLATE}
+  data-summary-template={SUMMARY_TEMPLATE}
+  data-email-message={EMAIL_MESSAGE}
+  data-fallback-message={fallbackSentence(site)}
+  data-busy-label="Sending..."
+>
+  <dialog
+    id="enquiry"
+    class="oy-modal-scrim"
+    aria-labelledby="enquiry-title"
+    open={open}
+    data-kind={openKind}
+  >
+    <div class="oy-modal">
+      <div class="oy-modal-top" aria-hidden="true"></div>
+      <div class="oy-modal-grab" aria-hidden="true"></div>
+      <div class="oy-modal-head">
+        <div>
+          <h2 id="enquiry-title" data-modal-title>{head.title}</h2>
+          <p data-modal-blurb>{head.blurb}</p>
+        </div>
+        <button class="oy-modal-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="oy-modal-body">
+        {
+          ENQUIRY_KINDS.map((k) => {
+            const spec = ENQUIRY_SPECS[k];
+            const contact = contacts[spec.role];
+            const ok = isOpen(k) && success ? success : successCopy(k, contact, site);
+            const foot = footCopy(k, contact, site);
+            const active = isOpen(k);
+            const showSuccess = active && state === 'success';
+            const formSummary = active && state === 'error' ? summary : undefined;
+            return (
+              <section
+                class="oy-enquiry"
+                data-kind={k}
+                data-title={spec.title}
+                data-blurb={spec.blurb}
+                hidden={!active}
+              >
+                <div class="oy-ok" data-success hidden={!showSuccess}>
+                  <b>{ok.title}</b>
+                  <p>{ok.body}</p>
+                  <div class="oy-ok-actions">
+                    <Button variant="secondary" type="button" data-close>
+                      Close
+                    </Button>
+                  </div>
+                </div>
+                <form
+                  method="POST"
+                  action={actions[k] ?? ''}
+                  novalidate
+                  data-form="enquiry"
+                  data-kind={k}
+                  hidden={showSuccess}
+                >
+                  <div class="oy-errsum" role="alert" tabindex="-1" data-summary hidden={!formSummary}>
+                    {formSummary}
+                  </div>
+                  <div class="oy-form-grid">
+                    {spec.fields.map((field) => (
+                      <Field
+                        spec={field}
+                        id={`eq-${k}-${field.id}`}
+                        value={active ? values[field.id] : undefined}
+                        error={active ? errors[field.id] : undefined}
+                      />
+                    ))}
+                  </div>
+                  <input type="hidden" name="source" value={source} />
+                  <div class="oy-hidden" aria-hidden="true">
+                    <label for={`eq-${k}-website`}>Website</label>
+                    <input id={`eq-${k}-website`} type="text" name="website" tabindex="-1" autocomplete="off" />
+                  </div>
+                  {foot && <p class="oy-form-foot">{foot}</p>}
+                  <div class="oy-form-actions">
+                    <Button type="submit" busy={active && state === 'submitting'}>
+                      {spec.submit}
+                    </Button>
+                    <Button variant="quiet" type="button" data-close>
+                      Cancel
+                    </Button>
+                    <p class="oy-form-help">
+                      Rather speak to a person?{' '}
+                      {email ? <a href={`mailto:${email}`}>{email}</a> : <Pending what="the general inbox" />}
+                      {phone && (
+                        <span>
+                          {' '}or call <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a>
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </form>
+              </section>
+            );
+          })
+        }
+      </div>
+    </div>
+  </dialog>
+</oy-enquiry-modal>
+
+<style>
+  /* The native dialog wears the tokens' scrim; the UA box is reset to fill the viewport. */
+  dialog.oy-modal-scrim {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    color: var(--ink);
+  }
+  dialog.oy-modal-scrim:not([open]) {
+    display: none;
+  }
+  dialog.oy-modal-scrim::backdrop {
+    background: transparent;
+  }
+  .oy-enquiry[hidden],
+  form[hidden],
+  .oy-ok[hidden],
+  .oy-errsum[hidden],
+  .oy-form-help [hidden] {
+    display: none;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .oy-ok-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .oy-form-foot {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  .oy-form-actions {
+    margin-top: 8px;
+  }
+  .oy-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>
+
+<script is:inline>
+  if (!customElements.get('oy-enquiry-modal')) {
+    customElements.define(
+      'oy-enquiry-modal',
+      class extends HTMLElement {
+        connectedCallback() {
+          const dialog = this.querySelector('dialog');
+          if (!dialog || typeof dialog.showModal !== 'function') return;
+          const title = this.querySelector('[data-modal-title]');
+          const blurb = this.querySelector('[data-modal-blurb]');
+          const sections = Array.from(this.querySelectorAll('section[data-kind]'));
+          const fill = (template, slots) =>
+            (template || '').replace(/\{(\w+)\}/g, (match, key) => slots[key] || '');
+          let trigger = null;
+
+          const sectionFor = (kind) => sections.find((s) => s.dataset.kind === kind);
+          const show = (kind) => {
+            const active = sectionFor(kind);
+            if (!active) return null;
+            for (const s of sections) s.hidden = s !== active;
+            if (title) title.textContent = active.dataset.title || '';
+            if (blurb) blurb.textContent = active.dataset.blurb || '';
+            dialog.setAttribute('data-kind', kind);
+            return active;
+          };
+          const describe = (control, field) => {
+            const hint = field.querySelector('.oy-field-hint');
+            const error = field.querySelector('.oy-field-error');
+            const ids = [];
+            if (hint) ids.push(hint.id);
+            if (error && !error.hidden) ids.push(error.id);
+            if (ids.length) control.setAttribute('aria-describedby', ids.join(' '));
+            else control.removeAttribute('aria-describedby');
+          };
+          const clearErrors = (form) => {
+            const summary = form.querySelector('[data-summary]');
+            if (summary) {
+              summary.hidden = true;
+              summary.textContent = '';
+            }
+            for (const field of form.querySelectorAll('.oy-field')) {
+              const control = field.querySelector('input, select, textarea');
+              const error = field.querySelector('.oy-field-error');
+              field.classList.remove('oy-field--error');
+              if (error) {
+                error.hidden = true;
+                error.textContent = '';
+              }
+              if (control) {
+                control.removeAttribute('aria-invalid');
+                describe(control, field);
+              }
+            }
+          };
+          const showFieldError = (form, name, sentence) => {
+            const control = form.querySelector('[name="' + name + '"]');
+            const field = control && control.closest('.oy-field');
+            if (!control || !field) return;
+            const error = field.querySelector('.oy-field-error');
+            field.classList.add('oy-field--error');
+            control.setAttribute('aria-invalid', 'true');
+            if (error) {
+              error.textContent = sentence;
+              error.hidden = false;
+            }
+            describe(control, field);
+          };
+          const showSummary = (form, sentence) => {
+            const summary = form.querySelector('[data-summary]');
+            if (!summary) return;
+            summary.textContent = sentence;
+            summary.hidden = false;
+            summary.focus();
+          };
+          const setBusy = (form, busy) => {
+            const button = form.querySelector('button[type="submit"]');
+            if (!button) return;
+            if (!button.dataset.label) button.dataset.label = button.textContent.trim();
+            button.textContent = busy ? this.dataset.busyLabel : button.dataset.label;
+            if (busy) {
+              button.setAttribute('aria-busy', 'true');
+              button.setAttribute('aria-disabled', 'true');
+            } else {
+              button.removeAttribute('aria-busy');
+              button.removeAttribute('aria-disabled');
+            }
+            form.dataset.busy = busy ? 'true' : 'false';
+          };
+          const succeed = (active, form, data) => {
+            const ok = active.querySelector('[data-success]');
+            if (ok) {
+              const heading = ok.querySelector('b');
+              const body = ok.querySelector('p');
+              if (heading && data.title) heading.textContent = data.title;
+              if (body && data.body) body.textContent = data.body;
+              ok.hidden = false;
+              form.hidden = true;
+              const close = ok.querySelector('[data-close]');
+              if (close) close.focus();
+            }
+            this.dispatchEvent(
+              new CustomEvent('oy:track', {
+                bubbles: true,
+                detail: { event: 'enquiry_submitted', kind: active.dataset.kind },
+              }),
+            );
+          };
+          const validate = (form) => {
+            const missing = [];
+            let badEmail = null;
+            for (const control of form.querySelectorAll('[data-required], [data-email]')) {
+              const value = (control.value || '').trim();
+              if (control.hasAttribute('data-required') && !value) missing.push(control);
+              else if (
+                control.hasAttribute('data-email') &&
+                value &&
+                !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)
+              )
+                badEmail = control;
+            }
+            clearErrors(form);
+            if (!missing.length && !badEmail) return true;
+            for (const control of missing) {
+              showFieldError(
+                form,
+                control.name,
+                fill(this.dataset.requiredTemplate, { req: control.dataset.req }),
+              );
+            }
+            if (badEmail) showFieldError(form, badEmail.name, this.dataset.emailMessage);
+            showSummary(
+              form,
+              missing.length
+                ? fill(this.dataset.summaryTemplate, {
+                    list: missing.map((control) => control.dataset.req).join(', '),
+                  })
+                : this.dataset.emailMessage,
+            );
+            return false;
+          };
+          const open = (kind, from) => {
+            const active = show(kind);
+            if (!active) return;
+            trigger = from || null;
+            const form = active.querySelector('form');
+            const ok = active.querySelector('[data-success]');
+            if (form) {
+              form.reset();
+              clearErrors(form);
+              setBusy(form, false);
+              form.hidden = false;
+              const source = form.querySelector('input[name="source"]');
+              if (source) source.value = window.location.pathname;
+            }
+            if (ok) ok.hidden = true;
+            if (!dialog.open) dialog.showModal();
+            const first =
+              form &&
+              form.querySelector('.oy-form-grid input, .oy-form-grid select, .oy-form-grid textarea');
+            if (first) first.focus();
+            this.dispatchEvent(
+              new CustomEvent('oy:track', {
+                bubbles: true,
+                detail: { event: 'enquiry_opened', kind },
+              }),
+            );
+          };
+
+          document.addEventListener('click', (event) => {
+            const target =
+              event.target && event.target.closest && event.target.closest('[data-enquiry]');
+            if (!target || this.contains(target)) return;
+            const kind = target.getAttribute('data-enquiry');
+            if (!sectionFor(kind)) return;
+            event.preventDefault();
+            open(kind, target);
+          });
+          for (const button of this.querySelectorAll('[data-close], .oy-modal-close')) {
+            button.addEventListener('click', () => dialog.close());
+          }
+          dialog.addEventListener('click', (event) => {
+            if (event.target === dialog) dialog.close();
+          });
+          dialog.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape') return;
+            event.preventDefault();
+            dialog.close();
+          });
+          dialog.addEventListener('close', () => {
+            if (/[?&](enquiry|sent)=/.test(window.location.search)) {
+              const url = new URL(window.location.href);
+              url.searchParams.delete('enquiry');
+              url.searchParams.delete('sent');
+              window.history.replaceState(null, '', url.pathname + url.search);
+            }
+            if (trigger && typeof trigger.focus === 'function') trigger.focus();
+            trigger = null;
+          });
+          for (const active of sections) {
+            const form = active.querySelector('form');
+            if (!form) continue;
+            form.addEventListener('submit', (event) => {
+              if (form.dataset.busy === 'true') {
+                event.preventDefault();
+                return;
+              }
+              if (!validate(form)) {
+                event.preventDefault();
+                return;
+              }
+              const submit = window.oySubmit;
+              if (typeof submit !== 'function') return;
+              event.preventDefault();
+              setBusy(form, true);
+              submit('enquiry.' + active.dataset.kind, new FormData(form)).then(
+                (result) => {
+                  const data = result && result.data;
+                  setBusy(form, false);
+                  if (data && data.ok) {
+                    succeed(active, form, data);
+                    return;
+                  }
+                  if (data && data.fields) {
+                    for (const name of Object.keys(data.fields)) {
+                      showFieldError(form, name, data.fields[name]);
+                    }
+                  }
+                  showSummary(
+                    form,
+                    (data && data.summary) ||
+                      (result && result.error && result.error.message) ||
+                      this.dataset.fallbackMessage,
+                  );
+                },
+                () => {
+                  setBusy(form, false);
+                  showSummary(form, this.dataset.fallbackMessage);
+                },
+              );
+            });
+          }
+          // A page served with the modal open (the no-JavaScript path) turns modal once scripts run.
+          if (dialog.hasAttribute('open')) {
+            const kind = dialog.getAttribute('data-kind');
+            dialog.removeAttribute('open');
+            const active = kind ? show(kind) : null;
+            dialog.showModal();
+            const summary = active && active.querySelector('[data-summary]:not([hidden])');
+            const close = active && active.querySelector('[data-success]:not([hidden]) [data-close]');
+            if (summary) summary.focus();
+            else if (close) close.focus();
+          }
+          this.dataset.ready = 'true';
+        }
+      },
+    );
+  }
+</script>
