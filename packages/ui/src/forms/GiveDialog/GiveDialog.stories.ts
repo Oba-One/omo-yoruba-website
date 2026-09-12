@@ -74,7 +74,7 @@ export const OpensFromTrigger: Story = {
     await expect(canvas.getByText(/Zeffy's embedded form renders in this box/)).toBeVisible();
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(dialog?.open).toBe(false));
-    await expect(trigger).toHaveFocus();
+    await waitFor(() => expect(trigger).toHaveFocus());
   },
 };
 

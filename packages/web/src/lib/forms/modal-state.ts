@@ -1,7 +1,7 @@
 /**
  * What the layout renders into the Enquiry Modal and the footer without JavaScript (ADR 0019):
- * the `?enquiry=<kind>` opener, the `sent=1` success render after the redirect, and a posted
- * result echoed with its values. Pure, so the layout stays thin and the rules are tested.
+ * the `?enquiry=<kind>` trigger link, the `sent=1` success render after the redirect, and a
+ * posted result echoed with its values. Pure, so the layout stays thin and the rules are tested.
  */
 import {
   ENQUIRY_KINDS,
@@ -33,7 +33,7 @@ export function enquiryKindFrom(value: string | null | undefined): EnquiryKind |
 
 const CLOSED: EnquiryPageState = { open: false, state: 'empty' };
 
-/** The state a GET renders: the opener, or the success block after the redirect. */
+/** The state a GET renders: the trigger link's kind, or the success block after the redirect. */
 export function modalStateFromUrl(
   url: URL,
   copy: (kind: EnquiryKind) => { title: string; body: string },
@@ -87,7 +87,11 @@ export type NewsletterPageState =
   | { state: 'error'; error: string; value?: string };
 
 /** The footer's newsletter state: `subscribed=1` after the redirect, or a posted error. */
-export function newsletterStateFrom(url: URL, outcome?: ActionOutcome, site: SiteContact = {}) {
+export function newsletterStateFrom(
+  url: URL,
+  outcome?: ActionOutcome,
+  site: SiteContact = {},
+): NewsletterPageState {
   const data = outcome?.data;
   if (data && !data.ok) {
     return {

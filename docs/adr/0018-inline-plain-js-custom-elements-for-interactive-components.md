@@ -18,7 +18,10 @@ the component library would then show every state except the ones that matter.
   markup (data attributes) rather than in a second script. `astro check` does not see them, so
   Playwright proves the behaviour on the site and the play function proves it in the canvas.
 - Vitest tests assert the initial markup and ARIA state only.
-- Inline scripts are exactly what `<ClientRouter />` leaves alone on navigation, which the
-  persisted nav and dialogs rely on; the `customElements` guard makes a re-run harmless.
+- Inline scripts are exactly what `<ClientRouter />` leaves alone on navigation. The two
+  dialogs are persisted and may be disconnected and connected again, so an element wires itself
+  once and adds its document and window listeners per connection with an AbortController; the
+  nav and the footer re-render per page and upgrade on insertion. A dialog exposes what opened
+  it as `oyTrigger`, so a trigger inside another dialog returns focus to that dialog's trigger.
 - The report-only CSP will list these scripts under `script-src`; Phase 9 hashes them or moves
   the policy (wayfinder ticket 13), the same choice `<ClientRouter />` already forces.

@@ -127,6 +127,6 @@ export const OpensFromTrigger: Story = {
     await expect(vendor.getByLabelText('Contact name')).toHaveValue('A. Example');
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(dialog?.open).toBe(false));
-    await expect(trigger).toHaveFocus();
+    await waitFor(() => expect(trigger).toHaveFocus());
   },
 };

@@ -1,4 +1,3 @@
-import { ENQUIRY_KINDS } from '@oy/content/enquiry-kinds';
 import type { ComponentProps } from 'astro/types';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import EnquiryCard from './EnquiryCard.astro';
@@ -40,8 +39,4 @@ export const Secondary: Story = { args: { kind: 'volunteer', variant: 'secondary
 /** A page adds what happens next from its own content; the card invents nothing. */
 export const WithNext: Story = {
   args: { kind: 'member', next: 'Dues are agreed with our membership lead' },
-};
-
-export const AllKinds: Story = {
-  args: { kind: ENQUIRY_KINDS[0] },
 };

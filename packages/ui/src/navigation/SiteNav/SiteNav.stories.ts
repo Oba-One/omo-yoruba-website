@@ -76,9 +76,10 @@ export const MobileMenuKeyboard: Story = {
     await userEvent.tab();
     await expect(menu?.contains(document.activeElement)).toBe(true);
     await userEvent.keyboard('{Escape}');
+    // The dialog's close event is a queued task, so what it does is awaited.
     await waitFor(() => expect(menu?.open).toBe(false));
-    await expect(burger).toHaveAttribute('aria-expanded', 'false');
-    await expect(burger).toHaveFocus();
+    await waitFor(() => expect(burger).toHaveAttribute('aria-expanded', 'false'));
+    await waitFor(() => expect(burger).toHaveFocus());
   },
 };
 

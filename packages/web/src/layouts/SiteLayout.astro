@@ -30,11 +30,11 @@ import Analytics from '../components/Analytics.astro';
 import FormBridge from '../components/FormBridge.astro';
 import ZeffyEmbed from '../components/ZeffyEmbed.astro';
 import {
+  type ActionOutcome,
   modalStateFromResult,
   modalStateFromUrl,
   newsletterStateFrom,
 } from '../lib/forms/modal-state';
-import type { FormResult } from '../lib/forms/result';
 import { loadQuery } from '../lib/sanity/load-query';
 
 interface Props {
@@ -54,18 +54,14 @@ const copyFor = (kind: EnquiryKind) => successCopy(kind, contacts[KIND_TO_ROLE[k
 // is an error to re-render with the values kept.
 let modal = modalStateFromUrl(Astro.url, copyFor);
 for (const kind of ENQUIRY_KINDS) {
-  const outcome = Astro.getActionResult(actions.enquiry[kind]) as
-    | { data?: FormResult; error?: { message: string } }
-    | undefined;
+  const outcome = Astro.getActionResult(actions.enquiry[kind]) as ActionOutcome | undefined;
   if (!outcome) continue;
   modal = modalStateFromResult(kind, outcome, site);
   break;
 }
 
 // The newsletter, without JavaScript, the same way.
-const newsletterOutcome = Astro.getActionResult(actions.newsletter) as
-  | { data?: FormResult; error?: { message: string } }
-  | undefined;
+const newsletterOutcome = Astro.getActionResult(actions.newsletter) as ActionOutcome | undefined;
 const newsletter = newsletterStateFrom(Astro.url, newsletterOutcome, site);
 // A posted form with errors re-renders as a 400, so the browser and the logs read it as one.
 if (modal.state === 'error' || newsletter.state === 'error') Astro.response.status = 400;
@@ -74,6 +70,8 @@ const actionPaths = Object.fromEntries(
   ENQUIRY_KINDS.map((kind) => [kind, String(actions.enquiry[kind])]),
 ) as Record<EnquiryKind, string>;
 const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';
+// The Studio can pause PostHog without a deploy (siteSettings.analyticsEnabled).
+const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !== false;
 ---
 
 <!doctype html>
@@ -84,7 +82,7 @@ const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <ClientRouter />
-    {PUBLIC_POSTHOG_KEY && <Analytics />}
+    {analyticsOn && <Analytics />}
   </head>
   <body class="oy-home" data-card="grain-dots" data-theme={settings?.theme ?? 'adire'}>
     <ProgressBar />
@@ -118,9 +116,7 @@ const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';
         address={settings?.address}
         ein={settings?.ein}
       >
-        <ZeffyEmbed slot="embed" server:defer>
-          <p slot="fallback" class="oy-give-island-fallback">Loading the giving form...</p>
-        </ZeffyEmbed>
+        <ZeffyEmbed slot="embed" server:defer />
       </GiveDialog>
     </div>
     <FormBridge />
@@ -137,9 +133,8 @@ const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';
 </html>
 
 <style is:global>
-  .oy-give-island-fallback {
-    margin: 0;
-    font-size: 14px;
-    color: var(--text-muted);
+  /* The sticky nav is 68px tall: an anchor lands under it, never behind it (ROUTES section 2). */
+  [id] {
+    scroll-margin-top: 96px;
   }
 </style>

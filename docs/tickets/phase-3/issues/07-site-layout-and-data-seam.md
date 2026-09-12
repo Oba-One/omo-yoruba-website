@@ -31,3 +31,7 @@ on insertion, so the current page and the source path stay right); only the two 
 persisted. The Zeffy island lives here (`ZeffyEmbed.astro`) and answered Pending against the
 seeded settings. The `?enquiry=member` opener renders the modal open and the element turns it
 modal once scripts run; `#give` opens the Give Dialog on load in its pending mode.
+
+Review follow-up: the cross-fade is asserted through the 380ms rule and Astro's reduced-motion
+stylesheet, not by navigating (the branch has one route); Phase 4's routes give the suite a
+second page to cross to. `siteSettings.analyticsEnabled` now gates PostHog beside the key.

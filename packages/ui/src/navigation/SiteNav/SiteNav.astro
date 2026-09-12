@@ -141,10 +141,6 @@ const ariaCurrent = (href: string) => (href === current ? 'page' : undefined);
     font-weight: 700;
     padding: 11px 26px;
   }
-  /* Sticky nav height: anchors land under it, never behind it. */
-  :global([id]) {
-    scroll-margin-top: 96px;
-  }
 </style>
 
 <script is:inline>
@@ -153,6 +149,7 @@ const ariaCurrent = (href: string) => (href === current ? 'page' : undefined);
       'oy-site-nav',
       class extends HTMLElement {
         connectedCallback() {
+          if (this.dataset.ready === 'true') return;
           const drop = this.querySelector('.oy-nav-drop');
           const trigger = drop && drop.querySelector('.oy-nav-trigger');
           const list = drop && drop.querySelector('.oy-nav-drop-menu');
@@ -184,6 +181,7 @@ const ariaCurrent = (href: string) => (href === current ? 'page' : undefined);
           const menu = this.querySelector('dialog.oy-nav-menu');
           if (burger && menu && typeof menu.showModal === 'function') {
             const open = () => {
+              menu.oyTrigger = burger;
               menu.showModal();
               burger.setAttribute('aria-expanded', 'true');
               this.dataset.menu = 'open';
@@ -192,6 +190,7 @@ const ariaCurrent = (href: string) => (href === current ? 'page' : undefined);
             menu.addEventListener('close', () => {
               burger.setAttribute('aria-expanded', 'false');
               this.dataset.menu = 'closed';
+              menu.oyTrigger = null;
               burger.focus();
             });
             const close = menu.querySelector('.oy-nav-close');

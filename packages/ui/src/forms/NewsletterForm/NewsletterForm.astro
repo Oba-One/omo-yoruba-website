@@ -9,7 +9,7 @@
  * announces `newsletter_submitted` as an `oy:track` event (ADR 0018).
  */
 import { fallbackSentence, NEWSLETTER_COPY, type SiteContact } from '@oy/content/enquiry-kinds';
-import { EMAIL_MESSAGE } from '@oy/content/enquiry-zod';
+import { EMAIL_MESSAGE, EMAIL_PATTERN } from '@oy/content/enquiry-zod';
 import Button from '../../core/Button/Button.astro';
 
 export type NewsletterState = 'idle' | 'busy' | 'success' | 'error';
@@ -56,6 +56,7 @@ const errorId = `${id}-error`;
   data-label-done={LABELS.success}
   data-required-message={REQUIRED}
   data-email-message={EMAIL_MESSAGE}
+  data-email-pattern={EMAIL_PATTERN}
   data-fallback-message={fallbackSentence(site)}
 >
   <form class="oy-signup" method="POST" action={action} novalidate data-form="newsletter">
@@ -135,6 +136,7 @@ const errorId = `${id}-error`;
       'oy-newsletter',
       class extends HTMLElement {
         connectedCallback() {
+          if (this.dataset.ready === 'true') return;
           const form = this.querySelector('form');
           const input = this.querySelector('input[type="email"]');
           const button = form && form.querySelector('button[type="submit"]');
@@ -197,7 +199,7 @@ const errorId = `${id}-error`;
               showError(this.dataset.requiredMessage);
               return;
             }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
+            if (!new RegExp(this.dataset.emailPattern || '^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$').test(value)) {
               event.preventDefault();
               showError(this.dataset.emailMessage);
               return;

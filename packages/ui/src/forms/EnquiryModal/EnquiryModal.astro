@@ -15,6 +15,7 @@
  * `enquiry_submitted` as `oy:track` events (ADR 0018).
  */
 import {
+  autocompleteFor,
   type ContactRole,
   ENQUIRY_KINDS,
   ENQUIRY_SPECS,
@@ -27,7 +28,7 @@ import {
   SUMMARY_TEMPLATE,
   successCopy,
 } from '@oy/content/enquiry-kinds';
-import { EMAIL_MESSAGE } from '@oy/content/enquiry-zod';
+import { EMAIL_MESSAGE, EMAIL_PATTERN } from '@oy/content/enquiry-zod';
 import Button from '../../core/Button/Button.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import Field from '../Field/Field.astro';
@@ -83,6 +84,7 @@ const isOpen = (k: EnquiryKind) => k === kind;
   data-required-template={REQUIRED_TEMPLATE}
   data-summary-template={SUMMARY_TEMPLATE}
   data-email-message={EMAIL_MESSAGE}
+  data-email-pattern={EMAIL_PATTERN}
   data-fallback-message={fallbackSentence(site)}
   data-busy-label="Sending..."
 >
@@ -148,6 +150,7 @@ const isOpen = (k: EnquiryKind) => k === kind;
                         id={`eq-${k}-${field.id}`}
                         value={active ? values[field.id] : undefined}
                         error={active ? errors[field.id] : undefined}
+                        autocomplete={autocompleteFor(field)}
                       />
                     ))}
                   </div>
@@ -241,255 +244,271 @@ const isOpen = (k: EnquiryKind) => k === kind;
 
 <script is:inline>
   if (!customElements.get('oy-enquiry-modal')) {
+    // The element is persisted across navigations, so it can be disconnected and connected
+    // again: the internal wiring happens once and the document listeners are added per
+    // connection with an AbortController that a disconnection aborts.
+    const wireEnquiryModal = (host) => {
+      const dialog = host.querySelector('dialog');
+      if (!dialog || typeof dialog.showModal !== 'function') return null;
+      const title = host.querySelector('[data-modal-title]');
+      const blurb = host.querySelector('[data-modal-blurb]');
+      const sections = Array.from(host.querySelectorAll('section[data-kind]'));
+      const emailPattern = new RegExp(host.dataset.emailPattern || '^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$');
+      const fill = (template, slots) =>
+        (template || '').replace(/\{(\w+)\}/g, (match, key) => slots[key] || '');
+      const api = { trigger: null, dialog };
+
+      const sectionFor = (kind) => sections.find((s) => s.dataset.kind === kind);
+      const show = (kind) => {
+        const active = sectionFor(kind);
+        if (!active) return null;
+        for (const s of sections) s.hidden = s !== active;
+        if (title) title.textContent = active.dataset.title || '';
+        if (blurb) blurb.textContent = active.dataset.blurb || '';
+        dialog.setAttribute('data-kind', kind);
+        return active;
+      };
+      const describe = (control, field) => {
+        const hint = field.querySelector('.oy-field-hint');
+        const error = field.querySelector('.oy-field-error');
+        const ids = [];
+        if (hint) ids.push(hint.id);
+        if (error && !error.hidden) ids.push(error.id);
+        if (ids.length) control.setAttribute('aria-describedby', ids.join(' '));
+        else control.removeAttribute('aria-describedby');
+      };
+      const clearErrors = (form) => {
+        const summary = form.querySelector('[data-summary]');
+        if (summary) {
+          summary.hidden = true;
+          summary.textContent = '';
+        }
+        for (const field of form.querySelectorAll('.oy-field')) {
+          const control = field.querySelector('input, select, textarea');
+          const error = field.querySelector('.oy-field-error');
+          field.classList.remove('oy-field--error');
+          if (error) {
+            error.hidden = true;
+            error.textContent = '';
+          }
+          if (control) {
+            control.removeAttribute('aria-invalid');
+            describe(control, field);
+          }
+        }
+      };
+      const showFieldError = (form, name, sentence) => {
+        const control = form.querySelector('[name="' + name + '"]');
+        const field = control && control.closest('.oy-field');
+        if (!control || !field) return;
+        const error = field.querySelector('.oy-field-error');
+        field.classList.add('oy-field--error');
+        control.setAttribute('aria-invalid', 'true');
+        if (error) {
+          error.textContent = sentence;
+          error.hidden = false;
+        }
+        describe(control, field);
+      };
+      const showSummary = (form, sentence) => {
+        const summary = form.querySelector('[data-summary]');
+        if (!summary) return;
+        summary.textContent = sentence;
+        summary.hidden = false;
+        summary.focus();
+      };
+      const setBusy = (form, busy) => {
+        const button = form.querySelector('button[type="submit"]');
+        if (!button) return;
+        if (!button.dataset.label) button.dataset.label = button.textContent.trim();
+        button.textContent = busy ? host.dataset.busyLabel : button.dataset.label;
+        if (busy) {
+          button.setAttribute('aria-busy', 'true');
+          button.setAttribute('aria-disabled', 'true');
+        } else {
+          button.removeAttribute('aria-busy');
+          button.removeAttribute('aria-disabled');
+        }
+        form.dataset.busy = busy ? 'true' : 'false';
+      };
+      const track = (event, kind) =>
+        host.dispatchEvent(new CustomEvent('oy:track', { bubbles: true, detail: { event, kind } }));
+      const succeed = (active, form, data) => {
+        const ok = active.querySelector('[data-success]');
+        if (ok) {
+          const heading = ok.querySelector('b');
+          const body = ok.querySelector('p');
+          if (heading && data.title) heading.textContent = data.title;
+          if (body && data.body) body.textContent = data.body;
+          ok.hidden = false;
+          form.hidden = true;
+          const close = ok.querySelector('[data-close]');
+          if (close) close.focus();
+        }
+        track('enquiry_submitted', active.dataset.kind);
+      };
+      const validate = (form) => {
+        const missing = [];
+        let badEmail = null;
+        for (const control of form.querySelectorAll('[data-required], [data-email]')) {
+          const value = (control.value || '').trim();
+          if (control.hasAttribute('data-required') && !value) missing.push(control);
+          else if (control.hasAttribute('data-email') && value && !emailPattern.test(value))
+            badEmail = control;
+        }
+        clearErrors(form);
+        if (!missing.length && !badEmail) return true;
+        for (const control of missing) {
+          showFieldError(
+            form,
+            control.name,
+            fill(host.dataset.requiredTemplate, { req: control.dataset.req }),
+          );
+        }
+        if (badEmail) showFieldError(form, badEmail.name, host.dataset.emailMessage);
+        showSummary(
+          form,
+          missing.length
+            ? fill(host.dataset.summaryTemplate, {
+                list: missing.map((control) => control.dataset.req).join(', '),
+              })
+            : host.dataset.emailMessage,
+        );
+        return false;
+      };
+      api.open = (kind, from) => {
+        const active = show(kind);
+        if (!active) return;
+        api.trigger = from || null;
+        dialog.oyTrigger = api.trigger;
+        const form = active.querySelector('form');
+        const ok = active.querySelector('[data-success]');
+        if (form) {
+          form.reset();
+          clearErrors(form);
+          setBusy(form, false);
+          form.hidden = false;
+          const source = form.querySelector('input[name="source"]');
+          if (source) source.value = window.location.pathname;
+        }
+        if (ok) ok.hidden = true;
+        if (!dialog.open) dialog.showModal();
+        const first =
+          form &&
+          form.querySelector('.oy-form-grid input, .oy-form-grid select, .oy-form-grid textarea');
+        if (first) first.focus();
+        track('enquiry_opened', kind);
+      };
+      api.has = (kind) => Boolean(sectionFor(kind));
+
+      for (const button of host.querySelectorAll('[data-close], .oy-modal-close')) {
+        button.addEventListener('click', () => dialog.close());
+      }
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        if (/[?&](enquiry|sent)=/.test(window.location.search)) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('enquiry');
+          url.searchParams.delete('sent');
+          window.history.replaceState(null, '', url.pathname + url.search);
+        }
+        const back = api.trigger;
+        if (back && back.isConnected && typeof back.focus === 'function') back.focus();
+        api.trigger = null;
+        dialog.oyTrigger = null;
+      });
+      for (const active of sections) {
+        const form = active.querySelector('form');
+        if (!form) continue;
+        form.addEventListener('submit', (event) => {
+          if (form.dataset.busy === 'true') {
+            event.preventDefault();
+            return;
+          }
+          if (!validate(form)) {
+            event.preventDefault();
+            return;
+          }
+          const submit = window.oySubmit;
+          if (typeof submit !== 'function') return;
+          event.preventDefault();
+          setBusy(form, true);
+          submit('enquiry.' + active.dataset.kind, new FormData(form)).then(
+            (result) => {
+              const data = result && result.data;
+              setBusy(form, false);
+              if (data && data.ok) {
+                succeed(active, form, data);
+                return;
+              }
+              if (data && data.fields) {
+                for (const name of Object.keys(data.fields)) {
+                  showFieldError(form, name, data.fields[name]);
+                }
+              }
+              // The handlers answer results, never throw: an `error` here is the transport
+              // (offline, a stale deploy), so the visitor gets the fallback sentence.
+              if (result && result.error) console.error('[enquiry]', result.error);
+              showSummary(form, (data && data.summary) || host.dataset.fallbackMessage);
+            },
+            () => {
+              setBusy(form, false);
+              showSummary(form, host.dataset.fallbackMessage);
+            },
+          );
+        });
+      }
+      // A page served with the modal open (the no-JavaScript path) turns modal once scripts run.
+      if (dialog.hasAttribute('open')) {
+        const kind = dialog.getAttribute('data-kind');
+        dialog.removeAttribute('open');
+        const active = kind ? show(kind) : null;
+        dialog.showModal();
+        const summary = active && active.querySelector('[data-summary]:not([hidden])');
+        const close = active && active.querySelector('[data-success]:not([hidden]) [data-close]');
+        if (summary) summary.focus();
+        else if (close) close.focus();
+      }
+      return api;
+    };
+
     customElements.define(
       'oy-enquiry-modal',
       class extends HTMLElement {
         connectedCallback() {
-          const dialog = this.querySelector('dialog');
-          if (!dialog || typeof dialog.showModal !== 'function') return;
-          const title = this.querySelector('[data-modal-title]');
-          const blurb = this.querySelector('[data-modal-blurb]');
-          const sections = Array.from(this.querySelectorAll('section[data-kind]'));
-          const fill = (template, slots) =>
-            (template || '').replace(/\{(\w+)\}/g, (match, key) => slots[key] || '');
-          let trigger = null;
-
-          const sectionFor = (kind) => sections.find((s) => s.dataset.kind === kind);
-          const show = (kind) => {
-            const active = sectionFor(kind);
-            if (!active) return null;
-            for (const s of sections) s.hidden = s !== active;
-            if (title) title.textContent = active.dataset.title || '';
-            if (blurb) blurb.textContent = active.dataset.blurb || '';
-            dialog.setAttribute('data-kind', kind);
-            return active;
-          };
-          const describe = (control, field) => {
-            const hint = field.querySelector('.oy-field-hint');
-            const error = field.querySelector('.oy-field-error');
-            const ids = [];
-            if (hint) ids.push(hint.id);
-            if (error && !error.hidden) ids.push(error.id);
-            if (ids.length) control.setAttribute('aria-describedby', ids.join(' '));
-            else control.removeAttribute('aria-describedby');
-          };
-          const clearErrors = (form) => {
-            const summary = form.querySelector('[data-summary]');
-            if (summary) {
-              summary.hidden = true;
-              summary.textContent = '';
-            }
-            for (const field of form.querySelectorAll('.oy-field')) {
-              const control = field.querySelector('input, select, textarea');
-              const error = field.querySelector('.oy-field-error');
-              field.classList.remove('oy-field--error');
-              if (error) {
-                error.hidden = true;
-                error.textContent = '';
-              }
-              if (control) {
-                control.removeAttribute('aria-invalid');
-                describe(control, field);
-              }
-            }
-          };
-          const showFieldError = (form, name, sentence) => {
-            const control = form.querySelector('[name="' + name + '"]');
-            const field = control && control.closest('.oy-field');
-            if (!control || !field) return;
-            const error = field.querySelector('.oy-field-error');
-            field.classList.add('oy-field--error');
-            control.setAttribute('aria-invalid', 'true');
-            if (error) {
-              error.textContent = sentence;
-              error.hidden = false;
-            }
-            describe(control, field);
-          };
-          const showSummary = (form, sentence) => {
-            const summary = form.querySelector('[data-summary]');
-            if (!summary) return;
-            summary.textContent = sentence;
-            summary.hidden = false;
-            summary.focus();
-          };
-          const setBusy = (form, busy) => {
-            const button = form.querySelector('button[type="submit"]');
-            if (!button) return;
-            if (!button.dataset.label) button.dataset.label = button.textContent.trim();
-            button.textContent = busy ? this.dataset.busyLabel : button.dataset.label;
-            if (busy) {
-              button.setAttribute('aria-busy', 'true');
-              button.setAttribute('aria-disabled', 'true');
-            } else {
-              button.removeAttribute('aria-busy');
-              button.removeAttribute('aria-disabled');
-            }
-            form.dataset.busy = busy ? 'true' : 'false';
-          };
-          const succeed = (active, form, data) => {
-            const ok = active.querySelector('[data-success]');
-            if (ok) {
-              const heading = ok.querySelector('b');
-              const body = ok.querySelector('p');
-              if (heading && data.title) heading.textContent = data.title;
-              if (body && data.body) body.textContent = data.body;
-              ok.hidden = false;
-              form.hidden = true;
-              const close = ok.querySelector('[data-close]');
-              if (close) close.focus();
-            }
-            this.dispatchEvent(
-              new CustomEvent('oy:track', {
-                bubbles: true,
-                detail: { event: 'enquiry_submitted', kind: active.dataset.kind },
-              }),
-            );
-          };
-          const validate = (form) => {
-            const missing = [];
-            let badEmail = null;
-            for (const control of form.querySelectorAll('[data-required], [data-email]')) {
-              const value = (control.value || '').trim();
-              if (control.hasAttribute('data-required') && !value) missing.push(control);
-              else if (
-                control.hasAttribute('data-email') &&
-                value &&
-                !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)
-              )
-                badEmail = control;
-            }
-            clearErrors(form);
-            if (!missing.length && !badEmail) return true;
-            for (const control of missing) {
-              showFieldError(
-                form,
-                control.name,
-                fill(this.dataset.requiredTemplate, { req: control.dataset.req }),
-              );
-            }
-            if (badEmail) showFieldError(form, badEmail.name, this.dataset.emailMessage);
-            showSummary(
-              form,
-              missing.length
-                ? fill(this.dataset.summaryTemplate, {
-                    list: missing.map((control) => control.dataset.req).join(', '),
-                  })
-                : this.dataset.emailMessage,
-            );
-            return false;
-          };
-          const open = (kind, from) => {
-            const active = show(kind);
-            if (!active) return;
-            trigger = from || null;
-            const form = active.querySelector('form');
-            const ok = active.querySelector('[data-success]');
-            if (form) {
-              form.reset();
-              clearErrors(form);
-              setBusy(form, false);
-              form.hidden = false;
-              const source = form.querySelector('input[name="source"]');
-              if (source) source.value = window.location.pathname;
-            }
-            if (ok) ok.hidden = true;
-            if (!dialog.open) dialog.showModal();
-            const first =
-              form &&
-              form.querySelector('.oy-form-grid input, .oy-form-grid select, .oy-form-grid textarea');
-            if (first) first.focus();
-            this.dispatchEvent(
-              new CustomEvent('oy:track', {
-                bubbles: true,
-                detail: { event: 'enquiry_opened', kind },
-              }),
-            );
-          };
-
-          document.addEventListener('click', (event) => {
-            const target =
-              event.target && event.target.closest && event.target.closest('[data-enquiry]');
-            if (!target || this.contains(target)) return;
-            const kind = target.getAttribute('data-enquiry');
-            if (!sectionFor(kind)) return;
-            event.preventDefault();
-            open(kind, target);
-          });
-          for (const button of this.querySelectorAll('[data-close], .oy-modal-close')) {
-            button.addEventListener('click', () => dialog.close());
-          }
-          dialog.addEventListener('click', (event) => {
-            if (event.target === dialog) dialog.close();
-          });
-          dialog.addEventListener('keydown', (event) => {
-            if (event.key !== 'Escape') return;
-            event.preventDefault();
-            dialog.close();
-          });
-          dialog.addEventListener('close', () => {
-            if (/[?&](enquiry|sent)=/.test(window.location.search)) {
-              const url = new URL(window.location.href);
-              url.searchParams.delete('enquiry');
-              url.searchParams.delete('sent');
-              window.history.replaceState(null, '', url.pathname + url.search);
-            }
-            if (trigger && typeof trigger.focus === 'function') trigger.focus();
-            trigger = null;
-          });
-          for (const active of sections) {
-            const form = active.querySelector('form');
-            if (!form) continue;
-            form.addEventListener('submit', (event) => {
-              if (form.dataset.busy === 'true') {
-                event.preventDefault();
-                return;
-              }
-              if (!validate(form)) {
-                event.preventDefault();
-                return;
-              }
-              const submit = window.oySubmit;
-              if (typeof submit !== 'function') return;
+          if (!this.oyApi) this.oyApi = wireEnquiryModal(this);
+          const api = this.oyApi;
+          if (!api) return;
+          this.oyListeners = new AbortController();
+          document.addEventListener(
+            'click',
+            (event) => {
+              const target =
+                event.target && event.target.closest && event.target.closest('[data-enquiry]');
+              if (!target || this.contains(target)) return;
+              const kind = target.getAttribute('data-enquiry');
+              if (!api.has(kind)) return;
               event.preventDefault();
-              setBusy(form, true);
-              submit('enquiry.' + active.dataset.kind, new FormData(form)).then(
-                (result) => {
-                  const data = result && result.data;
-                  setBusy(form, false);
-                  if (data && data.ok) {
-                    succeed(active, form, data);
-                    return;
-                  }
-                  if (data && data.fields) {
-                    for (const name of Object.keys(data.fields)) {
-                      showFieldError(form, name, data.fields[name]);
-                    }
-                  }
-                  // The handlers answer results, never throw: an `error` here is the transport
-                  // (offline, a stale deploy), so the visitor gets the fallback sentence.
-                  if (result && result.error) console.error('[enquiry]', result.error);
-                  showSummary(form, (data && data.summary) || this.dataset.fallbackMessage);
-                },
-                () => {
-                  setBusy(form, false);
-                  showSummary(form, this.dataset.fallbackMessage);
-                },
-              );
-            });
-          }
-          // A page served with the modal open (the no-JavaScript path) turns modal once scripts run.
-          if (dialog.hasAttribute('open')) {
-            const kind = dialog.getAttribute('data-kind');
-            dialog.removeAttribute('open');
-            const active = kind ? show(kind) : null;
-            dialog.showModal();
-            const summary = active && active.querySelector('[data-summary]:not([hidden])');
-            const close = active && active.querySelector('[data-success]:not([hidden]) [data-close]');
-            if (summary) summary.focus();
-            else if (close) close.focus();
-          }
+              // A trigger inside another dialog (the Give Dialog's Contact us) closes with it:
+              // focus goes back to what opened that dialog instead.
+              const from = target.closest('dialog');
+              api.open(kind, from && from !== api.dialog && from.oyTrigger ? from.oyTrigger : target);
+            },
+            { signal: this.oyListeners.signal },
+          );
           this.dataset.ready = 'true';
+        }
+
+        disconnectedCallback() {
+          if (this.oyListeners) this.oyListeners.abort();
+          delete this.dataset.ready;
         }
       },
     );

@@ -1,11 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Playwright against the dev server (the Vercel adapter has no preview command) or against a
-// deployed URL when PLAYWRIGHT_TEST_BASE_URL is set. Two projects: desktop Chromium at 1440 and a
-// 375 wide mobile Chromium (the iPhone descriptors default to WebKit, which CI does not install).
-// Facts and sources: docs/research/phase-3-playwright-and-axe.md.
+// Playwright against its own dev server on 4322 (the Vercel adapter has no preview command, and
+// a `bun dev` on 4321 keeps its toolbar and stays untouched) or against a deployed URL when
+// PLAYWRIGHT_TEST_BASE_URL is set. Two projects: desktop Chromium at 1440 and a 375 wide mobile
+// Chromium (the iPhone descriptors default to WebKit, which CI does not install). Facts and
+// sources: docs/research/phase-3-playwright-and-axe.md.
 const deployed = process.env.PLAYWRIGHT_TEST_BASE_URL;
-const baseURL = deployed ?? 'http://localhost:4321';
+const baseURL = deployed ?? 'http://localhost:4322';
 
 export default defineConfig({
   testDir: './e2e',
@@ -39,12 +40,12 @@ export default defineConfig({
         // backgrounds the dev server when it detects a coding agent (the process then "exits
         // early" and the daemon keeps the port); ASTRO_DEV_BACKGROUND set to anything turns that
         // detection off, so the server stays in the foreground under the runner.
-        command: 'node ./node_modules/astro/bin/astro.mjs dev',
+        command: 'node ./node_modules/astro/bin/astro.mjs dev --port 4322',
         env: { ...process.env, PLAYWRIGHT: '1', ASTRO_DEV_BACKGROUND: '0' },
         stdout: 'ignore',
         stderr: 'pipe',
         url: baseURL,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
         timeout: 120_000,
       },
 });

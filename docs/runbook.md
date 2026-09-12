@@ -141,20 +141,19 @@ Functions run on Node 24 in production and on this machine's Node 22 locally.
 ## Playwright and axe
 
 Since Phase 3 (`docs/research/phase-3-playwright-and-axe.md`). `bun e2e` runs the suite in
-`packages/web/e2e` with `@playwright/test` against `astro dev` on port 4321 (the Vercel adapter
-has no `astro preview`), in Chromium at 1440 and at a 375 wide mobile project. Install the
-browser once per machine, with Node 22 on `PATH`:
+`packages/web/e2e` with `@playwright/test` against its own `astro dev` on port 4322 (the Vercel
+adapter has no `astro preview`; a `bun dev` on 4321 stays untouched), in Chromium at 1440 and at
+a 375 wide mobile project. Install the browser once per machine, with Node 22 on `PATH`:
 
 ```bash
 bunx playwright install chromium
 ```
 
-The runner starts `node ./node_modules/astro/bin/astro.mjs dev` itself with `PLAYWRIGHT=1`
-(the dev toolbar off: its shadow DOM carries headings and controls the specs and axe would see)
-and `ASTRO_DEV_BACKGROUND=0` (Astro 7 otherwise backgrounds the dev server when it detects a
-coding agent, the runner reports "exited early" and the daemon keeps the port; `astro dev stop`
-clears one that got away). A `bun dev` already on 4321 is reused outside CI, toolbar and all,
-so stop it first for a clean run. Set `PLAYWRIGHT_TEST_BASE_URL` to run the suite against a
+The runner starts `node ./node_modules/astro/bin/astro.mjs dev --port 4322` itself with
+`PLAYWRIGHT=1` (the dev toolbar off: its shadow DOM carries headings and controls the specs and
+axe would see) and `ASTRO_DEV_BACKGROUND=0` (Astro 7 otherwise backgrounds the dev server when
+it detects a coding agent, the runner reports "exited early" and the daemon keeps the port;
+`astro dev stop` clears one that got away). Set `PLAYWRIGHT_TEST_BASE_URL` to run the suite against a
 deployed URL instead of starting a server; a preview deployment also needs the project's
 Protection Bypass secret in `use.extraHTTPHeaders` (not wired: previews are private, CI runs on
 the runner). The action requests are intercepted, so nothing is written; the two no-JS success

@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import {
+  autocompleteFor,
+  burstSentence,
   cappedSentence,
   contactsByRole,
+  ENQUIRY_SPECS,
   fallbackSentence,
   requiredSentence,
   successCopy,
   summarySentence,
 } from './enquiry-kinds';
-import { parseEnquiry } from './enquiry-zod';
+import { EMAIL_PATTERN, parseEnquiry } from './enquiry-zod';
 
 describe('form sentences', () => {
   it('speaks the same missing-field sentence on the site and in the action', () => {
@@ -32,6 +35,29 @@ describe('form sentences', () => {
       'Too many messages from this address in the last hour. Write to hello@example.org instead.',
     );
     expect(cappedSentence({})).toBe('Too many messages from this address in the last hour.');
+    expect(burstSentence({ email: 'hello@example.org' })).toBe(
+      'Too many messages in a few minutes. Try again shortly, or write to hello@example.org.',
+    );
+    expect(burstSentence()).toBe('Too many messages in a few minutes. Try again shortly.');
+  });
+
+  it('gives the scripts an email shape and the fields their autofill hints', () => {
+    const pattern = new RegExp(EMAIL_PATTERN);
+    expect(pattern.test('ade@example.org')).toBe(true);
+    expect(pattern.test('ade@example')).toBe(false);
+    const member = ENQUIRY_SPECS.member.fields;
+    expect(member.map((field) => autocompleteFor(field))).toEqual([
+      'name',
+      'email',
+      'tel',
+      'address-level2',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    ]);
+    const business = ENQUIRY_SPECS.vendor.fields.find((field) => field.id === 'biz');
+    expect(business && autocompleteFor(business)).toBe('organization');
   });
 
   it('keys the routing contacts by role and drops what it does not know', () => {

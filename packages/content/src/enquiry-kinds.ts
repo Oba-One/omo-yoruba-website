@@ -367,6 +367,8 @@ export const SUMMARY_TEMPLATE = 'We still need {list}. Nothing you typed has bee
 export const FALLBACK_TEMPLATE = 'We could not send your message.[[ Write to {email} instead.]]';
 export const CAPPED_TEMPLATE =
   'Too many messages from this address in the last hour.[[ Write to {email} instead.]]';
+export const BURST_TEMPLATE =
+  'Too many messages in a few minutes. Try again shortly[[, or write to {email}]].';
 
 /** "We still need an email address." */
 export const requiredSentence = (req: string): string => fillTemplate(REQUIRED_TEMPLATE, { req });
@@ -382,6 +384,20 @@ export const fallbackSentence = (site: SiteContact = {}): string =>
 /** The sentence when an address is past the address cap. */
 export const cappedSentence = (site: SiteContact = {}): string =>
   fillTemplate(CAPPED_TEMPLATE, { email: site.email });
+
+/** The sentence when one origin sends a burst. */
+export const burstSentence = (site: SiteContact = {}): string =>
+  fillTemplate(BURST_TEMPLATE, { email: site.email });
+
+/** The browser autofill hint for a field, from what it asks (WCAG 1.3.5). */
+export function autocompleteFor(field: FieldSpec): string | undefined {
+  if (field.type === 'email') return 'email';
+  if (field.type === 'tel') return 'tel';
+  if (['name', 'who', 'learner', 'guardian'].includes(field.id)) return 'name';
+  if (['org', 'biz'].includes(field.id)) return 'organization';
+  if (field.id === 'city') return 'address-level2';
+  return undefined;
+}
 
 /** A routing contact entry as a query returns it from `siteSettings.contacts[]`. */
 export interface ContactEntry {

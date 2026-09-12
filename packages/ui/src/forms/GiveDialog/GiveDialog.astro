@@ -21,7 +21,7 @@ interface Props {
   open?: boolean;
   /** The server state: the embed box, the fallback, or the Pending answer. */
   mode?: GiveMode;
-  /** The organisation name and mailing address for the check line; Pending while empty. */
+  /** The organization name and mailing address for the check line; Pending while empty. */
   orgName?: string | null;
   address?: string | null;
   ein?: string | null;
@@ -75,8 +75,8 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
         <button class="oy-modal-close" type="button" aria-label="Close">×</button>
       </div>
       <div class="oy-modal-body">
-        <div class="oy-give-frame" data-embed hidden={mode !== 'embed'}>
-          <p class="oy-give-loading" data-loading>Loading the giving form...</p>
+        <div class="oy-give-frame" data-embed hidden={mode === 'fallback'}>
+          <p class="oy-give-loading" data-loading hidden={mode === 'pending'}>Loading the giving form...</p>
           <div class="oy-give-mount" data-mount></div>
           <slot name="embed" />
         </div>
@@ -178,122 +178,149 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
 
 <script is:inline>
   if (!customElements.get('oy-give-dialog')) {
+    // Persisted across navigations: the internal wiring happens once, the document and window
+    // listeners are added per connection and aborted on disconnection.
+    const wireGiveDialog = (host) => {
+      const dialog = host.querySelector('dialog');
+      if (!dialog || typeof dialog.showModal !== 'function') return null;
+      const lead = host.querySelector('[data-lead]');
+      const embed = host.querySelector('[data-embed]');
+      const mount = host.querySelector('[data-mount]');
+      const loading = host.querySelector('[data-loading]');
+      const fallback = host.querySelector('[data-fallback]');
+      const heading = host.querySelector('[data-heading]');
+      const timeout = Number(host.dataset.timeout) || 4000;
+      const api = { trigger: null, dialog };
+      let timer = 0;
+      let poll = 0;
+      let mounted = false;
+      const track = (event) =>
+        host.dispatchEvent(new CustomEvent('oy:track', { bubbles: true, detail: { event } }));
+      const stop = () => {
+        window.clearTimeout(timer);
+        window.clearInterval(poll);
+        timer = 0;
+        poll = 0;
+      };
+      const fail = () => {
+        stop();
+        if (embed) embed.hidden = true;
+        if (fallback) fallback.hidden = false;
+        if (lead) lead.textContent = host.dataset.leadFallback;
+        if (heading) heading.textContent = host.dataset.headingFallback;
+        host.dataset.state = 'failed';
+        track('give_embed_failed');
+      };
+      const ready = () => {
+        stop();
+        if (loading) loading.hidden = true;
+        host.dataset.state = 'ready';
+      };
+      const mountFrame = () => {
+        const template = host.querySelector('template[data-zeffy]');
+        if (!template || !mount || mounted) return Boolean(template);
+        mounted = true;
+        mount.replaceChildren(template.content.cloneNode(true));
+        const frame = mount.querySelector('iframe');
+        if (frame) frame.addEventListener('load', ready, { once: true });
+        else ready();
+        return true;
+      };
+      const arm = () => {
+        if (host.dataset.mode === 'pending') return;
+        if (embed) embed.hidden = false;
+        if (fallback) fallback.hidden = true;
+        if (loading) loading.hidden = false;
+        if (lead) lead.textContent = host.dataset.leadEmbed;
+        host.dataset.state = 'loading';
+        stop();
+        timer = window.setTimeout(fail, timeout);
+        // The island may still be on its way; keep looking for the template until the timer ends.
+        if (!mountFrame()) poll = window.setInterval(mountFrame, 200);
+      };
+      api.open = (from) => {
+        api.trigger = from || null;
+        dialog.oyTrigger = api.trigger;
+        if (!dialog.open) dialog.showModal();
+        if (!mounted) arm();
+        const close = dialog.querySelector('.oy-modal-close');
+        if (close) close.focus();
+        track('give_opened');
+      };
+      api.openFromHash = () => {
+        if (window.location.hash === '#give' && !dialog.open) api.open(null);
+      };
+      const retry = () => {
+        mounted = false;
+        if (mount) mount.replaceChildren();
+        arm();
+      };
+
+      host.addEventListener('click', (event) => {
+        const target =
+          event.target && event.target.closest && event.target.closest('[data-enquiry]');
+        if (target) dialog.close();
+      });
+      const retryButton = host.querySelector('[data-retry]');
+      if (retryButton) retryButton.addEventListener('click', retry);
+      const closeButton = dialog.querySelector('.oy-modal-close');
+      if (closeButton) closeButton.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        if (window.location.hash === '#give') {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+        const back = api.trigger;
+        if (back && back.isConnected && typeof back.focus === 'function') back.focus();
+        api.trigger = null;
+        dialog.oyTrigger = null;
+      });
+      if (dialog.hasAttribute('open')) {
+        dialog.removeAttribute('open');
+        api.open(null);
+      } else {
+        window.setTimeout(api.openFromHash, 0);
+      }
+      return api;
+    };
+
     customElements.define(
       'oy-give-dialog',
       class extends HTMLElement {
         connectedCallback() {
-          const dialog = this.querySelector('dialog');
-          if (!dialog || typeof dialog.showModal !== 'function') return;
-          const lead = this.querySelector('[data-lead]');
-          const embed = this.querySelector('[data-embed]');
-          const mount = this.querySelector('[data-mount]');
-          const loading = this.querySelector('[data-loading]');
-          const fallback = this.querySelector('[data-fallback]');
-          const heading = this.querySelector('[data-heading]');
-          const timeout = Number(this.dataset.timeout) || 4000;
-          let trigger = null;
-          let timer = 0;
-          let poll = 0;
-          let mounted = false;
-          const track = (event) =>
-            this.dispatchEvent(new CustomEvent('oy:track', { bubbles: true, detail: { event } }));
-          const stop = () => {
-            window.clearTimeout(timer);
-            window.clearInterval(poll);
-            timer = 0;
-            poll = 0;
-          };
-          const fail = () => {
-            stop();
-            if (embed) embed.hidden = true;
-            if (fallback) fallback.hidden = false;
-            if (lead) lead.textContent = this.dataset.leadFallback;
-            if (heading) heading.textContent = this.dataset.headingFallback;
-            this.dataset.state = 'failed';
-            track('give_embed_failed');
-          };
-          const ready = () => {
-            stop();
-            if (loading) loading.hidden = true;
-            this.dataset.state = 'ready';
-          };
-          const mountFrame = () => {
-            const template = this.querySelector('template[data-zeffy]');
-            if (!template || !mount || mounted) return Boolean(template);
-            mounted = true;
-            mount.replaceChildren(template.content.cloneNode(true));
-            const frame = mount.querySelector('iframe');
-            if (frame) frame.addEventListener('load', ready, { once: true });
-            else ready();
-            return true;
-          };
-          const arm = () => {
-            if (this.dataset.mode === 'pending') return;
-            if (embed) embed.hidden = false;
-            if (fallback) fallback.hidden = true;
-            if (loading) loading.hidden = false;
-            if (lead) lead.textContent = this.dataset.leadEmbed;
-            this.dataset.state = 'loading';
-            stop();
-            timer = window.setTimeout(fail, timeout);
-            // The island may still be on its way; keep looking for the template until the timer ends.
-            if (!mountFrame()) poll = window.setInterval(mountFrame, 200);
-          };
-          const open = (from) => {
-            trigger = from || null;
-            if (!dialog.open) dialog.showModal();
-            if (!mounted) arm();
-            const close = dialog.querySelector('.oy-modal-close');
-            if (close) close.focus();
-            track('give_opened');
-          };
-          const retry = () => {
-            mounted = false;
-            if (mount) mount.replaceChildren();
-            arm();
-          };
-
-          document.addEventListener('click', (event) => {
-            const target = event.target && event.target.closest && event.target.closest('[data-give]');
-            if (!target) return;
-            event.preventDefault();
-            open(target);
-          });
-          this.addEventListener('click', (event) => {
-            const target = event.target && event.target.closest && event.target.closest('[data-enquiry]');
-            if (target) dialog.close();
-          });
-          const retryButton = this.querySelector('[data-retry]');
-          if (retryButton) retryButton.addEventListener('click', retry);
-          const closeButton = dialog.querySelector('.oy-modal-close');
-          if (closeButton) closeButton.addEventListener('click', () => dialog.close());
-          dialog.addEventListener('click', (event) => {
-            if (event.target === dialog) dialog.close();
-          });
-          dialog.addEventListener('keydown', (event) => {
-            if (event.key !== 'Escape') return;
-            event.preventDefault();
-            dialog.close();
-          });
-          dialog.addEventListener('close', () => {
-            if (window.location.hash === '#give') {
-              window.history.replaceState(null, '', window.location.pathname + window.location.search);
-            }
-            if (trigger && typeof trigger.focus === 'function') trigger.focus();
-            trigger = null;
-          });
-          const openFromHash = () => {
-            if (window.location.hash === '#give' && !dialog.open) open(null);
-          };
-          window.addEventListener('hashchange', openFromHash);
-          document.addEventListener('astro:page-load', openFromHash);
-          if (dialog.hasAttribute('open')) {
-            dialog.removeAttribute('open');
-            open(null);
-          } else {
-            window.setTimeout(openFromHash, 0);
-          }
+          if (!this.oyApi) this.oyApi = wireGiveDialog(this);
+          const api = this.oyApi;
+          if (!api) return;
+          this.oyListeners = new AbortController();
+          const signal = this.oyListeners.signal;
+          document.addEventListener(
+            'click',
+            (event) => {
+              const target =
+                event.target && event.target.closest && event.target.closest('[data-give]');
+              if (!target) return;
+              event.preventDefault();
+              // A Donate inside the mobile menu closes with it: focus goes back to the burger.
+              const from = target.closest('dialog');
+              api.open(from && from !== api.dialog && from.oyTrigger ? from.oyTrigger : target);
+            },
+            { signal },
+          );
+          window.addEventListener('hashchange', api.openFromHash, { signal });
+          document.addEventListener('astro:page-load', api.openFromHash, { signal });
           this.dataset.ready = 'true';
+        }
+
+        disconnectedCallback() {
+          if (this.oyListeners) this.oyListeners.abort();
+          delete this.dataset.ready;
         }
       },
     );

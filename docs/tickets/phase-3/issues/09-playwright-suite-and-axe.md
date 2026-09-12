@@ -32,3 +32,8 @@ the mobile menu painted its Donate button white on gold; the logo link was 40px 
 links 22px (now 44); axe measured the bottom sheet mid-animation (the audit waits for finite
 animations). Playwright cannot click the sheet's submit button at 375 without JavaScript (the
 nested scroll containers never settle), so the no-JS specs submit with Enter.
+
+Review follow-up: the suite runs its own dev server on 4322 so a `bun dev` on 4321 is never
+reused with its toolbar; the trust line and Give Dialog assertions tolerate filled settings; the
+"iframe present but never loading" path stays untested (an iframe fires `load` even for a
+refused frame, so the timer catches a hang only), covered by the stories' timed fallback.

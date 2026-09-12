@@ -12,6 +12,8 @@ import {
 } from './enquiry-kinds';
 
 export const EMAIL_MESSAGE = 'That email address does not look right. Check it and send again.';
+/** The shape the inline scripts check before a request (Zod's own check is the server's word). */
+export const EMAIL_PATTERN = '^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$';
 const TEXT_MAX = 300;
 const AREA_MAX = 4000;
 

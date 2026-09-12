@@ -13,15 +13,16 @@ With JavaScript the click is intercepted, the URL is untouched and the modal sho
 action returned. Spam is handled without a service: a honeypot field that answers success and
 writes nothing, an address cap of five enquiries an hour per reply-to address checked with a
 Sanity count generated from the spec's reply-to fields, and a per-address-of-origin token bucket
-in module memory as a best effort on a warm function. A repeat newsletter address reads as
+in module memory as a best effort on a warm function, each refusal with its own sentence. A repeat newsletter address reads as
 success and writes nothing, so the form never reveals whether an address is subscribed.
 
 ## Considered options
 
 Astro's `input` schema with thrown `ActionInputError`: idiomatic, but the posted values are gone
 by the time the page renders and rate limiting and write failures would need a second shape. A
-CSS `:target` opener: one hash cannot name both the modal and the kind. Re-rendering the success
-in place: Astro's documented pattern, rejected because a refresh re-posts.
+CSS `:target` trigger: one hash cannot name both the modal and the kind. Re-rendering the
+success in place: Astro's documented pattern, rejected because a refresh re-posts. The redirect
+lives in the middleware, since a layout cannot return a response.
 
 ## Consequences
 

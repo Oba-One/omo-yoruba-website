@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-// The settings hold no Zeffy URL yet (wayfinder ticket 03), so the dialog opens in its pending
-// mode: the check line, Contact us, no Try again. The embed and the timed fallback are covered
-// by the GiveDialog stories' play functions.
+// While the settings hold no Zeffy URL (wayfinder ticket 03) the dialog opens in its pending
+// mode: the Pending chip, the check line, Contact us, no Try again. Once the URL is set the
+// embed box mounts the island's iframe instead. The timed fallback is covered by the GiveDialog
+// stories' play functions.
 test('a Donate trigger opens the Give Dialog, Escape closes it and focus returns', async ({
   page,
   isMobile,
@@ -16,11 +17,16 @@ test('a Donate trigger opens the Give Dialog, Escape closes it and focus returns
   const dialog = page.locator('dialog#give');
   await expect(dialog).toHaveAttribute('open', '');
   await expect(page.locator('#give-title')).toHaveText('Give to Omo Yorùbá');
-  await expect(page.locator('oy-give-dialog')).toHaveAttribute('data-mode', 'pending');
-  await expect(dialog.locator('[data-heading]')).toHaveText(
-    'The online giving form is not set up yet.',
-  );
-  await expect(dialog.locator('[data-retry]')).toHaveCount(0);
+  const mode = await page.locator('oy-give-dialog').getAttribute('data-mode');
+  if (mode === 'pending') {
+    await expect(dialog.locator('[data-embed] .oy-pend')).toHaveText('Pending: the Zeffy link');
+    await expect(dialog.locator('[data-heading]')).toHaveText(
+      'The online giving form is not set up yet.',
+    );
+    await expect(dialog.locator('[data-retry]')).toHaveCount(0);
+  } else {
+    await expect(dialog.locator('[data-mount] iframe')).toHaveCount(1);
+  }
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toHaveAttribute('open', '');

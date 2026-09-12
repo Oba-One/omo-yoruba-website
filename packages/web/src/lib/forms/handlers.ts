@@ -7,6 +7,7 @@
  * fallback; nothing thrown reaches the visitor.
  */
 import {
+  burstSentence,
   type ContactRole,
   cappedSentence,
   contactsByRole,
@@ -131,9 +132,13 @@ export async function enquiryHandler(
   const parsed = parseEnquiry(kind, values);
   if (!parsed.success) return resultFromIssues(parsed.error.issues, values);
 
+  // The bucket comes first so a burst costs no read; the sentence names the inbox when a
+  // routing read has already cached it.
+  if (deps.bucket && !deps.bucket.take(addressOf(context), now.getTime())) {
+    return { ok: false, summary: burstSentence(routingCache?.value.site), values };
+  }
   const routing = await readRouting(deps.client, now.getTime());
   const capped = (): FormResult => ({ ok: false, summary: cappedSentence(routing.site), values });
-  if (deps.bucket && !deps.bucket.take(addressOf(context), now.getTime())) return capped();
   if (!deps.client) {
     console.error('[forms] no write token: SANITY_API_WRITE_TOKEN is missing (docs/runbook.md)');
     return { ok: false, summary: fallbackSentence(routing.site), values };
@@ -179,10 +184,10 @@ export async function newsletterHandler(
   const parsed = parseSubscriber(values);
   if (!parsed.success) return resultFromIssues(parsed.error.issues, values);
 
-  const routing = await readRouting(deps.client, now.getTime());
   if (deps.bucket && !deps.bucket.take(addressOf(context), now.getTime())) {
-    return { ok: false, summary: cappedSentence(routing.site), values };
+    return { ok: false, summary: burstSentence(routingCache?.value.site), values };
   }
+  const routing = await readRouting(deps.client, now.getTime());
   if (!deps.client) {
     console.error('[forms] no write token: SANITY_API_WRITE_TOKEN is missing (docs/runbook.md)');
     return { ok: false, summary: fallbackSentence(routing.site), values };

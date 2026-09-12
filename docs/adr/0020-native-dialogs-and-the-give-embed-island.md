@@ -18,5 +18,7 @@ nothing from an encrypted prop.
   fetch without a purge.
 - Zeffy loads only for visitors who open the dialog, which keeps the content pages inside the
   JavaScript budget.
-- `#give` opens the dialog on load with JavaScript; without it the `/donate` page renders the
-  dialog open through the same `:target` fallback the CSS provides.
+- `#give` opens the dialog on load with JavaScript only; a Donate trigger is a link to
+  `/donate#give`, and the Donate page (Phase 7) carries the other ways to give for anyone
+  without it. While the URL is empty the layout mounts the dialog in its pending mode and the
+  island's Pending chip stays visible above the fallback.

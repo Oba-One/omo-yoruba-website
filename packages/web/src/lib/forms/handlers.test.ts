@@ -30,7 +30,9 @@ function fakeClient(
       if (query.startsWith('count(')) return (overrides.count ?? 0) as never;
       if (query.includes('_type == "subscriber"')) return (overrides.existing ?? null) as never;
       return {
-        contacts: [{ role: 'vendors', name: null, email: 'v@example.org', responds: 'by 1 May' }],
+        contacts: [
+          { role: 'vendors', name: null, email: 'v@example.org', responds: 'within a week' },
+        ],
         generalEmail: 'hello@example.org',
         phone: null,
       } as never;
@@ -55,7 +57,7 @@ describe('enquiryHandler', () => {
     expect(result).toEqual({
       ok: true,
       title: 'Ẹ ṣé! ✓ Your application is in.',
-      body: 'We review applications in the order they arrive and write to every applicant by 1 May. If you are accepted, the booth fee is invoiced and a place is held once it is paid.',
+      body: 'We review applications in the order they arrive and write to every applicant within a week. If you are accepted, the booth fee is invoiced and a place is held once it is paid.',
     });
     expect(created).toEqual([
       {
