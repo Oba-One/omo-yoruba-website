@@ -23,10 +23,38 @@ that changes from year to year lives on the edition: dates, venue, cost, dress, 
 vendor terms, tickets.
 _Avoid_: the festival page's date, this year's gala, the current event's settings
 
+**Next edition**:
+The edition an event page shows: the nearest edition of the page's kind still to come. Between
+editions it may not exist yet, and its facts read Pending.
+_Avoid_: current edition, active event, this year's festival
+
+**Past years**:
+The photographs of the newest past edition of a kind, from its album, closing an event page (past
+galas on the Gala page). The only place a past edition appears on an event page.
+_Avoid_: recap, archive, previous events
+
 **Zone**:
 One of the festival's areas. Named zones: Ọjà Balógun (the market), Àgbàlá Ọmọde (the
-children's yard). Two are unnamed and pending.
+children's yard). Two are unnamed and pending; the festival page names them as placeholders up to
+the four confirmed.
 _Avoid_: area, stage, village
+
+**Vendor terms**:
+One festival edition's booth fees, application close and decision dates, and permit note.
+_Avoid_: vendor pricing, booth rates
+
+**Ticket tier**:
+One way into the Gala: seats bought through Eventbrite, or a table of ten arranged by enquiry.
+_Avoid_: ticket type, package, price point
+
+**Sponsor level**:
+A named level of sponsorship with its amount and what it is recognised with.
+_Avoid_: sponsorship tier, sponsor package
+
+**Honoree**:
+A person or organization the Gala recognises in an edition. The block stays hidden until the owner
+says the Gala gives awards.
+_Avoid_: awardee, honouree (spelling)
 
 **Lessons**:
 Yoruba Language Lessons. One teacher, live online, enrol by writing to her.
@@ -48,6 +76,16 @@ _Avoid_: programme in code and copy (US spelling), course
 The closing rows on nine pages (vendor, sponsor, performer, volunteer, table, give),
 reordered per page.
 _Avoid_: CTA section, footer CTA
+
+**Way in**:
+One of the six things a visitor can do from a take-part band: vendor, sponsor, performer, volunteer,
+table, give. Each has its accent and opens its enquiry kind or the Give Dialog.
+_Avoid_: channel, CTA type, path
+
+**Take-part row**:
+One row of a take-part band as the page singleton keeps it: a way in with its title, line and button
+label, in the page's order.
+_Avoid_: path row (the component that draws it), CTA row
 
 **Door**:
 One of the four Get Involved entry points (member, volunteer, partner, give), kept once as a
