@@ -1,0 +1,580 @@
+import { defineField } from 'sanity';
+import { voice } from '../../validation/rules';
+import { facts, refs, text } from '../helpers';
+import { definePage } from './page';
+import { siteSettings } from './siteSettings';
+
+export const WAY_INS = ['vendor', 'sponsor', 'performer', 'volunteer', 'table', 'give'] as const;
+
+const takePartOrder = defineField({
+  name: 'takePartOrder',
+  title: 'Take-part band order',
+  type: 'array',
+  of: [{ type: 'string' }],
+  options: { list: WAY_INS.map((key) => ({ title: key, value: key })) },
+  description: 'The ways in, in the order the closing band shows them.',
+});
+
+export const homepage = definePage({
+  name: 'homepage',
+  title: 'Homepage',
+  header: false,
+  actions: false,
+  fields: [
+    defineField({
+      name: 'hero',
+      title: 'Hero',
+      type: 'object',
+      fields: [
+        defineField({ name: 'kicker', title: 'Kicker', type: 'bilingual' }),
+        defineField({
+          name: 'title',
+          title: 'Heading',
+          type: 'string',
+          validation: voice.requiredHeading,
+        }),
+        text('sub', 'Line under the heading', 2),
+        defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
+        defineField({
+          name: 'primaryAction',
+          title: 'Primary action',
+          type: 'cta',
+          description: 'The one gold button.',
+        }),
+        defineField({
+          name: 'secondaryActions',
+          title: 'Secondary actions',
+          type: 'array',
+          of: [{ type: 'cta' }],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'leadEvent',
+      title: 'Event band',
+      type: 'reference',
+      to: [{ type: 'event' }],
+      description: 'Empty picks the next upcoming edition by date.',
+    }),
+    refs('stats', 'Stat strip', 'stat', 'Four figures, in order.'),
+    text('programsIntro', 'Programs intro', 2),
+    refs('voices', 'Member voices', 'testimonial'),
+    text('newsIntro', 'News intro', 2),
+    defineField({
+      name: 'yearInLife',
+      title: 'A year in the life',
+      type: 'array',
+      of: [{ type: 'oyImage' }],
+      description: 'Up to seven tiles; the layout option picks how many show.',
+      validation: (rule) => rule.max(7),
+    }),
+    defineField({
+      name: 'raiseYourHand',
+      title: 'Raise your hand',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        text('blurb', 'Blurb', 2),
+        refs('doors', 'Doors', 'door', 'Which doors show, in order.'),
+      ],
+    }),
+  ],
+  layout: [
+    {
+      name: 'season',
+      title: 'Season',
+      options: ['auto', 'gala', 'odunde'],
+      description: 'Which event leads; auto picks by date.',
+    },
+    // The prototype's value is "school"; the Studio shows the repo's word for it (AGENTS.md: never "School").
+    {
+      name: 'highlight',
+      title: 'Highlight',
+      options: ['festival', { value: 'school', title: 'lessons' }, 'collective'],
+    },
+    { name: 'gallery', title: 'Gallery tiles', options: ['7', '5', '3'] },
+    { name: 'involved', title: 'Get involved', options: ['doors', 'rows'] },
+    { name: 'newsletter', title: 'Newsletter', options: ['footer', 'band'] },
+    { name: 'pattern', title: 'Pattern', options: ['rich', 'subtle'] },
+    {
+      name: 'motion',
+      title: 'Motion',
+      options: ['on', 'off'],
+      description: 'The hero photo breathe.',
+    },
+  ],
+});
+
+export const festivalPage = definePage({
+  name: 'festivalPage',
+  title: 'Odunde Festival page',
+  fields: [
+    facts(
+      'extraFacts',
+      'Extra glance facts',
+      'Rows beyond date, time, place and cost, which come from the edition.',
+    ),
+    defineField({
+      name: 'whatItIs',
+      title: 'What Odunde is',
+      type: 'blockContent',
+      description: 'Includes the Lunar New Year, Diwali and Nowruz framing.',
+    }),
+    text('zonesIntro', 'Zones intro', 2),
+    facts('planYourVisit', 'Plan your visit', 'Eight practical facts. Empty values show Pending.'),
+    takePartOrder,
+    text('pastYearsIntro', 'Past years intro', 2),
+    text('partnersIntro', 'Partners intro', 2),
+  ],
+  layout: [
+    { name: 'phead', title: 'Header', options: ['photo', 'slim'] },
+    { name: 'zones', title: 'Zones', options: ['mosaic', 'five', 'grid', 'list'] },
+    { name: 'schedule', title: 'Schedule', options: ['shown', 'collapsed', 'hidden'] },
+    { name: 'takepart', title: 'Take part first row', options: ['vendor', 'sponsor'] },
+    { name: 'labels', title: 'Take-part labels', options: ['column', 'none', 'kicker'] },
+  ],
+});
+
+export const galaPage = definePage({
+  name: 'galaPage',
+  title: 'End-of-Year Gala page',
+  fields: [
+    facts(
+      'extraFacts',
+      'Extra glance facts',
+      'Rows beyond date, doors, venue and dress, which come from the edition.',
+    ),
+    text('eveningIntro', 'The evening intro'),
+    text('tiersIntro', 'Seats and tables intro', 2),
+    text('sponsorIntro', 'Sponsor intro', 2),
+    text('honoreesIntro', 'Honorees intro', 2),
+    text('pastIntro', 'Past galas intro', 2),
+    takePartOrder,
+  ],
+  layout: [
+    { name: 'treatment', title: 'Treatment', options: ['formal', 'warm'] },
+    { name: 'tiers', title: 'Tiers', options: ['columns', 'rows'] },
+    { name: 'emphasis', title: 'Emphasis', options: ['seats', 'tables'] },
+    { name: 'awards', title: 'Awards', options: ['shown', 'hidden'] },
+    { name: 'schedule', title: 'Running order', options: ['shown', 'hidden'] },
+    { name: 'past', title: 'Past galas', options: ['shown', 'hidden'] },
+    { name: 'labels', title: 'Take-part labels', options: ['column', 'none', 'kicker'] },
+  ],
+});
+
+const subprogram = {
+  type: 'object',
+  name: 'subprogram',
+  fields: [
+    defineField({ name: 'name', title: 'Name', type: 'string', validation: voice.requiredHeading }),
+    defineField({ name: 'ages', title: 'Ages', type: 'string', validation: voice.text }),
+    text('blurb', 'Blurb', 2),
+    defineField({
+      name: 'detail',
+      title: 'One detail line',
+      type: 'string',
+      validation: voice.text,
+    }),
+    defineField({ name: 'action', title: 'Action', type: 'cta' }),
+  ],
+  preview: { select: { title: 'name', subtitle: 'ages' } },
+};
+
+export const programsPage = definePage({
+  name: 'programsPage',
+  title: 'Programs page',
+  fields: [
+    text('intro', 'Intro', 2),
+    defineField({
+      name: 'kidsStem',
+      title: 'Kids & STEM',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        defineField({ name: 'ages', title: 'Ages', type: 'string', validation: voice.text }),
+        text('blurb', 'Blurb'),
+        defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
+        defineField({
+          name: 'subprograms',
+          title: 'Sub programs',
+          type: 'array',
+          of: [subprogram],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'culturalExchange',
+      title: 'Cultural Exchange',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        text('blurb', 'Blurb'),
+        defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
+        defineField({ name: 'cadence', title: 'Cadence', type: 'string', validation: voice.text }),
+        defineField({
+          name: 'eligibility',
+          title: 'Who it is for',
+          type: 'string',
+          validation: voice.text,
+        }),
+        defineField({
+          name: 'howToJoin',
+          title: 'How to join',
+          type: 'string',
+          validation: voice.text,
+        }),
+      ],
+    }),
+    defineField({
+      name: 'yearStrip',
+      title: 'When things run',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'yearStripRow',
+          fields: [
+            defineField({
+              name: 'when',
+              title: 'When',
+              type: 'string',
+              description: '"June", "Nov or Dec", "Year-round".',
+              validation: voice.text,
+            }),
+            defineField({
+              name: 'program',
+              title: 'Program',
+              type: 'reference',
+              to: [{ type: 'program' }],
+            }),
+            defineField({
+              name: 'event',
+              title: 'Event',
+              type: 'reference',
+              to: [{ type: 'event' }],
+            }),
+            defineField({ name: 'note', title: 'Note', type: 'string', validation: voice.text }),
+          ],
+          preview: { select: { title: 'when', subtitle: 'note' } },
+        },
+      ],
+    }),
+  ],
+  layout: [
+    { name: 'cards', title: 'Cards', options: ['four', 'three', 'pairs'] },
+    { name: 'inline', title: 'Inline programs', options: ['expanded', 'collapsed'] },
+    { name: 'yearstrip', title: 'Year strip', options: ['shown', 'hidden'] },
+  ],
+});
+
+export const lessonsPage = definePage({
+  name: 'lessonsPage',
+  title: 'Yoruba Language Lessons page',
+  fields: [
+    facts('glance', 'At a glance', 'Format, when, ages, cost.'),
+    defineField({ name: 'teacher', title: 'Teacher', type: 'reference', to: [{ type: 'person' }] }),
+    text('teacherIntro', 'Teacher intro', 2),
+    defineField({
+      name: 'levels',
+      title: 'Levels',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'level',
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Name',
+              type: 'string',
+              validation: voice.requiredHeading,
+            }),
+            text('blurb', 'What it covers', 2),
+          ],
+          preview: { select: { title: 'name' } },
+        },
+      ],
+    }),
+    defineField({
+      name: 'oneLesson',
+      title: 'What a lesson looks like',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'lessonStep',
+          fields: [
+            defineField({
+              name: 'step',
+              title: 'Step',
+              type: 'string',
+              description: '"Before", "First half", "Break".',
+              validation: voice.text,
+            }),
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              validation: voice.requiredHeading,
+            }),
+            text('detail', 'Detail', 2),
+          ],
+          preview: { select: { title: 'title', subtitle: 'step' } },
+        },
+      ],
+    }),
+    defineField({
+      name: 'faq',
+      title: 'Questions parents ask',
+      type: 'array',
+      of: [{ type: 'faqItem' }],
+    }),
+    refs('voices', 'Voices', 'testimonial'),
+  ],
+  layout: [
+    { name: 'lesson', title: 'What a lesson looks like', options: ['shown', 'hidden'] },
+    { name: 'portraits', title: 'Portraits', options: ['shown', 'hidden'] },
+    { name: 'faq', title: 'Questions', options: ['closed', 'open'] },
+  ],
+});
+
+export const collectivePage = definePage({
+  name: 'collectivePage',
+  title: 'Yoruba Cultural Collective page',
+  fields: [
+    defineField({
+      name: 'argument',
+      title: 'Why culture and sustainability sit together',
+      type: 'blockContent',
+      description: 'Must be in your words. Empty shows Pending.',
+    }),
+    refs('initiatives', 'Initiatives', 'initiative', 'Solar Hub and Green Goods, in order.'),
+    defineField({
+      name: 'voice',
+      title: 'One voice',
+      type: 'reference',
+      to: [{ type: 'testimonial' }],
+    }),
+    defineField({
+      name: 'keepsOwnList',
+      title: 'The Collective keeps its own mailing list',
+      type: 'boolean',
+      description: 'Off points the updates row at the footer newsletter.',
+      initialValue: false,
+    }),
+  ],
+  layout: [
+    { name: 'initiatives', title: 'Initiatives', options: ['side', 'stacked'] },
+    { name: 'green', title: 'Green', options: ['signal', 'strong'] },
+    { name: 'status', title: 'Status lines', options: ['shown', 'hidden'] },
+    { name: 'events', title: 'Events', options: ['shown', 'hidden'] },
+  ],
+});
+
+export const getInvolvedPage = definePage({
+  name: 'getInvolvedPage',
+  title: 'Get Involved page',
+  fields: [
+    refs('doors', 'Doors', 'door', 'The four ways in, in order.'),
+    defineField({
+      name: 'hometownAssociations',
+      title: 'Hometown associations',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        defineField({ name: 'prose', title: 'Prose', type: 'blockContent' }),
+      ],
+    }),
+    defineField({
+      name: 'fallback',
+      title: 'Or just talk to someone',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        text('blurb', 'Blurb', 2),
+      ],
+    }),
+  ],
+  layout: [
+    { name: 'doors', title: 'Doors', options: ['cards', 'rows'] },
+    { name: 'hta', title: 'Hometown associations', options: ['shown', 'hidden'] },
+  ],
+});
+
+export const impactPage = definePage({
+  name: 'impactPage',
+  title: 'Impact page',
+  fields: [
+    refs('stats', 'Headline numbers', 'stat', 'Four or six, in order.'),
+    defineField({ name: 'howWeWork', title: 'How we work', type: 'blockContent' }),
+    refs('outcomes', 'What each program produced', 'outcome'),
+    defineField({
+      name: 'civicInfra',
+      title: 'Odunde as civic infrastructure',
+      type: 'blockContent',
+    }),
+    refs('voices', 'In their words', 'testimonial'),
+    defineField({
+      name: 'photos',
+      title: 'The work in photographs',
+      type: 'array',
+      of: [{ type: 'oyImage' }],
+    }),
+    text('fundersIntro', 'Partners and funders intro', 2),
+    defineField({
+      name: 'nextYear',
+      title: 'Fund the next year',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        text('blurb', 'Blurb', 2),
+      ],
+    }),
+  ],
+  layout: [
+    { name: 'stats', title: 'Headline numbers', options: ['four', 'six'] },
+    { name: 'outcomes', title: 'Outcomes', options: ['cards', 'rows'] },
+    { name: 'sources', title: 'Source lines', options: ['shown', 'hidden'] },
+    { name: 'funders', title: 'Funders', options: ['shown', 'hidden'] },
+  ],
+});
+
+export const storyPage = definePage({
+  name: 'storyPage',
+  title: 'Our Story page',
+  fields: [
+    defineField({
+      name: 'founding',
+      title: 'How it began',
+      type: 'blockContent',
+      description: 'The 1997 story, in your words.',
+    }),
+    refs('timeline', 'Timeline', 'timelineEntry'),
+    text('boardIntro', 'Board intro', 2),
+    text('staffIntro', 'Staff and volunteers intro', 2),
+    defineField({
+      name: 'reachUs',
+      title: 'Reach us',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        text('blurb', 'Blurb', 2),
+      ],
+    }),
+  ],
+  layout: [
+    {
+      name: 'timeline',
+      title: 'Timeline',
+      options: ['hidden', 'shown'],
+      description: 'Hidden until the owner confirms the entries (wayfinder ticket 07).',
+    },
+    { name: 'bios', title: 'Bios', options: ['short', 'full'] },
+    { name: 'portraits', title: 'Portraits', options: ['shown', 'hidden'] },
+  ],
+});
+
+export const donatePage = definePage({
+  name: 'donatePage',
+  title: 'Donate page',
+  fields: [
+    defineField({
+      name: 'giveNow',
+      title: 'Give now',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        text('blurb', 'Blurb'),
+      ],
+    }),
+    defineField({
+      name: 'largerScale',
+      title: 'Giving at a larger scale',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
+        text('blurb', 'Blurb', 2),
+        refs('doors', 'Doors', 'door', 'The partner and sponsor doors.'),
+      ],
+    }),
+    refs('whatYourGiftDoes', 'What your gift does', 'givingLevel'),
+    defineField({
+      name: 'otherWays',
+      title: 'Other ways to give',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'otherWay',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              validation: voice.requiredHeading,
+            }),
+            text('blurb', 'Blurb', 2),
+          ],
+          preview: { select: { title: 'title' } },
+        },
+      ],
+    }),
+    defineField({
+      name: 'taxLine',
+      title: 'Tax-deductible line',
+      type: 'string',
+      validation: voice.text,
+    }),
+  ],
+  layout: [{ name: 'impact', title: 'What your gift does', options: ['shown', 'hidden'] }],
+});
+
+export const galleryPage = definePage({
+  name: 'galleryPage',
+  title: 'Photo Gallery page',
+  fields: [
+    text('intro', 'Intro', 2),
+    defineField({
+      name: 'creditsAndConsent',
+      title: 'Photography credit and permissions',
+      type: 'blockContent',
+      description: 'This wording must be yours. Empty shows Pending.',
+    }),
+  ],
+  layout: [
+    { name: 'open', title: 'Opening an album', options: ['viewer', 'grid'] },
+    { name: 'captions', title: 'Captions', options: ['always', 'hover'] },
+    { name: 'state', title: 'State', options: ['built', 'soon'] },
+  ],
+});
+
+export const newsPage = definePage({
+  name: 'newsPage',
+  title: 'News & Events page',
+  actions: false,
+  fields: [],
+  layout: [
+    { name: 'order', title: 'Order', options: ['events-led', 'feed-led'] },
+    { name: 'filtersShown', title: 'Filters', options: ['shown', 'hidden'] },
+  ],
+});
+
+export const singletonTypes = [
+  siteSettings,
+  homepage,
+  festivalPage,
+  galaPage,
+  programsPage,
+  lessonsPage,
+  collectivePage,
+  getInvolvedPage,
+  impactPage,
+  storyPage,
+  donatePage,
+  galleryPage,
+  newsPage,
+];
+
+/** The fixed document id of each singleton is its type name. */
+export const SINGLETON_NAMES = singletonTypes.map((type) => type.name);
+export { siteSettings };

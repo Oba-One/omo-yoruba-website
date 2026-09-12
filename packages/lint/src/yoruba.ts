@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 import { positionOf, snippetAround } from './position';
 
 export interface Term {
@@ -25,12 +24,6 @@ export interface FindOptions {
    * The CLI sets it from the file extension.
    */
   markdown?: boolean;
-}
-
-export function loadTerms(): Term[] {
-  const file = new URL('../yoruba-terms.json', import.meta.url);
-  const parsed = JSON.parse(readFileSync(file, 'utf8')) as { terms: Term[] };
-  return parsed.terms;
 }
 
 // Masked characters become this filler (U+0001): not a letter and not whitespace, so a term can

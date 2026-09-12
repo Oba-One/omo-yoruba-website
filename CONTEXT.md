@@ -17,6 +17,12 @@ _Avoid_: splitting it into two words (the older design system spelling), "the fe
 The End-of-Year Gala, November or December. Seats go to Eventbrite; tables are an enquiry.
 _Avoid_: dinner, banquet, fundraiser
 
+**Edition**:
+One running of an event (Odunde 2027, Gala 2026), kept as one `event` document. Every fact
+that changes from year to year lives on the edition: dates, venue, cost, dress, schedule,
+vendor terms, tickets.
+_Avoid_: the festival page's date, this year's gala, the current event's settings
+
 **Zone**:
 One of the festival's areas. Named zones: Ọjà Balógun (the market), Àgbàlá Ọmọde (the
 children's yard). Two are unnamed and pending.
@@ -44,8 +50,9 @@ reordered per page.
 _Avoid_: CTA section, footer CTA
 
 **Door**:
-One of the four Get Involved entry points (member, volunteer, partner, give). Renders as a
-card or a path row.
+One of the four Get Involved entry points (member, volunteer, partner, give), kept once as a
+`door` document and shown by the homepage, Get Involved and Donate. Renders as a card or a
+path row.
 _Avoid_: tile, option, pathway
 
 **Glance strip**:
@@ -53,7 +60,8 @@ The at-a-glance facts under a page header.
 _Avoid_: key facts, info bar
 
 **Kicker**:
-The Yoruba • English uppercase label above a heading, stored as `{ yo, en }`.
+The Yoruba • English uppercase label above a heading, stored as `{ yo, en }`. English is
+always present; a kicker with no Yoruba half ("Coming up next") is the single form.
 _Avoid_: eyebrow, overline, tagline
 
 **Give Dialog**:
@@ -80,14 +88,41 @@ _Avoid_: noise, paper grain
 ### Content
 
 **Enquiry**:
-Any owned form submission. Eight kinds plus newsletter. Becomes an `enquiry` document,
-then an email.
-_Avoid_: lead, submission, request
+A submission of one of the eight owned forms (sponsor, performer, table, member, volunteer,
+enrol, vendor, contact). Becomes an `enquiry` document, then an email. The newsletter is not
+an enquiry: it becomes a `subscriber` document.
+_Avoid_: lead, submission, request, newsletter enquiry
+
+**Routing contact**:
+An entry in the site settings that receives one or more enquiry kinds: a role, a name, an
+email, a phone and a response line. It names the person in a form's success copy; when it is
+empty the copy names the role instead.
+_Avoid_: named contact in code, hard-coded address, coordinator field
 
 **Pending**:
 An empty required-for-launch field. Renders a named chip on the site and a row in the
 Studio Pending view.
 _Avoid_: placeholder flag, TODO, lorem ipsum, mock
+
+**Pending registry**:
+The one list of required-for-launch fields with the wording of what is missing. The Studio
+Pending view and the site's chips both read it.
+_Avoid_: placeholder list, TODO list, missing-content map
+
+**Presence pending**:
+A Pending row for a document type with no documents yet (people, partners, testimonials) or
+fewer than expected (zones). A field query cannot find what does not exist.
+_Avoid_: empty state, missing content, zero results
+
+**Lint report**:
+The document the `content-lint` function writes for a published document whose text breaks
+the voice rules. Listed in the Pending view; empty when the document is clean.
+_Avoid_: validation error, warning email, lint failure
+
+**Stat**:
+A sourced figure kept once as a `stat` document and referenced, in order, by the pages that
+show it.
+_Avoid_: number, metric, KPI, headline figure inline
 
 **Confirmed fact**:
 Content the client has supplied (list in `docs/design/CONTENT-MODEL.md` section 1).

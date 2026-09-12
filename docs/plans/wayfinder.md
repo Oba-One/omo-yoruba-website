@@ -1,4 +1,4 @@
-# Wayfinder map: omoyorubaofsocal.org on Astro 7 and Sanity
+# Wayfinder map: omoyorubasocal.org on Astro 7 and Sanity
 
 Charted 4 September 2026 in Phase 0. Tracker conventions: `docs/agents/issue-tracker.md`.
 Child tickets: `docs/tickets/wayfinder/issues/`. A ticket marked `Owner: yes` is the
@@ -49,6 +49,24 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   hand-written `@font-face` rules in `@oy/tokens/fonts.css`, no font origin in the CSP, Yoruba
   text kept NFC; research in `docs/research/fonts-source-serif-sans-subsets.md` (Phase 1).
 
+- [.astro holds in Storybook: the Phase 1 checkpoint is closed](../tickets/wayfinder/issues/16-astro-in-storybook-checkpoint.md):
+  the owner merged pull request #2 on 5 September 2026; the stubs and workarounds carry in the
+  ticket's answer; no pivot (ADR 0002).
+
+- Domain: `omoyorubasocal.org`, bought by the owner on 11 September 2026 through Vercel, since the
+  old `omoyorubaofsocal.org` is registered elsewhere and not yet in the owner's hands. Its DNS
+  is at Cloudflare. The repo, the wizard and the Vercel project use the new name; the old one
+  redirects here once the owner controls it (ticket 10). Vercel reads the `development` dataset
+  until `production` is seeded.
+
+- `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` are required at build time since Phase 2
+  (the data layer exists); CI builds with placeholder values (`docs/runbook.md`).
+
+- [Sanity Studio v6, not the v5 line the brief named](../tickets/wayfinder/issues/14-sanity-studio-major.md):
+  `sanity` 6.12.0 with `@sanity/astro` 3.5.1; the v6 breaking changes touch nothing the repo
+  configures; pins and the facts that contradict the brief are in the ticket's answer and
+  `docs/research/phase-2-*.md` (Phase 2, the owner's yes gates the install).
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.
@@ -59,8 +77,6 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 17 | Run `scripts/setup-wizard.sh` (Sanity, Vercel, Resend, PostHog, Chromatic) | Phase 2 seed, Phase 4 preview |
 | 18 | Accept the em dash lint carve-out for `docs/design/` | Phase 0 sign-off |
 | 11 | Storybook hosting: separate Vercel project or a path under the site | Phase 1 |
-| 16 | Does `.astro` hold up in Storybook (the Phase 1 checkpoint) | Phase 2 onward |
-| 14 | Sanity Studio major: v5 in the brief, v6 current | Phase 2 |
 | 02 | EIN, mailing address, phone, routing email per enquiry kind | Phase 2 seed, Phase 3 routing |
 | 05 | The two unnamed festival zones | Phase 2 seed, Phase 5 |
 | 09 | Photo credits to confirm | Phase 2 seed |
@@ -91,8 +107,6 @@ webhook after Phase 4). Ticket 19 (fonts) was resolved in Phase 1.
 - Page-section stories for every layout option: how fixtures represent a whole page
   without mock names or prices.
 - Content Release naming and who may publish one; depends on ticket 22.
-- Whether `PUBLIC_SANITY_*` variables become required at build time in Phase 2 (they are
-  optional in Phase 0 so the repo builds before the wizard runs).
 
 ## Out of scope
 

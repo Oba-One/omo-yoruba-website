@@ -29,3 +29,7 @@ hashes. Not available in stories: `astro:actions`, `astro:env`, content collecti
 transitions, server islands. Sources: `docs/research/phase-1-storybook-chromatic.md`. Whether the
 framework holds for the interactive components of Phase 3 onward is the owner's call in wayfinder
 ticket 16; nothing pivots without it.
+
+Owner decision, 5 September 2026: the checkpoint closed with the merge of pull request #2
+(https://github.com/Oba-One/omo-yoruba-website/pull/2). `.astro` holds; the stubs and workarounds
+carry in wayfinder ticket 16's answer. No pivot.

@@ -4,7 +4,11 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./yoruba-terms.json": "./yoruba-terms.json"
+    "./em-dash": "./src/em-dash.ts",
+    "./yoruba": "./src/yoruba.ts",
+    "./sentence-case": "./src/sentence-case.ts",
+    "./yoruba-terms.json": "./yoruba-terms.json",
+    "./proper-nouns.json": "./proper-nouns.json"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

@@ -1,0 +1,7 @@
+{
+  "_id": "zone-example",
+  "_type": "zone",
+  "_rev": "example",
+  "name": { "yo": "Oja Balogun", "en": "The market" },
+  "line": "A zone description with a bare Yoruba name, for `sanity functions test content-lint --file functions/content-lint/example-event.json`"
+}

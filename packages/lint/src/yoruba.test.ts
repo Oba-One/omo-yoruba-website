@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { findBareTerms, loadTerms } from './yoruba';
+import { loadTerms } from './terms';
+import { findBareTerms } from './yoruba';
 
 const terms = loadTerms();
 
@@ -39,7 +40,7 @@ describe('findBareTerms', () => {
 
   it('ignores URLs, file paths, CSS names and code identifiers', () => {
     const text = [
-      'https://omoyorubaofsocal.org/oja-balogun?ref=omo-yoruba',
+      'https://omoyorubasocal.org/oja-balogun?ref=omo-yoruba',
       'images/odunde-2026-oja-balogun.jpg and design/Oja-Balogun.dc.html and /programs/oja-balogun',
       '.oy-adire and --adire-opacity-dark and .oy-aso-oke and .oy-ph--adire and .oy-band--aso-oke',
       'const adireDots = 1; const aso_oke = 2; const OmoYoruba = 3;',

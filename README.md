@@ -17,6 +17,8 @@ bun dev          # Astro dev server (packages/web)
 bun check        # typecheck + lint + unit tests
 bun run test     # unit tests only (bun test is Bun's own runner, not Vitest)
 bun run build    # production build of packages/web (bun build is Bun's bundler)
+bun typegen      # regenerate the Sanity types (commit the result)
+bun seed         # seed the development dataset (needs the wizard's values)
 ```
 
 CI runs the same check, the build, the commit message rules and shellcheck on every pull

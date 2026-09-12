@@ -12,5 +12,5 @@ Repo-wide invariants, in short:
 - Colours come from `@oy/tokens` only. Components are `.astro` files in `packages/ui`,
   each with a story. Pages in `packages/web` own no component styling.
 - Never invent content: an empty field renders Pending.
-- Pull requests need the four CI jobs green. Review feedback should cite the rule in
-  `AGENTS.md` or the ADR it comes from.
+- Pull requests need every required CI check green (the list is in `docs/runbook.md`, CI and
+  merging). Review feedback should cite the rule in `AGENTS.md` or the ADR it comes from.

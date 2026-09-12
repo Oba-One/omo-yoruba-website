@@ -196,7 +196,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 # set ENV_FILE (the library's documented override). Secrets are typed hidden and never echoed.
 if [[ "$ENV_FILE" == ".env" ]]; then ENV_FILE="packages/web/.env"; fi
 FUNCTIONS_ENV_FILE="packages/content/.env"
-SITE_URL_DEFAULT="https://omoyorubaofsocal.org"
+SITE_URL_DEFAULT="https://omoyorubasocal.org"
 LOCAL_URL="http://localhost:4321"
 
 VERCEL_READY=0
@@ -293,7 +293,7 @@ open_url "https://vercel.com/dashboard"
 step "Open the project, then Settings, then Build and Deployment."
 step "Root Directory: packages/web, with 'Include files outside the root directory' enabled."
 step "Framework Preset: Astro. Node.js Version: 22.x (packages/web/package.json also pins it)."
-step "Under Domains, add omoyorubaofsocal.org (and www) when you are ready to point DNS."
+step "Under Domains, add omoyorubasocal.org (and www) when you are ready to point DNS."
 if (( VERCEL_READY )) && confirm "Push the values from $ENV_FILE to Vercel now? Existing values are replaced."; then
   vercel_env PUBLIC_SANITY_PROJECT_ID "$PUBLIC_SANITY_PROJECT_ID"
   vercel_env PUBLIC_SANITY_DATASET "production" production preview
@@ -315,7 +315,7 @@ pause
 stage "Resend: sending domain and API key"
 say "Enquiry emails are sent by a Sanity Function through Resend from the site's domain."
 open_url "https://resend.com/domains"
-step "Add domain omoyorubaofsocal.org, then create the DNS records it shows at your DNS host."
+step "Add domain omoyorubasocal.org, then create the DNS records it shows at your DNS host."
 step "Wait for the domain to verify (the page refreshes its status)."
 open_url "https://resend.com/api-keys"
 step "Create an API key named 'sanity enquiry-notify' with Sending access only, copy it."

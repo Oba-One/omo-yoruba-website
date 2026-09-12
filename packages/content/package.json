@@ -3,11 +3,37 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./studio": "./src/studio/config.ts",
+    "./enquiry-kinds": "./src/enquiry-kinds.ts",
+    "./enquiry-zod": "./src/enquiry-zod.ts",
+    "./pending": "./src/pending.ts",
+    "./routes": "./src/routes.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
-    "typegen": "echo 'TypeGen is wired in Phase 2 (sanity schema extract, then sanity typegen generate).' && exit 1",
-    "seed": "echo 'The seed script arrives in Phase 2. See docs/design/CONTENT-MODEL.md section 6.' && exit 1"
+    "test": "vitest run",
+    "sanity": "bash scripts/sanity.sh",
+    "typegen": "bash scripts/sanity.sh schema extract --path ./schema.json --force && bash scripts/sanity.sh typegen generate",
+    "seed": "bun --env-file=../web/.env scripts/seed.ts"
+  },
+  "dependencies": {
+    "@oy/lint": "workspace:*",
+    "@sanity/blueprints": "0.24.0",
+    "@sanity/client": "8.5.0",
+    "@sanity/functions": "1.7.1",
+    "@sanity/image-url": "2.1.1",
+    "@sanity/vision": "6.12.0",
+    "groq": "6.12.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "resend": "6.26.0",
+    "sanity": "6.12.0",
+    "styled-components": "6.5.3",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7"
   }
 }

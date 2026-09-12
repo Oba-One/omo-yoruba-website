@@ -2,10 +2,14 @@
 # Phase 0 wired: the check (typecheck, Biome, voice and colour lints, unit tests, toolchain
 # pins), the web build with a JS size summary, the commit message rules on pull requests,
 # and shellcheck on the repo scripts. Phase 1 added the Storybook build with Chromatic.
-# Later phases add, in order: the TypeGen drift check (Phase 2), Playwright with axe against
-# the Vercel preview (Phase 3), Lighthouse CI against the preview (Phase 4), and the nightly
-# content-lint workflow (Phase 9). Every job here is safe to require in branch protection:
-# none is path filtered, so each reports on every pull request.
+# Phase 2 added the TypeGen drift check. Later phases add, in order: Playwright with axe
+# against the Vercel preview (Phase 3), Lighthouse CI against the preview (Phase 4), and the
+# nightly content-lint workflow (Phase 9). Every job here is safe to require in branch
+# protection: none is path filtered, so each reports on every pull request.
+#
+# The two PUBLIC_SANITY_* variables are required by the astro:env schema since Phase 2. The
+# build never reads content (every page is server rendered), so placeholder values let the
+# build and the typecheck run without a project; Vercel holds the real ones.
 
 name: CI
 
@@ -26,6 +30,9 @@ jobs:
     name: Typecheck, lint, test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      PUBLIC_SANITY_PROJECT_ID: placeholder
+      PUBLIC_SANITY_DATASET: development
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -38,6 +45,9 @@ jobs:
     name: Build packages/web
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      PUBLIC_SANITY_PROJECT_ID: placeholder
+      PUBLIC_SANITY_DATASET: development
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -57,6 +67,24 @@ jobs:
               printf '| `%s` | %s |\n' "$(basename "$f")" "$(gzip -c "$f" | wc -c | tr -d ' ')"
             done
           } | tee -a "$GITHUB_STEP_SUMMARY"
+
+  typegen:
+    name: TypeGen drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-js
+      - name: Regenerate schema.json and sanity.types.ts (offline, no project needed)
+        run: bun typegen
+      - name: The committed files must match the schema
+        run: |
+          git diff --exit-code -- packages/content/schema.json packages/content/src/sanity.types.ts || {
+            echo '::error title=TypeGen drift::Run `bun typegen` and commit packages/content/schema.json and packages/content/src/sanity.types.ts.'
+            exit 1
+          }
 
   messages:
     name: Commit messages and PR title

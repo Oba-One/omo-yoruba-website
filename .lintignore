@@ -11,6 +11,9 @@ docs/design/design/
 # The word list and the lint's own fixtures must contain the bare forms.
 [yoruba] packages/lint/yoruba-terms.json
 [yoruba] packages/lint/src/*.test.ts
+[yoruba] packages/content/src/validation/*.test.ts
+[yoruba] packages/content/functions/content-lint/*.test.ts
+[yoruba] packages/content/functions/content-lint/example-event.json
 
 # Third-party skill, copied as published.
 .claude/skills/git-guardrails-claude-code/
