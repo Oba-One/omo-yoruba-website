@@ -34,8 +34,10 @@ Done on 11 September 2026 after the pull request opened: the token lines were re
 token replaced the Contributor token, and `bun seed` ran against `development` (42 documents,
 68 photographs; a second and third run left everything unchanged).
 
-1. `packages/web/.env` still lacks `SANITY_PREVIEW_SECRET` and `SANITY_WEBHOOK_SECRET` (wizard
-   stage 2 generates them); `/api/preview/enable` and `/api/revalidate` answer 500 until then.
+1. `packages/web/.env` still lacks `SANITY_WEBHOOK_SECRET` (wizard stage 2 generates it, or
+   `openssl rand -hex 32`); `/api/revalidate` answers 500 until then. `/api/preview/enable` needs
+   only the Viewer token: the Presentation tool makes and stores its own secret. The wizard's
+   `SANITY_PREVIEW_SECRET` is not read by any Phase 2 code; keep the name for later phases.
 2. Log in at http://localhost:4321/admin (`bun dev`) and open Pending: 49 field rows list their
    documents and "Missing entirely" shows the two unnamed zones and the five absent types. The
    project's CORS origins must include `http://localhost:4321` (wizard stage 1).
