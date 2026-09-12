@@ -12,7 +12,6 @@
  * perspective cookie) the Visual Editing overlay mounts after the bridge (ADR 0021).
  */
 import '@oy/tokens';
-import { actions } from 'astro:actions';
 import { PUBLIC_POSTHOG_KEY } from 'astro:env/client';
 import { ClientRouter, fade } from 'astro:transitions';
 import {
@@ -33,6 +32,7 @@ import { VisualEditing } from '@sanity/astro/visual-editing';
 import Analytics from '../components/Analytics.astro';
 import FormBridge from '../components/FormBridge.astro';
 import ZeffyEmbed from '../components/ZeffyEmbed.astro';
+import { ENQUIRY_ACTIONS, NEWSLETTER_ACTION } from '../lib/forms/action-paths';
 import {
   type ActionOutcome,
   modalStateFromResult,
@@ -67,18 +67,18 @@ const contacts = contactsByRole(settings?.contacts);
 const site = { email: settings?.generalEmail ?? undefined, phone: settings?.phone ?? undefined };
 const copyFor = (kind: EnquiryKind) => successCopy(kind, contacts[KIND_TO_ROLE[kind]], site);
 
-// A posted enquiry without JavaScript: the middleware redirected a success, so a result here
-// is an error to re-render with the values kept.
+// A posted enquiry without JavaScript: the middleware redirected a success, so an outcome in
+// locals is an error to re-render with the values kept.
+const posted = Astro.locals.formOutcome;
 let modal = modalStateFromUrl(Astro.url, copyFor);
 for (const kind of ENQUIRY_KINDS) {
-  const outcome = Astro.getActionResult(actions.enquiry[kind]) as ActionOutcome | undefined;
-  if (!outcome) continue;
-  modal = modalStateFromResult(kind, outcome, site);
+  if (posted?.name !== `enquiry.${kind}`) continue;
+  modal = modalStateFromResult(kind, posted as ActionOutcome, site);
   break;
 }
 
 // The newsletter, without JavaScript, the same way.
-const newsletterOutcome = Astro.getActionResult(actions.newsletter) as ActionOutcome | undefined;
+const newsletterOutcome = posted?.name === 'newsletter' ? (posted as ActionOutcome) : undefined;
 const newsletter = newsletterStateFrom(Astro.url, newsletterOutcome, site);
 // A posted form with errors re-renders as a 400, so the browser and the logs read it as one,
 // and the CDN never stores it.
@@ -87,9 +87,6 @@ if (modal.state === 'error' || newsletter.state === 'error') {
   Astro.cache.set(false);
 }
 
-const actionPaths = Object.fromEntries(
-  ENQUIRY_KINDS.map((kind) => [kind, String(actions.enquiry[kind])]),
-) as Record<EnquiryKind, string>;
 const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';
 // The Studio can pause PostHog without a deploy (siteSettings.analyticsEnabled).
 const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !== false;
@@ -114,7 +111,7 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
         <NewsletterBand
           title={settings?.newsletterTitle}
           blurb={settings?.newsletterBlurb}
-          action={String(actions.newsletter)}
+          action={NEWSLETTER_ACTION}
           state={newsletter.state}
           error={newsletter.state === 'error' ? newsletter.error : undefined}
           value={newsletter.state === 'error' ? newsletter.value : undefined}
@@ -125,7 +122,7 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
     }
     <SiteFooter
       settings={settings ?? {}}
-      newsletterAction={String(actions.newsletter)}
+      newsletterAction={NEWSLETTER_ACTION}
       newsletterState={newsletter.state}
       newsletterError={newsletter.state === 'error' ? newsletter.error : undefined}
       newsletterValue={newsletter.state === 'error' ? newsletter.value : undefined}
@@ -143,7 +140,7 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
         success={modal.success}
         contacts={contacts}
         site={site}
-        actions={actionPaths}
+        actions={ENQUIRY_ACTIONS}
         source={path}
       />
       <GiveDialog

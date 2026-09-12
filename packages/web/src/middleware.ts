@@ -3,6 +3,7 @@ import { PUBLIC_PREVIEW_ORIGIN } from 'astro:env/client';
 import { defineMiddleware } from 'astro:middleware';
 import { uncacheableReason } from './lib/cache-policy';
 import { buildCsp, CSP_REPORT_PATH, cspExempt, reportingEndpointsHeader } from './lib/csp';
+import type { FormOutcome } from './lib/forms/action-paths';
 import {
   enquiryKindFrom,
   redirectAfterEnquiry,
@@ -45,6 +46,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
       return context.redirect(target, 303);
     }
     setActionResult(action.name, serializeActionResult(result));
+    // The layout reads the outcome from locals rather than importing the actions module, which
+    // would carry the Studio's stylesheets into the page (src/lib/forms/action-paths.ts).
+    const outcome: FormOutcome = { name: action.name, data: result.data };
+    if (result.error) outcome.error = { message: result.error.message };
+    context.locals.formOutcome = outcome;
   }
 
   const response = await next();

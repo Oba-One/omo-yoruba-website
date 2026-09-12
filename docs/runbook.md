@@ -233,7 +233,11 @@ settings (cached for a minute) or `{ ok: false, summary, fields, values }`. With
 token every form answers the fallback sentence and logs why. The Enquiry Modal and the footer
 form post natively without JavaScript: `?enquiry=<kind>` opens the modal, the middleware runs a
 posted action and redirects a success to `?enquiry=<kind>&sent=1` (`?subscribed=1` for the
-newsletter), and an error re-renders the page as a 400 with the values kept. With JavaScript
+newsletter), and an error re-renders the page as a 400 with the values kept. Since Phase 4 the
+forms post to `?_action=<name>` from `src/lib/forms/action-paths.ts` and the layout reads a
+posted error from `Astro.locals.formOutcome`, which the middleware sets: a page that imports
+the `astro:actions` server module inherits the stylesheets of every route in the manifest, the
+Studio's included, so no page or layout imports it. With JavaScript
 the inline elements hand the form to `window.oySubmit` (`FormBridge.astro`, over `astro:actions`)
 and render the result in place. The datasets are private: `loadQuery` reads every query with
 `SANITY_API_READ_TOKEN`, and without it every page renders Pending. To read an enquiry from a

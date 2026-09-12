@@ -13,7 +13,8 @@
     "./images": "./src/images.ts",
     "./layout": "./src/layout.ts",
     "./lead-event": "./src/lead-event.ts",
-    "./stega": "./src/stega.ts"
+    "./stega": "./src/stega.ts",
+    "./api-version": "./src/api-version.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

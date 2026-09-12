@@ -6,7 +6,7 @@
  */
 import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
 import { getSecret } from 'astro:env/server';
-import { STUDIO_API_VERSION } from '@oy/content';
+import { STUDIO_API_VERSION } from '@oy/content/api-version';
 import { createClient } from '@sanity/client';
 import type { FormDeps } from './handlers';
 import { createBucket } from './limits';

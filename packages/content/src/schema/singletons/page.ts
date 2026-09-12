@@ -1,12 +1,8 @@
 import { defineField, defineType, type FieldDefinition } from 'sanity';
-import { type LayoutValue, layoutOption } from '../objects/layoutOption';
+import type { LayoutSpec } from '../../layout-options';
+import { layoutOption } from '../objects/layoutOption';
 
-export interface LayoutSpec {
-  name: string;
-  title: string;
-  options: readonly LayoutValue[];
-  description?: string;
-}
+export type { LayoutSpec };
 
 export interface PageSpec {
   name: string;

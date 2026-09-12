@@ -6,13 +6,13 @@ import {
   presentationTool,
 } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
+import { STUDIO_API_VERSION } from '../api-version';
 import { schemaTypes } from '../schema';
 import { documentActions, newDocumentOptions } from './document-options';
 import { presentationOptions } from './presentation';
 import { defaultDocumentNode, structure } from './structure';
 
-/** The API version every Studio query pins (docs/research/phase-2-sanity-client-and-image-url.md). */
-export const STUDIO_API_VERSION = '2026-09-11';
+export { STUDIO_API_VERSION };
 
 export interface StudioEnv {
   projectId: string;

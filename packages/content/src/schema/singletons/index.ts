@@ -1,7 +1,8 @@
 import { defineField } from 'sanity';
+import { PAGE_LAYOUTS } from '../../layout-options';
 import { voice } from '../../validation/rules';
 import { facts, refs, text } from '../helpers';
-import { definePage } from './page';
+import { definePage, type LayoutSpec } from './page';
 import { siteSettings } from './siteSettings';
 
 export const WAY_INS = ['vendor', 'sponsor', 'performer', 'volunteer', 'table', 'give'] as const;
@@ -92,30 +93,7 @@ export const homepage = definePage({
       ],
     }),
   ],
-  layout: [
-    {
-      name: 'season',
-      title: 'Season',
-      options: ['auto', 'gala', 'odunde'],
-      description: 'Which event leads; auto picks by date.',
-    },
-    // The prototype's value is "school"; the Studio shows the repo's word for it (AGENTS.md: never "School").
-    {
-      name: 'highlight',
-      title: 'Highlight',
-      options: ['festival', { value: 'school', title: 'lessons' }, 'collective'],
-    },
-    { name: 'gallery', title: 'Gallery tiles', options: ['7', '5', '3'] },
-    { name: 'involved', title: 'Get involved', options: ['doors', 'rows'] },
-    { name: 'newsletter', title: 'Newsletter', options: ['footer', 'band'] },
-    { name: 'pattern', title: 'Pattern', options: ['rich', 'subtle'] },
-    {
-      name: 'motion',
-      title: 'Motion',
-      options: ['on', 'off'],
-      description: 'The hero photo breathe.',
-    },
-  ],
+  layout: PAGE_LAYOUTS.homepage as LayoutSpec[],
 });
 
 export const festivalPage = definePage({
@@ -139,13 +117,7 @@ export const festivalPage = definePage({
     text('pastYearsIntro', 'Past years intro', 2),
     text('partnersIntro', 'Partners intro', 2),
   ],
-  layout: [
-    { name: 'phead', title: 'Header', options: ['photo', 'slim'] },
-    { name: 'zones', title: 'Zones', options: ['mosaic', 'five', 'grid', 'list'] },
-    { name: 'schedule', title: 'Schedule', options: ['shown', 'collapsed', 'hidden'] },
-    { name: 'takepart', title: 'Take part first row', options: ['vendor', 'sponsor'] },
-    { name: 'labels', title: 'Take-part labels', options: ['column', 'none', 'kicker'] },
-  ],
+  layout: PAGE_LAYOUTS.festivalPage as LayoutSpec[],
 });
 
 export const galaPage = definePage({
@@ -164,15 +136,7 @@ export const galaPage = definePage({
     text('pastIntro', 'Past galas intro', 2),
     takePartOrder,
   ],
-  layout: [
-    { name: 'treatment', title: 'Treatment', options: ['formal', 'warm'] },
-    { name: 'tiers', title: 'Tiers', options: ['columns', 'rows'] },
-    { name: 'emphasis', title: 'Emphasis', options: ['seats', 'tables'] },
-    { name: 'awards', title: 'Awards', options: ['shown', 'hidden'] },
-    { name: 'schedule', title: 'Running order', options: ['shown', 'hidden'] },
-    { name: 'past', title: 'Past galas', options: ['shown', 'hidden'] },
-    { name: 'labels', title: 'Take-part labels', options: ['column', 'none', 'kicker'] },
-  ],
+  layout: PAGE_LAYOUTS.galaPage as LayoutSpec[],
 });
 
 const subprogram = {
@@ -273,11 +237,7 @@ export const programsPage = definePage({
       ],
     }),
   ],
-  layout: [
-    { name: 'cards', title: 'Cards', options: ['four', 'three', 'pairs'] },
-    { name: 'inline', title: 'Inline programs', options: ['expanded', 'collapsed'] },
-    { name: 'yearstrip', title: 'Year strip', options: ['shown', 'hidden'] },
-  ],
+  layout: PAGE_LAYOUTS.programsPage as LayoutSpec[],
 });
 
 export const lessonsPage = definePage({
@@ -344,11 +304,7 @@ export const lessonsPage = definePage({
     }),
     refs('voices', 'Voices', 'testimonial'),
   ],
-  layout: [
-    { name: 'lesson', title: 'What a lesson looks like', options: ['shown', 'hidden'] },
-    { name: 'portraits', title: 'Portraits', options: ['shown', 'hidden'] },
-    { name: 'faq', title: 'Questions', options: ['closed', 'open'] },
-  ],
+  layout: PAGE_LAYOUTS.lessonsPage as LayoutSpec[],
 });
 
 export const collectivePage = definePage({
@@ -376,12 +332,7 @@ export const collectivePage = definePage({
       initialValue: false,
     }),
   ],
-  layout: [
-    { name: 'initiatives', title: 'Initiatives', options: ['side', 'stacked'] },
-    { name: 'green', title: 'Green', options: ['signal', 'strong'] },
-    { name: 'status', title: 'Status lines', options: ['shown', 'hidden'] },
-    { name: 'events', title: 'Events', options: ['shown', 'hidden'] },
-  ],
+  layout: PAGE_LAYOUTS.collectivePage as LayoutSpec[],
 });
 
 export const getInvolvedPage = definePage({
@@ -408,10 +359,7 @@ export const getInvolvedPage = definePage({
       ],
     }),
   ],
-  layout: [
-    { name: 'doors', title: 'Doors', options: ['cards', 'rows'] },
-    { name: 'hta', title: 'Hometown associations', options: ['shown', 'hidden'] },
-  ],
+  layout: PAGE_LAYOUTS.getInvolvedPage as LayoutSpec[],
 });
 
 export const impactPage = definePage({
@@ -444,12 +392,7 @@ export const impactPage = definePage({
       ],
     }),
   ],
-  layout: [
-    { name: 'stats', title: 'Headline numbers', options: ['four', 'six'] },
-    { name: 'outcomes', title: 'Outcomes', options: ['cards', 'rows'] },
-    { name: 'sources', title: 'Source lines', options: ['shown', 'hidden'] },
-    { name: 'funders', title: 'Funders', options: ['shown', 'hidden'] },
-  ],
+  layout: PAGE_LAYOUTS.impactPage as LayoutSpec[],
 });
 
 export const storyPage = definePage({
@@ -475,16 +418,7 @@ export const storyPage = definePage({
       ],
     }),
   ],
-  layout: [
-    {
-      name: 'timeline',
-      title: 'Timeline',
-      options: ['hidden', 'shown'],
-      description: 'Hidden until the owner confirms the entries (wayfinder ticket 07).',
-    },
-    { name: 'bios', title: 'Bios', options: ['short', 'full'] },
-    { name: 'portraits', title: 'Portraits', options: ['shown', 'hidden'] },
-  ],
+  layout: PAGE_LAYOUTS.storyPage as LayoutSpec[],
 });
 
 export const donatePage = definePage({
@@ -539,7 +473,7 @@ export const donatePage = definePage({
       validation: voice.text,
     }),
   ],
-  layout: [{ name: 'impact', title: 'What your gift does', options: ['shown', 'hidden'] }],
+  layout: PAGE_LAYOUTS.donatePage as LayoutSpec[],
 });
 
 export const galleryPage = definePage({
@@ -554,11 +488,7 @@ export const galleryPage = definePage({
       description: 'This wording must be yours. Empty shows Pending.',
     }),
   ],
-  layout: [
-    { name: 'open', title: 'Opening an album', options: ['viewer', 'grid'] },
-    { name: 'captions', title: 'Captions', options: ['always', 'hover'] },
-    { name: 'state', title: 'State', options: ['built', 'soon'] },
-  ],
+  layout: PAGE_LAYOUTS.galleryPage as LayoutSpec[],
 });
 
 export const newsPage = definePage({
@@ -566,10 +496,7 @@ export const newsPage = definePage({
   title: 'News & Events page',
   actions: false,
   fields: [],
-  layout: [
-    { name: 'order', title: 'Order', options: ['events-led', 'feed-led'] },
-    { name: 'filtersShown', title: 'Filters', options: ['shown', 'hidden'] },
-  ],
+  layout: PAGE_LAYOUTS.newsPage as LayoutSpec[],
 });
 
 export const singletonTypes = [
