@@ -149,15 +149,50 @@ browser once per machine, with Node 22 on `PATH`:
 bunx playwright install chromium
 ```
 
-`reuseExistingServer` is on outside CI, so a running `bun dev` is reused. Set
-`PLAYWRIGHT_TEST_BASE_URL` to run the same suite against a deployed URL instead of starting a
-server; a preview deployment also needs the project's Protection Bypass secret in
-`use.extraHTTPHeaders` (not wired: previews are private, CI runs locally). The CI job
+The runner starts `node ./node_modules/astro/bin/astro.mjs dev` itself with `PLAYWRIGHT=1`
+(the dev toolbar off: its shadow DOM carries headings and controls the specs and axe would see)
+and `ASTRO_DEV_BACKGROUND=0` (Astro 7 otherwise backgrounds the dev server when it detects a
+coding agent, the runner reports "exited early" and the daemon keeps the port; `astro dev stop`
+clears one that got away). A `bun dev` already on 4321 is reused outside CI, toolbar and all,
+so stop it first for a clean run. Set `PLAYWRIGHT_TEST_BASE_URL` to run the suite against a
+deployed URL instead of starting a server; a preview deployment also needs the project's
+Protection Bypass secret in `use.extraHTTPHeaders` (not wired: previews are private, CI runs on
+the runner). The action requests are intercepted, so nothing is written; the two no-JS success
+specs, which post for real, run only with `E2E_WRITE=1` against `development`. The CI job
 `Playwright and axe` installs Chromium with its system dependencies on every run (Playwright
-advises against caching browsers), starts the dev server with the placeholder Sanity variables,
-intercepts the action requests so nothing is written, and uploads `playwright-report/` when a
-run fails. Add the context `Playwright and axe` to the branch protection once the Phase 3 pull
-request merges. Vitest keeps to `src/**/*.test.ts`; Playwright keeps to `e2e/**`.
+advises against caching browsers), runs the suite with the placeholder Sanity variables (every
+read answers Pending, every write answers the fallback sentence, both fine for the suite), and
+uploads `playwright-report/` when a run fails. Add the context `Playwright and axe` to the branch
+protection once the Phase 3 pull request merges. Vitest keeps to `src/**/*.test.ts`; Playwright
+keeps to `e2e/**`.
+
+## Forms and the actions
+
+Since Phase 3 (ADR 0019). Nine Astro Actions in `packages/web/src/actions`, one per enquiry kind
+and the newsletter, each backed by a handler in `src/lib/forms/handlers.ts`: validate with
+`parseEnquiry` (the newsletter with `parseSubscriber`), drop a filled honeypot (`website`) with a
+success answer and no write, refuse a burst from one origin (ten in ten minutes, a token bucket
+in module memory, best effort on a warm function) and an address past the cap (five enquiries an
+hour per reply-to address, a Sanity count across every kind), write `{ kind, [kind]: fields,
+submittedAt, source, handled }` or `{ email, subscribedAt, source }` with `SANITY_API_WRITE_TOKEN`,
+and answer `{ ok: true, title, body }` from `successCopy` with the routing contact read from the
+settings (cached for a minute) or `{ ok: false, summary, fields, values }`. Without the write
+token every form answers the fallback sentence and logs why. The Enquiry Modal and the footer
+form post natively without JavaScript: `?enquiry=<kind>` opens the modal, the middleware runs a
+posted action and redirects a success to `?enquiry=<kind>&sent=1` (`?subscribed=1` for the
+newsletter), and an error re-renders the page as a 400 with the values kept. With JavaScript
+the inline elements hand the form to `window.oySubmit` (`FormBridge.astro`, over `astro:actions`)
+and render the result in place. The datasets are private: `loadQuery` reads every query with
+`SANITY_API_READ_TOKEN`, and without it every page renders Pending. To read an enquiry from a
+session without the Studio:
+
+```bash
+bun run --filter @oy/content query -- '*[_type == "enquiry"] | order(submittedAt desc)[0]'
+```
+
+Analytics: the components announce `oy:track` events (`enquiry_opened`, `enquiry_submitted`,
+`give_opened`, `give_embed_failed`, `newsletter_submitted`) and `Analytics.astro` forwards them
+to PostHog once it loads, with pageviews on every navigation and never a form's contents.
 
 ## Rollback
 

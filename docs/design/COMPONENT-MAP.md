@@ -38,8 +38,9 @@ Conventions:
 
 | Component | Variants and states | Props | Used on |
 | --- | --- | --- | --- |
-| `SiteNav` | desktop with Events dropdown; mobile overlay; current page marker; dropdown open, focus-within, Escape | `current`, `items` | All |
-| `SiteFooter` | with newsletter; trust line; socials | `settings`, `newsletterState` | All |
+| `SiteNav` | desktop with Events dropdown; mobile menu as a native dialog under 880px (the ported CSS breakpoint); current page marker (`aria-current` on the link, `data-current` on the Events trigger); dropdown open, focus within, Escape | `path`, `donateHref`, `menuOpen` (story only) | All |
+| `SiteFooter` | with newsletter; trust line with the EIN placeholder; socials per network in the settings; Pending chips for the owed facts | `settings`, `newsletterState`, `newsletterAction`, `newsletterError`, `newsletterValue`, `source` | All |
+| `ProgressBar` | idle; loading (the 2px gold bar the router events drive) | `loading` (story only) | All |
 | `Hero` (homepage) | photo with scrim, breathing photo (motion on/off), kicker, H1, sub, two actions | `image`, `kicker`, `title`, `sub`, `primary`, `secondary`, `motion` | Home |
 | `PageHeader` | slim (no photo); photo band; up to two buttons | `variant`, `kicker`, `title`, `line`, `image`, `actions` | All eleven |
 | `GlanceStrip` | 4 and 5 facts; a fact can be Pending | `facts[]` | Odunde, Gala, Lessons, Collective |
@@ -90,11 +91,15 @@ Conventions:
 
 | Component | Variants and states | Props | Used on |
 | --- | --- | --- | --- |
-| `Field` | text, email, tel, select, textarea; label, hint, error sentence; wide variant; 44px min | `spec`, `value`, `error` | Enquiry Modal, footer |
-| `NewsletterForm` | footer (inline, in dark); band variant; states idle, busy, success (button reads "Ẹ ṣé! ✓"), error | `variant`, `state` | Footer, Home band |
-| `EnquiryModal` | one shell, eight field sets from `enquiry-kinds.ts`; states empty, filled, submitting, success, error summary; dialog on desktop, bottom sheet under 720px; focus trap, Escape, focus return, scrim click | `kind`, `open`, `returnFocusTo` | Five pages plus nav and footer |
-| `GiveDialog` | embed (Zeffy iframe in our card, aṣọ òkè header); fallback (check address, Contact) after load failure or timeout | `mode` | Every Donate button |
-| `EnquiryCard` | the card that explains a form before opening it: title, what it asks, how long, what happens next, button | `kind` | Get Involved doors, Lessons, Odunde, Gala |
+| `Field` | text, email, tel, select, textarea; label, hint, error sentence tied through `aria-describedby`; wide variant; `aria-required` and `data-req`, never the native `required`; 44px min | `spec`, `id`, `name`, `value`, `error`, `wide`, `autocomplete` | Enquiry Modal |
+| `NewsletterForm` | footer (inline, in dark); band variant; states idle, busy, success (button reads "Ẹ ṣé! ✓" in place), error; honeypot; posts natively, enhances through the site's bridge | `action`, `state`, `error`, `value`, `source`, `variant`, `site` | Footer, Home band |
+| `EnquiryModal` | one native dialog, eight forms from `enquiry-kinds.ts`, only the open kind visible; states empty, filled, submitting, success (Close focused), error (summary as alert, values kept); dialog on desktop, bottom sheet under 720px; Escape, scrim click, focus return; opens from any `[data-enquiry]` trigger; server-rendered open for `?enquiry=<kind>` and a posted result | `kind`, `open`, `state`, `values`, `errors`, `summary`, `success`, `contacts`, `site`, `actions`, `source` | Mounted once by the layout |
+| `GiveDialog` | embed (the island's template mounted on first open, aṣọ òkè edge); fallback (check line with the address or Pending, Contact us, Try again) after the timer; pending (the island's answer while the URL is empty, no Try again) | `open`, `mode`, `orgName`, `address`, `ein`, `contactHref`, `timeout`; slot `embed` | Mounted once by the layout; every Donate trigger |
+| `EnquiryCard` | the card that explains a form before opening it: title, what it asks, how many questions, what happens next (from the page), the trigger as a link to `?enquiry=<kind>#enquiry` | `kind`, `title`, `blurb`, `next`, `label`, `variant` | Get Involved doors, Lessons, Odunde, Gala |
+
+Built in Phase 3 as above. Where the routes table and the footer prototype disagreed (SVG marks
+and two link columns in the prototype, text initials and four columns in the table), the
+prototype won as the later polish; the mobile menu breaks at 880px because the ported CSS does.
 
 ## Retired (keep out of the library)
 
