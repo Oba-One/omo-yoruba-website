@@ -265,6 +265,7 @@ export type Stat = {
   _rev: string;
   value?: string;
   label?: string;
+  shortLabel?: string;
   source?: string;
   asOf?: string;
 };
@@ -922,6 +923,7 @@ export type Homepage = {
   hero?: {
     kicker?: Bilingual;
     title?: string;
+    emphasis?: string;
     sub?: string;
     image?: OyImage;
     blessing?: Bilingual;
@@ -1241,7 +1243,7 @@ export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields |
 
 // Source: src/queries/homepage.ts
 // Variable: homepageQuery
-// Query: *[_id == "homepage"][0]{  hero{    kicker{yo, en},    title,    sub,    blessing{yo, en},    image{_type, alt, caption, hotspot, crop, asset},    primaryAction{label, kind, enquiryKind, href, newTab},    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}  },  "leadEvent": leadEvent->{_id, kind, title, edition, start, end, "venueName": venue.name, summary},  "events": *[_type == "event" && kind in ["festival", "gala"]] | order(edition desc){    _id, kind, title, edition, start, end, "venueName": venue.name, summary  },  "stats": stats[]->{_id, value, label, source, asOf},  programsIntro,  "programs": *[_type == "program"] | order(order asc){    _id, name, "slug": slug.current, kicker{yo, en}, blurb,    image{_type, alt, caption, hotspot, crop, asset},    cadence, ages, page,    action{label, kind, enquiryKind, href, newTab}  },  "voices": voices[]->{_id, quote, name, relation, permissionToName, context},  voicesIntro,  voicesProverb{yo, en},  newsIntro,  "news": *[_type == "newsPost"] | order(date desc)[0...3]{    _id, title, "slug": slug.current, date, kicker{yo, en}, summary,    image{_type, alt, caption, hotspot, crop, asset}  },  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},  raiseYourHand{    title,    blurb,    "doors": doors[]->{      _id, key, title, blurb, bullets,      action{label, kind, enquiryKind, href, newTab},      image{_type, alt, caption, hotspot, crop, asset}    }  },  layout{season, highlight, gallery, involved, newsletter, pattern, motion},  seo{title, description}}
+// Query: *[_id == "homepage"][0]{  hero{    kicker{yo, en},    title,    emphasis,    sub,    blessing{yo, en},    image{_type, alt, caption, hotspot, crop, asset},    primaryAction{label, kind, enquiryKind, href, newTab},    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}  },  "leadEvent": leadEvent->{_id, kind, title, edition, start, end, "venueName": venue.name, summary},  "events": *[_type == "event" && kind in ["festival", "gala"]] | order(edition desc){    _id, kind, title, edition, start, end, "venueName": venue.name, summary  },  "stats": stats[]->{_id, value, label, shortLabel, source, asOf},  programsIntro,  "programs": *[_type == "program"] | order(order asc){    _id, name, "slug": slug.current, kicker{yo, en}, blurb,    image{_type, alt, caption, hotspot, crop, asset},    cadence, ages, page,    action{label, kind, enquiryKind, href, newTab}  },  "voices": voices[]->{_id, quote, name, relation, permissionToName, context},  voicesIntro,  voicesProverb{yo, en},  newsIntro,  "news": *[_type == "newsPost"] | order(date desc)[0...3]{    _id, title, "slug": slug.current, date, kicker{yo, en}, summary,    image{_type, alt, caption, hotspot, crop, asset},    "tags": tags[]->{_type, kind, page}  },  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},  raiseYourHand{    title,    blurb,    "doors": doors[]->{      _id, key, title, blurb, bullets,      action{label, kind, enquiryKind, href, newTab},      image{_type, alt, caption, hotspot, crop, asset}    }  },  layout{season, highlight, gallery, involved, newsletter, pattern, motion},  seo{title, description}}
 export type HomepageQueryResult = {
   hero: null;
   leadEvent: null;
@@ -1307,6 +1309,15 @@ export type HomepageQueryResult = {
       crop: SanityImageCrop | null;
       asset: SanityImageAssetReference | null;
     } | null;
+    tags: Array<{
+      _type: "event";
+      kind: "collective" | "festival" | "gala" | "other" | null;
+      page: null;
+    } | {
+      _type: "program";
+      kind: null;
+      page: "collective" | "lessons" | null;
+    }> | null;
   }>;
   yearInLife: null;
   raiseYourHand: null;
@@ -1377,6 +1388,15 @@ export type HomepageQueryResult = {
       crop: SanityImageCrop | null;
       asset: SanityImageAssetReference | null;
     } | null;
+    tags: Array<{
+      _type: "event";
+      kind: "collective" | "festival" | "gala" | "other" | null;
+      page: null;
+    } | {
+      _type: "program";
+      kind: null;
+      page: "collective" | "lessons" | null;
+    }> | null;
   }>;
   yearInLife: null;
   raiseYourHand: null;
@@ -1465,6 +1485,15 @@ export type HomepageQueryResult = {
       crop: SanityImageCrop | null;
       asset: SanityImageAssetReference | null;
     } | null;
+    tags: Array<{
+      _type: "event";
+      kind: "collective" | "festival" | "gala" | "other" | null;
+      page: null;
+    } | {
+      _type: "program";
+      kind: null;
+      page: "collective" | "lessons" | null;
+    }> | null;
   }>;
   yearInLife: null;
   raiseYourHand: null;
@@ -1498,6 +1527,7 @@ export type HomepageQueryResult = {
     _id: string;
     value: string | null;
     label: string | null;
+    shortLabel: string | null;
     source: string | null;
     asOf: string | null;
   }> | null;
@@ -1559,6 +1589,15 @@ export type HomepageQueryResult = {
       crop: SanityImageCrop | null;
       asset: SanityImageAssetReference | null;
     } | null;
+    tags: Array<{
+      _type: "event";
+      kind: "collective" | "festival" | "gala" | "other" | null;
+      page: null;
+    } | {
+      _type: "program";
+      kind: null;
+      page: "collective" | "lessons" | null;
+    }> | null;
   }>;
   yearInLife: null;
   raiseYourHand: null;
@@ -1582,6 +1621,7 @@ export type HomepageQueryResult = {
       en: string | null;
     } | null;
     title: string | null;
+    emphasis: string | null;
     sub: string | null;
     blessing: {
       yo: string | null;
@@ -1635,6 +1675,7 @@ export type HomepageQueryResult = {
     _id: string;
     value: string | null;
     label: string | null;
+    shortLabel: string | null;
     source: string | null;
     asOf: string | null;
   }> | null;
@@ -1699,6 +1740,15 @@ export type HomepageQueryResult = {
       crop: SanityImageCrop | null;
       asset: SanityImageAssetReference | null;
     } | null;
+    tags: Array<{
+      _type: "event";
+      kind: "collective" | "festival" | "gala" | "other" | null;
+      page: null;
+    } | {
+      _type: "program";
+      kind: null;
+      page: "collective" | "lessons" | null;
+    }> | null;
   }>;
   yearInLife: Array<{
     _key: string;
@@ -1823,7 +1873,7 @@ export type SubscriberByEmailQueryResult = string | null;
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"leadEvent\": leadEvent->{_id, kind, title, edition, start, end, \"venueName\": venue.name, summary},\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, source, asOf},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  newsIntro,\n  \"news\": *[_type == \"newsPost\"] | order(date desc)[0...3]{\n    _id, title, \"slug\": slug.current, date, kicker{yo, en}, summary,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
+    "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"leadEvent\": leadEvent->{_id, kind, title, edition, start, end, \"venueName\": venue.name, summary},\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source, asOf},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  newsIntro,\n  \"news\": *[_type == \"newsPost\"] | order(date desc)[0...3]{\n    _id, title, \"slug\": slug.current, date, kicker{yo, en}, summary,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"tags\": tags[]->{_type, kind, page}\n  },\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_id == \"siteSettings\"][0]{\n  orgName,\n  wordmarkLine2,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  footerBlurb,\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  eventbriteUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;
     "*[_type == \"subscriber\" && email == $email][0]._id": SubscriberByEmailQueryResult;

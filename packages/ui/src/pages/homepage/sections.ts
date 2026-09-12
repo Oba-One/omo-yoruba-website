@@ -1,8 +1,11 @@
 /**
  * The homepage sections as configured components for the page-section stories (ROUTES section
  * 5: one story per layout option so the owner compares the values without touching content).
- * Every part comes from the fixtures; the site composes the same parts in packages/web.
+ * Every part comes from the fixtures; the site composes the same parts in packages/web, where
+ * `buildHomepage` makes the same choices (the highlighted program's action in the hero, the first
+ * three programs, the three voice slots).
  */
+import { HOMEPAGE_VOICE_SLOTS } from '@oy/content/pending';
 import EventBand from '../../bands/EventBand/EventBand.astro';
 import NewsletterBand from '../../bands/NewsletterBand/NewsletterBand.astro';
 import DoorCard from '../../cards/DoorCard/DoorCard.astro';
@@ -11,6 +14,7 @@ import ProgramCard from '../../cards/ProgramCard/ProgramCard.astro';
 import PullQuote from '../../cards/PullQuote/PullQuote.astro';
 import PathRows from '../../content/PathRows/PathRows.astro';
 import ProverbLine from '../../content/ProverbLine/ProverbLine.astro';
+import { usableAction } from '../../core/ActionButton/action';
 import {
   DOORS,
   GALA_2026,
@@ -31,16 +35,26 @@ import Section from '../../page/Section/Section.astro';
 import SectionHead from '../../page/SectionHead/SectionHead.astro';
 import type { SlotValue } from '../../storybook';
 
-export const hero = (motion: boolean): SlotValue => ({
+export type Highlight = 'festival' | 'school' | 'collective';
+
+/** The hero's gold button per highlight: the Studio's own, or the highlighted program's action. */
+const HIGHLIGHT_ACTIONS: Record<Highlight, (typeof PROGRAMS)[number]['action'] | undefined> = {
+  festival: undefined,
+  school: PROGRAMS.find((program) => program.page === 'lessons')?.action,
+  collective: PROGRAMS.find((program) => program.page === 'collective')?.action,
+};
+
+export const hero = (motion: boolean, highlight: Highlight = 'festival'): SlotValue => ({
   component: Hero,
   props: {
     image: HERO.image.src,
     alt: HERO.image.alt,
     kicker: HERO.kicker,
     title: HERO.title,
+    emphasis: HERO.emphasis,
     sub: HERO.sub,
     blessing: HERO.blessing,
-    primary: HERO.primary,
+    primary: usableAction(HIGHLIGHT_ACTIONS[highlight], HERO.primary),
     secondary: HERO.secondary,
     motion,
   },
@@ -67,9 +81,12 @@ export const programs: SlotValue = {
       },
       {
         component: CardGrid,
-        props: { columns: 4 },
+        props: { columns: 3 },
         slots: {
-          default: PROGRAMS.map((program) => ({ component: ProgramCard, props: { program } })),
+          default: PROGRAMS.slice(0, 3).map((program) => ({
+            component: ProgramCard,
+            props: { program },
+          })),
         },
       },
     ],
@@ -93,7 +110,12 @@ export const voices: SlotValue = {
       {
         component: CardGrid,
         props: { columns: 3 },
-        slots: { default: [1, 2, 3].map(() => ({ component: PullQuote, props: {} })) },
+        slots: {
+          default: HOMEPAGE_VOICE_SLOTS.map((placeholder) => ({
+            component: PullQuote,
+            props: { placeholder },
+          })),
+        },
       },
       { component: ProverbLine, props: PROVERB },
     ],

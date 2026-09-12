@@ -9,6 +9,8 @@ describe('HomeRoot', () => {
   it('carries the defaults of the options as data attributes', async () => {
     const root = (await renderToBody(Default)).querySelector('.oy-home');
     expect(root?.getAttribute('data-card')).toBe('grain-dots');
+    // The site's default theme, which sets the band and alternate section surfaces.
+    expect(root?.getAttribute('data-theme')).toBe('adire');
     expect(root?.getAttribute('data-highlight')).toBe('festival');
     expect(root?.getAttribute('data-pattern')).toBe('rich');
     expect(root?.getAttribute('data-motion')).toBe('true');

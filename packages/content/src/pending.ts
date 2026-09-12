@@ -399,6 +399,44 @@ export function pendingTitle(entry: PendingEntry | PresenceEntry): string {
   return `${entry.where}: ${entry.what}`;
 }
 
+export interface VoiceSlot {
+  /** What the missing quote should be, shown in brackets in the quote's own face. */
+  quote: string;
+  /** Who it should come from, after "Name pending •". */
+  role: string;
+  /** The testimonial `context` that fills the slot: a voice with it takes the slot's place. */
+  context: 'lessons' | 'festival' | 'collective' | 'general';
+}
+
+/**
+ * The homepage's three member voices while the testimonials are missing, in the prototype's own
+ * placeholder form (`02 Homepage.dc.html`): the quote the slot waits for in brackets and "Name
+ * pending" with the voice it wants, under the registry's chip for the voices (ADR 0014 holds). A
+ * testimonial whose context matches a slot fills it, so the page never asks again for a voice it
+ * shows. The prototype's parent quote mentions Saturday mornings, which the Lessons rule retires,
+ * so that slot asks what the lessons changed instead.
+ */
+export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
+  {
+    quote:
+      'Quote from a Language Lessons parent, two or three sentences on what the lessons changed at home.',
+    role: 'Parent, Language Lessons',
+    context: 'lessons',
+  },
+  {
+    quote:
+      'Quote from an elder of Ẹgbẹ́ Ìbílẹ̀, two or three sentences on passing the language to the grandchildren.',
+    role: 'Elder, Ẹgbẹ́ Ìbílẹ̀',
+    context: 'general',
+  },
+  {
+    quote:
+      'Quote from a vendor at Ọjà Balógun, two or three sentences on what festival day does for the business.',
+    role: 'Vendor, Ọjà Balógun',
+    context: 'festival',
+  },
+];
+
 /**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
  * `kind` picks the row for one kind of document (an event's `gala` or `festival`) where the

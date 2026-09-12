@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'astro/types';
-import { STATS } from '../../fixtures/homepage';
+import { HOMEPAGE_STATS, STATS } from '../../fixtures/homepage';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import StatStrip from './StatStrip.astro';
 
@@ -8,7 +8,7 @@ type Args = StoryArgs<ComponentProps<typeof StatStrip>>;
 const meta = {
   title: 'Page/StatStrip',
   component: StatStrip,
-  args: { stats: STATS },
+  args: { stats: HOMEPAGE_STATS },
   parameters: {
     layout: 'fullscreen',
     docs: {
@@ -23,7 +23,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
-/** The four seeded figures, no source lines: the homepage. */
+/** The four seeded figures with the short labels, no source lines: the homepage. */
 export const Default: Story = {};
 
 export const Four: Story = {};
@@ -31,8 +31,8 @@ export const Four: Story = {};
 /** Six across: the Impact page's option. The two extra figures are the seeded ones repeated to show the layout. */
 export const Six: Story = { args: { stats: [...STATS, ...STATS.slice(0, 2)] } };
 
-/** With source lines: every seeded figure still waits for its source, so each shows the chip. */
-export const WithSources: Story = { args: { sources: true } };
+/** With source lines and the full labels: every seeded figure still waits for its source, so each shows the chip. */
+export const WithSources: Story = { args: { sources: true, stats: STATS } };
 
 /** One figure sourced (an illustrative line, from no dataset), the rest Pending. */
 export const WithOneSource: Story = {

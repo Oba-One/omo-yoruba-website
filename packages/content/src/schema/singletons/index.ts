@@ -34,6 +34,26 @@ export const homepage = definePage({
           type: 'string',
           validation: voice.requiredHeading,
         }),
+        defineField({
+          name: 'emphasis',
+          title: 'Words in gold',
+          type: 'string',
+          description:
+            'Part of the heading set in gold italic, copied exactly as it appears there: "alive". Empty leaves the whole heading white.',
+          validation: (rule) => [
+            ...voice.text(rule),
+            rule
+              .custom((value, context) => {
+                const title = (context.parent as { title?: string } | undefined)?.title;
+                if (!value?.trim() || !title) return true;
+                // Marks typed as one character or as a letter and a combining mark read the same.
+                return title.normalize('NFC').includes(value.trim().normalize('NFC'))
+                  ? true
+                  : 'These words are not in the heading as written, so the heading shows with no gold. Copy them from the heading.';
+              })
+              .warning(),
+          ],
+        }),
         text('sub', 'Line under the heading', 2),
         defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
         defineField({
@@ -46,7 +66,8 @@ export const homepage = definePage({
           name: 'primaryAction',
           title: 'Primary action',
           type: 'cta',
-          description: 'The one gold button.',
+          description:
+            "The gold button. When the layout's Highlight names Language Lessons or the Collective, that program's card action takes its place.",
         }),
         defineField({
           name: 'secondaryActions',

@@ -2,11 +2,12 @@
 /**
  * A photo tile of the year-in-the-life mosaic (`02 Homepage.dc.html`, COMPONENT-MAP, Cards): the
  * photograph with its caption over a scrim, Yoruba first with the gold dot before the English,
- * square corners, no zoom; the scrim deepens on hover through the tokens. Without a photograph
- * the tile is the placeholder with the àdìrẹ dot field naming the missing photo.
+ * square corners, no zoom, framed by the Studio hotspot; the scrim deepens on hover through the
+ * tokens. Without a photograph the tile is the placeholder with the àdìrẹ dot field naming the
+ * missing photo.
  */
 import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
-import { altOf, type ImageInput, imgAttributes } from '../image';
+import { altOf, type ImageInput, imgAttributes, positionOf } from '../image';
 
 interface Props {
   image?: ImageInput | null;
@@ -33,6 +34,7 @@ const {
 } = Astro.props;
 
 const img = imgAttributes(image, sizes);
+const position = positionOf(image);
 const [yo, ...restCaption] = (caption ?? '').split(' • ');
 const en = restCaption.join(' • ');
 ---
@@ -40,7 +42,13 @@ const en = restCaption.join(' • ');
 <figure class:list={['v2-mo', 'oy-photo-tile', className]} data-sanity={edit} {...rest}>
   {
     img ? (
-      <img {...img} alt={altOf(image, alt ?? '')} loading="lazy" decoding="async" />
+      <img
+        {...img}
+        alt={altOf(image, alt ?? '')}
+        loading="lazy"
+        decoding="async"
+        style={position ? `object-position: ${position}` : undefined}
+      />
     ) : (
       <ImagePlaceholder what={what} tone="adire" class="oy-photo-tile-placeholder" />
     )

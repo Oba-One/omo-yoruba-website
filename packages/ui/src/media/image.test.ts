@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { altOf, imgAttributes } from './image';
+import { altOf, imgAttributes, positionOf } from './image';
 
 describe('imgAttributes', () => {
   it('takes a URL string', () => {
@@ -27,5 +27,16 @@ describe('imgAttributes', () => {
     });
     expect(altOf(resolved)).toBe('Alt');
     expect(altOf('a', 'fallback')).toBe('fallback');
+  });
+});
+
+describe('positionOf', () => {
+  it('reads the hotspot framing of a resolved image and nothing else', () => {
+    expect(positionOf({ src: '/a.jpg', position: '60% 35%' })).toBe('60% 35%');
+    expect(positionOf({ src: '/a.jpg' })).toBeUndefined();
+    expect(positionOf('/a.jpg')).toBeUndefined();
+    expect(positionOf(undefined)).toBeUndefined();
+    // The position never becomes an attribute of the img.
+    expect(imgAttributes({ src: '/a.jpg', position: '60% 35%' })).toEqual({ src: '/a.jpg' });
   });
 });

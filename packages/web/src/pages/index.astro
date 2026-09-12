@@ -56,6 +56,7 @@ cachePage(Astro, '/', { draft: preview });
       edit={home.hero.edit}
       kicker={home.hero.kicker}
       title={home.hero.title}
+      emphasis={home.hero.emphasis}
       sub={home.hero.sub}
       blessing={home.hero.blessing}
       primary={home.hero.primary}
@@ -73,7 +74,7 @@ cachePage(Astro, '/', { draft: preview });
         link={{ label: 'All programs', href: '/programs' }}
         id="programs-heading"
       />
-      <CardGrid columns={4}>
+      <CardGrid columns={3}>
         {home.programs.map(({ program, imageEdit }) => (
           <ProgramCard program={program} imageEdit={imageEdit} />
         ))}
@@ -88,8 +89,8 @@ cachePage(Astro, '/', { draft: preview });
         id="voices-heading"
       />
       <CardGrid columns={3}>
-        {home.voices.map((voice) => (
-          <PullQuote testimonial={voice} />
+        {home.voices.map(({ testimonial, placeholder }) => (
+          <PullQuote testimonial={testimonial} placeholder={placeholder} />
         ))}
       </CardGrid>
       <ProverbLine yo={home.proverb?.yo} en={home.proverb?.en} />
@@ -103,8 +104,8 @@ cachePage(Astro, '/', { draft: preview });
         id="news-heading"
       />
       <CardGrid columns={3}>
-        {home.news.map((post) => (
-          <NewsCard post={post} />
+        {home.news.map(({ post, href }) => (
+          <NewsCard post={post} href={href} />
         ))}
       </CardGrid>
     </Section>

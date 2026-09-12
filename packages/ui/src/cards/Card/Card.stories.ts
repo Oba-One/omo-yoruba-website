@@ -32,6 +32,13 @@ export const WithPhoto: Story = {
   args: { image: PHOTOS.learningYoruba.src, alt: PHOTOS.learningYoruba.alt },
 };
 
+/** A Studio photo with a hotspot: the cover crop keeps the editor's framing (the prototype's 60% 35%). */
+export const FramedPhoto: Story = {
+  args: {
+    image: { src: PHOTOS.learningYoruba.src, alt: PHOTOS.learningYoruba.alt, position: '60% 35%' },
+  },
+};
+
 export const WithKicker: Story = {
   args: {
     kicker: { yo: 'Ẹ̀kọ́ èdè', en: 'Lessons' },

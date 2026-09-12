@@ -4,11 +4,12 @@
  * the 8px aṣọ òkè top edge and the grain-dots texture from the tokens' `.oy-card`, and the hover
  * language of `.v2-card`: the border deepens, the title warms to terracotta, the arrow slides and
  * the 2px aṣọ òkè rule draws under the action. No lift, no zoom. An optional photo sits above the
- * body at a fixed height with square corners; the body is the slot. The dark scope comes from a
- * parent `.oy-dark`.
+ * body at a fixed height with square corners, framed by the Studio hotspot; the body is the slot.
+ * The dark scope comes from a parent `.oy-dark`. The base resets the browser's margin, so a card
+ * rendered as a `figure` fills its grid cell like the others.
  */
 import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
-import { altOf, type ImageInput, imgAttributes } from '../../media/image';
+import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
 
 interface Props {
   as?: 'article' | 'figure' | 'div';
@@ -47,6 +48,8 @@ const {
 
 const img = imgAttributes(image, sizes);
 const altText = altOf(image, alt ?? '');
+const position = positionOf(image);
+const mediaStyle = `height: ${mediaHeight}px${position ? `; object-position: ${position}` : ''}`;
 ---
 
 <Tag class:list={['oy-card', 'v2-card', className]} {...rest}>
@@ -58,7 +61,7 @@ const altText = altOf(image, alt ?? '');
         alt={altText}
         loading="lazy"
         decoding="async"
-        style={`height: ${mediaHeight}px`}
+        style={mediaStyle}
         data-sanity={imageEdit}
       />
     )
@@ -73,6 +76,9 @@ const altText = altOf(image, alt ?? '');
 </Tag>
 
 <style>
+  .oy-card {
+    margin: 0;
+  }
   .oy-card-media {
     display: block;
     width: 100%;

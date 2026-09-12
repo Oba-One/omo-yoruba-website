@@ -183,7 +183,8 @@ async function writeDocuments(
         continue;
       }
       // Only the fields the owner has not filled since; an edit is never overwritten. One level
-      // into an object (`hero.blessing`) so a field added to the schema later still lands.
+      // into an object (`hero.blessing`) and into keyed array items (`yearInLife[_key=="tile-0"]`),
+      // so a field added to the schema later still lands.
       const missing = missingFields(fields, current);
       if (Object.keys(missing).length === 0) {
         unchanged += 1;

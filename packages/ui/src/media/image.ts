@@ -14,6 +14,8 @@ export interface ResolvedImage {
   width?: number;
   height?: number;
   alt?: string;
+  /** CSS `object-position` from the Studio hotspot ("60% 35%"): the framing a cover crop keeps. */
+  position?: string;
 }
 
 export type ImageInput = string | ImageMetadata | ResolvedImage;
@@ -44,6 +46,14 @@ export function imgAttributes(
     ...(input.width ? { width: input.width } : {}),
     ...(input.height ? { height: input.height } : {}),
   };
+}
+
+/** The `object-position` a resolved image carries from its hotspot, or undefined. */
+export function positionOf(input: ImageInput | null | undefined): string | undefined {
+  if (input && typeof input === 'object' && 'position' in input) {
+    return typeof input.position === 'string' && input.position ? input.position : undefined;
+  }
+  return undefined;
 }
 
 /** The alt text carried by a resolved image, else the fallback. */

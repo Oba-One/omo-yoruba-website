@@ -70,11 +70,32 @@ const fact = (label: string, value?: string, note?: string) => ({
   ...(note ? { note } : {}),
 });
 
-function image(assets: SeedAssets, file: string, caption?: string) {
+/** A focus point in percent, copied from the prototype's `object-position` for the photograph. */
+type Focus = readonly [x: number, y: number];
+
+function image(assets: SeedAssets, file: string, caption?: string, focus?: Focus) {
   const asset = assets.get(file);
   if (!asset) return undefined;
   const text = caption ?? asset.caption;
-  return { _type: 'oyImage', asset: ref(asset.assetId), alt: asset.caption, caption: text };
+  return {
+    _type: 'oyImage',
+    asset: ref(asset.assetId),
+    alt: asset.caption,
+    caption: text,
+    // The hotspot carries the prototype's framing; the site turns it back into object-position.
+    ...(focus
+      ? {
+          hotspot: {
+            _type: 'sanity.imageHotspot',
+            x: focus[0] / 100,
+            y: focus[1] / 100,
+            width: 0.4,
+            height: 0.4,
+          },
+          crop: { _type: 'sanity.imageCrop', top: 0, bottom: 0, left: 0, right: 0 },
+        }
+      : {}),
+  };
 }
 
 function withKeys<T extends object>(
@@ -109,14 +130,31 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     theme: 'adire',
   });
 
-  const stats = [
-    { id: 'stat-years', value: '29', label: 'years serving Southern California' },
-    { id: 'stat-community', value: '3,000+', label: 'Yoruba community in Southern California' },
+  // The Impact page reads the full label; the homepage strip reads the short one (02 Homepage).
+  const stats: { id: string; value: string; label: string; shortLabel?: string }[] = [
+    {
+      id: 'stat-years',
+      value: '29',
+      label: 'years serving Southern California',
+      shortLabel: 'years serving SoCal',
+    },
+    {
+      id: 'stat-community',
+      value: '3,000+',
+      label: 'Yoruba community in Southern California',
+      shortLabel: 'Yoruba community in SoCal',
+    },
     { id: 'stat-zones', value: '4', label: 'festival zones at Odunde' },
     { id: 'stat-associations', value: '9', label: 'hometown associations' },
   ];
   for (const stat of stats)
-    docs.push({ _id: stat.id, _type: 'stat', value: stat.value, label: stat.label });
+    docs.push({
+      _id: stat.id,
+      _type: 'stat',
+      value: stat.value,
+      label: stat.label,
+      ...(stat.shortLabel ? { shortLabel: stat.shortLabel } : {}),
+    });
 
   for (const [id, photographer] of Object.entries(PHOTOGRAPHERS)) {
     docs.push({
@@ -127,9 +165,19 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     });
   }
 
-  // The card photographs and links follow the homepage prototype; the Collective and Cultural
-  // Exchange cards keep the placeholder (the prototype's Collective photo is marked interim).
-  const programs = [
+  // The card photographs, their framing and the links follow the homepage prototype, the
+  // Collective's interim photograph included; Cultural Exchange keeps the placeholder.
+  const programs: {
+    id: string;
+    name: string;
+    slug: string;
+    page?: string;
+    cadence?: string;
+    blurb?: string;
+    image?: string;
+    focus?: Focus;
+    action?: ReturnType<typeof cta>;
+  }[] = [
     {
       id: 'program-yoruba-lessons',
       name: 'Yoruba Language Lessons',
@@ -139,6 +187,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       blurb:
         'Speaking, reading, and tone marks, taught over video call by our teacher. Times are set with her.',
       image: 'odunde-2026-attendees-learning-yoruba.jpg',
+      focus: [60, 35],
       action: cta('Enrol a learner', 'url', '/programs/yoruba-lessons'),
     },
     {
@@ -148,6 +197,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       page: 'collective',
       blurb:
         'Members who put culture to work: the Solar Hub, Green Goods, and a circle that keeps ideas moving.',
+      image: 'odunde-2026-attendee-smiling-2.jpg',
+      focus: [50, 25],
       action: cta('Meet the Collective', 'url', '/programs/cultural-collective'),
     },
     {
@@ -156,6 +207,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       slug: 'kids-stem',
       blurb: "Àgbàlá Ọmọde, the children's compound, and the STEM Hub.",
       image: 'odunde-2026-kids-doing-crafts.jpg',
+      focus: [60, 55],
       action: cta('See youth programs', 'url', '/programs#kids'),
     },
     { id: 'program-cultural-exchange', name: 'Cultural Exchange', slug: 'cultural-exchange' },
@@ -169,7 +221,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       ...(program.blurb ? { blurb: program.blurb } : {}),
       ...(program.cadence ? { cadence: program.cadence } : {}),
       ...(program.page ? { page: program.page } : {}),
-      ...(program.image ? { image: image(assets, program.image) } : {}),
+      ...(program.image ? { image: image(assets, program.image, undefined, program.focus) } : {}),
       ...(program.action ? { action: program.action } : {}),
       order: index + 1,
     });
@@ -214,6 +266,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     title: 'Odunde Festival 2027',
     edition: 2027,
     venue: { name: 'Leimert Park' },
+    // The edition's line on the homepage band (02 Homepage); four zones is a confirmed fact.
+    summary: 'One village, four zones, one family.',
   });
   docs.push({
     _id: 'event-gala-2026',
@@ -316,6 +370,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         'Members carry the lessons, the festival, and each other. Dues run the year between events, when nothing is being sold and the bills still arrive.',
       action: cta('Become a member', 'enquiry', 'member'),
       image: 'odunde-2026-group-guests-smiling.jpg',
+      focus: [50, 30] as Focus,
     },
     {
       id: 'door-volunteer',
@@ -337,6 +392,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       ],
       action: cta('Partner with us', 'enquiry', 'sponsor'),
       image: 'odunde-2026-president-receiving-gift.jpg',
+      focus: [50, 22] as Focus,
     },
     {
       id: 'door-give',
@@ -355,19 +411,31 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       blurb: door.blurb,
       ...(door.bullets ? { bullets: door.bullets } : {}),
       action: door.action,
-      ...(door.image ? { image: image(assets, door.image) } : {}),
+      ...(door.image ? { image: image(assets, door.image, undefined, door.focus) } : {}),
       order: index + 1,
     });
   });
 
-  const yearInLife: [string, string][] = [
-    ['odunde-2026-procession-zoomed.jpg', 'Ọdúndé • Festival day at Leimert Park'],
-    ['odunde-2026-vendor-selling-suya.jpg', 'Oúnjẹ • Festival food at Ọjà Balógun'],
-    ['odunde-2026-mom-playing-games-with-kids.jpg', 'Àgbàlá Ọmọde • Kids at play in the park'],
-    ['odunde-2026-attendees-sitting-at-market.jpg', 'Àjọṣe • Partners and friends at the table'],
-    ['gala-2025-three-friends-selfie.jpg', 'Àsè ọdún • End-of-Year Gala 2025'],
-    ['odunde-2026-yoruba-language-teaching-session.jpg', 'Ẹ̀kọ́ èdè • Yoruba lesson at the festival'],
-    ['odunde-2026-vendor-necklaces.jpg', 'Ọjà Balógun • Vendors at the market'],
+  const yearInLife: [string, string, Focus][] = [
+    ['odunde-2026-procession-zoomed.jpg', 'Ọdúndé • Festival day at Leimert Park', [50, 35]],
+    ['odunde-2026-vendor-selling-suya.jpg', 'Oúnjẹ • Festival food at Ọjà Balógun', [50, 40]],
+    [
+      'odunde-2026-mom-playing-games-with-kids.jpg',
+      'Àgbàlá Ọmọde • Kids at play in the park',
+      [50, 45],
+    ],
+    [
+      'odunde-2026-attendees-sitting-at-market.jpg',
+      'Àjọṣe • Partners and friends at the table',
+      [50, 50],
+    ],
+    ['gala-2025-three-friends-selfie.jpg', 'Àsè ọdún • End-of-Year Gala 2025', [35, 40]],
+    [
+      'odunde-2026-yoruba-language-teaching-session.jpg',
+      'Ẹ̀kọ́ èdè • Yoruba lesson at the festival',
+      [50, 50],
+    ],
+    ['odunde-2026-vendor-necklaces.jpg', 'Ọjà Balógun • Vendors at the market', [50, 35]],
   ];
 
   docs.push(
@@ -375,8 +443,9 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       hero: {
         kicker: bilingual('Ẹ káàbọ̀', 'Welcome'),
         title: 'Yoruba culture, alive in Southern California',
+        emphasis: 'alive',
         sub: 'Language, festival, family. Since 1997.',
-        image: image(assets, 'community-dance.jpg'),
+        image: image(assets, 'community-dance.jpg', undefined, [35, 35]),
         blessing: bilingual('Oòdúà á gbè wá o!', 'May Odùduwà bless us'),
         primaryAction: cta('See the Odunde Festival', 'url', '/odunde'),
         secondaryActions: withKeys('action', [cta('Get involved', 'url', '/get-involved')]),
@@ -392,7 +461,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       ),
       yearInLife: withKeys(
         'tile',
-        yearInLife.map(([file, caption]) => image(assets, file, caption)),
+        yearInLife.map(([file, caption, focus]) => image(assets, file, caption, focus)),
       ),
       raiseYourHand: {
         title: 'Raise your hand',
@@ -664,12 +733,35 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-/** The seed fields the document lacks, as `setIfMissing` paths, one level into plain objects. */
+/**
+ * The seed fields the document lacks, as `setIfMissing` paths: one level into plain objects
+ * (`hero.emphasis`) and into the items of a keyed array matched by `_key`
+ * (`yearInLife[_key=="tile-0"].hotspot`), so a field added to the schema later still lands on a
+ * dataset seeded before it. An item the owner removed or re-keyed is left alone, and so is a
+ * photograph whose stored asset is not the seed's: its framing and words belong to the photo the
+ * owner chose (the Studio keeps an empty hotspot empty when an asset is swapped).
+ */
 export function missingFields(
   fields: Record<string, unknown>,
   current: Record<string, unknown>,
 ): Record<string, unknown> {
   const missing: Record<string, unknown> = {};
+  const assetOf = (value: Record<string, unknown>) =>
+    isPlainObject(value.asset) && typeof value.asset._ref === 'string'
+      ? value.asset._ref
+      : undefined;
+  const fill = (
+    prefix: string,
+    value: Record<string, unknown>,
+    stored: Record<string, unknown>,
+  ) => {
+    const seeded = assetOf(value);
+    if (seeded !== undefined && assetOf(stored) !== seeded) return;
+    for (const [sub, subValue] of Object.entries(value)) {
+      if (subValue !== undefined && stored[sub] === undefined)
+        missing[`${prefix}.${sub}`] = subValue;
+    }
+  };
   for (const [key, value] of Object.entries(fields)) {
     if (value === undefined) continue;
     const stored = current[key];
@@ -678,9 +770,14 @@ export function missingFields(
       continue;
     }
     if (isPlainObject(value) && isPlainObject(stored) && !('_ref' in value)) {
-      for (const [sub, subValue] of Object.entries(value)) {
-        if (subValue !== undefined && stored[sub] === undefined)
-          missing[`${key}.${sub}`] = subValue;
+      fill(key, value, stored);
+      continue;
+    }
+    if (Array.isArray(value) && Array.isArray(stored)) {
+      for (const item of value) {
+        if (!isPlainObject(item) || typeof item._key !== 'string' || '_ref' in item) continue;
+        const match = stored.find((entry) => isPlainObject(entry) && entry._key === item._key);
+        if (isPlainObject(match)) fill(`${key}[_key=="${item._key}"]`, item, match);
       }
     }
   }

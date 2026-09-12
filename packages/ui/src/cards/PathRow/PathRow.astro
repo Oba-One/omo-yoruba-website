@@ -3,8 +3,9 @@
  * The row form of a door (`02 Homepage.dc.html`, the rows option; COMPONENT-MAP, Cards): the
  * chip naming the way in, the title and one line, one action that opens the door's enquiry kind
  * or the Give Dialog. The chip's accent follows the way in through the tokens (`data-accent`);
- * the border deepens on hover, no rule, no lift. Rows sit inside `PathRows`. The chip labels
- * for the volunteer and give doors have no prototype and are the owner's to confirm.
+ * the border deepens on hover, no rule, no lift. Rows sit inside `PathRows`. The chips are the
+ * prototypes' own: "Membership" and "Partnership" from the homepage rows, "Volunteer" and "Give"
+ * from the take-part rows of `11 Yoruba Language School.dc.html`, which share the accents.
  */
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
@@ -20,9 +21,9 @@ interface Props {
 
 const CHIPS: Record<string, string> = {
   member: 'Membership',
-  volunteer: 'Volunteering',
+  volunteer: 'Volunteer',
   partner: 'Partnership',
-  give: 'Giving',
+  give: 'Give',
 };
 /** The chip accent per door, as the prototype colours them (the member row borrows the performer accent). */
 const ACCENTS: Record<string, string> = {

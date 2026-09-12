@@ -1,12 +1,14 @@
 ---
 /**
- * The homepage root as the prototype carries it: `.oy-home` with the grain-dots card texture and
- * the data attributes the layout options drive (`data-highlight`, `data-pattern`, `data-motion`,
- * `data-season`, `data-involved`, `data-newsletter`, `data-gallery`), which the tokens' rules
- * read. The site puts the same attributes on `<body>` through the layout; the page-section
- * stories wrap a section in this so the owner compares each option in Storybook.
+ * The homepage root as the prototype carries it: `.oy-home` with the grain-dots card texture, the
+ * theme (`data-theme`, `adire` by default as on the site, which sets the band and alternate section
+ * surfaces) and the data attributes the layout options drive (`data-highlight`, `data-pattern`,
+ * `data-motion`, `data-season`, `data-involved`, `data-newsletter`, `data-gallery`), which the
+ * tokens' rules read. The site puts the same attributes on `<body>` through the layout; the
+ * page-section stories wrap a section in this so the owner compares each option in Storybook.
  */
 interface Props {
+  theme?: 'adire' | 'calm' | 'festival';
   highlight?: 'festival' | 'school' | 'collective';
   pattern?: 'rich' | 'subtle';
   /** `on` breathes and rises; `off` settles everything. */
@@ -19,6 +21,7 @@ interface Props {
 }
 
 const {
+  theme = 'adire',
   highlight = 'festival',
   pattern = 'rich',
   motion = 'on',
@@ -33,6 +36,7 @@ const {
 <div
   class:list={['oy-home', className]}
   data-card="grain-dots"
+  data-theme={theme}
   data-highlight={highlight}
   data-pattern={pattern}
   data-motion={motion === 'off' ? 'false' : 'true'}

@@ -293,9 +293,13 @@ export const program = defineType({
       name: 'action',
       title: 'Card action',
       type: 'cta',
-      description: 'The quiet link on the program card. Empty shows no link.',
+      description:
+        'The quiet link on the program card. When the homepage highlights this program, it is also the gold button in the hero. Empty shows no link.',
     }),
-    order,
+    defineField({
+      ...order,
+      description: 'Lower shows first. The homepage shows the first three.',
+    }),
   ],
   orderings: [{ title: 'Order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
   preview: { select: { title: 'name', subtitle: 'cadence', media: 'image' } },
@@ -485,6 +489,8 @@ export const newsPost = defineType({
       title: 'Tags',
       type: 'array',
       of: [{ type: 'reference', to: [{ type: 'program' }, { type: 'event' }] }],
+      description:
+        'The programs and events the post is about. Until the News page exists, Read more on the homepage opens the page of the first of them that has one (a festival or gala edition, a program); a post without one shows no Read more.',
     }),
     defineField({ name: 'author', title: 'Author', type: 'reference', to: [{ type: 'person' }] }),
   ],
@@ -662,6 +668,14 @@ export const stat = defineType({
       validation: voice.requiredText,
     }),
     defineField({ name: 'label', title: 'Label', type: 'string', validation: voice.requiredText }),
+    defineField({
+      name: 'shortLabel',
+      title: 'Short label',
+      type: 'string',
+      description:
+        'The label in the homepage strip, where the space is small: "years serving SoCal". Empty uses the label.',
+      validation: voice.text,
+    }),
     defineField({
       name: 'source',
       title: 'Source',

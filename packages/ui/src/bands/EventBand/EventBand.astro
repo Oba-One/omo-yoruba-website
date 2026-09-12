@@ -6,7 +6,10 @@
  * kind (the Gala: "Coming up next" and "Tickets & tables"; Odunde: "Ọdúndé • The new year has
  * arrived" and "Vendors & sponsors"); everything else is the edition's own: title, venue, date
  * and summary, with a Pending chip for a missing date or venue. No edition renders the Pending
- * line for the next event.
+ * line for the next event. The line reads as the prototype's sentence ("June 2027. One village,
+ * four zones, one family.") at the body size, and the button keeps to the right at every width,
+ * below the copy once the row wraps. The root carries no generic `oy-band` class: the tokens size
+ * that family's paragraphs at 15px.
  */
 import { pendingWhat } from '@oy/content/pending';
 import { ROUTE_SINGLETONS } from '@oy/content/routes';
@@ -78,7 +81,7 @@ const when = formatDate(event?.start);
 ---
 
 <div
-  class:list={['oy-band', 'oy-dark', `oy-band--${kind === 'festival' ? 'odunde' : 'gala'}`, 'oy-event-band', className]}
+  class:list={['oy-dark', 'oy-event-band', className]}
   data-kind={kind}
   data-sanity={edit}
   {...rest}
@@ -99,8 +102,11 @@ const when = formatDate(event?.start);
                 <span class="oy-band-dot" aria-hidden="true">
                   •
                 </span>
-                {when ? <span>{when}</span> : <Pending what={datePending} />}
-                {event.summary && <span class="oy-band-summary">{event.summary}</span>}
+                {/* The space ends the sentence for readers and copying; the flex gap does the spacing. */}
+                {when ? <span>{event.summary ? `${when}. ` : when}</span> : <Pending what={datePending} />}
+                {event.summary && (
+                  <span class:list={['oy-band-summary', !when && 'oy-band-summary--apart']}>{event.summary}</span>
+                )}
               </p>
             </div>
             <Button href={copy.href} arrow>
@@ -169,7 +175,8 @@ const when = formatDate(event?.start);
   .oy-band-dot {
     color: var(--text-on-dark-faint);
   }
-  .oy-band-summary {
+  /* After a Pending chip the summary starts its own line rather than running on from the chip. */
+  .oy-band-summary--apart {
     flex-basis: 100%;
   }
   .oy-event-band :global(.oy-btn) {
@@ -177,10 +184,5 @@ const when = formatDate(event?.start);
   }
   .oy-event-band :global(.oy-pend-line) {
     flex: 1;
-  }
-  @media (max-width: 720px) {
-    .oy-event-band :global(.oy-btn) {
-      margin-left: 0;
-    }
   }
 </style>

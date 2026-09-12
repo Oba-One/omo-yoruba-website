@@ -27,6 +27,11 @@ type Story = StoryObj<Args>;
 
 export const Default: Story = {};
 
+/** A Studio photo with a hotspot: the tile keeps the prototype's framing (50% 35%). */
+export const Framed: Story = {
+  args: { image: { src: first.image.src, alt: first.image.alt, position: '50% 35%' } },
+};
+
 export const EnglishOnly: Story = { args: { caption: 'Festival day' } };
 
 export const NoCaption: Story = { args: { caption: undefined } };

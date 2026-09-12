@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './Card.stories';
 
-const { Default, WithPhoto, WithKicker, AsFigure, NoRule } = composeStories(stories);
+const { Default, WithPhoto, FramedPhoto, WithKicker, AsFigure, NoRule } = composeStories(stories);
 
 describe('Card', () => {
   it('renders the card shell with the body, the title and the woven rule', async () => {
@@ -21,6 +21,11 @@ describe('Card', () => {
     expect(img?.getAttribute('loading')).toBe('lazy');
     expect(img?.getAttribute('decoding')).toBe('async');
     expect(img?.getAttribute('style')).toBe('height: 170px');
+  });
+
+  it('frames a photo by its hotspot', async () => {
+    const img = (await renderToBody(FramedPhoto)).querySelector('img.oy-card-media');
+    expect(img?.getAttribute('style')).toBe('height: 170px; object-position: 60% 35%');
   });
 
   it('renders the bilingual kicker above the title', async () => {

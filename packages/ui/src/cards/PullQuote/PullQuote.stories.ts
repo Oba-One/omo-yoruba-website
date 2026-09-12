@@ -1,3 +1,4 @@
+import { HOMEPAGE_VOICE_SLOTS } from '@oy/content/pending';
 import type { ComponentProps } from 'astro/types';
 import { type Meta, onDark, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import PullQuote from './PullQuote.astro';
@@ -22,7 +23,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The ayo dot row, the quote, the name and relation. Initials only when the person has not agreed to be named. Without a testimonial the card is a Pending card with the registry wording.',
+          'The ayo dot row, the quote, the name and relation. Initials only when the person has not agreed to be named. Without a testimonial the card waits in the prototype placeholder form for its slot (the quote it wants in brackets, Name pending with the voice), or as a Pending card with the registry wording when the page names no slot.',
       },
     },
   },
@@ -38,7 +39,12 @@ export const Initials: Story = {
   args: { testimonial: { ...sample, name: 'Adé Bákàrè', permissionToName: false } },
 };
 
-/** No testimonial yet: the Pending card. */
+/** No testimonial yet, in the homepage's first slot: the registry's chip over the prototype's placeholder. */
+export const Waiting: Story = {
+  args: { testimonial: undefined, placeholder: HOMEPAGE_VOICE_SLOTS[0] },
+};
+
+/** No testimonial and no slot: the Pending card. */
 export const Pending: Story = { args: { testimonial: undefined } };
 
 export const OnDark: Story = { ...onDark };

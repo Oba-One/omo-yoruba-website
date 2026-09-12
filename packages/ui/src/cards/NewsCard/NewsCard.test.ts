@@ -19,8 +19,10 @@ describe('NewsCard', () => {
 
   it('adds Read more only with an href, and the kicker when the post has one', async () => {
     const link = (await renderToBody(WithLink)).querySelector('a.oy-btn--quiet');
-    expect(link?.getAttribute('href')).toBe('/news/odunde-2026-recap');
+    expect(link?.getAttribute('href')).toBe('/odunde');
     expect(text(link)).toContain('Read more');
+    // The hidden title completes the link's name: three cards never read as three "Read more".
+    expect(text(link?.querySelector('.oy-news-about'))).toBe(': Odunde 2026: the recap');
     expect(text((await renderToBody(WithKicker)).querySelector('.oy-kicker'))).toBe(
       'Ẹ̀kọ́ èdè•Lessons',
     );

@@ -6,6 +6,7 @@
  */
 import communityDance from '../../../../docs/design/design/images/w2/community-dance.jpg?url';
 import galaSelfie from '../../../../docs/design/design/images/w2/gala-2025-three-friends-selfie.jpg?url';
+import attendeeSmiling from '../../../../docs/design/design/images/w2/odunde-2026-attendee-smiling-2.jpg?url';
 import learningYoruba from '../../../../docs/design/design/images/w2/odunde-2026-attendees-learning-yoruba.jpg?url';
 import atMarket from '../../../../docs/design/design/images/w2/odunde-2026-attendees-sitting-at-market.jpg?url';
 import guestsSmiling from '../../../../docs/design/design/images/w2/odunde-2026-group-guests-smiling.jpg?url';
@@ -26,6 +27,10 @@ export const PHOTOS = {
   communityDance: {
     src: communityDance,
     alt: 'A woman in green print and gèlè laughs with her arms out as the room sings',
+  },
+  attendeeSmiling: {
+    src: attendeeSmiling,
+    alt: 'A man in a purple and teal print shirt and cap smiles on Degnan Boulevard',
   },
   learningYoruba: {
     src: learningYoruba,

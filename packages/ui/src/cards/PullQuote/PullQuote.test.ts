@@ -4,7 +4,7 @@ import { renderToBody, text } from '../../test/stories';
 import { initialsOf } from './initials';
 import * as stories from './PullQuote.stories';
 
-const { Default, Initials, Pending } = composeStories(stories);
+const { Default, Initials, Waiting, Pending } = composeStories(stories);
 
 describe('PullQuote', () => {
   it('renders the ayo row, the quote and the caption on a figure card', async () => {
@@ -20,6 +20,19 @@ describe('PullQuote', () => {
     expect(text(caption)).toBe('A. B. • Parent, Language Lessons');
     expect(initialsOf('Adé Bákàrè')).toBe('A. B.');
     expect(initialsOf('Ọlá')).toBe('Ọ.');
+  });
+
+  it('waits in the prototype placeholder form for its slot', async () => {
+    const figure = (await renderToBody(Waiting)).querySelector('figure.oy-card');
+    expect(figure?.getAttribute('data-pending')).toBe('true');
+    // The registry's chip stays above the prototype's placeholder (ADR 0014).
+    expect(text(figure?.querySelector('.oy-pend'))).toBe('Pending: member voices');
+    expect(text(figure?.querySelector('blockquote'))).toBe(
+      '[ Quote from a Language Lessons parent, two or three sentences on what the lessons changed at home. ]',
+    );
+    expect(text(figure?.querySelector('figcaption'))).toBe(
+      'Name pending • Parent, Language Lessons',
+    );
   });
 
   it('renders the Pending card with the registry wording when there is no voice', async () => {

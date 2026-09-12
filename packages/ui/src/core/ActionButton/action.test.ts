@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveAction } from './action';
+import { resolveAction, usableAction } from './action';
 
 describe('resolveAction', () => {
   it('opens an enquiry kind through the modal trigger and the no-JavaScript link', () => {
@@ -30,6 +30,14 @@ describe('resolveAction', () => {
     expect(resolveAction({ label: 'Plan', kind: 'anchor', href: '#plan' })).toMatchObject({
       attributes: { href: '#plan' },
     });
+  });
+
+  it('picks the first action that renders, so a half-filled one never replaces a whole one', () => {
+    const half = { label: 'Enrol a learner', kind: 'enquiry' };
+    const whole = { label: 'See the Odunde Festival', kind: 'url', href: '/odunde' };
+    expect(usableAction(half, whole)).toBe(whole);
+    expect(usableAction(undefined, null, whole)).toBe(whole);
+    expect(usableAction(half)).toBeUndefined();
   });
 
   it('names what is missing instead of guessing', () => {

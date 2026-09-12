@@ -1,12 +1,13 @@
 ---
 /**
  * A member voice (`02 Homepage.dc.html`, Member voices): the ayo dot row, the quote in the
- * display face, the name and relation in the caption, on the card base. Without permission to
- * name, the caption shows initials only. Without a testimonial the card renders as Pending with
- * the registry's wording, so the voices section keeps its three-column rhythm while the owner
- * gathers quotes.
+ * display face, the name and relation in the caption, on the card base, filling its grid cell.
+ * Without permission to name, the caption shows initials only. Without a testimonial the card
+ * shows the registry's Pending chip (ADR 0014), then the prototype's placeholder when the page
+ * names the slot (the quote it wants in brackets, "Name pending" with the voice), so the voices
+ * section keeps its three-column rhythm while the owner gathers quotes.
  */
-import { pendingWhat } from '@oy/content/pending';
+import { pendingWhat, type VoiceSlot } from '@oy/content/pending';
 import Divider from '../../core/Divider/Divider.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import Card from '../Card/Card.astro';
@@ -21,10 +22,12 @@ export interface TestimonialLike {
 
 interface Props {
   testimonial?: TestimonialLike | null;
+  /** The slot this card waits in while there is no testimonial (`HOMEPAGE_VOICE_SLOTS`). */
+  placeholder?: VoiceSlot | null;
   class?: string;
 }
 
-const { testimonial, class: className } = Astro.props;
+const { testimonial, placeholder, class: className } = Astro.props;
 const pending = pendingWhat('homepage', 'voices[]');
 const name = testimonial?.name?.trim();
 const who = name ? (testimonial?.permissionToName ? name : initialsOf(name)) : undefined;
@@ -38,6 +41,12 @@ const parts = [who, testimonial?.relation?.trim()].filter(Boolean);
       <>
         {testimonial.quote && <blockquote class="oy-quote-text">{testimonial.quote}</blockquote>}
         {parts.length > 0 && <figcaption class="oy-quote-who">{parts.join(' • ')}</figcaption>}
+      </>
+    ) : placeholder ? (
+      <>
+        <Pending what={pending} class="oy-quote-pending" />
+        <blockquote class="oy-quote-text">[ {placeholder.quote} ]</blockquote>
+        <figcaption class="oy-quote-who">Name pending • {placeholder.role}</figcaption>
       </>
     ) : (
       <>
@@ -53,6 +62,9 @@ const parts = [who, testimonial?.relation?.trim()].filter(Boolean);
 <style>
   .oy-quote-card :global(.oy-card-body) {
     gap: 14px;
+  }
+  .oy-quote-card :global(.oy-quote-pending) {
+    align-self: flex-start;
   }
   .oy-quote-text {
     margin: 0;

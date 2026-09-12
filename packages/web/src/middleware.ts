@@ -1,7 +1,7 @@
 import { getActionContext } from 'astro:actions';
 import { PUBLIC_PREVIEW_ORIGIN } from 'astro:env/client';
 import { defineMiddleware } from 'astro:middleware';
-import { uncacheableReason } from './lib/cache-policy';
+import { isPreviewHost, uncacheableReason } from './lib/cache-policy';
 import { buildCsp, CSP_REPORT_PATH, cspExempt, reportingEndpointsHeader } from './lib/csp';
 import type { FormOutcome } from './lib/forms/action-paths';
 import {
@@ -15,13 +15,22 @@ import { isDraftRequest, PERSPECTIVE_COOKIE } from './lib/sanity/preview';
 const CSP_REPORT_ONLY = buildCsp();
 const REPORTING_ENDPOINTS = reportingEndpointsHeader(CSP_REPORT_PATH);
 
-function setHeaders(response: Response): void {
-  response.headers.set('Content-Security-Policy-Report-Only', CSP_REPORT_ONLY);
-  response.headers.set('Reporting-Endpoints', REPORTING_ENDPOINTS);
+function setHeaders(
+  response: Response,
+  { csp, noindex }: { csp: boolean; noindex: boolean },
+): void {
+  if (csp) {
+    response.headers.set('Content-Security-Policy-Report-Only', CSP_REPORT_ONLY);
+    response.headers.set('Reporting-Endpoints', REPORTING_ENDPOINTS);
+  }
+  // The preview host serves every page uncached for the Studio's iframe and, as a custom domain,
+  // outside Vercel Authentication; search engines keep to the public host.
+  if (noindex) response.headers.set('X-Robots-Tag', 'noindex, nofollow');
 }
 
 /**
- * Three jobs. The report-only CSP header on every page (docs/adr/0011). The forms without
+ * Three jobs. The report-only CSP header on every page (docs/adr/0011), and `noindex` on
+ * everything the preview host answers. The forms without
  * JavaScript (ADR 0019): a form posted to an action runs here, before the page; a success
  * redirects to the same page with the modal open on its success block (or the footer on its
  * thanks), so a refresh never resubmits, and an error hands the result to the page, which
@@ -56,21 +65,25 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const response = await next();
+  const previewOrigin = PUBLIC_PREVIEW_ORIGIN || undefined;
   const reason = uncacheableReason({
     method: context.request.method,
     draft: isDraftRequest(context.cookies.get(PERSPECTIVE_COOKIE)?.value),
     origin: context.url.origin,
-    previewOrigin: PUBLIC_PREVIEW_ORIGIN || undefined,
+    previewOrigin,
   });
   if (reason) context.cache.set(false);
-  if (cspExempt(context.url.pathname)) return response;
+  const headers = {
+    csp: !cspExempt(context.url.pathname),
+    noindex: isPreviewHost(context.url.origin, previewOrigin),
+  };
   try {
-    setHeaders(response);
+    setHeaders(response, headers);
     return response;
   } catch {
     // Response.redirect() and fetch() responses carry immutable headers on Node.
     const copy = new Response(response.body, response);
-    setHeaders(copy);
+    setHeaders(copy, headers);
     return copy;
   }
 });

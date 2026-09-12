@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './ProgramCard.stories';
 
-const { Default, Collective, Pending, WithEdit } = composeStories(stories);
+const { Default, Collective, NoPhoto, Pending, WithEdit } = composeStories(stories);
 
 describe('ProgramCard', () => {
   it('renders the photo, the name, the blurb and the quiet action from the Studio', async () => {
@@ -18,10 +18,15 @@ describe('ProgramCard', () => {
     expect(card?.querySelector('.v2-rule')).not.toBeNull();
   });
 
-  it('names the missing photograph and marks the Collective card', async () => {
+  it('marks the Collective card, with its interim photograph', async () => {
     const card = (await renderToBody(Collective)).querySelector('.oy-card');
     expect(card?.getAttribute('data-program')).toBe('collective');
     expect(card?.classList.contains('v2-prog--collective')).toBe(true);
+    expect(card?.querySelector('img.oy-card-media')).not.toBeNull();
+  });
+
+  it('names the missing photograph', async () => {
+    const card = (await renderToBody(NoPhoto)).querySelector('.oy-card');
     expect(card?.querySelector('img')).toBeNull();
     expect(card?.querySelector('.oy-ph')?.getAttribute('aria-label')).toBe(
       'Placeholder for a photo of Yoruba Cultural Collective',

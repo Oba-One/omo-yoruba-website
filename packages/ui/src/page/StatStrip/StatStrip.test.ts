@@ -13,7 +13,7 @@ describe('StatStrip', () => {
     expect(strip?.getAttribute('data-columns')).toBe('4');
     const stats = Array.from(strip?.querySelectorAll('.oy-stat') ?? []);
     expect(stats.map((s) => text(s.querySelector('b')))).toEqual(['29', '3,000+', '4', '9']);
-    expect(text(stats[0]?.querySelector('span'))).toBe('years serving Southern California');
+    expect(text(stats[0]?.querySelector('span'))).toBe('years serving SoCal');
     expect(band?.querySelector('.oy-source')).toBeNull();
   });
 

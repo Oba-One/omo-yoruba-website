@@ -43,10 +43,10 @@ export const Four: Story = {
 const programs = (count: number) =>
   PROGRAMS.slice(0, count).map((program) => ({ component: ProgramCard, props: { program } }));
 
-/** The program cards four across, as the homepage shows them. */
+/** The program cards four across: the Programs page option. */
 export const ProgramsFour: Story = { args: { columns: 4, slots: { default: programs(4) } } };
 
-/** Three across: the Programs page option. */
+/** Three across, as the homepage shows them (and a Programs page option). */
 export const ProgramsThree: Story = { args: { columns: 3, slots: { default: programs(3) } } };
 
 /** Pairs. */

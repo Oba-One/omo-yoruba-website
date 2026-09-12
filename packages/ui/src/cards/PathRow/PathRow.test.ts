@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PathRow.stories';
 
-const { Member, Partner, Pending } = composeStories(stories);
+const { Member, Partner, Volunteer, Give, Pending } = composeStories(stories);
 
 describe('PathRow', () => {
   it('renders the chip, the copy and the gold enquiry trigger for the member door', async () => {
@@ -21,6 +21,16 @@ describe('PathRow', () => {
     expect(row?.getAttribute('data-accent')).toBe('sponsor');
     expect(text(row?.querySelector('.oy-path-chip'))).toBe('Partnership');
     expect(row?.querySelector('a.oy-btn')?.className).toContain('oy-btn--secondary');
+  });
+
+  it('labels the volunteer and give rows with the prototype chips', async () => {
+    const volunteer = (await renderToBody(Volunteer)).querySelector('.oy-path');
+    expect(text(volunteer?.querySelector('.oy-path-chip'))).toBe('Volunteer');
+    expect(volunteer?.getAttribute('data-accent')).toBe('volunteer');
+    const give = (await renderToBody(Give)).querySelector('.oy-path');
+    expect(text(give?.querySelector('.oy-path-chip'))).toBe('Give');
+    expect(give?.getAttribute('data-accent')).toBe('give');
+    expect(give?.querySelector('[data-give]')).not.toBeNull();
   });
 
   it('names what is missing for an empty door', async () => {

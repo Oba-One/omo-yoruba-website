@@ -9,6 +9,7 @@ import { PHOTOS } from './photos';
 export const HERO = {
   kicker: { yo: 'Ẹ káàbọ̀', en: 'Welcome' },
   title: 'Yoruba culture, alive in Southern California',
+  emphasis: 'alive',
   sub: 'Language, festival, family. Since 1997.',
   blessing: { yo: 'Oòdúà á gbè wá o!', en: 'May Odùduwà bless us' },
   image: PHOTOS.communityDance,
@@ -35,15 +36,32 @@ export const ODUNDE_2027 = {
   start: null,
   end: null,
   venueName: 'Leimert Park',
-  summary: null,
+  summary: 'One village, four zones, one family.',
 };
 
-export const STATS = [
-  { _id: 'stat-years', value: '29', label: 'years serving Southern California' },
-  { _id: 'stat-community', value: '3,000+', label: 'Yoruba community in Southern California' },
+/** The four figures as the seed writes them: the Impact page's label and the strip's short one. */
+export const STATS: { _id: string; value: string; label: string; shortLabel?: string }[] = [
+  {
+    _id: 'stat-years',
+    value: '29',
+    label: 'years serving Southern California',
+    shortLabel: 'years serving SoCal',
+  },
+  {
+    _id: 'stat-community',
+    value: '3,000+',
+    label: 'Yoruba community in Southern California',
+    shortLabel: 'Yoruba community in SoCal',
+  },
   { _id: 'stat-zones', value: '4', label: 'festival zones at Odunde' },
   { _id: 'stat-associations', value: '9', label: 'hometown associations' },
 ];
+
+/** The same figures as the homepage strip reads them, by buildHomepage's rule. */
+export const HOMEPAGE_STATS = STATS.map((stat) => ({
+  ...stat,
+  label: stat.shortLabel || stat.label,
+}));
 
 export const PROGRAMS = [
   {
@@ -63,7 +81,7 @@ export const PROGRAMS = [
     page: 'collective',
     blurb:
       'Members who put culture to work: the Solar Hub, Green Goods, and a circle that keeps ideas moving.',
-    image: null,
+    image: PHOTOS.attendeeSmiling,
     action: { label: 'Meet the Collective', kind: 'url', href: '/programs/cultural-collective' },
   },
   {
@@ -86,6 +104,7 @@ export const PROGRAMS = [
   },
 ];
 
+/** The three posts oldest first, as the homepage lists them, with the page each is tagged to. */
 export const NEWS = [
   {
     _id: 'news-odunde-2026-recap',
@@ -94,6 +113,7 @@ export const NEWS = [
     date: '2026-07-01',
     summary:
       'Four zones, one village. Photos, video, and the numbers from our biggest festival yet.',
+    href: '/odunde',
   },
   {
     _id: 'news-language-lessons-fall-term',
@@ -101,6 +121,7 @@ export const NEWS = [
     slug: 'language-lessons-fall-term',
     date: '2026-08-01',
     summary: 'New learners welcome. Write to the teacher to find a time that suits your family.',
+    href: '/programs/yoruba-lessons',
   },
   {
     _id: 'news-end-of-year-gala-2026',
@@ -108,6 +129,7 @@ export const NEWS = [
     slug: 'end-of-year-gala-2026',
     date: '2026-11-01',
     summary: 'An evening of culture, community, and celebration. Tables available now.',
+    href: '/gala',
   },
 ];
 
@@ -139,6 +161,27 @@ export const DOORS = [
       'For organizations and funders. Sponsorship is what keeps Odunde open to all of Leimert Park, and what carries the lessons through the year.',
     action: { label: 'Partner with us', kind: 'enquiry', enquiryKind: 'sponsor' },
     image: PHOTOS.receivingGift,
+  },
+];
+
+/** The two doors the homepage leaves out, as the seed writes them (Get Involved shows all four). */
+export const OTHER_DOORS = [
+  {
+    _id: 'door-volunteer',
+    key: 'volunteer',
+    title: 'Volunteer',
+    blurb:
+      'One short form. You tell us when you are free and what you can do, and we place you where the gap is.',
+    action: { label: 'Raise your hand', kind: 'enquiry', enquiryKind: 'volunteer' },
+    image: null,
+  },
+  {
+    _id: 'door-give',
+    key: 'give',
+    title: 'Give',
+    blurb: 'Would rather give than join? That takes about a minute.',
+    action: { label: 'Donate', kind: 'give' },
+    image: null,
   },
 ];
 

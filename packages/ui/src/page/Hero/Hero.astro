@@ -2,10 +2,11 @@
 /**
  * The homepage hero (`02 Homepage.dc.html`): the photo behind a scrim with the àdìrẹ dot field,
  * breathing slowly when motion is on (`.v2-kb`, off under reduced motion and the page's
- * `data-motion="false"`), the kicker, the H1, the line under it, one gold action with the outline
- * actions beside it, and the blessing line in the display italic. Without a photo the hero keeps
- * the theme's surface and shows a Pending chip for the photograph; without a heading the H1
- * carries a Pending chip, so the page still has its one H1.
+ * `data-motion="false"`), and the copy set left in a 640px column: the kicker, the H1 with its
+ * gold words in italic, the line under it, one gold action with the outline actions beside it,
+ * and the blessing line in the display italic. Without a photo the hero keeps the theme's surface
+ * and shows a Pending chip for the photograph; without a heading the H1 carries a Pending chip, so
+ * the page still has its one H1.
  */
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
@@ -13,13 +14,16 @@ import type { ActionLike } from '../../core/ActionButton/action';
 import Divider from '../../core/Divider/Divider.astro';
 import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
-import { altOf, type ImageInput, imgAttributes } from '../../media/image';
+import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
+import { splitEmphasis } from './emphasis';
 
 interface Props {
   image?: ImageInput | null;
   alt?: string;
   kicker?: BilingualText | null;
   title?: string | null;
+  /** The part of the heading set in gold italic ("alive"); matched exactly, first occurrence. */
+  emphasis?: string | null;
   sub?: string | null;
   blessing?: BilingualText | null;
   primary?: ActionLike | null;
@@ -38,6 +42,7 @@ const {
   alt,
   kicker,
   title,
+  emphasis,
   sub,
   blessing,
   primary,
@@ -50,7 +55,11 @@ const {
 } = Astro.props;
 
 const img = imgAttributes(image, '100vw');
+const position = positionOf(image);
 const rise = motion ? 'v2-rise' : undefined;
+// The heading is rendered as stored (trimming could cut the edit link stega appends); the gold
+// words split it only when they occur in it, and the Studio warns when they do not.
+const split = splitEmphasis(title, emphasis);
 ---
 
 <header class:list={['oy-dark', 'v2-hero', 'oy-hero-band', className]} id="top" data-sanity={edit} {...rest}>
@@ -63,6 +72,7 @@ const rise = motion ? 'v2-rise' : undefined;
         loading="eager"
         fetchpriority="high"
         decoding="async"
+        style={position ? `object-position: ${position}` : undefined}
         data-sanity={imageEdit}
       />
     ) : (
@@ -71,10 +81,24 @@ const rise = motion ? 'v2-rise' : undefined;
   }
   <div class="v2-hero-scrim" aria-hidden="true"></div>
   <div class="v2-dots" aria-hidden="true"></div>
-  <div class="oy-wrap oy-hero-inner">
+  <div class="oy-wrap oy-hero-band-inner">
     <div class="oy-hero-copy">
       {(kicker?.yo || kicker?.en) && <Kicker yo={kicker?.yo ?? undefined} en={kicker?.en ?? undefined} class={rise} />}
-      <h1 class={rise} style="animation-delay: 0.12s">{title || <Pending what={pendingWhat('homepage', 'hero.title')} />}</h1>
+      <h1 class={rise} style="animation-delay: 0.12s">
+        {
+          !title?.trim() ? (
+            <Pending what={pendingWhat('homepage', 'hero.title')} />
+          ) : split ? (
+            <>
+              {split.before}
+              <em>{split.accent}</em>
+              {split.after}
+            </>
+          ) : (
+            title
+          )
+        }
+      </h1>
       {sub && <p class:list={['oy-hero-sub', rise]} style="animation-delay: 0.24s">{sub}</p>}
       <div class:list={['v2-hero-cta', rise]} style="animation-delay: 0.36s">
         <ActionButton action={primary} variant="primary" />
@@ -118,7 +142,8 @@ const rise = motion ? 'v2-rise' : undefined;
     right: 16px;
     z-index: 1;
   }
-  .oy-hero-inner {
+  /* Not `.oy-hero-inner`: the tokens' generic hero centres that class. */
+  .oy-hero-band-inner {
     position: relative;
     width: 100%;
     padding-top: 64px;
@@ -127,20 +152,27 @@ const rise = motion ? 'v2-rise' : undefined;
   .oy-hero-copy {
     max-width: 640px;
   }
-  /* The hero scale from the tokens, so the festival theme's scale reaches the heading. */
+  /* The prototype's own scale for the photo hero, times the theme's (1 for `adire` and `calm`). */
   .oy-hero-band h1 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: calc(var(--text-hero) * var(--theme-hero-scale, 1));
+    font-size: calc(var(--text-hero-photo) * var(--theme-hero-scale, 1));
     line-height: 1.12;
     color: var(--white);
     margin: 18px 0 14px;
+  }
+  /* 600, as the prototype shows it: its only italic face of the display type is the 600. */
+  .oy-hero-band h1 em {
+    font-style: italic;
+    font-weight: 600;
+    color: var(--gold-300);
   }
   .oy-hero-sub {
     font-size: 18px;
     color: var(--text-on-dark-soft);
     margin: 0 0 30px;
   }
+  /* 600: the prototype loads only the 600 italic of the display face, so that is the weight it shows. */
   .oy-hero-blessing {
     margin: 36px 0 0;
     display: flex;
@@ -149,6 +181,7 @@ const rise = motion ? 'v2-rise' : undefined;
     flex-wrap: wrap;
     font-family: var(--font-display);
     font-style: italic;
+    font-weight: 600;
     font-size: 17px;
     color: var(--gold-300);
   }

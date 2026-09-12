@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PhotoTile.stories';
 
-const { Default, EnglishOnly, NoCaption, Pending } = composeStories(stories);
+const { Default, Framed, EnglishOnly, NoCaption, Pending } = composeStories(stories);
 
 describe('PhotoTile', () => {
   it('renders the photo lazily with the Yoruba-first caption and the gold dot', async () => {
@@ -14,6 +14,13 @@ describe('PhotoTile', () => {
     expect(text(tile?.querySelector('figcaption [lang="yo"]'))).toBe('Ọdúndé');
     expect(tile?.querySelector('.oy-photo-tile-dot')?.getAttribute('aria-hidden')).toBe('true');
     expect(text(tile?.querySelector('figcaption'))).toBe('Ọdúndé • Festival day at Leimert Park');
+  });
+
+  it('frames a photo by its hotspot and leaves a plain URL at the centre', async () => {
+    const framed = (await renderToBody(Framed)).querySelector('figure.v2-mo img');
+    expect(framed?.getAttribute('style')).toBe('object-position: 50% 35%');
+    const plain = (await renderToBody(Default)).querySelector('figure.v2-mo img');
+    expect(plain?.hasAttribute('style')).toBe(false);
   });
 
   it('keeps a single caption plain and can have none', async () => {

@@ -1725,6 +1725,13 @@
         },
         "optional": true
       },
+      "shortLabel": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "source": {
         "type": "objectAttribute",
         "value": {
@@ -6182,6 +6189,13 @@
               "optional": true
             },
             "title": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "emphasis": {
               "type": "objectAttribute",
               "value": {
                 "type": "string"

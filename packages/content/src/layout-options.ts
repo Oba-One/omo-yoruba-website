@@ -26,6 +26,8 @@ export const PAGE_LAYOUTS = {
       name: 'highlight',
       title: 'Highlight',
       options: ['festival', { value: 'school', title: 'lessons' }, 'collective'],
+      description:
+        "The program the homepage leans on: its card moves first with the gold ring, and its card action becomes the hero's gold button. Festival keeps the hero's own button.",
     },
     { name: 'gallery', title: 'Gallery tiles', options: ['7', '5', '3'] },
     { name: 'involved', title: 'Get involved', options: ['doors', 'rows'] },

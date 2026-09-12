@@ -24,6 +24,13 @@ export type ActionResolution =
   | { ok: true; label: string; attributes: ActionAttributes }
   | { ok: false; pending: string };
 
+/** The first of the actions that renders a button, so a half-filled one never replaces a whole one. */
+export function usableAction<A extends ActionLike>(
+  ...actions: (A | null | undefined)[]
+): A | undefined {
+  return actions.find((action): action is A => resolveAction(action)?.ok === true);
+}
+
 export function resolveAction(action: ActionLike | null | undefined): ActionResolution | undefined {
   if (!action) return undefined;
   const label = action.label?.trim();

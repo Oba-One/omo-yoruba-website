@@ -13,6 +13,7 @@ const meta = {
     alt: HERO.image.alt,
     kicker: HERO.kicker,
     title: HERO.title,
+    emphasis: HERO.emphasis,
     sub: HERO.sub,
     blessing: HERO.blessing,
     primary: HERO.primary,
@@ -24,7 +25,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The homepage hero: the photograph behind a scrim and the àdìrẹ dot field, the Yoruba • English kicker, the one gold action and the outline action, the blessing line. The photo breathes slowly when motion is on and holds still under reduced motion or the page option.',
+          'The homepage hero: the photograph behind a scrim and the àdìrẹ dot field, and the copy set left: the Yoruba • English kicker, the heading with its gold words in italic, the one gold action and the outline action, the blessing line. The photo breathes slowly when motion is on and holds still under reduced motion or the page option.',
       },
     },
   },
@@ -40,6 +41,9 @@ export const Default: Story = {};
 export const MotionOff: Story = { args: { motion: false } };
 
 export const NoBlessing: Story = { args: { blessing: undefined, secondary: [] } };
+
+/** No gold words in the Studio: the whole heading white. */
+export const PlainHeading: Story = { args: { emphasis: undefined } };
 
 /** Nothing from the Studio yet: the surface, a Pending chip for the photograph and one for the heading. */
 export const Pending: Story = {
