@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "astro check",
-    "e2e": "echo 'Playwright arrives in Phase 3. See docs/design/QUALITY.md section 2.' && exit 1"
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/react": "6.0.5",

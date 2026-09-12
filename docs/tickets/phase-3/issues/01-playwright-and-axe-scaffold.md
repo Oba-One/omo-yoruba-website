@@ -1,7 +1,7 @@
 # 01: Playwright and axe run against the dev server, locally and in CI
 
 Labels: infra
-Status: open
+Status: resolved
 Blocked by: none
 
 **What to build:** `bun e2e` runs Playwright (`@playwright/test` 1.63.0, `@axe-core/playwright`
@@ -12,8 +12,16 @@ on load. CI gains a seventh job, `Playwright and axe`, that installs Chromium wi
 dependencies, runs the suite with the placeholder Sanity variables, and uploads the report on
 failure.
 
-- [ ] `bun e2e` passes locally with the browser installed once (`bunx playwright install chromium`)
-- [ ] The smoke spec fails when a dialog carries `open` on load
-- [ ] Vitest still runs only `src/**/*.test.ts`; Playwright runs only `e2e/**`
-- [ ] The CI job is green on the pull request and safe to require
-- [ ] `docs/runbook.md` explains the local run, the base URL variable and the job
+- [x] `bun e2e` passes locally with the browser installed once (`bunx playwright install chromium`)
+- [x] The smoke spec fails when a dialog carries `open` on load
+- [x] Vitest still runs only `src/**/*.test.ts`; Playwright runs only `e2e/**`
+- [x] The CI job is green on the pull request and safe to require
+- [x] `docs/runbook.md` explains the local run, the base URL variable and the job
+
+## Comments
+
+11 September 2026. Two projects (desktop 1440, mobile 375 in Chromium), `list` locally and
+`github` plus `html` in CI, the dev server reused locally and started on the runner. The CI job
+runs the suite on the runner rather than against the Vercel preview, which sits behind Vercel
+Authentication. The "dialog open on load" criterion is the smoke assertion `dialog[open]` has
+count zero; every later dialog is mounted closed and the assertion stays in the suite.

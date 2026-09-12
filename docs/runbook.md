@@ -138,6 +138,27 @@ verified Resend domain>"`. Neither lives in code; without them the function reco
 `notifyError` on the enquiry instead of sending. Logs: `bunx sanity functions logs <name>`.
 Functions run on Node 24 in production and on this machine's Node 22 locally.
 
+## Playwright and axe
+
+Since Phase 3 (`docs/research/phase-3-playwright-and-axe.md`). `bun e2e` runs the suite in
+`packages/web/e2e` with `@playwright/test` against `astro dev` on port 4321 (the Vercel adapter
+has no `astro preview`), in Chromium at 1440 and at a 375 wide mobile project. Install the
+browser once per machine, with Node 22 on `PATH`:
+
+```bash
+bunx playwright install chromium
+```
+
+`reuseExistingServer` is on outside CI, so a running `bun dev` is reused. Set
+`PLAYWRIGHT_TEST_BASE_URL` to run the same suite against a deployed URL instead of starting a
+server; a preview deployment also needs the project's Protection Bypass secret in
+`use.extraHTTPHeaders` (not wired: previews are private, CI runs locally). The CI job
+`Playwright and axe` installs Chromium with its system dependencies on every run (Playwright
+advises against caching browsers), starts the dev server with the placeholder Sanity variables,
+intercepts the action requests so nothing is written, and uploads `playwright-report/` when a
+run fails. Add the context `Playwright and axe` to the branch protection once the Phase 3 pull
+request merges. Vitest keeps to `src/**/*.test.ts`; Playwright keeps to `e2e/**`.
+
 ## Rollback
 
 Vercel keeps every deployment: promote the previous production deployment from the
@@ -189,14 +210,14 @@ too, and force pushes and deletions are refused. So every change reaches `main` 
 pull request, the owner's included. Required contexts (the job `name` values), checked
 5 September 2026: `Typecheck, lint, test`, `Build packages/web`, `Commit messages and PR
 title`, `Shell scripts`, `Storybook build and Chromatic`. Phase 2 adds the job `TypeGen drift`;
-add that context when the Phase 2 pull request merges. To inspect or change it:
+add that context when the Phase 2 pull request merges. Phase 3 adds `Playwright and axe`. To inspect or change it:
 
 ```bash
 gh api repos/Oba-One/omo-yoruba-website/branches/main/protection --jq '.required_status_checks.contexts'
 ```
 
 Adding a required check later means adding its job name to the `contexts` list with the same
-`PUT` call, body as in this file's history. Playwright follows in Phase 3.
+`PUT` call, body as in this file's history.
 
 ## Security headers
 
