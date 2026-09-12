@@ -33,7 +33,7 @@ Conventions:
 | `ActionButton` | a Studio action as a button: an enquiry kind opens the Enquiry Modal (`data-enquiry`), `give` the Give Dialog (`data-give`), a link or an anchor is a plain href; outline by default; a half-filled action renders nothing (the Studio refuses to publish one) | `action`, `variant`, `size`, `arrow` | Hero, doors, program cards, Handoff | The page passes `primary` once per view |
 | `Pending` | chip inline (`chip`); the "Pending from you" line (`line`); block with aspect ratio (`block`); every form names the missing item | `what`, `variant`, `aspect`, `tone` (indigo, terra, green, gold) | Every page | Shows the àdìrẹ dot fill at 8 to 12% |
 | `PatternBand` | àdìrẹ dot field overlay (`dots`); chevron rows (`chevron`, `flip` for the bottom edge); motif columns (`motif`); batik wash (`batik`) | `pattern`, `opacity`, `flip` | Hero, event band, footer, cards | Lives in `bands/`; SVGs from `@oy/tokens/patterns/` (copied from `design/images/patterns/`) |
-| `Logo` | mark + two-line wordmark (`lockup`, line two hides under 1060px); mark only (`mark`); light lockup for dark (`light`) | `variant`, `href` | Nav, footer | Lives in `navigation/`; `logo-mark.png`, `logo-lockup-light.png` beside the component |
+| `Logo` | mark + two-line wordmark (`lockup`, line two hides under 1060px); mark only (`mark`); light lockup for dark (`light`, lazy below the fold) | `variant`, `href` | Nav, footer | Lives in `navigation/`; `logo-mark-2x.webp`, `-3x.webp` and `logo-lockup-light-2x.webp`, `-3x.webp` beside the component, cut from the masters in `design/images/` at twice and three times the drawn size |
 
 ## Page structure
 

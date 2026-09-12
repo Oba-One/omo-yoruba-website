@@ -1,9 +1,8 @@
 import type { ComponentProps } from 'astro/types';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
-// The prerendered Logo resolves its PNGs only when they reach the client bundle (Logo.stories.ts).
-import lockupLightUrl from '../Logo/logo-lockup-light.png?url';
-import markUrl from '../Logo/logo-mark.png?url';
+// The prerendered Logo resolves its images only when they reach the client bundle.
+import { logoAssets } from '../Logo/story-assets';
 import SiteNav from './SiteNav.astro';
 
 type Args = StoryArgs<ComponentProps<typeof SiteNav>>;
@@ -16,7 +15,7 @@ const meta = {
   component: SiteNav,
   args: { path: '/' },
   parameters: {
-    staticBuildAssets: [markUrl, lockupLightUrl],
+    staticBuildAssets: logoAssets,
     layout: 'fullscreen',
     docs: {
       description: {
