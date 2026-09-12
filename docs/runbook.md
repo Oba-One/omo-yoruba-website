@@ -11,7 +11,7 @@ Names and roles: `docs/design/README.md` section 7. Schema: `packages/web/astro.
 | Variable | Where it lives | Notes |
 | --- | --- | --- |
 | `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET` | `packages/web/.env`, Vercel (all environments) | Required since Phase 2: the build stops without them (CI uses placeholders) |
-| `PUBLIC_SITE_URL` | Vercel per environment | Production `https://omoyorubaofsocal.org` |
+| `PUBLIC_SITE_URL` | Vercel per environment | Production `https://omoyorubasocal.org` |
 | `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST` | `packages/web/.env`, Vercel | Empty key disables analytics |
 | `PUBLIC_ZEFFY_EMBED_URL`, `PUBLIC_EVENTBRITE_URL` | Vercel | May stay empty (wayfinder ticket 03) |
 | `SANITY_API_READ_TOKEN` (Viewer) | `packages/web/.env`, Vercel | `/api/preview/enable` validates the Studio's secret with it; stega and drafts (Phase 4) |
@@ -30,12 +30,21 @@ in CI and through `bunx lefthook run pre-commit`.
 
 ## Deploy
 
-Vercel project for `packages/web`: Root Directory `packages/web` with "Include files outside the
+Vercel project `omo-yoruba` in the Greenpill Dev Guild team (created 11 September 2026, linked to
+`Oba-One/omo-yoruba-website`): Root Directory `packages/web` with "Include files outside the
 root directory" enabled (the lockfile and the workspace packages live above it), framework
-Astro, Node 22 (`engines` in `packages/web/package.json` pins `22.x`; the root pins it too).
-The adapter writes `.vercel/output`; `bun run build` from the repo root builds it. Every
-push to a branch gets a preview URL; `main` deploys to production. Public `PUBLIC_*`
-values are inlined at build time, so changing one in Vercel needs a redeploy.
+Astro, Node 22 (`engines` in `packages/web/package.json` pins `22.x` and overrides the project's
+own Node setting). The adapter writes `.vercel/output`; `bun run build` from the repo root builds
+it. Every push to a branch gets a preview URL; `main` deploys to production at
+`omo-yoruba-greenpilldevguild.vercel.app`, which keeps working after the domain attaches. Public
+`PUBLIC_*` values are inlined at build time, so changing one in Vercel needs a redeploy, and
+since Phase 2 the production build stops without `PUBLIC_SANITY_PROJECT_ID` and
+`PUBLIC_SANITY_DATASET`.
+
+Domain: `omoyorubasocal.org`, bought through Vercel on 11 September 2026 (the old
+`omoyorubaofsocal.org` is not in the owner's hands; wayfinder ticket 10 covers its redirects).
+Attach it under the project's Domains with `www` redirecting to the apex; Vercel manages the DNS,
+so Resend's records for the sending domain go there too.
 
 Storybook: a second Vercel project with Root Directory `packages/ui` and "Include files outside
 the root directory" enabled; `packages/ui/vercel.json` pins the install and build commands and
@@ -65,7 +74,9 @@ loaders and the overlay and documents click-to-edit here.
 
 `/api/revalidate` exists since Phase 2: it verifies the `sanity-webhook-signature` header with
 `SANITY_WEBHOOK_SECRET` (HMAC SHA-256 over `timestamp.body`, five minutes of tolerance), reads
-`{_type, slug}` from the body and answers with the cache tags the document affects
+`{_type, slug}` from the body and answers with the cache tags the document affects. Point the
+webhook at `https://omoyorubasocal.org/api/revalidate` once Phase 2 is on `main`, or at the
+production alias above; never at a preview deployment, which Vercel protects
 (`cacheTagsFor` in `@oy/content/routes`: the type and one tag per route that reads it). The
 purge itself waits for Phase 4, which adds the Vercel cache provider, how to purge by hand and
 how to confirm a publish reached the site within a minute. Create the webhook at wizard stage 7

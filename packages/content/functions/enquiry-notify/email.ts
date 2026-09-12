@@ -85,7 +85,7 @@ export function buildEmail(enquiry: EnquiryDocument, route: Route): Email {
   const sender = senderOf(enquiry);
   const reply = details[replyToField(enquiry.kind).id];
   const lines = [
-    `A new ${enquiry.kind} enquiry arrived through omoyorubaofsocal.org.`,
+    `A new ${enquiry.kind} enquiry arrived through omoyorubasocal.org.`,
     '',
     ...spec.fields.map((field) => `${field.label}: ${text(details[field.id])}`),
     '',

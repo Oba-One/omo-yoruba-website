@@ -31,7 +31,7 @@ if (!projectId || !dataset) {
 export default defineConfig({
   // Canonical origin. Vercel injects PUBLIC_SITE_URL per environment at build time, so
   // previews get their own value; the production domain is the fallback.
-  site: process.env.PUBLIC_SITE_URL ?? 'https://omoyorubaofsocal.org',
+  site: process.env.PUBLIC_SITE_URL ?? 'https://omoyorubasocal.org',
   output: 'server',
   adapter: vercel(),
 
@@ -75,7 +75,7 @@ export default defineConfig({
         context: 'client',
         access: 'public',
         optional: true,
-        default: 'https://omoyorubaofsocal.org',
+        default: 'https://omoyorubasocal.org',
       }),
       PUBLIC_POSTHOG_KEY: envField.string({
         context: 'client',

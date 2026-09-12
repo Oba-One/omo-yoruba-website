@@ -56,7 +56,7 @@ describe('buildEmail', () => {
     expect(email.subject).toBe('Sponsor enquiry from Leimert Park Village');
     expect(email.text).toBe(
       [
-        'A new sponsor enquiry arrived through omoyorubaofsocal.org.',
+        'A new sponsor enquiry arrived through omoyorubasocal.org.',
         '',
         'Organization: Leimert Park Village',
         'Your name and role: A. Person, director',

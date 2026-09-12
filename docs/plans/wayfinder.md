@@ -1,4 +1,4 @@
-# Wayfinder map: omoyorubaofsocal.org on Astro 7 and Sanity
+# Wayfinder map: omoyorubasocal.org on Astro 7 and Sanity
 
 Charted 4 September 2026 in Phase 0. Tracker conventions: `docs/agents/issue-tracker.md`.
 Child tickets: `docs/tickets/wayfinder/issues/`. A ticket marked `Owner: yes` is the
@@ -52,6 +52,11 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
 - [.astro holds in Storybook: the Phase 1 checkpoint is closed](../tickets/wayfinder/issues/16-astro-in-storybook-checkpoint.md):
   the owner merged pull request #2 on 5 September 2026; the stubs and workarounds carry in the
   ticket's answer; no pivot (ADR 0002).
+
+- Domain: `omoyorubasocal.org`, bought by the owner on 11 September 2026 through Vercel, since the
+  old `omoyorubaofsocal.org` is registered elsewhere and not yet in the owner's hands. The repo,
+  the wizard and the Vercel project use the new name; the old one redirects here once the owner
+  controls it (ticket 10).
 
 - `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` are required at build time since Phase 2
   (the data layer exists); CI builds with placeholder values (`docs/runbook.md`).

@@ -31,23 +31,34 @@ sources: `docs/research/phase-2-sanity-studio-v6-and-astro.md`,
 ## Owner follow-ups, in order
 
 Done on 11 September 2026 after the pull request opened: the token lines were renamed, an Editor
-token replaced the Contributor token, and `bun seed` ran against `development` (42 documents,
-68 photographs; a second and third run left everything unchanged).
+token replaced the Contributor token, `bun seed` ran against `development` (42 documents,
+68 photographs; a second and third run left everything unchanged), the domain
+`omoyorubasocal.org` was bought and the repo renamed to it, the Vercel project `omo-yoruba`
+exists (linked to the GitHub repository, production at `omo-yoruba-greenpilldevguild.vercel.app`)
+and a Resend API key was created.
 
-1. `packages/web/.env` still lacks `SANITY_WEBHOOK_SECRET` (wizard stage 2 generates it, or
+1. Vercel: attach `omoyorubasocal.org` (and `www`) under the project's Domains; the project
+   listed only its `vercel.app` aliases on 11 September. Set the environment variables there
+   before this pull request merges, since the production build now stops without
+   `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` (wizard stage 3 pushes everything in
+   `packages/web/.env`, including the tokens and `SANITY_WEBHOOK_SECRET`).
+2. `packages/web/.env` still lacks `SANITY_WEBHOOK_SECRET` (wizard stage 2 generates it, or
    `openssl rand -hex 32`); `/api/revalidate` answers 500 until then. `/api/preview/enable` needs
    only the Viewer token: the Presentation tool makes and stores its own secret. The wizard's
    `SANITY_PREVIEW_SECRET` is not read by any Phase 2 code; keep the name for later phases.
-2. Log in at http://localhost:4321/admin (`bun dev`) and open Pending: 49 field rows list their
+3. Resend: the API key belongs on the deployed function, not on Vercel or in Astro; add the
+   sending domain `omoyorubasocal.org` in Resend and create its DNS records in Vercel's DNS for
+   the domain, then choose the sender for `ENQUIRY_FROM`.
+4. Log in at http://localhost:4321/admin (`bun dev`) and open Pending: 49 field rows list their
    documents and "Missing entirely" shows the two unnamed zones and the five absent types. The
    project's CORS origins must include `http://localhost:4321` (wizard stage 1).
-3. Functions: `bunx sanity login`, `bunx sanity blueprints init`, `bunx sanity blueprints deploy`
+5. Functions: `bunx sanity login`, `bunx sanity blueprints init`, `bunx sanity blueprints deploy`
    from the repo root, then `bunx sanity functions env add enquiry-notify RESEND_API_KEY <value>`
    and `... ENQUIRY_FROM "<Name> <address on the verified domain>"` (`docs/runbook.md`,
    Functions). Wizard stage 4 creates the Resend domain and key.
-4. Branch protection: add the context `TypeGen drift`.
-5. `bun seed -- --dry-run --dataset production` to read the plan before a production run.
-6. Wayfinder tickets 02 (EIN, address, phone, routing emails and response lines), 05 (the two
+6. Branch protection: add the context `TypeGen drift`.
+7. `bun seed -- --dry-run --dataset production` to read the plan before a production run.
+8. Wayfinder tickets 02 (EIN, address, phone, routing emails and response lines), 05 (the two
    zones), 09 (photo credits, the summer camp year) and 22 (roles on the plan) still gate content.
 
 ## Decisions made without the owner (reverse any)
