@@ -1,8 +1,8 @@
 ---
 /**
  * A page section at the content width: `.oy-section` on white, on the theme's alternate ground
- * (`alt`, the indigo tint under the `adire` theme) or on paper, an optional batik wash or the stat
- * strip's corner dot fields behind the content, and the slot inside `.oy-wrap`. On the tint the
+ * (`alt`, the indigo tint under the `adire` theme) or on paper, an optional batik wash behind the
+ * content, and the slot inside `.oy-wrap`. On the tint the
  * kicker deepens to terracotta 700 and muted text to its on-tint token so both keep AA. Pages
  * compose sections from this and `SectionHead`; the textures come from the tokens and the
  * pattern option on the page root dims them.
@@ -15,8 +15,8 @@ interface Props {
   id?: string;
   /** The theme's alternate ground (`.oy-section--alt`), or paper. */
   ground?: SectionGround;
-  /** A texture behind the content: the batik wash, or the two corner dot fields. */
-  texture?: 'batik' | 'corners' | 'none';
+  /** A texture behind the content: the batik wash. */
+  texture?: 'batik' | 'none';
   /** The id of the heading that labels the section. */
   labelledby?: string;
   class?: string;
@@ -45,14 +45,6 @@ const {
   {...rest}
 >
   {texture === 'batik' && <PatternBand pattern="batik" />}
-  {
-    texture === 'corners' && (
-      <>
-        <div class="v2-corner v2-corner--tl" aria-hidden="true" />
-        <div class="v2-corner v2-corner--br" aria-hidden="true" />
-      </>
-    )
-  }
   <div class="oy-wrap oy-section-inner">
     <slot />
   </div>

@@ -293,7 +293,7 @@ export const program = defineType({
       name: 'action',
       title: 'Card action',
       type: 'cta',
-      description: 'The quiet link on the program card. Empty reads "See the program".',
+      description: 'The quiet link on the program card. Empty shows no link.',
     }),
     order,
   ],

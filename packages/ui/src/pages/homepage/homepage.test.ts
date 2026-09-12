@@ -30,7 +30,8 @@ describe('the homepage page-section stories', () => {
     const root = (await renderToBody(Highlight.Lessons)).querySelector('.oy-home');
     expect(root?.getAttribute('data-highlight')).toBe('school');
     expect(root?.querySelectorAll('[data-columns="4"] .oy-card')).toHaveLength(4);
-    expect(root?.querySelector('.v2-prog--school')).not.toBeNull();
+    expect(root?.querySelector('.v2-prog--school[data-program="lessons"]')).not.toBeNull();
+    expect(root?.querySelector('.v2-prog--collective[data-program="collective"]')).not.toBeNull();
   });
 
   it('gallery: seven, five and three tiles', async () => {

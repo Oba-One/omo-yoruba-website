@@ -6,12 +6,14 @@
  * single kicker; no kicker renders none.
  */
 import Button from '../../core/Button/Button.astro';
-import Kicker from '../../core/Kicker/Kicker.astro';
+import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
 
 interface Props {
-  kicker?: { yo?: string | null; en?: string | null } | null;
+  kicker?: BilingualText | null;
   title?: string | null;
+  /** The registry's wording for a missing heading; without it an empty heading renders nothing. */
+  pending?: string;
   intro?: string | null;
   link?: { label: string; href: string } | null;
   /** The id of the heading, for `aria-labelledby` on the section. */
@@ -19,7 +21,7 @@ interface Props {
   class?: string;
 }
 
-const { kicker, title, intro, link, id, class: className } = Astro.props;
+const { kicker, title, intro, link, id, pending, class: className } = Astro.props;
 const hasKicker = Boolean(kicker?.yo || kicker?.en);
 ---
 
@@ -33,7 +35,7 @@ const hasKicker = Boolean(kicker?.yo || kicker?.en);
         </div>
       )
     }
-    <h2 id={id}>{title?.trim() || <Pending what="the heading" />}</h2>
+    {(title?.trim() || pending) && <h2 id={id}>{title?.trim() || <Pending what={pending} />}</h2>}
     {intro && <p class="oy-sec-intro">{intro}</p>}
   </div>
   {

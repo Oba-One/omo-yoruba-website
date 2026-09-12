@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './ActionButton.stories';
 
-const { Default, Give, NewTab, Anchor, Pending, Quiet } = composeStories(stories);
+const { Default, Give, NewTab, Anchor, Incomplete, Quiet } = composeStories(stories);
 
 describe('ActionButton', () => {
   it('renders an enquiry action as a modal trigger with the no-JavaScript link', async () => {
@@ -32,9 +32,9 @@ describe('ActionButton', () => {
     expect((await renderToBody(Quiet)).querySelector('.oy-btn--quiet')).not.toBeNull();
   });
 
-  it('shows a Pending chip when the action is half filled', async () => {
-    const body = await renderToBody(Pending);
+  it('renders nothing when the action is half filled', async () => {
+    const body = await renderToBody(Incomplete);
     expect(body.querySelector('a.oy-btn')).toBeNull();
-    expect(text(body.querySelector('.oy-pend'))).toBe('Pending: which form this button opens');
+    expect(body.querySelector('.oy-pend')).toBeNull();
   });
 });

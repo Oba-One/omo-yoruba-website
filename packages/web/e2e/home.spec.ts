@@ -15,12 +15,14 @@ test.describe('the homepage', () => {
         .map((el) => el.id || el.className.split(' ')[0])
         .join(' '),
     );
-    expect(order).toBe('top impact odunde programs voices news gallery get-involved');
+    expect(order).toBe('top impact lead-event programs voices news gallery get-involved');
     await expect(page.locator('header.v2-hero .v2-hero-scrim')).toHaveCount(1);
-    await expect(page.locator('#odunde.oy-event-band')).toHaveCount(1);
+    await expect(page.locator('#lead-event.oy-event-band')).toHaveCount(1);
     await expect(page.locator('#programs [data-columns="4"]')).toHaveCount(1);
     await expect(page.locator('#voices .oy-quote-card')).toHaveCount(3);
-    await expect(page.locator('#gallery .oy-mosaic figure')).toHaveCount(7);
+    // The mosaic shows as many tiles as the gallery option on the body asks for.
+    const tiles = Number(await page.locator('body').getAttribute('data-gallery'));
+    await expect(page.locator('#gallery .oy-mosaic figure')).toHaveCount(tiles);
     await expect(page.locator('footer.oy-footer')).toHaveCount(1);
     // The body carries the layout options the tokens read.
     await expect(page.locator('body')).toHaveAttribute('data-motion', /true|false/);
@@ -41,9 +43,10 @@ test.describe('the homepage', () => {
       heroText.includes('Yoruba culture, alive in Southern California') ||
         /pending: the hero heading/i.test(heroText),
     ).toBe(true);
-    // innerText applies the chip's uppercase transform, so the match ignores case.
-    const bandText = await page.locator('#odunde').innerText();
-    expect(bandText).toMatch(/pending: the/i);
+    // The band carries the edition's date or the registry's chip for it (innerText applies the
+    // chip's uppercase transform, so the match ignores case).
+    const bandText = await page.locator('#lead-event').innerText();
+    expect(bandText).toMatch(/pending: the|\b\d{4}\b/i);
     // The trust line's EIN placeholder, the mock address and the mock prices never appear.
     const body = await page.locator('body').innerText();
     expect(body).not.toMatch(/95-4612387|Leimert Boulevard|555-0148|\$\d/);

@@ -15,7 +15,6 @@ interface Props {
   involved?: 'doors' | 'rows';
   newsletter?: 'footer' | 'band';
   gallery?: '7' | '5' | '3';
-  theme?: 'adire' | 'calm' | 'festival';
   class?: string;
 }
 
@@ -27,7 +26,6 @@ const {
   involved,
   newsletter,
   gallery,
-  theme,
   class: className,
 } = Astro.props;
 ---
@@ -42,7 +40,6 @@ const {
   data-involved={involved}
   data-newsletter={newsletter}
   data-gallery={gallery}
-  data-theme={theme}
 >
   <slot />
 </div>

@@ -9,7 +9,7 @@ describe('PathRow', () => {
   it('renders the chip, the copy and the gold enquiry trigger for the member door', async () => {
     const row = (await renderToBody(Member)).querySelector('.oy-path[data-door="member"]');
     expect(text(row?.querySelector('.oy-path-chip'))).toBe('Membership');
-    expect(row?.hasAttribute('data-accent')).toBe(false);
+    expect(row?.getAttribute('data-accent')).toBe('performer');
     expect(text(row?.querySelector('.oy-path-body h3'))).toBe('Become a member');
     const button = row?.querySelector('a.oy-btn');
     expect(button?.className).toContain('oy-btn--primary');
@@ -26,7 +26,8 @@ describe('PathRow', () => {
   it('names what is missing for an empty door', async () => {
     const row = (await renderToBody(Pending)).querySelector('.oy-path');
     expect(text(row?.querySelector('.oy-path-chip .oy-pend'))).toBe('Pending: the way in');
-    expect(text(row?.querySelector('h3 .oy-pend'))).toBe('Pending: the door title');
+    expect(row?.querySelector('h3')).toBeNull();
+    expect(text(row?.querySelector('p .oy-pend'))).toBe('Pending: the blurb');
     expect(row?.querySelector('a.oy-btn')).toBeNull();
   });
 });

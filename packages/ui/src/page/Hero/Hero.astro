@@ -7,26 +7,29 @@
  * the theme's surface and shows a Pending chip for the photograph; without a heading the H1
  * carries a Pending chip, so the page still has its one H1.
  */
+import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import type { ActionLike } from '../../core/ActionButton/action';
 import Divider from '../../core/Divider/Divider.astro';
-import Kicker from '../../core/Kicker/Kicker.astro';
+import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import { altOf, type ImageInput, imgAttributes } from '../../media/image';
 
 interface Props {
   image?: ImageInput | null;
   alt?: string;
-  kicker?: { yo?: string | null; en?: string | null } | null;
+  kicker?: BilingualText | null;
   title?: string | null;
   sub?: string | null;
-  blessing?: { yo?: string | null; en?: string | null } | null;
+  blessing?: BilingualText | null;
   primary?: ActionLike | null;
   secondary?: ActionLike[] | null;
   /** The breathing photo and the entrance rise; off renders everything settled. */
   motion?: boolean;
   /** A `data-sanity` attribute for the photo, so click-to-edit reaches the image field. */
   imageEdit?: string;
+  /** A `data-sanity` attribute for the hero itself, so click-to-edit reaches the motion option. */
+  edit?: string;
   class?: string;
 }
 
@@ -41,6 +44,7 @@ const {
   secondary = [],
   motion = true,
   imageEdit,
+  edit,
   class: className,
   ...rest
 } = Astro.props;
@@ -49,7 +53,7 @@ const img = imgAttributes(image, '100vw');
 const rise = motion ? 'v2-rise' : undefined;
 ---
 
-<header class:list={['oy-dark', 'v2-hero', 'oy-hero-band', className]} id="top" {...rest}>
+<header class:list={['oy-dark', 'v2-hero', 'oy-hero-band', className]} id="top" data-sanity={edit} {...rest}>
   {
     img ? (
       <img
@@ -62,7 +66,7 @@ const rise = motion ? 'v2-rise' : undefined;
         data-sanity={imageEdit}
       />
     ) : (
-      <Pending what="the hero photograph" class="oy-hero-pending" />
+      <Pending what={pendingWhat('homepage', 'hero.image')} class="oy-hero-pending" />
     )
   }
   <div class="v2-hero-scrim" aria-hidden="true"></div>
@@ -70,7 +74,7 @@ const rise = motion ? 'v2-rise' : undefined;
   <div class="oy-wrap oy-hero-inner">
     <div class="oy-hero-copy">
       {(kicker?.yo || kicker?.en) && <Kicker yo={kicker?.yo ?? undefined} en={kicker?.en ?? undefined} class={rise} />}
-      <h1 class={rise} style="animation-delay: 0.12s">{title || <Pending what="the hero heading" />}</h1>
+      <h1 class={rise} style="animation-delay: 0.12s">{title || <Pending what={pendingWhat('homepage', 'hero.title')} />}</h1>
       {sub && <p class:list={['oy-hero-sub', rise]} style="animation-delay: 0.24s">{sub}</p>}
       <div class:list={['v2-hero-cta', rise]} style="animation-delay: 0.36s">
         <ActionButton action={primary} variant="primary" />
@@ -123,10 +127,11 @@ const rise = motion ? 'v2-rise' : undefined;
   .oy-hero-copy {
     max-width: 640px;
   }
+  /* The hero scale from the tokens, so the festival theme's scale reaches the heading. */
   .oy-hero-band h1 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(34px, 4.8vw, 56px);
+    font-size: calc(var(--text-hero) * var(--theme-hero-scale, 1));
     line-height: 1.12;
     color: var(--white);
     margin: 18px 0 14px;

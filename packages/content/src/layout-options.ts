@@ -13,7 +13,7 @@ export interface LayoutSpec {
   description?: string;
 }
 
-export const PAGE_LAYOUTS: Record<string, readonly LayoutSpec[]> = {
+export const PAGE_LAYOUTS = {
   homepage: [
     {
       name: 'season',
@@ -100,4 +100,4 @@ export const PAGE_LAYOUTS: Record<string, readonly LayoutSpec[]> = {
     { name: 'order', title: 'Order', options: ['events-led', 'feed-led'] },
     { name: 'filtersShown', title: 'Filters', options: ['shown', 'hidden'] },
   ],
-};
+} satisfies Record<string, readonly LayoutSpec[]>;

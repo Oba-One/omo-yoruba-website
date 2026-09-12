@@ -24,6 +24,8 @@ export default meta;
 type Story = StoryObj<Args>;
 
 /** Become a member: the gold action opens the member enquiry. */
+export const Default: Story = {};
+
 export const Member: Story = {};
 
 /** Partner or sponsor: the outline action opens the sponsor enquiry. */
@@ -32,7 +34,12 @@ export const Partner: Story = { args: { door: DOORS[1] as Args['door'], primary:
 /** With the "what it asks and gives" bullets, as Get Involved shows them; the member door still owes its lines. */
 export const WithBullets: Story = { args: { bullets: true } };
 
-/** A door with only its key: the placeholder, the chips and no button. */
+/** A door with only its key: the placeholder, the registry's chip for the blurb and no button. */
 export const Pending: Story = { args: { door: { key: 'volunteer' }, primary: false } };
 
 export const Hover: Story = { parameters: { pseudo: { hover: '.oy-card' } } };
+
+/** In draft mode the photo carries its edit attribute for click-to-edit. */
+export const WithEdit: Story = {
+  args: { imageEdit: 'id=door-member;type=door;path=image;base=%2Fadmin' },
+};

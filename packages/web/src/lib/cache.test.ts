@@ -9,7 +9,7 @@ const record = () => {
 describe('cachePage', () => {
   it('tags a public page with every type that reaches it, one day fresh and seven days stale', () => {
     const { calls, cache } = record();
-    cachePage({ cache }, '/', { preview: false });
+    cachePage({ cache }, '/', { draft: false });
     expect(calls).toEqual([
       {
         maxAge: PAGE_MAX_AGE,
@@ -31,12 +31,9 @@ describe('cachePage', () => {
     expect(cacheOptions('/odunde').tags).toContain('type:zone');
   });
 
-  it('opts a draft-mode request and an error re-render out', () => {
+  it('opts a draft-mode request out', () => {
     const draft = record();
-    cachePage(draft, '/', { preview: true });
+    cachePage(draft, '/', { draft: true });
     expect(draft.calls).toEqual([false]);
-    const error = record();
-    cachePage(error, '/', { preview: false, uncacheable: true });
-    expect(error.calls).toEqual([false]);
   });
 });

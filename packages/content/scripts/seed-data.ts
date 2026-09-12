@@ -671,6 +671,7 @@ export function missingFields(
 ): Record<string, unknown> {
   const missing: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(fields)) {
+    if (value === undefined) continue;
     const stored = current[key];
     if (stored === undefined) {
       missing[key] = value;
@@ -678,7 +679,8 @@ export function missingFields(
     }
     if (isPlainObject(value) && isPlainObject(stored) && !('_ref' in value)) {
       for (const [sub, subValue] of Object.entries(value)) {
-        if (stored[sub] === undefined) missing[`${key}.${sub}`] = subValue;
+        if (subValue !== undefined && stored[sub] === undefined)
+          missing[`${key}.${sub}`] = subValue;
       }
     }
   }

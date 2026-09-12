@@ -309,7 +309,27 @@ export const PENDING: readonly PendingEntry[] = [
   },
 
   // Homepage
+  { type: 'homepage', fields: ['hero.title'], where: 'Homepage, hero', what: 'the hero heading' },
+  {
+    type: 'homepage',
+    fields: ['hero.image'],
+    where: 'Homepage, hero',
+    what: 'the hero photograph',
+  },
+  {
+    type: 'homepage',
+    fields: ['stats[]'],
+    where: 'Homepage, figures',
+    what: 'the headline figures',
+  },
   { type: 'homepage', fields: ['voices[]'], where: 'Homepage, voices', what: 'member voices' },
+  {
+    type: 'homepage',
+    fields: ['raiseYourHand.title'],
+    where: 'Homepage, raise your hand',
+    what: 'the heading',
+  },
+  { type: 'door', fields: ['blurb'], where: 'Doors', what: 'the blurb' },
 ];
 
 export const PRESENCE: readonly PresenceEntry[] = [
@@ -381,12 +401,14 @@ export function pendingTitle(entry: PendingEntry | PresenceEntry): string {
 
 /**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
- * `filter` narrows to the row for one kind of document (`kind == "gala"`) where the registry keeps
- * a row per kind.
+ * `kind` picks the row for one kind of document (an event's `gala` or `festival`) where the
+ * registry keeps a row per kind; without a matching row the first row for the field answers.
  */
-export function pendingWhat(type: string, field: string, filter?: string): string | undefined {
+export function pendingWhat(type: string, field: string, kind?: string): string | undefined {
   const rows = PENDING.filter((entry) => entry.type === type && entry.fields?.includes(field));
-  const narrowed = filter ? rows.find((entry) => entry.filter?.includes(filter)) : undefined;
+  const narrowed = kind
+    ? rows.find((entry) => entry.filter?.includes(`kind == "${kind}"`))
+    : undefined;
   return (narrowed ?? rows[0])?.what;
 }
 

@@ -9,6 +9,7 @@
  * line for the next event.
  */
 import { pendingWhat } from '@oy/content/pending';
+import { ROUTE_SINGLETONS } from '@oy/content/routes';
 import Button from '../../core/Button/Button.astro';
 import Kicker from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
@@ -30,31 +31,34 @@ interface Props {
   event?: BandEvent | null;
   /** Overrides the edition's kind for the frame and the copy. */
   kind?: EventBandKind;
-  /** The event page the button opens; `/gala` or `/odunde` by kind. */
-  href?: string;
   /** A `data-sanity` attribute for the band, so click-to-edit reaches the season option. */
   edit?: string;
   class?: string;
   id?: string;
 }
 
+/** The band's own copy by kind (the prototype's kicker and button), and the page it opens. */
 const COPY: Record<
   EventBandKind,
   { kicker: { yo?: string; en: string }; button: string; href: string }
 > = {
-  gala: { kicker: { en: 'Coming up next' }, button: 'Tickets & tables', href: '/gala' },
+  gala: {
+    kicker: { en: 'Coming up next' },
+    button: 'Tickets & tables',
+    href: ROUTE_SINGLETONS.galaPage ?? '/gala',
+  },
   festival: {
     kicker: { yo: 'Ọdúndé', en: 'The new year has arrived' },
     button: 'Vendors & sponsors',
-    href: '/odunde',
+    href: ROUTE_SINGLETONS.festivalPage ?? '/odunde',
   },
 };
 
-const { event, kind: kindProp, href, edit, class: className, ...rest } = Astro.props;
+const { event, kind: kindProp, edit, class: className, ...rest } = Astro.props;
 const kind: EventBandKind = kindProp ?? (event?.kind === 'festival' ? 'festival' : 'gala');
 const copy = COPY[kind];
-const kindFilter = `kind == "${kind}"`;
-const datePending = pendingWhat('event', 'start', kindFilter) ?? 'the date';
+const datePending = pendingWhat('event', 'start', kind);
+const venuePending = pendingWhat('event', 'venue.name', kind);
 
 function formatDate(value: string | null | undefined): string | undefined {
   if (!value) return undefined;
@@ -89,9 +93,9 @@ const when = formatDate(event?.start);
           <>
             <div class="oy-band-copy">
               <Kicker yo={copy.kicker.yo} en={copy.kicker.en} />
-              <h2>{event.title || <Pending what="the edition title" />}</h2>
+              {event.title && <h2>{event.title}</h2>}
               <p class="oy-band-line">
-                {event.venueName ? <span>{event.venueName}</span> : <Pending what="the venue" />}
+                {event.venueName ? <span>{event.venueName}</span> : <Pending what={venuePending} />}
                 <span class="oy-band-dot" aria-hidden="true">
                   •
                 </span>
@@ -99,12 +103,12 @@ const when = formatDate(event?.start);
                 {event.summary && <span class="oy-band-summary">{event.summary}</span>}
               </p>
             </div>
-            <Button href={href ?? copy.href} arrow>
+            <Button href={copy.href} arrow>
               {copy.button}
             </Button>
           </>
         ) : (
-          <Pending variant="line" what="the next event: an edition with a date and a venue" />
+          <Pending variant="line" what="the lead event: an edition with a date and a venue" />
         )
       }
     </div>

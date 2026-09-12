@@ -1,4 +1,4 @@
-import { createImageUrlBuilder } from '@sanity/image-url';
+import { createImageUrlBuilder, type SanityImageSource } from '@sanity/image-url';
 
 /**
  * Every image on the site is a Sanity CDN URL built here from the asset reference, the hotspot and
@@ -18,8 +18,6 @@ export interface ImageSetOptions {
   width: number;
   /** Locks the aspect ratio (width divided by height) and crops around the hotspot. */
   aspect?: number;
-  /** The candidate widths for `srcset`; the default doubles the width and halves it. */
-  widths?: number[];
   quality?: number;
 }
 
@@ -53,7 +51,7 @@ export type ImageSetBuilder = (
 
 export function createImageSet({ projectId, dataset }: ImageSetConfig): ImageSetBuilder {
   const builder = createImageUrlBuilder({ projectId, dataset });
-  return (image, { width, aspect, widths, quality = 80 }) => {
+  return (image, { width, aspect, quality = 80 }) => {
     const ref = image?.asset?._ref;
     const natural = assetDimensions(ref);
     if (!ref || !natural || !image) return undefined;
@@ -63,17 +61,18 @@ export function createImageSet({ projectId, dataset }: ImageSetConfig): ImageSet
       height: Math.round(natural.height * (1 - (crop.top ?? 0) - (crop.bottom ?? 0))),
     };
     const ratio = aspect ?? cropped.width / cropped.height;
+    // Half, the width, one and a half and double: the widths a 1x to 2x screen asks for.
     const candidates = [
       ...new Set(
-        (widths ?? [Math.round(width / 2), width, Math.round(width * 1.5), width * 2])
-          .map((w) => Math.round(w))
-          .filter((w) => w > 0 && w <= cropped.width),
+        [Math.round(width / 2), width, Math.round(width * 1.5), width * 2].filter(
+          (w) => w > 0 && w <= cropped.width,
+        ),
       ),
     ].sort((a, b) => a - b);
     if (candidates.length === 0) candidates.push(cropped.width);
     const urlFor = (w: number) => {
       let url = builder
-        .image(image as never)
+        .image(image as SanityImageSource)
         .width(w)
         .auto('format')
         .quality(quality);

@@ -22,7 +22,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A section at the content width with the section padding from the tokens, on white, the theme tint or paper, and a low-opacity texture behind the content (the batik wash or the corner dot fields). Texture, never costume.',
+          'A section at the content width with the section padding from the tokens, on white, the theme tint or paper, and the low-opacity batik wash behind the content. Texture, never costume.',
       },
     },
   },
@@ -38,5 +38,3 @@ export const Alt: Story = { args: { ground: 'alt' } };
 export const Paper: Story = { args: { ground: 'paper' } };
 
 export const Batik: Story = { args: { ground: 'paper', texture: 'batik' } };
-
-export const Corners: Story = { args: { texture: 'corners' } };

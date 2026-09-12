@@ -32,5 +32,5 @@ export const WithKicker: Story = {
   args: { post: { ...NEWS[1], kicker: { yo: 'Ẹ̀kọ́ èdè', en: 'Lessons' } } as Args['post'] },
 };
 
-/** A post with only its title: the date and summary are Pending. */
-export const Pending: Story = { args: { post: { title: 'End-of-Year Gala' } } };
+/** A post with only its title: nothing stands in for the date or the summary. */
+export const TitleOnly: Story = { args: { post: { title: 'End-of-Year Gala' } } };

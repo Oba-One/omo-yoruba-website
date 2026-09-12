@@ -24,6 +24,8 @@ export default meta;
 type Story = StoryObj<Args>;
 
 /** The four seeded figures, no source lines: the homepage. */
+export const Default: Story = {};
+
 export const Four: Story = {};
 
 /** Six across: the Impact page's option. The two extra figures are the seeded ones repeated to show the layout. */

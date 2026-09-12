@@ -2,10 +2,11 @@
 /**
  * The row form of a door (`02 Homepage.dc.html`, the rows option; COMPONENT-MAP, Cards): the
  * chip naming the way in, the title and one line, one action that opens the door's enquiry kind
- * or the Give Dialog. The chip's accent follows the way in through the tokens
- * (`data-accent`: sponsor, volunteer, give); the border deepens on hover, no rule, no lift.
- * Rows sit inside `PathRows`.
+ * or the Give Dialog. The chip's accent follows the way in through the tokens (`data-accent`);
+ * the border deepens on hover, no rule, no lift. Rows sit inside `PathRows`. The chip labels
+ * for the volunteer and give doors have no prototype and are the owner's to confirm.
  */
+import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import type { DoorLike } from '../DoorCard/DoorCard.astro';
@@ -23,7 +24,9 @@ const CHIPS: Record<string, string> = {
   partner: 'Partnership',
   give: 'Giving',
 };
+/** The chip accent per door, as the prototype colours them (the member row borrows the performer accent). */
 const ACCENTS: Record<string, string> = {
+  member: 'performer',
   partner: 'sponsor',
   volunteer: 'volunteer',
   give: 'give',
@@ -36,8 +39,8 @@ const key = door.key ?? '';
 <div class:list={['oy-path', className]} data-door={key || undefined} data-accent={ACCENTS[key]}>
   <span class="oy-path-chip">{CHIPS[key] ?? <Pending what="the way in" />}</span>
   <div class="oy-path-body">
-    <h3>{door.title?.trim() || <Pending what="the door title" />}</h3>
-    <p>{door.blurb || <Pending what="the blurb" />}</p>
+    {door.title?.trim() && <h3>{door.title}</h3>}
+    <p>{door.blurb || <Pending what={pendingWhat('door', 'blurb')} />}</p>
   </div>
   <ActionButton action={door.action} variant={primary ? 'primary' : 'secondary'} />
 </div>

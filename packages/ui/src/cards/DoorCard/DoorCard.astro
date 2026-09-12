@@ -4,7 +4,8 @@
  * the photo or its placeholder, the title, the blurb, what it asks and gives when the page
  * shows it, and one action that opens the door's enquiry kind or the Give Dialog through the
  * mounted dialogs. The first door on a view is gold, the rest outline. The row form is
- * `PathRow`. A missing blurb or empty bullets show the registry's chips.
+ * `PathRow`. A missing blurb or empty bullets show the registry's chips; the title is required
+ * in the Studio, so an empty one renders nothing.
  */
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
@@ -36,13 +37,16 @@ interface Props {
 
 const { door, primary = false, bullets = false, imageEdit, class: className } = Astro.props;
 const title = door.title?.trim();
-const bulletsPending = pendingWhat('door', 'bullets[]') ?? 'what this way in asks and gives';
+const blurbPending = pendingWhat('door', 'blurb');
+const bulletsPending = pendingWhat('door', 'bullets[]');
 ---
 
 <Card
   image={door.image}
+  imageEdit={imageEdit}
   alt=""
   mediaHeight={190}
+  sizes="(min-width: 1100px) 540px, (min-width: 860px) 50vw, 100vw"
   bodyClass="oy-door"
   class:list={['oy-door-card', className]}
   data-door={door.key ?? undefined}
@@ -52,8 +56,8 @@ const bulletsPending = pendingWhat('door', 'bullets[]') ?? 'what this way in ask
       <ImagePlaceholder slot="media" what={`a photo for ${title ?? 'this door'}`} aspect="520 / 190" class="oy-door-placeholder" />
     )
   }
-  <h3>{title || <Pending what="the door title" />}</h3>
-  <p>{door.blurb || <Pending what="the blurb" />}</p>
+  {title && <h3>{title}</h3>}
+  <p>{door.blurb || <Pending what={blurbPending} />}</p>
   {
     bullets &&
       ((door.bullets ?? []).length > 0 ? (

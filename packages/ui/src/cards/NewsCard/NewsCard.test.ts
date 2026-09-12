@@ -4,7 +4,7 @@ import { renderToBody, text } from '../../test/stories';
 import { monthYear } from './date';
 import * as stories from './NewsCard.stories';
 
-const { Default, WithLink, WithKicker, Pending } = composeStories(stories);
+const { Default, WithLink, WithKicker, TitleOnly } = composeStories(stories);
 
 describe('NewsCard', () => {
   it('writes the month and year, the title and the summary, with no link by default', async () => {
@@ -26,9 +26,11 @@ describe('NewsCard', () => {
     );
   });
 
-  it('marks the missing date and summary as Pending', async () => {
-    const card = (await renderToBody(Pending)).querySelector('.oy-card');
-    expect(text(card?.querySelector('.oy-card-date .oy-pend'))).toBe('Pending: the date');
-    expect(text(card?.querySelector('p .oy-pend'))).toBe('Pending: the summary');
+  it('shows the title alone when the post has no date or summary yet', async () => {
+    const card = (await renderToBody(TitleOnly)).querySelector('.oy-card');
+    expect(text(card?.querySelector('h3'))).toBe('End-of-Year Gala');
+    expect(card?.querySelector('.oy-card-date')).toBeNull();
+    expect(card?.querySelector('p')).toBeNull();
+    expect(card?.querySelector('.oy-pend')).toBeNull();
   });
 });

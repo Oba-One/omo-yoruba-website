@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './ProgramCard.stories';
 
-const { Default, Collective, Pending } = composeStories(stories);
+const { Default, Collective, Pending, WithEdit } = composeStories(stories);
 
 describe('ProgramCard', () => {
   it('renders the photo, the name, the blurb and the quiet action from the Studio', async () => {
@@ -28,11 +28,14 @@ describe('ProgramCard', () => {
     );
   });
 
-  it('shows the registry chip for a missing blurb and a hub link for a missing action', async () => {
+  it('shows the registry chip for a missing blurb and no link without an action', async () => {
     const card = (await renderToBody(Pending)).querySelector('.oy-card');
     expect(text(card?.querySelector('p .oy-pend'))).toBe('Pending: what the program is');
-    const link = card?.querySelector('a.oy-btn--quiet');
-    expect(link?.getAttribute('href')).toBe('/programs#cultural-exchange');
-    expect(text(link)).toContain('See the program');
+    expect(card?.querySelector('a.oy-btn--quiet')).toBeNull();
+  });
+
+  it('puts the edit attribute on the photo in draft mode', async () => {
+    const img = (await renderToBody(WithEdit)).querySelector('img.oy-card-media');
+    expect(img?.getAttribute('data-sanity')).toContain('type=program;path=image');
   });
 });

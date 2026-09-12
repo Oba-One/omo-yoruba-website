@@ -58,4 +58,9 @@ export const AsFigure: Story = {
 
 export const NoRule: Story = { args: { rule: false } };
 
+/** The shell around content the Studio still owes: a Pending chip where the copy will sit. */
+export const Pending: Story = {
+  args: { title: undefined, slots: { default: '<span class="oy-pend">Pending: the card</span>' } },
+};
+
 export const OnDark: Story = { ...onDark };

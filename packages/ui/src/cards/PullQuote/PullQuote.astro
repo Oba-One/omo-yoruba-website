@@ -25,7 +25,7 @@ interface Props {
 }
 
 const { testimonial, class: className } = Astro.props;
-const pending = pendingWhat('homepage', 'voices[]') ?? 'member voices';
+const pending = pendingWhat('homepage', 'voices[]');
 const name = testimonial?.name?.trim();
 const who = name ? (testimonial?.permissionToName ? name : initialsOf(name)) : undefined;
 const parts = [who, testimonial?.relation?.trim()].filter(Boolean);
@@ -36,10 +36,8 @@ const parts = [who, testimonial?.relation?.trim()].filter(Boolean);
   {
     testimonial ? (
       <>
-        <blockquote class="oy-quote-text">{testimonial.quote || <Pending what="the quote" />}</blockquote>
-        <figcaption class="oy-quote-who">
-          {parts.length > 0 ? parts.join(' • ') : <Pending what="who said it" />}
-        </figcaption>
+        {testimonial.quote && <blockquote class="oy-quote-text">{testimonial.quote}</blockquote>}
+        {parts.length > 0 && <figcaption class="oy-quote-who">{parts.join(' • ')}</figcaption>}
       </>
     ) : (
       <>

@@ -29,6 +29,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
+export const Default: Story = {};
+
 export const Seven: Story = {};
 
 export const Five: Story = { args: { count: 5 } };

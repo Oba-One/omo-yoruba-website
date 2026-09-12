@@ -23,6 +23,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
+export const Default: Story = {};
+
 export const Member: Story = {};
 
 export const Partner: Story = { args: { door: DOORS[1] as Args['door'], primary: false } };

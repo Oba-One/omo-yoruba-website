@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './DoorCard.stories';
 
-const { Member, Partner, WithBullets, Pending } = composeStories(stories);
+const { Member, Partner, WithBullets, Pending, WithEdit } = composeStories(stories);
 
 describe('DoorCard', () => {
   it('renders the member door with its photo, copy and the gold enquiry trigger', async () => {
@@ -35,7 +35,15 @@ describe('DoorCard', () => {
     expect(card?.querySelector('.oy-ph')?.getAttribute('aria-label')).toBe(
       'Placeholder for a photo for this door',
     );
-    expect(text(card?.querySelector('h3 .oy-pend'))).toBe('Pending: the door title');
+    expect(card?.querySelector('h3')).toBeNull();
+    expect(text(card?.querySelector('p .oy-pend'))).toBe('Pending: the blurb');
     expect(card?.querySelector('a.oy-btn')).toBeNull();
+  });
+
+  it('puts the edit attribute on the photo in draft mode', async () => {
+    const img = (await renderToBody(WithEdit)).querySelector('img.oy-card-media');
+    expect(img?.getAttribute('data-sanity')).toBe(
+      'id=door-member;type=door;path=image;base=%2Fadmin',
+    );
   });
 });

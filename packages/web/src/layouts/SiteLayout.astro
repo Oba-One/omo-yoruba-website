@@ -34,7 +34,6 @@ import FormBridge from '../components/FormBridge.astro';
 import ZeffyEmbed from '../components/ZeffyEmbed.astro';
 import { ENQUIRY_ACTIONS, NEWSLETTER_ACTION } from '../lib/forms/action-paths';
 import {
-  type ActionOutcome,
   modalStateFromResult,
   modalStateFromUrl,
   newsletterStateFrom,
@@ -48,9 +47,17 @@ interface Props {
   root?: Record<string, string | undefined>;
   /** Where the newsletter form sits: in the footer, or as a band before it. */
   newsletter?: 'footer' | 'band';
+  /** A `data-sanity` attribute for the band, so click-to-edit reaches the newsletter option. */
+  newsletterEdit?: string;
 }
 
-const { title, description, root = {}, newsletter: placement = 'footer' } = Astro.props;
+const {
+  title,
+  description,
+  root = {},
+  newsletter: placement = 'footer',
+  newsletterEdit,
+} = Astro.props;
 const path = Astro.url.pathname;
 const rootAttributes = Object.fromEntries(
   Object.entries(root)
@@ -73,12 +80,12 @@ const posted = Astro.locals.formOutcome;
 let modal = modalStateFromUrl(Astro.url, copyFor);
 for (const kind of ENQUIRY_KINDS) {
   if (posted?.name !== `enquiry.${kind}`) continue;
-  modal = modalStateFromResult(kind, posted as ActionOutcome, site);
+  modal = modalStateFromResult(kind, posted, site);
   break;
 }
 
 // The newsletter, without JavaScript, the same way.
-const newsletterOutcome = posted?.name === 'newsletter' ? (posted as ActionOutcome) : undefined;
+const newsletterOutcome = posted?.name === 'newsletter' ? posted : undefined;
 const newsletter = newsletterStateFrom(Astro.url, newsletterOutcome, site);
 // A posted form with errors re-renders as a 400, so the browser and the logs read it as one,
 // and the CDN never stores it.
@@ -117,6 +124,7 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
           value={newsletter.state === 'error' ? newsletter.value : undefined}
           source={path}
           site={site}
+          edit={newsletterEdit}
         />
       )
     }

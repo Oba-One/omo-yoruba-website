@@ -40,6 +40,6 @@ describe('EventBand', () => {
   it('renders the Pending line when there is no edition', async () => {
     const band = (await renderToBody(Pending)).querySelector('.oy-event-band');
     expect(band?.querySelector('h2')).toBeNull();
-    expect(text(band?.querySelector('.oy-pend-line'))).toContain('the next event');
+    expect(text(band?.querySelector('.oy-pend-line'))).toContain('the lead event');
   });
 });

@@ -14,7 +14,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'One edition at a time, whichever is next: the gala frame or the festival frame, with chevron rows, stripe seams and motif columns. The edition brings its title, venue, date and summary; a missing date or venue shows a Pending chip.',
+          'The lead event, one edition at a time: the gala frame or the festival frame, with chevron rows, stripe seams and motif columns. The edition brings its title, venue, date and summary; a missing date or venue shows the registry chip.',
       },
     },
   },
@@ -24,6 +24,8 @@ export default meta;
 type Story = StoryObj<Args>;
 
 /** The Gala frame: "Coming up next", the edition, Tickets & tables. The date and venue are Pending until the Studio holds them. */
+export const Default: Story = {};
+
 export const Gala: Story = {};
 
 /** The festival frame: "Ọdúndé • The new year has arrived", Leimert Park, Vendors & sponsors. */
@@ -40,5 +42,5 @@ export const Filled: Story = {
   },
 };
 
-/** No edition to show: the Pending line names what the band waits for. */
+/** No lead event: the Pending line names what the band waits for. */
 export const Pending: Story = { args: { event: undefined } };

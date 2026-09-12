@@ -1,11 +1,11 @@
 ---
 /**
  * A program on the homepage and the Programs hub (`02 Homepage.dc.html`): the photo or the
- * placeholder, the name, the blurb and one quiet action, on the card base. The highlighted card
- * (`data-highlight` on the page root, the `highlight` option) moves first and takes the gold ring
- * through the tokens' `.v2-prog--school` and `.v2-prog--collective` rules; the Collective's link
- * reads green, the one place green lives outside its page. A missing blurb shows the registry's
- * chip; a missing action falls back to a quiet link to the program's page or the hub.
+ * placeholder, the name, the blurb and one quiet action from the Studio, on the card base. The
+ * highlighted card (`data-highlight` on the page root, the `highlight` option) moves first and
+ * takes the gold ring, the prototype's page rule ported below; the Collective's link reads
+ * green, the one place green lives outside its page. A missing blurb shows the registry's chip;
+ * without an action the card has no link.
  */
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
@@ -31,10 +31,7 @@ interface Props {
   class?: string;
 }
 
-const PAGE_HREF: Record<string, string> = {
-  lessons: '/programs/yoruba-lessons',
-  collective: '/programs/cultural-collective',
-};
+/** The prototype's class per highlight value (`school` is the stored value for the Lessons). */
 const HIGHLIGHT_CLASS: Record<string, string> = {
   lessons: 'v2-prog--school',
   collective: 'v2-prog--collective',
@@ -42,16 +39,14 @@ const HIGHLIGHT_CLASS: Record<string, string> = {
 
 const { program, imageEdit, class: className } = Astro.props;
 const name = program.name?.trim();
-const href = (program.page && PAGE_HREF[program.page]) ?? `/programs#${program.slug ?? ''}`;
-const action: ActionLike = program.action?.label
-  ? program.action
-  : { label: 'See the program', kind: 'url', href };
-const blurbPending = pendingWhat('program', 'blurb') ?? 'the blurb';
+const action: ActionLike | undefined = program.action?.label ? program.action : undefined;
+const blurbPending = pendingWhat('program', 'blurb');
 ---
 
 <Card
   title={name || undefined}
   image={program.image}
+  imageEdit={imageEdit}
   alt=""
   mediaHeight={170}
   class:list={[program.page && HIGHLIGHT_CLASS[program.page], className]}
@@ -67,9 +62,8 @@ const blurbPending = pendingWhat('program', 'blurb') ?? 'the blurb';
       />
     )
   }
-  {!name && <h3><Pending what="the program name" /></h3>}
   <p>{program.blurb || <Pending what={blurbPending} />}</p>
-  <ActionButton action={action} variant="quiet" class="oy-program-link" />
+  {action && <ActionButton action={action} variant="quiet" class="oy-program-link" />}
 </Card>
 
 <style>
@@ -79,5 +73,12 @@ const blurbPending = pendingWhat('program', 'blurb') ?? 'the blurb';
   }
   :global([data-program='collective']) :global(.oy-program-link) {
     color: var(--green-600);
+  }
+  /* The highlight option (02 Homepage.dc.html): the chosen program leads with the gold ring. */
+  :global(.oy-home[data-highlight='school'] .v2-prog--school),
+  :global(.oy-home[data-highlight='collective'] .v2-prog--collective) {
+    order: -1;
+    border-color: var(--gold-500);
+    box-shadow: inset 0 0 0 1px var(--gold-500);
   }
 </style>

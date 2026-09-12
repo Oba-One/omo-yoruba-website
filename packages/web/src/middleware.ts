@@ -45,10 +45,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
             : context.url.pathname;
       return context.redirect(target, 303);
     }
+    // Astro's own bookkeeping (the result stays readable through Astro.getActionResult and is
+    // not run twice); the layout reads the outcome from locals rather than importing the
+    // actions module, which would carry the Studio's stylesheets into the page
+    // (src/lib/forms/action-paths.ts).
     setActionResult(action.name, serializeActionResult(result));
-    // The layout reads the outcome from locals rather than importing the actions module, which
-    // would carry the Studio's stylesheets into the page (src/lib/forms/action-paths.ts).
-    const outcome: FormOutcome = { name: action.name, data: result.data };
+    const outcome: FormOutcome = { name: action.name, data };
     if (result.error) outcome.error = { message: result.error.message };
     context.locals.formOutcome = outcome;
   }

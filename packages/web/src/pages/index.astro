@@ -10,6 +10,7 @@
  */
 import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
 import { createImageSet } from '@oy/content/images';
+import { pendingWhat } from '@oy/content/pending';
 import { homepageQuery } from '@oy/content/queries';
 import EventBand from '@oy/ui/bands/EventBand/EventBand.astro';
 import DoorCard from '@oy/ui/cards/DoorCard/DoorCard.astro';
@@ -19,9 +20,9 @@ import ProgramCard from '@oy/ui/cards/ProgramCard/ProgramCard.astro';
 import PullQuote from '@oy/ui/cards/PullQuote/PullQuote.astro';
 import PathRows from '@oy/ui/content/PathRows/PathRows.astro';
 import ProverbLine from '@oy/ui/content/ProverbLine/ProverbLine.astro';
-import Button from '@oy/ui/core/Button/Button.astro';
 import PhotoMosaic from '@oy/ui/media/PhotoMosaic/PhotoMosaic.astro';
 import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
 import Hero from '@oy/ui/page/Hero/Hero.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
 import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
@@ -37,8 +38,8 @@ const imageSet = createImageSet({
   projectId: PUBLIC_SANITY_PROJECT_ID,
   dataset: PUBLIC_SANITY_DATASET,
 });
-const home = buildHomepage(data, { imageSet, preview, studioUrl: STUDIO_BASE_PATH });
-cachePage(Astro, '/', { preview });
+const home = buildHomepage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/', { draft: preview });
 ---
 
 <SiteLayout
@@ -46,11 +47,13 @@ cachePage(Astro, '/', { preview });
   description={home.description}
   root={home.root}
   newsletter={home.layout.newsletter}
+  newsletterEdit={home.edit.newsletter}
 >
   <main id="main">
     <Hero
       image={home.hero.image}
       imageEdit={home.hero.imageEdit}
+      edit={home.hero.edit}
       kicker={home.hero.kicker}
       title={home.hero.title}
       sub={home.hero.sub}
@@ -60,7 +63,7 @@ cachePage(Astro, '/', { preview });
       motion={home.hero.motion}
     />
     <StatStrip stats={home.stats} id="impact" />
-    <EventBand event={home.lead.event} kind={home.lead.kind} edit={home.edit.season} id="odunde" />
+    <EventBand event={home.lead.event} kind={home.lead.kind} edit={home.edit.season} id="lead-event" />
 
     <Section id="programs" labelledby="programs-heading" data-sanity={home.edit.highlight}>
       <SectionHead
@@ -113,10 +116,10 @@ cachePage(Astro, '/', { preview });
         id="gallery-heading"
       />
       <PhotoMosaic tiles={home.tiles} count={home.layout.gallery} edit={home.edit.gallery} />
-      <p class="oy-gallery-more">
-        <Button variant="secondary" href="/gallery" arrow>Open the photo gallery</Button>
-        <span>Odunde, the Gala, and the language lessons, year by year.</span>
-      </p>
+      <Handoff
+        action={{ label: 'Open the photo gallery', kind: 'url', href: '/gallery' }}
+        text="Odunde, the Gala, and the language lessons, year by year."
+      />
     </Section>
 
     <Section id="get-involved" labelledby="involved-heading" data-sanity={home.edit.involved}>
@@ -124,6 +127,7 @@ cachePage(Astro, '/', { preview });
         kicker={{ yo: 'Ẹ dara pọ̀ mọ́ wa', en: 'Join us' }}
         title={home.raiseYourHand.title}
         intro={home.raiseYourHand.blurb}
+        pending={pendingWhat('homepage', 'raiseYourHand.title')}
         id="involved-heading"
       />
       {
@@ -145,16 +149,3 @@ cachePage(Astro, '/', { preview });
   </main>
 </SiteLayout>
 
-<style>
-  /* Page layout only: the parts style themselves. */
-  .oy-gallery-more {
-    margin-top: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    flex-wrap: wrap;
-    font-size: var(--text-small);
-    color: var(--text-muted);
-  }
-</style>

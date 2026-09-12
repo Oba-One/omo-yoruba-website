@@ -7,12 +7,15 @@ type Args = StoryArgs<ComponentProps<typeof ActionButton>>;
 const meta = {
   title: 'Core/ActionButton',
   component: ActionButton,
-  args: { action: { label: 'Become a member', kind: 'enquiry', enquiryKind: 'member' } },
+  args: {
+    action: { label: 'Become a member', kind: 'enquiry', enquiryKind: 'member' },
+    variant: 'primary',
+  },
   parameters: {
     docs: {
       description: {
         component:
-          'The Studio decides what a button opens: an enquiry form, the Give Dialog, a link or a section on the page. The component only turns that into the right trigger, and a half-filled action shows a Pending chip instead of a dead button.',
+          'The Studio decides what a button opens: an enquiry form, the Give Dialog, a link or a section on the page. The component only turns that into the right trigger; a half-filled action renders nothing, since the Studio refuses to publish one. Outline by default, gold once per view.',
       },
     },
   },
@@ -44,8 +47,10 @@ export const Quiet: Story = {
   args: { action: { label: 'All programs', kind: 'url', href: '/programs' }, variant: 'quiet' },
 };
 
-/** An action without its form or link names what the Studio still owes. */
-export const Pending: Story = { args: { action: { label: 'Partner with us', kind: 'enquiry' } } };
+/** An action without its form renders nothing rather than a dead button. */
+export const Incomplete: Story = {
+  args: { action: { label: 'Partner with us', kind: 'enquiry' } },
+};
 
 export const OnDark: Story = {
   ...onDark,

@@ -1,0 +1,41 @@
+---
+/**
+ * The closing "where this page hands off" line (COMPONENT-MAP, Page structure): one button and a
+ * short line beside it, centred, as the homepage's gallery section ends ("Open the photo gallery"
+ * and the line under the mosaic in `02 Homepage.dc.html`). The button is a Studio-shaped action
+ * so a page can pass a link, an enquiry kind or the Give Dialog; outline by default, quiet where
+ * the page asks.
+ */
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+
+interface Props {
+  action?: ActionLike | null;
+  /** The line beside the button. */
+  text?: string | null;
+  variant?: 'secondary' | 'quiet' | 'primary';
+  class?: string;
+}
+
+const { action, text, variant = 'secondary', class: className } = Astro.props;
+---
+
+<p class:list={['oy-handoff-line', className]}>
+  <ActionButton action={action} variant={variant} />
+  {text && <span class="oy-handoff-text">{text}</span>}
+</p>
+
+<style>
+  .oy-handoff-line {
+    margin: 28px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .oy-handoff-text {
+    font-size: var(--text-small);
+    color: var(--text-muted);
+  }
+</style>

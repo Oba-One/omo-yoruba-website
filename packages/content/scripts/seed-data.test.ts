@@ -169,9 +169,12 @@ describe('missingFields', () => {
     });
   });
 
-  it('never overwrites a value the owner filled, at either level', () => {
+  it('never overwrites a value the owner filled, at either level, and skips an undefined seed value', () => {
     expect(missingFields({ hero: { title: 'x' } }, { hero: { title: 'kept' } })).toEqual({});
     expect(missingFields({ title: 'x' }, { title: 'kept' })).toEqual({});
+    expect(missingFields({ image: undefined, hero: { image: undefined } }, { hero: {} })).toEqual(
+      {},
+    );
   });
 
   it('seeds the program and door photographs and the prototype copy', () => {

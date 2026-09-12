@@ -2,14 +2,17 @@
  * The homepage view: what the page hands the library parts, built from the one homepage query.
  * Pure, so a test can drive it with a fixture: the layout with the schema defaults filled, the
  * lead edition from the season rule, every image resolved to a CDN set with its alt, the voices
- * padded to three Pending cards while none exist, the body data attributes the options drive,
- * and the `data-sanity` attributes for click-to-edit, only in draft mode.
+ * padded to three Pending cards while fewer exist, the body data attributes the options drive,
+ * the head's title and description cleaned of stega, and the `data-sanity` attributes for
+ * click-to-edit, only in draft mode.
  */
 import type { ImageSetBuilder } from '@oy/content/images';
 import { withLayoutDefaults } from '@oy/content/layout';
-import { calendarKind, leadEvent } from '@oy/content/lead-event';
+import { calendarKind, leadEvent, leadKindOf } from '@oy/content/lead-event';
 import type { homepageQuery } from '@oy/content/queries';
+import type { ResolvedImage } from '@oy/ui/media/image.ts';
 import type { ClientReturn } from '@sanity/client';
+import { stegaClean } from '@sanity/client/stega';
 import { dataAttribute } from './data-attribute';
 
 export type HomepageData = NonNullable<ClientReturn<typeof homepageQuery, unknown>>;
@@ -24,18 +27,10 @@ export interface HomepageLayout extends Record<string, string> {
   motion: 'on' | 'off';
 }
 
-export interface ResolvedImage {
-  src: string;
-  srcset: string;
-  width: number;
-  height: number;
-  alt: string;
-}
-
 export interface BuildOptions {
   imageSet: ImageSetBuilder;
   /** Draft mode: the `data-sanity` attributes are rendered. */
-  preview: boolean;
+  draft: boolean;
   /** The Studio's base path for the edit attributes. */
   studioUrl: string;
   now?: Date;
@@ -55,25 +50,29 @@ function resolve(
 }
 
 export function buildHomepage(data: HomepageData | null, options: BuildOptions) {
-  const { imageSet, preview, studioUrl, now = new Date() } = options;
+  const { imageSet, draft, studioUrl, now = new Date() } = options;
   const edit = (path: string, id = 'homepage', type = 'homepage') =>
-    preview ? dataAttribute({ id, type, path, baseUrl: studioUrl }) : undefined;
+    draft ? dataAttribute({ id, type, path, baseUrl: studioUrl }) : undefined;
 
   const layout = withLayoutDefaults<HomepageLayout>('homepage', data?.layout);
   const hero = data?.hero;
   const events = (data?.events ?? []).filter((event) => event !== null);
   const lead = leadEvent(events, { season: layout.season, explicit: data?.leadEvent, now });
-  const leadKind: 'festival' | 'gala' = lead
-    ? lead.kind === 'festival'
-      ? 'festival'
-      : 'gala'
-    : calendarKind(now);
+  const leadKind = lead ? leadKindOf(lead) : calendarKind(now);
 
-  const voices = (data?.voices ?? []).filter((voice) => voice !== null);
+  // The prototype's three-column rhythm: Pending cards fill up to three while voices are few.
+  const voices: (NonNullable<HomepageData['voices']>[number] | undefined)[] = (
+    data?.voices ?? []
+  ).filter((voice) => voice !== null);
+  while (voices.length < 3) voices.push(undefined);
+
+  // Nothing in the head may carry stega (the overlay would read the title as editable text).
+  const clean = (value: string | null | undefined) =>
+    value ? stegaClean(value).trim() || undefined : undefined;
 
   return {
-    title: data?.seo?.title?.trim() || hero?.title?.trim() || ORG_NAME,
-    description: data?.seo?.description?.trim() || hero?.sub?.trim() || undefined,
+    title: clean(data?.seo?.title) || clean(hero?.title) || ORG_NAME,
+    description: clean(data?.seo?.description) || clean(hero?.sub),
     layout,
     root: {
       highlight: layout.highlight,
@@ -87,6 +86,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
     hero: {
       image: resolve(imageSet, hero?.image, { width: 1440 }),
       imageEdit: edit('hero.image'),
+      edit: edit('layout.motion'),
       kicker: hero?.kicker,
       title: hero?.title,
       sub: hero?.sub,
@@ -106,7 +106,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       imageEdit: edit('image', program._id, 'program'),
     })),
     voicesIntro: data?.voicesIntro,
-    voices: voices.length > 0 ? voices : [undefined, undefined, undefined],
+    voices,
     proverb: data?.voicesProverb,
     newsIntro: data?.newsIntro,
     news: (data?.news ?? []).filter((post) => post !== null),

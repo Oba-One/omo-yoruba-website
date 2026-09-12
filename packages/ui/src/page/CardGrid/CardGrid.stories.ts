@@ -1,5 +1,7 @@
 import type { ComponentProps } from 'astro/types';
 import Card from '../../cards/Card/Card.astro';
+import ProgramCard from '../../cards/ProgramCard/ProgramCard.astro';
+import { PROGRAMS } from '../../fixtures/homepage';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import CardGrid from './CardGrid.astro';
 
@@ -28,10 +30,37 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
+export const Default: Story = {};
+
 export const Three: Story = {};
 
 export const Two: Story = { args: { columns: 2, slots: { default: [card('One'), card('Two')] } } };
 
 export const Four: Story = {
   args: { columns: 4, slots: { default: [card('One'), card('Two'), card('Three'), card('Four')] } },
+};
+
+const programs = (count: number) =>
+  PROGRAMS.slice(0, count).map((program) => ({ component: ProgramCard, props: { program } }));
+
+/** The program cards four across, as the homepage shows them. */
+export const ProgramsFour: Story = { args: { columns: 4, slots: { default: programs(4) } } };
+
+/** Three across: the Programs page option. */
+export const ProgramsThree: Story = { args: { columns: 3, slots: { default: programs(3) } } };
+
+/** Pairs. */
+export const ProgramsPairs: Story = { args: { columns: 2, slots: { default: programs(4) } } };
+
+/** Cards whose content the Studio still owes. */
+export const Pending: Story = {
+  args: {
+    slots: {
+      default: [1, 2, 3].map(() => ({
+        component: Card,
+        props: {},
+        slots: { default: '<span class="oy-pend">Pending: the card</span>' },
+      })),
+    },
+  },
 };

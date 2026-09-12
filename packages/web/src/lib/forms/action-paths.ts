@@ -8,6 +8,7 @@
  * Playwright specs post through this path, so a drift in the parameter fails them.
  */
 import { ENQUIRY_KINDS, type EnquiryKind } from '@oy/content/enquiry-kinds';
+import type { ActionOutcome } from './modal-state';
 
 export const ACTION_PARAM = '_action';
 
@@ -20,9 +21,7 @@ export const ENQUIRY_ACTIONS: Record<EnquiryKind, string> = Object.fromEntries(
 ) as Record<EnquiryKind, string>;
 
 /** The outcome of a form posted without JavaScript, as the middleware leaves it in locals. */
-export interface FormOutcome {
+export interface FormOutcome extends ActionOutcome {
   /** `enquiry.<kind>` or `newsletter`. */
   name: string;
-  data?: unknown;
-  error?: { message: string };
 }

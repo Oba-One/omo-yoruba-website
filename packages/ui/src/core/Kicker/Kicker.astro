@@ -6,6 +6,12 @@
  */
 import Pending from '../Pending/Pending.astro';
 
+/** A Yoruba • English pair as the Studio stores it: English always present, Yoruba optional. */
+export interface BilingualText {
+  yo?: string | null;
+  en?: string | null;
+}
+
 interface Props {
   /** Yoruba text with full marks: "Ẹ káàbọ̀". */
   yo?: string;

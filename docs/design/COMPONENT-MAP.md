@@ -30,7 +30,7 @@ Conventions:
 | `Kicker` | Yoruba • English; single; on dark (gold-300); Pending chip when both halves are empty | `yo`, `en`, `as`, `what` | Every section | Test string with diacritics at 12px |
 | `Button` | primary (gold), secondary (indigo outline, fills on hover), quiet (text with arrow), sizes default and small; hover, focus (2px ring, offset 2px, gold-300 in dark), pressed (settle 1.5%), disabled, busy ("Sending...") | `variant`, `size`, `href`, `type`, `arrow`, `busy`, `disabled` | Everywhere | One gold per view rule documented in the story |
 | `Divider` | aṣọ òkè stripe 2 to 4 uneven bands (`asoke`); thin rule (`thin`); ayo dot row (`ayo`); the handoff ornament (`ornament`) | `kind` | Section seams | Never pinstripes |
-| `ActionButton` | a Studio action as a button: an enquiry kind opens the Enquiry Modal (`data-enquiry`), `give` the Give Dialog (`data-give`), a link or an anchor is a plain href; a half-filled action renders a Pending chip | `action`, `variant`, `size`, `arrow` | Hero, doors, program cards | The page passes `primary` once per view |
+| `ActionButton` | a Studio action as a button: an enquiry kind opens the Enquiry Modal (`data-enquiry`), `give` the Give Dialog (`data-give`), a link or an anchor is a plain href; outline by default; a half-filled action renders nothing (the Studio refuses to publish one) | `action`, `variant`, `size`, `arrow` | Hero, doors, program cards, Handoff | The page passes `primary` once per view |
 | `Pending` | chip inline (`chip`); the "Pending from you" line (`line`); block with aspect ratio (`block`); every form names the missing item | `what`, `variant`, `aspect`, `tone` (indigo, terra, green, gold) | Every page | Shows the àdìrẹ dot fill at 8 to 12% |
 | `PatternBand` | àdìrẹ dot field overlay (`dots`); chevron rows (`chevron`, `flip` for the bottom edge); motif columns (`motif`); batik wash (`batik`) | `pattern`, `opacity`, `flip` | Hero, event band, footer, cards | Lives in `bands/`; SVGs from `@oy/tokens/patterns/` (copied from `design/images/patterns/`) |
 | `Logo` | mark + two-line wordmark (`lockup`, line two hides under 1060px); mark only (`mark`); light lockup for dark (`light`) | `variant`, `href` | Nav, footer | Lives in `navigation/`; `logo-mark.png`, `logo-lockup-light.png` beside the component |
@@ -47,22 +47,22 @@ Conventions:
 | `GlanceStrip` | 4 and 5 facts; a fact can be Pending | `facts[]` | Odunde, Gala, Lessons, Collective |
 | `EventBand` | festival frame (chevron rows, stripe seams, motif columns), gala frame; one edition at a time, Pending chips for a missing date or venue, the Pending line for no edition (lives in `bands/`) | `event`, `kind`, `href`, `edit`, `id` | Home |
 | `StatStrip` | 4 and 6 figures; with and without source lines; the corner dot fields; Pending for a missing figure or no figures | `stats[]`, `sources`, `columns`, `what`, `id` | Home, Impact |
-| `Section` | a section at the content width on white, the theme tint (`alt`, AA-safe kicker and muted text) or paper; batik or corner textures | `id`, `ground`, `texture`, `labelledby` | Every page |
-| `SectionHead` | the aṣọ òkè swatch and kicker, the heading, an optional intro and quiet link; Pending for a missing heading | `kicker`, `title`, `intro`, `link`, `id` | Every section |
-| `CardGrid` | two, three or four across, collapsing under 860px (four: 1000px and 600px) | `columns` | Home, Programs, Get Involved |
+| `Section` | a section at the content width on white, the theme tint (`alt`, AA-safe kicker and muted text) or paper; the batik wash behind the content | `id`, `ground`, `texture`, `labelledby` | Every page |
+| `SectionHead` | the aṣọ òkè swatch and kicker, the heading, an optional intro and quiet link; the registry's chip for a missing heading when the page passes its wording | `kicker`, `title`, `intro`, `link`, `id`, `pending` | Every section |
+| `CardGrid` | two, three or four across, collapsing under 860px (four: 1000px and 600px); its stories show the program cards four across, three and in pairs | `columns` | Home, Programs, Get Involved |
 | `HomeRoot` | the page root's data attributes (`data-highlight`, `data-pattern`, `data-motion` and the rest) for the page-section stories; the site puts them on the body | `highlight`, `pattern`, `motion`, `season`, `involved`, `newsletter`, `gallery`, `theme` | Storybook (Pages) |
 | `TakePartBand` | 2, 3, 4 rows; label style column, none, kicker; colour accent per way in (vendor, sponsor, performer, volunteer, table, give); reorderable | `rows[]`, `labels` | Nine pages |
 | `YearStrip` | program cadence across the year, 5 columns | `months[]` | Programs |
-| `Handoff` | the closing "where this page hands off" line with a quiet button | `text`, `cta` | Several |
+| `Handoff` | the closing "where this page hands off" line: one Studio-shaped action (outline by default, quiet where asked) and a short line beside it, centred; the homepage closes its mosaic with it | `action`, `text`, `variant` | Home, several |
 
 ## Cards
 
 | Component | Variants and states | Props | Used on |
 | --- | --- | --- | --- |
 | `Card` (base) | paper ground, indigo hairline, 8px aṣọ òkè top edge, grain-dots texture; hover border deepens, title warms to terracotta, arrow slides, 2px aṣọ òkè rule draws under the action; optional photo at a fixed height; dark scope | `as`, `image`, `alt`, `mediaHeight`, `kicker`, `title`, `bodyClass`, `rule` | Base for the rest |
-| `ProgramCard` | photo or placeholder, name, blurb, quiet action; four across, three, pairs through `CardGrid`; the highlighted card takes the gold ring under `data-highlight`; the Collective link reads green; Pending for the blurb | `program`, `imageEdit` | Home, Programs |
+| `ProgramCard` | photo or placeholder, name, blurb, the quiet action from the Studio (none, no link); four across, three, pairs through `CardGrid`; the highlighted card moves first with the gold ring under `data-highlight` (the prototype's page rule, ported into the card); the Collective link reads green; Pending for the blurb | `program`, `imageEdit` | Home, Programs |
 | `DoorCard` | a door as a card: photo or placeholder, title, blurb, the bullets when the page asks, one action (enquiry kind or Give) gold once per view; Pending for the bullets | `door`, `primary`, `bullets`, `imageEdit` | Home, Get Involved, Donate |
-| `PathRow` | the row form of a door: chip by way in, title, line, action, accent per way in; stacked by `PathRows` (`content/`) with the label style | `door`, `primary`; `PathRows`: `labels` | Home, Get Involved |
+| `PathRow` | the row form of a door: chip by way in (Membership, Partnership from the prototype; Volunteering, Giving are the owner's to confirm), title, line, action, the prototype's accent per door; stacked by `PathRows` (`content/`) with the label style | `door`, `primary`; `PathRows`: `labels` | Home, Get Involved |
 | `NewsCard` | month and year, kicker, title, summary; Read more only with an href (none until the News page) | `post`, `href` | Home, News |
 | `PersonCard` | with portrait; without (woven tick instead of a face, a real design); compact | `person`, `variant`, `bio` (short, full) | Our Story, Lessons |
 | `ZoneCard` | Yoruba name with marks, translation, one line, photo; mosaic, five, grid, list layouts driven by the parent | `zone` | Odunde |

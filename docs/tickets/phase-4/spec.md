@@ -51,7 +51,7 @@ specs use the member door.
 
 - Copy the prototype carries but the schema had no field for gets a field and a seed value: the hero
   blessing line (`hero.blessing`, bilingual), the voices intro (`voicesIntro`) and the proverb under
-  the voices (`voicesProverb`, bilingual), and a `program.action` so a card's quiet link is content.
+  the voices (`voicesProverb`, bilingual), and a `program.action` so a card's quiet link is content (no action, no link).
   Section kickers and headings stay page copy in `packages/web`.
 - Program and door photographs the prototype shows are seeded from the register (the Lessons and
   Kids & STEM cards, the member and partner doors); the Collective and Cultural Exchange cards render

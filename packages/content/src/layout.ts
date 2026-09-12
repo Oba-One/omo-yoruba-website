@@ -9,7 +9,7 @@ const optionValue = (option: LayoutSpec['options'][number]) =>
  * agree on one source without the site importing the schema.
  */
 export function layoutDefaults(typeName: string): Record<string, string> | undefined {
-  const specs = PAGE_LAYOUTS[typeName];
+  const specs = (PAGE_LAYOUTS as Record<string, readonly LayoutSpec[]>)[typeName];
   if (!specs || specs.length === 0) return undefined;
   return Object.fromEntries(
     specs.map((spec) => [spec.name, optionValue(spec.options[0] as LayoutSpec['options'][number])]),
@@ -25,7 +25,7 @@ export function withLayoutDefaults<T extends Record<string, string>>(
   raw: Partial<Record<keyof T, string | null | undefined>> | null | undefined,
 ): T {
   const result: Record<string, string> = { ...(layoutDefaults(typeName) ?? {}) };
-  for (const spec of PAGE_LAYOUTS[typeName] ?? []) {
+  for (const spec of (PAGE_LAYOUTS as Record<string, readonly LayoutSpec[]>)[typeName] ?? []) {
     const value = raw?.[spec.name as keyof T];
     if (typeof value === 'string' && spec.options.map(optionValue).includes(value)) {
       result[spec.name] = value;

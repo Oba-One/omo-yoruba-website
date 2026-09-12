@@ -7,6 +7,7 @@
  * date and written in words.
  */
 import Button from '../../core/Button/Button.astro';
+import type { BilingualText } from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import Card from '../Card/Card.astro';
 import { monthYear } from './date';
@@ -14,7 +15,7 @@ import { monthYear } from './date';
 export interface PostLike {
   title?: string | null;
   date?: string | null;
-  kicker?: { yo?: string | null; en?: string | null } | null;
+  kicker?: BilingualText | null;
   summary?: string | null;
 }
 
@@ -30,9 +31,8 @@ const when = monthYear(post.date);
 ---
 
 <Card title={post.title || undefined} kicker={post.kicker} class:list={['oy-news-card', className]}>
-  <span class="oy-card-date">{when || <Pending what="the date" />}</span>
-  {!post.title && <h3><Pending what="the title" /></h3>}
-  <p>{post.summary || <Pending what="the summary" />}</p>
+  {when && <span class="oy-card-date">{when}</span>}
+  {post.summary && <p>{post.summary}</p>}
   {
     href && (
       <Button variant="quiet" href={href} arrow>

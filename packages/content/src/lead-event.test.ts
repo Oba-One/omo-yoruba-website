@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calendarKind, leadEvent } from './lead-event';
+import { calendarKind, leadEvent, leadKindOf } from './lead-event';
 
 const odunde2026 = { _id: 'odunde-2026', kind: 'festival', edition: 2026 };
 const odunde2027 = { _id: 'odunde-2027', kind: 'festival', edition: 2027 };
@@ -10,10 +10,17 @@ const september = new Date('2026-09-12T12:00:00Z');
 const february = new Date('2027-02-01T12:00:00Z');
 
 describe('leadEvent', () => {
-  it('lets an explicit reference win over everything', () => {
-    expect(leadEvent(seeded, { season: 'odunde', explicit: gala2025, now: september })).toBe(
-      gala2025,
+  it('lets an explicit reference win while it is still to come', () => {
+    expect(leadEvent(seeded, { season: 'odunde', explicit: gala2026, now: september })).toBe(
+      gala2026,
     );
+    // A stale reference to a past edition falls through to the season rule.
+    expect(leadEvent(seeded, { season: 'odunde', explicit: gala2025, now: september })).toBe(
+      odunde2027,
+    );
+    expect(leadKindOf(gala2026)).toBe('gala');
+    expect(leadKindOf(odunde2027)).toBe('festival');
+    expect(leadKindOf(undefined)).toBe('gala');
   });
 
   it('follows the calendar when nothing is dated: the Gala after June, the festival before', () => {

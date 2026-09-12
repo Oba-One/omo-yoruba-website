@@ -1,6 +1,7 @@
 /**
  * Which edition leads the homepage's event band (ROUTES sections 1 and 5): the `season` option
- * with its automatic default by date. An explicit `leadEvent` reference always wins. `gala` or
+ * with its automatic default by date. An explicit `leadEvent` reference wins while it is still
+ * to come. `gala` or
  * `odunde` picks that kind's nearest dated upcoming edition, or its newest undated one that is
  * still to come. `auto` picks the nearest dated upcoming edition of either kind; when nothing is
  * dated it follows the calendar (the festival leads from January to June, the Gala from July to
@@ -77,11 +78,16 @@ export function calendarKind(now: Date): LeadKind {
   return SEASON_MONTHS.festival.includes(now.getMonth()) ? 'festival' : 'gala';
 }
 
+/** The frame an edition takes: the festival's or the Gala's (the default for anything else). */
+export function leadKindOf(event: LeadCandidate | null | undefined): LeadKind {
+  return event?.kind === 'festival' ? 'festival' : 'gala';
+}
+
 export function leadEvent<T extends LeadCandidate>(
   events: readonly T[],
   { season, explicit, now = new Date() }: LeadEventOptions<T> = {},
 ): T | undefined {
-  if (explicit) return explicit;
+  if (explicit && upcoming(explicit, now)) return explicit;
   const ahead = events.filter((event) => upcoming(event, now));
   if (season === 'gala' || season === 'odunde') {
     const chosen = leadOfKind(ahead, KIND_FOR_SEASON[season]);

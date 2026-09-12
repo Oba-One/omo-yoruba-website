@@ -113,7 +113,7 @@ const data = {
 
 describe('buildHomepage', () => {
   it('fills the layout defaults and drives the body attributes from them', () => {
-    const view = buildHomepage(data, { imageSet, preview: false, studioUrl: '/admin', now });
+    const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.layout).toEqual({
       season: 'auto',
       highlight: 'school',
@@ -136,12 +136,12 @@ describe('buildHomepage', () => {
   });
 
   it('picks the lead edition with the season rule: the Gala in September when nothing is dated', () => {
-    const view = buildHomepage(data, { imageSet, preview: false, studioUrl: '/admin', now });
+    const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.lead.event?._id).toBe('gala-2026');
     expect(view.lead.kind).toBe('gala');
     const february = buildHomepage(data, {
       imageSet,
-      preview: false,
+      draft: false,
       studioUrl: '/admin',
       now: new Date('2027-02-01'),
     });
@@ -149,7 +149,7 @@ describe('buildHomepage', () => {
   });
 
   it('resolves every image to a CDN set carrying its alt', () => {
-    const view = buildHomepage(data, { imageSet, preview: false, studioUrl: '/admin', now });
+    const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.hero.image?.src).toContain('cdn.sanity.io');
     expect(view.hero.image?.alt).toBe('A woman laughs');
     expect(view.programs[0]?.program.image?.height).toBe(170);
@@ -157,16 +157,46 @@ describe('buildHomepage', () => {
     expect(view.raiseYourHand.doors[0]?.door.image).toBeUndefined();
   });
 
-  it('pads the voices to three Pending cards while none exist', () => {
-    const view = buildHomepage(data, { imageSet, preview: false, studioUrl: '/admin', now });
+  it('pads the voices to three Pending cards while fewer exist', () => {
+    const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.voices).toEqual([undefined, undefined, undefined]);
+    const one = {
+      ...data,
+      voices: [
+        {
+          _id: 'v',
+          quote: 'q',
+          name: null,
+          relation: null,
+          permissionToName: false,
+          context: null,
+        },
+      ],
+    } as HomepageData;
+    const view2 = buildHomepage(one, { imageSet, draft: false, studioUrl: '/admin', now });
+    expect(view2.voices).toHaveLength(3);
+    expect(view2.voices[0]?._id).toBe('v');
+  });
+
+  it('keeps stega out of the head', () => {
+    const stega = 'Yoruba culture\u200B\u200C\u200D\uFEFF\u200B\u200B\u200C\u200D';
+    const view = buildHomepage(
+      {
+        ...data,
+        hero: { ...data.hero, title: stega, sub: `Line${'\u200B\u200C'.repeat(4)}` },
+      } as HomepageData,
+      { imageSet, draft: true, studioUrl: '/admin', now },
+    );
+    expect(view.title).toBe('Yoruba culture');
+    expect(view.description).toBe('Line');
+    expect(view.hero.edit).toBe('id=homepage;type=homepage;path=layout.motion;base=%2Fadmin');
   });
 
   it('renders the edit attributes only in draft mode', () => {
-    const published = buildHomepage(data, { imageSet, preview: false, studioUrl: '/admin', now });
+    const published = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(published.hero.imageEdit).toBeUndefined();
     expect(published.edit.season).toBeUndefined();
-    const draft = buildHomepage(data, { imageSet, preview: true, studioUrl: '/admin', now });
+    const draft = buildHomepage(data, { imageSet, draft: true, studioUrl: '/admin', now });
     expect(draft.hero.imageEdit).toBe('id=homepage;type=homepage;path=hero.image;base=%2Fadmin');
     expect(draft.tiles[0]?.edit).toBe(
       'id=homepage;type=homepage;path=yearInLife:tile-1;base=%2Fadmin',
@@ -178,14 +208,14 @@ describe('buildHomepage', () => {
   });
 
   it('titles the page from the seo field, then the hero, then the organisation', () => {
-    expect(buildHomepage(data, { imageSet, preview: false, studioUrl: '/admin', now }).title).toBe(
+    expect(buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now }).title).toBe(
       'Yoruba culture, alive in Southern California',
     );
-    expect(buildHomepage(null, { imageSet, preview: false, studioUrl: '/admin', now }).title).toBe(
+    expect(buildHomepage(null, { imageSet, draft: false, studioUrl: '/admin', now }).title).toBe(
       'Omo Yorùbá of Southern California',
     );
     expect(
-      buildHomepage(null, { imageSet, preview: false, studioUrl: '/admin', now }).lead.event,
+      buildHomepage(null, { imageSet, draft: false, studioUrl: '/admin', now }).lead.event,
     ).toBeUndefined();
   });
 });

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody } from '../../test/stories';
 import * as stories from './Section.stories';
 
-const { Default, Alt, Paper, Batik, Corners } = composeStories(stories);
+const { Default, Alt, Paper, Batik } = composeStories(stories);
 
 describe('Section', () => {
   it('wraps the content at the content width and labels the section by its heading', async () => {
@@ -18,7 +18,5 @@ describe('Section', () => {
     expect((await renderToBody(Paper)).querySelector('.oy-section--paper')).not.toBeNull();
     const batik = (await renderToBody(Batik)).querySelector('.oy-section--textured');
     expect(batik?.querySelector('.oy-pattern--batik')?.getAttribute('aria-hidden')).toBe('true');
-    const corners = (await renderToBody(Corners)).querySelector('section');
-    expect(corners?.querySelectorAll('.v2-corner')).toHaveLength(2);
   });
 });

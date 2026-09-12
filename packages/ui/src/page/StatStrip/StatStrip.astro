@@ -3,8 +3,8 @@
  * The headline figures (`02 Homepage.dc.html`, COMPONENT-MAP, Page structure): four or six big
  * serif numbers with a small label each, on white with the two corner dot fields, a hairline
  * under the band. With `sources` on, each figure carries its source line (the Impact page) and a
- * missing source shows the registry's Pending chip. A figure without a value shows a chip too;
- * no figures at all show the Pending line.
+ * missing source shows the registry's Pending chip. Value and label are required in the Studio,
+ * so an empty one renders nothing; no figures at all show the registry's Pending line.
  */
 import { pendingWhat } from '@oy/content/pending';
 import Pending from '../../core/Pending/Pending.astro';
@@ -31,12 +31,12 @@ const {
   stats = [],
   sources = false,
   columns = (stats?.length ?? 0) > 4 ? 6 : 4,
-  what = 'the headline figures',
+  what = pendingWhat('homepage', 'stats[]'),
   class: className,
   ...rest
 } = Astro.props;
 const list = stats ?? [];
-const sourcePending = pendingWhat('stat', 'source') ?? 'a source line';
+const sourcePending = pendingWhat('stat', 'source');
 ---
 
 <div class:list={['oy-stat-band', className]} {...rest}>
@@ -47,8 +47,8 @@ const sourcePending = pendingWhat('stat', 'source') ?? 'a source line';
       list.length > 0 ? (
         list.map((stat) => (
           <div class="oy-stat">
-            <b>{stat.value || <Pending what="the figure" />}</b>
-            <span>{stat.label || <Pending what="the label" />}</span>
+            <b>{stat.value}</b>
+            <span>{stat.label}</span>
             {sources && (
               <small class="oy-source">{stat.source || <Pending what={sourcePending} />}</small>
             )}

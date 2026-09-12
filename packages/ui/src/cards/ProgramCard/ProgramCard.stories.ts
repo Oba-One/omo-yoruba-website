@@ -14,7 +14,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Photo or placeholder, name, blurb, one quiet action. Four across, three, or pairs through the CardGrid. The highlighted card moves first with the gold ring; the Collective link reads green.',
+          'Photo or placeholder, name, blurb, one quiet action from the Studio. Four across, three, or pairs through the CardGrid (its stories show the three arrangements). The highlighted card moves first with the gold ring; the Collective link reads green.',
       },
     },
   },
@@ -29,7 +29,12 @@ export const Default: Story = {};
 /** The Collective: no photograph yet (the placeholder names it), green link. */
 export const Collective: Story = { args: { program: PROGRAMS[1] as Args['program'] } };
 
-/** Cultural Exchange: the blurb is Pending and the action falls back to the hub. */
+/** Cultural Exchange: the blurb is Pending and there is no action yet, so no link. */
 export const Pending: Story = { args: { program: PROGRAMS[3] as Args['program'] } };
 
 export const Hover: Story = { parameters: { pseudo: { hover: '.oy-card' } } };
+
+/** In draft mode the photo carries its edit attribute. */
+export const WithEdit: Story = {
+  args: { imageEdit: 'id=program-yoruba-lessons;type=program;path=image;base=%2Fadmin' },
+};

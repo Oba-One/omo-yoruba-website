@@ -2,7 +2,7 @@ import { defineField } from 'sanity';
 import { PAGE_LAYOUTS } from '../../layout-options';
 import { voice } from '../../validation/rules';
 import { facts, refs, text } from '../helpers';
-import { definePage, type LayoutSpec } from './page';
+import { definePage } from './page';
 import { siteSettings } from './siteSettings';
 
 export const WAY_INS = ['vendor', 'sponsor', 'performer', 'volunteer', 'table', 'give'] as const;
@@ -93,7 +93,7 @@ export const homepage = definePage({
       ],
     }),
   ],
-  layout: PAGE_LAYOUTS.homepage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.homepage,
 });
 
 export const festivalPage = definePage({
@@ -117,7 +117,7 @@ export const festivalPage = definePage({
     text('pastYearsIntro', 'Past years intro', 2),
     text('partnersIntro', 'Partners intro', 2),
   ],
-  layout: PAGE_LAYOUTS.festivalPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.festivalPage,
 });
 
 export const galaPage = definePage({
@@ -136,7 +136,7 @@ export const galaPage = definePage({
     text('pastIntro', 'Past galas intro', 2),
     takePartOrder,
   ],
-  layout: PAGE_LAYOUTS.galaPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.galaPage,
 });
 
 const subprogram = {
@@ -237,7 +237,7 @@ export const programsPage = definePage({
       ],
     }),
   ],
-  layout: PAGE_LAYOUTS.programsPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.programsPage,
 });
 
 export const lessonsPage = definePage({
@@ -304,7 +304,7 @@ export const lessonsPage = definePage({
     }),
     refs('voices', 'Voices', 'testimonial'),
   ],
-  layout: PAGE_LAYOUTS.lessonsPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.lessonsPage,
 });
 
 export const collectivePage = definePage({
@@ -332,7 +332,7 @@ export const collectivePage = definePage({
       initialValue: false,
     }),
   ],
-  layout: PAGE_LAYOUTS.collectivePage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.collectivePage,
 });
 
 export const getInvolvedPage = definePage({
@@ -359,7 +359,7 @@ export const getInvolvedPage = definePage({
       ],
     }),
   ],
-  layout: PAGE_LAYOUTS.getInvolvedPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.getInvolvedPage,
 });
 
 export const impactPage = definePage({
@@ -392,7 +392,7 @@ export const impactPage = definePage({
       ],
     }),
   ],
-  layout: PAGE_LAYOUTS.impactPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.impactPage,
 });
 
 export const storyPage = definePage({
@@ -418,7 +418,7 @@ export const storyPage = definePage({
       ],
     }),
   ],
-  layout: PAGE_LAYOUTS.storyPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.storyPage,
 });
 
 export const donatePage = definePage({
@@ -473,7 +473,7 @@ export const donatePage = definePage({
       validation: voice.text,
     }),
   ],
-  layout: PAGE_LAYOUTS.donatePage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.donatePage,
 });
 
 export const galleryPage = definePage({
@@ -488,7 +488,7 @@ export const galleryPage = definePage({
       description: 'This wording must be yours. Empty shows Pending.',
     }),
   ],
-  layout: PAGE_LAYOUTS.galleryPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.galleryPage,
 });
 
 export const newsPage = definePage({
@@ -496,7 +496,7 @@ export const newsPage = definePage({
   title: 'News & Events page',
   actions: false,
   fields: [],
-  layout: PAGE_LAYOUTS.newsPage as LayoutSpec[],
+  layout: PAGE_LAYOUTS.newsPage,
 });
 
 export const singletonTypes = [
