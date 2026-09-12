@@ -1,0 +1,61 @@
+---
+/**
+ * The proverb under the member voices (`02 Homepage.dc.html`): the sun crest beside the Yoruba
+ * line in the display face and its English sense in the body face. Yoruba leads, English
+ * supports. Renders nothing without both halves' worth of text.
+ */
+interface Props {
+  yo?: string | null;
+  en?: string | null;
+  class?: string;
+}
+
+const { yo, en, class: className } = Astro.props;
+---
+
+{
+  (yo || en) && (
+    <p class:list={['oy-proverb', className]}>
+      <span class="oy-proverb-crest" aria-hidden="true" />
+      <span class="oy-proverb-text">
+        {yo && <span lang="yo" class="oy-proverb-yo">{yo}</span>}
+        {yo && en && ' '}
+        {en && <span class="oy-proverb-en">{en}</span>}
+      </span>
+    </p>
+  )
+}
+
+<style>
+  .oy-proverb {
+    margin: 30px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+  .oy-proverb-crest {
+    display: block;
+    width: 40px;
+    height: 30px;
+    flex: none;
+    background: var(--pattern-sun-crest) center / contain no-repeat;
+  }
+  .oy-proverb-yo {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--indigo-700);
+  }
+  .oy-proverb-en {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+  :global(.oy-dark) .oy-proverb-yo {
+    color: var(--gold-300);
+  }
+</style>

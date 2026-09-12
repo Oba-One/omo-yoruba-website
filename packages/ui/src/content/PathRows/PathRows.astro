@@ -1,0 +1,17 @@
+---
+/**
+ * The stack of path rows (`02 Homepage.dc.html`, the rows option): the tokens' `.oy-takepart`
+ * column with its label style (`column` gives every chip one width, `none` drops the chips,
+ * `kicker` turns them into small terracotta kickers). Children are `PathRow`s.
+ */
+interface Props {
+  labels?: 'column' | 'none' | 'kicker';
+  class?: string;
+}
+
+const { labels = 'column', class: className, ...rest } = Astro.props;
+---
+
+<div class:list={['oy-takepart', className]} data-labels={labels} {...rest}>
+  <slot />
+</div>

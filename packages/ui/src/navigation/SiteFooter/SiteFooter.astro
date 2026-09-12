@@ -39,6 +39,8 @@ interface Props {
   newsletterValue?: string;
   /** The page path, stored on the subscriber. */
   source?: string;
+  /** The newsletter block; off when the page places the newsletter band before the footer. */
+  newsletter?: boolean;
 }
 
 const {
@@ -48,6 +50,7 @@ const {
   newsletterError,
   newsletterValue,
   source = '',
+  newsletter = true,
 } = Astro.props;
 
 const EIN_PLACEHOLDER = 'XX-XXXXXXX';
@@ -130,18 +133,22 @@ const NETWORK_NAMES: Record<SocialNetwork, string> = {
           )
         }
       </div>
-      <div class="oy-footer-newsletter">
-        <h4>{settings.newsletterTitle?.trim() || <Pending what="the newsletter title" />}</h4>
-        {settings.newsletterBlurb?.trim() && <p>{settings.newsletterBlurb}</p>}
-        <NewsletterForm
-          action={newsletterAction}
-          state={newsletterState}
-          error={newsletterError}
-          value={newsletterValue}
-          source={source}
-          site={{ email: email, phone: phone }}
-        />
-      </div>
+      {
+        newsletter && (
+          <div class="oy-footer-newsletter">
+            <h4>{settings.newsletterTitle?.trim() || <Pending what="the newsletter title" />}</h4>
+            {settings.newsletterBlurb?.trim() && <p>{settings.newsletterBlurb}</p>}
+            <NewsletterForm
+              action={newsletterAction}
+              state={newsletterState}
+              error={newsletterError}
+              value={newsletterValue}
+              source={source}
+              site={{ email: email, phone: phone }}
+            />
+          </div>
+        )
+      }
     </div>
     <div>
       <h4>Take part</h4>

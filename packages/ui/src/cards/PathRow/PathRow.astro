@@ -1,0 +1,43 @@
+---
+/**
+ * The row form of a door (`02 Homepage.dc.html`, the rows option; COMPONENT-MAP, Cards): the
+ * chip naming the way in, the title and one line, one action that opens the door's enquiry kind
+ * or the Give Dialog. The chip's accent follows the way in through the tokens
+ * (`data-accent`: sponsor, volunteer, give); the border deepens on hover, no rule, no lift.
+ * Rows sit inside `PathRows`.
+ */
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import type { DoorLike } from '../DoorCard/DoorCard.astro';
+
+interface Props {
+  door: DoorLike;
+  /** The gold action: once per view. */
+  primary?: boolean;
+  class?: string;
+}
+
+const CHIPS: Record<string, string> = {
+  member: 'Membership',
+  volunteer: 'Volunteering',
+  partner: 'Partnership',
+  give: 'Giving',
+};
+const ACCENTS: Record<string, string> = {
+  partner: 'sponsor',
+  volunteer: 'volunteer',
+  give: 'give',
+};
+
+const { door, primary = false, class: className } = Astro.props;
+const key = door.key ?? '';
+---
+
+<div class:list={['oy-path', className]} data-door={key || undefined} data-accent={ACCENTS[key]}>
+  <span class="oy-path-chip">{CHIPS[key] ?? <Pending what="the way in" />}</span>
+  <div class="oy-path-body">
+    <h3>{door.title?.trim() || <Pending what="the door title" />}</h3>
+    <p>{door.blurb || <Pending what="the blurb" />}</p>
+  </div>
+  <ActionButton action={door.action} variant={primary ? 'primary' : 'secondary'} />
+</div>

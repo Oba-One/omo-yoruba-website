@@ -1,0 +1,83 @@
+---
+/**
+ * A program on the homepage and the Programs hub (`02 Homepage.dc.html`): the photo or the
+ * placeholder, the name, the blurb and one quiet action, on the card base. The highlighted card
+ * (`data-highlight` on the page root, the `highlight` option) moves first and takes the gold ring
+ * through the tokens' `.v2-prog--school` and `.v2-prog--collective` rules; the Collective's link
+ * reads green, the one place green lives outside its page. A missing blurb shows the registry's
+ * chip; a missing action falls back to a quiet link to the program's page or the hub.
+ */
+import { pendingWhat } from '@oy/content/pending';
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+import Pending from '../../core/Pending/Pending.astro';
+import ImagePlaceholder from '../../media/ImagePlaceholder/ImagePlaceholder.astro';
+import type { ImageInput } from '../../media/image';
+import Card from '../Card/Card.astro';
+
+export interface ProgramLike {
+  name?: string | null;
+  slug?: string | null;
+  blurb?: string | null;
+  image?: ImageInput | null;
+  page?: string | null;
+  action?: ActionLike | null;
+}
+
+interface Props {
+  program: ProgramLike;
+  /** A `data-sanity` attribute for the photo. */
+  imageEdit?: string;
+  class?: string;
+}
+
+const PAGE_HREF: Record<string, string> = {
+  lessons: '/programs/yoruba-lessons',
+  collective: '/programs/cultural-collective',
+};
+const HIGHLIGHT_CLASS: Record<string, string> = {
+  lessons: 'v2-prog--school',
+  collective: 'v2-prog--collective',
+};
+
+const { program, imageEdit, class: className } = Astro.props;
+const name = program.name?.trim();
+const href = (program.page && PAGE_HREF[program.page]) ?? `/programs#${program.slug ?? ''}`;
+const action: ActionLike = program.action?.label
+  ? program.action
+  : { label: 'See the program', kind: 'url', href };
+const blurbPending = pendingWhat('program', 'blurb') ?? 'the blurb';
+---
+
+<Card
+  title={name || undefined}
+  image={program.image}
+  alt=""
+  mediaHeight={170}
+  class:list={[program.page && HIGHLIGHT_CLASS[program.page], className]}
+  data-program={program.page ?? program.slug ?? undefined}
+>
+  {
+    !program.image && (
+      <ImagePlaceholder
+        slot="media"
+        what={`a photo of ${name ?? 'the program'}`}
+        aspect="360 / 170"
+        class="oy-program-placeholder"
+      />
+    )
+  }
+  {!name && <h3><Pending what="the program name" /></h3>}
+  <p>{program.blurb || <Pending what={blurbPending} />}</p>
+  <ActionButton action={action} variant="quiet" class="oy-program-link" />
+</Card>
+
+<style>
+  :global(.oy-card) > :global(.oy-program-placeholder) {
+    height: 170px;
+    aspect-ratio: auto;
+  }
+  :global([data-program='collective']) :global(.oy-program-link) {
+    color: var(--green-600);
+  }
+</style>

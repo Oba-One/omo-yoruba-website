@@ -1,0 +1,48 @@
+---
+/**
+ * The card arrangements of the page prototypes: two, three or four across at the content width,
+ * collapsing the way `02 Homepage.dc.html` does (three and two to one column under 860px; four to
+ * two under 1000px and to one under 600px). Children are the cards; the page only chooses the
+ * count.
+ */
+interface Props {
+  columns?: 2 | 3 | 4;
+  class?: string;
+}
+
+const { columns = 3, class: className, ...rest } = Astro.props;
+---
+
+<div class:list={['oy-card-grid', className]} data-columns={columns} {...rest}>
+  <slot />
+</div>
+
+<style>
+  .oy-card-grid {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .oy-card-grid[data-columns='2'] {
+    grid-template-columns: 1fr 1fr;
+  }
+  .oy-card-grid[data-columns='4'] {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @media (max-width: 1000px) {
+    .oy-card-grid[data-columns='4'] {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 860px) {
+    .oy-card-grid[data-columns='3'],
+    .oy-card-grid[data-columns='2'] {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .oy-card-grid[data-columns='4'] {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+/**
+ * The homepage hero (`02 Homepage.dc.html`): the photo behind a scrim with the àdìrẹ dot field,
+ * breathing slowly when motion is on (`.v2-kb`, off under reduced motion and the page's
+ * `data-motion="false"`), the kicker, the H1, the line under it, one gold action with the outline
+ * actions beside it, and the blessing line in the display italic. Without a photo the hero keeps
+ * the theme's surface and shows a Pending chip for the photograph; without a heading the H1
+ * carries a Pending chip, so the page still has its one H1.
+ */
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+import Divider from '../../core/Divider/Divider.astro';
+import Kicker from '../../core/Kicker/Kicker.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import { altOf, type ImageInput, imgAttributes } from '../../media/image';
+
+interface Props {
+  image?: ImageInput | null;
+  alt?: string;
+  kicker?: { yo?: string | null; en?: string | null } | null;
+  title?: string | null;
+  sub?: string | null;
+  blessing?: { yo?: string | null; en?: string | null } | null;
+  primary?: ActionLike | null;
+  secondary?: ActionLike[] | null;
+  /** The breathing photo and the entrance rise; off renders everything settled. */
+  motion?: boolean;
+  /** A `data-sanity` attribute for the photo, so click-to-edit reaches the image field. */
+  imageEdit?: string;
+  class?: string;
+}
+
+const {
+  image,
+  alt,
+  kicker,
+  title,
+  sub,
+  blessing,
+  primary,
+  secondary = [],
+  motion = true,
+  imageEdit,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const img = imgAttributes(image, '100vw');
+const rise = motion ? 'v2-rise' : undefined;
+---
+
+<header class:list={['oy-dark', 'v2-hero', 'oy-hero-band', className]} id="top" {...rest}>
+  {
+    img ? (
+      <img
+        class:list={['oy-hero-photo', motion && 'v2-kb']}
+        {...img}
+        alt={altOf(image, alt ?? '')}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        data-sanity={imageEdit}
+      />
+    ) : (
+      <Pending what="the hero photograph" class="oy-hero-pending" />
+    )
+  }
+  <div class="v2-hero-scrim" aria-hidden="true"></div>
+  <div class="v2-dots" aria-hidden="true"></div>
+  <div class="oy-wrap oy-hero-inner">
+    <div class="oy-hero-copy">
+      {(kicker?.yo || kicker?.en) && <Kicker yo={kicker?.yo ?? undefined} en={kicker?.en ?? undefined} class={rise} />}
+      <h1 class={rise} style="animation-delay: 0.12s">{title || <Pending what="the hero heading" />}</h1>
+      {sub && <p class:list={['oy-hero-sub', rise]} style="animation-delay: 0.24s">{sub}</p>}
+      <div class:list={['v2-hero-cta', rise]} style="animation-delay: 0.36s">
+        <ActionButton action={primary} variant="primary" />
+        {(secondary ?? []).map((action) => (
+          <ActionButton action={action} variant="secondary" arrow={false} />
+        ))}
+      </div>
+      {
+        (blessing?.yo || blessing?.en) && (
+          <p class:list={['oy-hero-blessing', rise]} style="animation-delay: 0.5s">
+            {blessing?.yo && <span lang="yo">{blessing.yo}</span>}
+            {blessing?.yo && blessing?.en && (
+              <span class="oy-hero-blessing-dot" aria-hidden="true">
+                •
+              </span>
+            )}
+            {blessing?.en && <span class="oy-hero-blessing-en">{blessing.en}</span>}
+          </p>
+        )
+      }
+    </div>
+  </div>
+  <Divider kind="asoke" class="oy-hero-edge" />
+</header>
+
+<style>
+  .oy-hero-band {
+    background: var(--hero-surface, var(--indigo-900));
+  }
+  .oy-hero-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 35% 35%;
+  }
+  .oy-hero-pending {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1;
+  }
+  .oy-hero-inner {
+    position: relative;
+    width: 100%;
+    padding-top: 64px;
+    padding-bottom: 72px;
+  }
+  .oy-hero-copy {
+    max-width: 640px;
+  }
+  .oy-hero-band h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(34px, 4.8vw, 56px);
+    line-height: 1.12;
+    color: var(--white);
+    margin: 18px 0 14px;
+  }
+  .oy-hero-sub {
+    font-size: 18px;
+    color: var(--text-on-dark-soft);
+    margin: 0 0 30px;
+  }
+  .oy-hero-blessing {
+    margin: 36px 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 11px;
+    flex-wrap: wrap;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--gold-300);
+  }
+  .oy-hero-blessing-dot {
+    color: var(--text-on-dark-faint);
+  }
+  .oy-hero-blessing-en {
+    color: var(--text-on-dark-soft);
+  }
+  .oy-hero-band :global(.oy-hero-edge) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+</style>

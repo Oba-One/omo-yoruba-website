@@ -1,0 +1,76 @@
+---
+/**
+ * A member voice (`02 Homepage.dc.html`, Member voices): the ayo dot row, the quote in the
+ * display face, the name and relation in the caption, on the card base. Without permission to
+ * name, the caption shows initials only. Without a testimonial the card renders as Pending with
+ * the registry's wording, so the voices section keeps its three-column rhythm while the owner
+ * gathers quotes.
+ */
+import { pendingWhat } from '@oy/content/pending';
+import Divider from '../../core/Divider/Divider.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import Card from '../Card/Card.astro';
+import { initialsOf } from './initials';
+
+export interface TestimonialLike {
+  quote?: string | null;
+  name?: string | null;
+  relation?: string | null;
+  permissionToName?: boolean | null;
+}
+
+interface Props {
+  testimonial?: TestimonialLike | null;
+  class?: string;
+}
+
+const { testimonial, class: className } = Astro.props;
+const pending = pendingWhat('homepage', 'voices[]') ?? 'member voices';
+const name = testimonial?.name?.trim();
+const who = name ? (testimonial?.permissionToName ? name : initialsOf(name)) : undefined;
+const parts = [who, testimonial?.relation?.trim()].filter(Boolean);
+---
+
+<Card as="figure" class:list={['oy-quote-card', className]} data-pending={testimonial ? undefined : 'true'}>
+  <Divider kind="ayo" />
+  {
+    testimonial ? (
+      <>
+        <blockquote class="oy-quote-text">{testimonial.quote || <Pending what="the quote" />}</blockquote>
+        <figcaption class="oy-quote-who">
+          {parts.length > 0 ? parts.join(' • ') : <Pending what="who said it" />}
+        </figcaption>
+      </>
+    ) : (
+      <>
+        <blockquote class="oy-quote-text">
+          <Pending what={pending} />
+        </blockquote>
+        <figcaption class="oy-quote-who">Name pending</figcaption>
+      </>
+    )
+  }
+</Card>
+
+<style>
+  .oy-quote-card :global(.oy-card-body) {
+    gap: 14px;
+  }
+  .oy-quote-text {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--indigo-700);
+  }
+  .oy-quote-who {
+    margin-top: auto;
+    padding-top: 6px;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  :global(.oy-dark) .oy-quote-text {
+    color: var(--white);
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+/**
+ * A news entry (`02 Homepage.dc.html`, News & events): the month and year in the small caps
+ * line, the title, the summary and a quiet Read more, on the card base. The link appears only
+ * when the page supplies an href (the News page waits on its cadence, wayfinder ticket 08), so
+ * the card never points at a route that does not exist. The date is read from the post's ISO
+ * date and written in words.
+ */
+import Button from '../../core/Button/Button.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import Card from '../Card/Card.astro';
+import { monthYear } from './date';
+
+export interface PostLike {
+  title?: string | null;
+  date?: string | null;
+  kicker?: { yo?: string | null; en?: string | null } | null;
+  summary?: string | null;
+}
+
+interface Props {
+  post: PostLike;
+  /** The post's page; none until the News page exists. */
+  href?: string;
+  class?: string;
+}
+
+const { post, href, class: className } = Astro.props;
+const when = monthYear(post.date);
+---
+
+<Card title={post.title || undefined} kicker={post.kicker} class:list={['oy-news-card', className]}>
+  <span class="oy-card-date">{when || <Pending what="the date" />}</span>
+  {!post.title && <h3><Pending what="the title" /></h3>}
+  <p>{post.summary || <Pending what="the summary" />}</p>
+  {
+    href && (
+      <Button variant="quiet" href={href} arrow>
+        Read more
+      </Button>
+    )
+  }
+</Card>
+
+<style>
+  /* The date sits first in the body, above the kicker and the title. */
+  .oy-news-card :global(.oy-card-body) {
+    display: flex;
+  }
+  .oy-news-card :global(.oy-card-date) {
+    order: -1;
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+/**
+ * A Studio action as a button: the `cta` object's kind decides the trigger (an enquiry kind opens
+ * the Enquiry Modal, `give` the Give Dialog, a link or an anchor is a plain href), the label is
+ * the content, and a half-filled action renders a Pending chip naming what is missing rather than
+ * a dead button. The variant carries the gold rule: a page passes `primary` once per view.
+ */
+import Button, { type ButtonSize, type ButtonVariant } from '../Button/Button.astro';
+import Pending from '../Pending/Pending.astro';
+import { type ActionLike, resolveAction } from './action';
+
+interface Props {
+  action?: ActionLike | null;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  arrow?: boolean;
+  class?: string;
+}
+
+const {
+  action,
+  variant = 'primary',
+  size = 'default',
+  arrow = true,
+  class: className,
+} = Astro.props;
+const resolved = resolveAction(action);
+---
+
+{
+  resolved &&
+    (resolved.ok ? (
+      <Button variant={variant} size={size} arrow={arrow} class={className} {...resolved.attributes}>
+        {resolved.label}
+      </Button>
+    ) : (
+      <Pending what={resolved.pending} class={className} />
+    ))
+}
