@@ -1,0 +1,25 @@
+---
+/**
+ * The Zeffy embed as a server island (ADR 0020): rendered on its own request after the page,
+ * so the cached page never carries the URL and a Studio change shows on the next open. Reads
+ * `siteSettings.zeffyEmbedUrl` and hands the Give Dialog a template with the iframe, which the
+ * dialog mounts on first open; while the URL is empty it answers the Pending chip and the
+ * dialog stays in its pending mode. Mount with `server:defer` and a `slot="fallback"` child.
+ */
+import { siteSettingsQuery } from '@oy/content/queries';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import { loadQuery } from '../lib/sanity/load-query';
+
+const { data } = await loadQuery(siteSettingsQuery, {}, { cookies: Astro.cookies });
+const url = data?.zeffyEmbedUrl?.trim();
+---
+
+{
+  url ? (
+    <template data-zeffy>
+      <iframe src={url} title="Zeffy donation form" allow="payment" loading="lazy"></iframe>
+    </template>
+  ) : (
+    <Pending what="the Zeffy link" />
+  )
+}

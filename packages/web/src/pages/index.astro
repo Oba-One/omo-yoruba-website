@@ -1,14 +1,25 @@
 ---
 // Placeholder until Phase 4 composes the homepage from Sanity. The kicker and heading are
 // the confirmed homepage copy (docs/design/ROUTES-AND-INTERACTIONS.md section 4); the last
-// line is the design system's diacritics test string (docs/design/README.md section 3).
+// line is the design system's diacritics test string (docs/design/README.md section 3). The
+// cards below exercise the forms seam from a page until the real pages carry the triggers.
+import { ENQUIRY_KINDS } from '@oy/content/enquiry-kinds';
+import EnquiryCard from '@oy/ui/forms/EnquiryCard/EnquiryCard.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 
 <SiteLayout title="Omo Yorùbá of Southern California">
-  <main>
+  <main class="oy-wrap">
     <p><span lang="yo">Ẹ káàbọ̀</span> • Welcome</p>
     <h1>Celebrating and sustaining Yoruba culture in Southern California since 1997</h1>
     <p lang="yo">Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun.</p>
+    <section aria-labelledby="forms-heading">
+      <h2 id="forms-heading">Ways to take part</h2>
+      <div class="oy-card-grid">
+        {ENQUIRY_KINDS.map((kind, index) => (
+          <EnquiryCard kind={kind} variant={index === 0 ? 'primary' : 'secondary'} />
+        ))}
+      </div>
+    </section>
   </main>
 </SiteLayout>

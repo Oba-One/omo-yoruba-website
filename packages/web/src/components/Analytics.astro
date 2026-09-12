@@ -1,13 +1,30 @@
 ---
 // PostHog, loaded after first paint. SiteLayout only renders this component when
 // PUBLIC_POSTHOG_KEY is set. Public variables are inlined at build time, so a key added on
-// Vercel takes effect on the next deploy (docs/runbook.md). Pageviews only for now; the named
-// events arrive with the forms in Phase 3 (docs/design/ROUTES-AND-INTERACTIONS.md section 2).
-// No autocapture, no session recording.
+// Vercel takes effect on the next deploy (docs/runbook.md). Pageviews on every navigation, plus
+// the track events the components announce as `oy:track` (CONTEXT.md, Track event; the names in
+// docs/design/ROUTES-AND-INTERACTIONS.md section 2): enquiry_opened, enquiry_submitted,
+// give_opened, give_embed_failed, newsletter_submitted. Events raised before PostHog loads wait
+// in a queue. No autocapture, no session recording, never a form's contents.
 ---
 
 <script>
   import { PUBLIC_POSTHOG_HOST, PUBLIC_POSTHOG_KEY } from 'astro:env/client';
+
+  interface TrackEvent {
+    event: string;
+    [property: string]: unknown;
+  }
+
+  const queue: TrackEvent[] = [];
+  let capture: ((event: TrackEvent) => void) | undefined;
+
+  document.addEventListener('oy:track', (event) => {
+    const detail = (event as CustomEvent<TrackEvent>).detail;
+    if (!detail || typeof detail.event !== 'string') return;
+    if (capture) capture(detail);
+    else queue.push(detail);
+  });
 
   function start() {
     if (!PUBLIC_POSTHOG_KEY) return;
@@ -21,6 +38,8 @@
           disable_session_recording: true,
           person_profiles: 'identified_only',
         });
+        capture = ({ event, ...properties }) => posthog.capture(event, properties);
+        for (const queued of queue.splice(0)) capture(queued);
       })
       .catch(() => {
         // Analytics never block the page; a failed chunk fetch is not worth reporting.
