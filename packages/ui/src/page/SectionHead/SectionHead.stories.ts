@@ -42,4 +42,7 @@ export const NoKicker: Story = { args: { kicker: undefined, title: 'Raise your h
 /** The kicker test string at 12px. */
 export const Diacritics: Story = { args: { kicker: { yo: TEST_STRING, en: 'Welcome' } } };
 
+/** The heading still owed by the Studio. */
+export const Pending: Story = { args: { title: undefined } };
+
 export const OnDark: Story = { ...onDark };

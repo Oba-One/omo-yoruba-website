@@ -25,6 +25,7 @@
   --text-heading: var(--indigo-700);
   --text-body: var(--ink);
   --text-muted: var(--muted);
+  --text-muted-on-tint: #5f5f6a; /* muted text on the indigo-100 tint: 5.3:1, where --muted reads 4.45 (added in Phase 4) */
   --text-on-dark: var(--white);
   --text-on-dark-soft: #c8cde8;
   --text-on-dark-faint: #8890b5;

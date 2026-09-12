@@ -78,7 +78,7 @@ export const programs: SlotValue = {
 
 export const voices: SlotValue = {
   component: Section,
-  props: { id: 'voices', alt: true, texture: 'batik', labelledby: 'voices-heading' },
+  props: { id: 'voices', ground: 'paper', texture: 'batik', labelledby: 'voices-heading' },
   slots: {
     default: [
       {
@@ -102,7 +102,7 @@ export const voices: SlotValue = {
 
 export const gallery = (count: '7' | '5' | '3'): SlotValue => ({
   component: Section,
-  props: { id: 'gallery', alt: true, labelledby: 'gallery-heading' },
+  props: { id: 'gallery', ground: 'alt', labelledby: 'gallery-heading' },
   slots: {
     default: [
       {

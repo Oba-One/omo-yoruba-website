@@ -1,0 +1,93 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from '@playwright/test';
+
+// The homepage blocks in the prototype's order (ROUTES section 4), each present whether the
+// Studio holds its content or renders Pending (CI runs with a placeholder project, so every read
+// answers null): the hero with one h1, the stat strip, the event band, programs, member voices,
+// news, the year in the life, raise your hand, and the footer. The doors open the Enquiry Modal.
+test.describe('the homepage', () => {
+  test('carries every block in order, one h1 and nothing open on load', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
+    const order = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('main > *'))
+        .map((el) => el.id || el.className.split(' ')[0])
+        .join(' '),
+    );
+    expect(order).toBe('top impact odunde programs voices news gallery get-involved');
+    await expect(page.locator('header.v2-hero .v2-hero-scrim')).toHaveCount(1);
+    await expect(page.locator('#odunde.oy-event-band')).toHaveCount(1);
+    await expect(page.locator('#programs [data-columns="4"]')).toHaveCount(1);
+    await expect(page.locator('#voices .oy-quote-card')).toHaveCount(3);
+    await expect(page.locator('#gallery .oy-mosaic figure')).toHaveCount(7);
+    await expect(page.locator('footer.oy-footer')).toHaveCount(1);
+    // The body carries the layout options the tokens read.
+    await expect(page.locator('body')).toHaveAttribute('data-motion', /true|false/);
+    await expect(page.locator('body')).toHaveAttribute('data-pattern', /rich|subtle/);
+    await expect(page.locator('body')).toHaveAttribute(
+      'data-highlight',
+      /festival|school|collective/,
+    );
+  });
+
+  test('shows the Studio content or a named Pending chip, never an invented fact', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const hero = page.locator('header.v2-hero');
+    const heroText = await hero.innerText();
+    expect(
+      heroText.includes('Yoruba culture, alive in Southern California') ||
+        /pending: the hero heading/i.test(heroText),
+    ).toBe(true);
+    // innerText applies the chip's uppercase transform, so the match ignores case.
+    const bandText = await page.locator('#odunde').innerText();
+    expect(bandText).toMatch(/pending: the/i);
+    // The trust line's EIN placeholder, the mock address and the mock prices never appear.
+    const body = await page.locator('body').innerText();
+    expect(body).not.toMatch(/95-4612387|Leimert Boulevard|555-0148|\$\d/);
+  });
+
+  test('the first door is the one gold action of its view and opens the Enquiry Modal', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const section = page.locator('#get-involved');
+    await section.scrollIntoViewIfNeeded();
+    const gold = section.locator('.oy-btn--primary');
+    const doors = section.locator('[data-enquiry], [data-give]');
+    if ((await doors.count()) === 0) {
+      // A placeholder project: the doors render Pending and there is nothing to open.
+      await expect(section.locator('.oy-pend').first()).toBeVisible();
+      return;
+    }
+    expect(await gold.count()).toBeLessThanOrEqual(1);
+    const trigger = doors.first();
+    await trigger.click();
+    await expect(page.locator('dialog#enquiry')).toHaveAttribute('open', '');
+    await page.keyboard.press('Escape');
+    await expect(trigger).toBeFocused();
+  });
+
+  test('is clean for axe with the page settled', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() =>
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+          .map((animation) => animation.finished.catch(() => undefined)),
+      ),
+    );
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(
+      results.violations.map((violation) => ({
+        id: violation.id,
+        nodes: violation.nodes.map((node) => node.target.join(' ')).slice(0, 5),
+      })),
+    ).toEqual([]);
+  });
+});

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './SectionHead.stories';
 
-const { Default, WithLink, WithIntro, SingleKicker, NoKicker } = composeStories(stories);
+const { Default, WithLink, WithIntro, SingleKicker, NoKicker, Pending } = composeStories(stories);
 
 describe('SectionHead', () => {
   it('renders the swatch, the bilingual kicker and the heading', async () => {
@@ -26,5 +26,11 @@ describe('SectionHead', () => {
   it('renders a single English kicker, or none', async () => {
     expect(text((await renderToBody(SingleKicker)).querySelector('.oy-kicker'))).toBe('Stay close');
     expect((await renderToBody(NoKicker)).querySelector('.oy-kicker')).toBeNull();
+  });
+
+  it('marks a missing heading as Pending', async () => {
+    expect(text((await renderToBody(Pending)).querySelector('h2 .oy-pend'))).toBe(
+      'Pending: the heading',
+    );
   });
 });

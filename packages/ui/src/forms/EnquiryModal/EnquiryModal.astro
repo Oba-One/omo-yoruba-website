@@ -473,8 +473,14 @@ const isOpen = (k: EnquiryKind) => k === kind;
         dialog.showModal();
         const summary = active && active.querySelector('[data-summary]:not([hidden])');
         const close = active && active.querySelector('[data-success]:not([hidden]) [data-close]');
+        const first =
+          active &&
+          active.querySelector(
+            'form:not([hidden]) .oy-form-grid input, form:not([hidden]) .oy-form-grid select, form:not([hidden]) .oy-form-grid textarea',
+          );
         if (summary) summary.focus();
         else if (close) close.focus();
+        else if (first) first.focus();
       }
       return api;
     };

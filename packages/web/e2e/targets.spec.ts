@@ -22,7 +22,9 @@ test('every visible control on the page and in the open modal is at least 44px',
   test.skip(!isMobile, 'measured at 375');
   await page.goto('/');
   expect(await page.evaluate(small)).toEqual([]);
-  await page.locator('.oy-enquiry-card[data-kind="vendor"] a[data-enquiry]').click();
+  const trigger = page.locator('main [data-enquiry="member"]').first();
+  await trigger.scrollIntoViewIfNeeded();
+  await trigger.click();
   await expect(page.locator('dialog#enquiry')).toHaveAttribute('open', '');
   expect(await page.evaluate(small)).toEqual([]);
 });

@@ -30,7 +30,7 @@ test.describe('axe on the layout', () => {
 
   test('with the Enquiry Modal open', async ({ page }) => {
     await page.goto('/');
-    await page.locator('.oy-enquiry-card[data-kind="member"] a[data-enquiry]').click();
+    await page.locator('main [data-enquiry="member"]').first().click();
     await expect(page.locator('dialog#enquiry')).toHaveAttribute('open', '');
     expect(await audit(page)).toEqual([]);
   });

@@ -2,9 +2,11 @@ import { ENQUIRY_KINDS, ENQUIRY_SPECS, successCopy } from '@oy/content/enquiry-k
 import { expect, test } from '@playwright/test';
 import { interceptActions } from './helpers';
 
-// Every kind: open from its card, an empty submit names what is missing and keeps what was
-// typed, a filled submit shows Sending... then the success block with Close focused, Escape
-// closes and focus returns to the trigger. The action is intercepted (helpers.ts).
+// Every kind: open from a real trigger where the home page has one (the member and partner
+// doors, the footer's volunteer and contact links) and from the `?enquiry=<kind>` opener where it
+// has none, an empty submit names what is missing and keeps what was typed, a filled submit
+// shows Sending... then the success block with Close focused, Escape closes and focus returns
+// to the trigger. The action is intercepted (helpers.ts).
 for (const kind of ENQUIRY_KINDS) {
   const spec = ENQUIRY_SPECS[kind];
   const required = spec.fields.filter((field) => field.required);
@@ -13,16 +15,24 @@ for (const kind of ENQUIRY_KINDS) {
       (field) => field.kind === 'text' && !field.required && field.type !== 'email',
     ) ?? required[0];
 
-  test(`${kind}: the five states from the card trigger`, async ({ page }) => {
+  test(`${kind}: the five states from a real trigger or the opener`, async ({ page }) => {
     await interceptActions(page, (name) => {
       expect(name).toBe(`enquiry.${kind}`);
       return { ok: true, ...successCopy(kind) };
     });
     await page.goto('/');
-    const trigger = page.locator(`.oy-enquiry-card[data-kind="${kind}"] a[data-enquiry]`);
+    const trigger = page
+      .locator(`main [data-enquiry="${kind}"], footer [data-enquiry="${kind}"]`)
+      .first();
+    const hasTrigger = (await trigger.count()) > 0;
     const dialog = page.locator('dialog#enquiry');
     const section = page.locator(`section.oy-enquiry[data-kind="${kind}"]`);
-    await trigger.click();
+    if (hasTrigger) {
+      await trigger.scrollIntoViewIfNeeded();
+      await trigger.click();
+    } else {
+      await page.goto(`/?enquiry=${kind}`);
+    }
     await expect(dialog).toHaveAttribute('open', '');
     await expect(page.locator('#enquiry-title')).toHaveText(spec.title);
     await expect(section.locator(`[name="${spec.fields[0]?.id}"]`)).toBeFocused();
@@ -59,7 +69,7 @@ for (const kind of ENQUIRY_KINDS) {
 
     await page.keyboard.press('Escape');
     await expect(dialog).not.toHaveAttribute('open', '');
-    await expect(trigger).toBeFocused();
+    if (hasTrigger) await expect(trigger).toBeFocused();
   });
 }
 

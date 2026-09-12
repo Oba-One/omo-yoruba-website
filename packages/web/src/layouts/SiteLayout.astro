@@ -7,7 +7,9 @@
  * invented name, address or phone (ADR 0005). Without JavaScript `?enquiry=<kind>` opens the
  * modal and a posted error re-renders it with the values kept; the middleware redirects a
  * success to `sent=1`, which renders the success block (ADR 0019). `#give` opens the Give
- * Dialog on load with JavaScript.
+ * Dialog on load with JavaScript. The page's layout options reach the body as data attributes
+ * (`root`), the newsletter sits in the footer or as a band before it, and in draft mode (the
+ * perspective cookie) the Visual Editing overlay mounts after the bridge (ADR 0021).
  */
 import '@oy/tokens';
 import { actions } from 'astro:actions';
@@ -21,11 +23,13 @@ import {
   successCopy,
 } from '@oy/content/enquiry-kinds';
 import { siteSettingsQuery } from '@oy/content/queries';
+import NewsletterBand from '@oy/ui/bands/NewsletterBand/NewsletterBand.astro';
 import EnquiryModal from '@oy/ui/forms/EnquiryModal/EnquiryModal.astro';
 import GiveDialog from '@oy/ui/forms/GiveDialog/GiveDialog.astro';
 import SiteFooter from '@oy/ui/navigation/SiteFooter/SiteFooter.astro';
 import SiteNav from '@oy/ui/navigation/SiteNav/SiteNav.astro';
 import ProgressBar from '@oy/ui/page/ProgressBar/ProgressBar.astro';
+import { VisualEditing } from '@sanity/astro/visual-editing';
 import Analytics from '../components/Analytics.astro';
 import FormBridge from '../components/FormBridge.astro';
 import ZeffyEmbed from '../components/ZeffyEmbed.astro';
@@ -40,12 +44,25 @@ import { loadQuery } from '../lib/sanity/load-query';
 interface Props {
   title: string;
   description?: string;
+  /** Data attributes on the body from the page's layout options (the prototype's page root). */
+  root?: Record<string, string | undefined>;
+  /** Where the newsletter form sits: in the footer, or as a band before it. */
+  newsletter?: 'footer' | 'band';
 }
 
-const { title, description } = Astro.props;
+const { title, description, root = {}, newsletter: placement = 'footer' } = Astro.props;
 const path = Astro.url.pathname;
+const rootAttributes = Object.fromEntries(
+  Object.entries(root)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => [`data-${key}`, value]),
+);
 
-const { data: settings } = await loadQuery(siteSettingsQuery, {}, { cookies: Astro.cookies });
+const { data: settings, preview } = await loadQuery(
+  siteSettingsQuery,
+  {},
+  { cookies: Astro.cookies },
+);
 const contacts = contactsByRole(settings?.contacts);
 const site = { email: settings?.generalEmail ?? undefined, phone: settings?.phone ?? undefined };
 const copyFor = (kind: EnquiryKind) => successCopy(kind, contacts[KIND_TO_ROLE[kind]], site);
@@ -63,8 +80,12 @@ for (const kind of ENQUIRY_KINDS) {
 // The newsletter, without JavaScript, the same way.
 const newsletterOutcome = Astro.getActionResult(actions.newsletter) as ActionOutcome | undefined;
 const newsletter = newsletterStateFrom(Astro.url, newsletterOutcome, site);
-// A posted form with errors re-renders as a 400, so the browser and the logs read it as one.
-if (modal.state === 'error' || newsletter.state === 'error') Astro.response.status = 400;
+// A posted form with errors re-renders as a 400, so the browser and the logs read it as one,
+// and the CDN never stores it.
+if (modal.state === 'error' || newsletter.state === 'error') {
+  Astro.response.status = 400;
+  Astro.cache.set(false);
+}
 
 const actionPaths = Object.fromEntries(
   ENQUIRY_KINDS.map((kind) => [kind, String(actions.enquiry[kind])]),
@@ -84,10 +105,24 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
     <ClientRouter />
     {analyticsOn && <Analytics />}
   </head>
-  <body class="oy-home" data-card="grain-dots" data-theme={settings?.theme ?? 'adire'}>
+  <body class="oy-home" data-card="grain-dots" data-theme={settings?.theme ?? 'adire'} {...rootAttributes}>
     <ProgressBar />
     <SiteNav path={path} />
     <slot />
+    {
+      placement === 'band' && (
+        <NewsletterBand
+          title={settings?.newsletterTitle}
+          blurb={settings?.newsletterBlurb}
+          action={String(actions.newsletter)}
+          state={newsletter.state}
+          error={newsletter.state === 'error' ? newsletter.error : undefined}
+          value={newsletter.state === 'error' ? newsletter.value : undefined}
+          source={path}
+          site={site}
+        />
+      )
+    }
     <SiteFooter
       settings={settings ?? {}}
       newsletterAction={String(actions.newsletter)}
@@ -95,6 +130,7 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
       newsletterError={newsletter.state === 'error' ? newsletter.error : undefined}
       newsletterValue={newsletter.state === 'error' ? newsletter.value : undefined}
       source={path}
+      newsletter={placement === 'footer'}
     />
     <div transition:persist="oy-dialogs">
       <EnquiryModal
@@ -120,6 +156,7 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
       </GiveDialog>
     </div>
     <FormBridge />
+    <VisualEditing enabled={preview} zIndex={1000} />
     <script>
       // The progress bar (ProgressBar.astro) watches this attribute across the router's lifecycle.
       document.addEventListener('astro:before-preparation', () => {

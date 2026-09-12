@@ -1,16 +1,20 @@
 ---
 /**
- * A page section at the content width: `.oy-section` with the alternate paper ground when asked,
- * an optional batik wash or the stat strip's corner dot fields behind the content, and the slot
- * inside `.oy-wrap`. Pages compose sections from this and `SectionHead`; the textures come from
- * the tokens and the pattern option on the page root dims them.
+ * A page section at the content width: `.oy-section` on white, on the theme's alternate ground
+ * (`alt`, the indigo tint under the `adire` theme) or on paper, an optional batik wash or the stat
+ * strip's corner dot fields behind the content, and the slot inside `.oy-wrap`. On the tint the
+ * kicker deepens to terracotta 700 and muted text to its on-tint token so both keep AA. Pages
+ * compose sections from this and `SectionHead`; the textures come from the tokens and the
+ * pattern option on the page root dims them.
  */
 import PatternBand from '../../bands/PatternBand/PatternBand.astro';
 
+export type SectionGround = 'white' | 'alt' | 'paper';
+
 interface Props {
   id?: string;
-  /** The paper ground (`.oy-section--alt`). */
-  alt?: boolean;
+  /** The theme's alternate ground (`.oy-section--alt`), or paper. */
+  ground?: SectionGround;
   /** A texture behind the content: the batik wash, or the two corner dot fields. */
   texture?: 'batik' | 'corners' | 'none';
   /** The id of the heading that labels the section. */
@@ -18,12 +22,25 @@ interface Props {
   class?: string;
 }
 
-const { id, alt = false, texture = 'none', labelledby, class: className, ...rest } = Astro.props;
+const {
+  id,
+  ground = 'white',
+  texture = 'none',
+  labelledby,
+  class: className,
+  ...rest
+} = Astro.props;
 ---
 
 <section
   id={id}
-  class:list={['oy-section', alt && 'oy-section--alt', texture !== 'none' && 'oy-section--textured', className]}
+  class:list={[
+    'oy-section',
+    ground === 'alt' && 'oy-section--alt',
+    ground === 'paper' && 'oy-section--paper',
+    texture !== 'none' && 'oy-section--textured',
+    className,
+  ]}
   aria-labelledby={labelledby}
   {...rest}
 >
@@ -42,6 +59,14 @@ const { id, alt = false, texture = 'none', labelledby, class: className, ...rest
 </section>
 
 <style>
+  .oy-section--paper {
+    background: var(--paper);
+  }
+  /* The indigo tint is lighter than paper: terracotta 600 and the muted grey both fall under 4.5:1 on it. */
+  .oy-section--alt {
+    --accent-kicker: var(--terra-700);
+    --text-muted: var(--text-muted-on-tint);
+  }
   .oy-section--textured {
     position: relative;
     overflow: hidden;
