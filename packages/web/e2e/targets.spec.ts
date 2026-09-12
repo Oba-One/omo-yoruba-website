@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openEnquiry } from './helpers';
 
 // The elder test at 375: every control a finger can reach has a 44px box (QUALITY.md section 2).
 // Inline links in running text are the one exception WCAG allows.
@@ -22,9 +23,8 @@ test('every visible control on the page and in the open modal is at least 44px',
   test.skip(!isMobile, 'measured at 375');
   await page.goto('/');
   expect(await page.evaluate(small)).toEqual([]);
-  const trigger = page.locator('main [data-enquiry="member"]').first();
-  await trigger.scrollIntoViewIfNeeded();
-  await trigger.click();
+  // The member form in every environment: its door locally, the opener in CI (helpers.ts).
+  await openEnquiry(page, 'member');
   await expect(page.locator('dialog#enquiry')).toHaveAttribute('open', '');
   expect(await page.evaluate(small)).toEqual([]);
 });

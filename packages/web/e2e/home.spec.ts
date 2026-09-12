@@ -18,7 +18,7 @@ test.describe('the homepage', () => {
     expect(order).toBe('top impact lead-event programs voices news gallery get-involved');
     await expect(page.locator('header.v2-hero .v2-hero-scrim')).toHaveCount(1);
     await expect(page.locator('#lead-event.oy-event-band')).toHaveCount(1);
-    await expect(page.locator('#programs [data-columns="4"]')).toHaveCount(1);
+    await expect(page.locator('#programs [data-columns="3"]')).toHaveCount(1);
     await expect(page.locator('#voices .oy-quote-card')).toHaveCount(3);
     // The mosaic shows as many tiles as the gallery option on the body asks for.
     const tiles = Number(await page.locator('body').getAttribute('data-gallery'));
@@ -39,17 +39,43 @@ test.describe('the homepage', () => {
     await page.goto('/');
     const hero = page.locator('header.v2-hero');
     const heroText = await hero.innerText();
-    expect(
-      heroText.includes('Yoruba culture, alive in Southern California') ||
-        /pending: the hero heading/i.test(heroText),
-    ).toBe(true);
-    // The band carries the edition's date or the registry's chip for it (innerText applies the
-    // chip's uppercase transform, so the match ignores case).
+    const seeded = heroText.includes('Yoruba culture, alive in Southern California');
+    expect(seeded || /pending: the hero heading/i.test(heroText)).toBe(true);
+    // With the Studio's content the band carries an edition (its year or the registry's chip for
+    // a missing fact); only CI's placeholder project shows the Pending line for no edition
+    // (innerText applies the chip's uppercase transform, so the match ignores case).
     const bandText = await page.locator('#lead-event').innerText();
-    expect(bandText).toMatch(/pending: the|\b\d{4}\b/i);
+    expect(bandText).toMatch(seeded ? /pending: the|\b\d{4}\b/i : /pending from you/i);
     // The trust line's EIN placeholder, the mock address and the mock prices never appear.
     const body = await page.locator('body').innerText();
     expect(body).not.toMatch(/95-4612387|Leimert Boulevard|555-0148|\$\d/);
+  });
+
+  test('holds the prototype layout at this width', async ({ page }) => {
+    await page.goto('/');
+    // The hero copy is set left; the tokens' generic hero centres its own inner class.
+    await expect(page.locator('header.v2-hero h1')).toHaveCSS('text-align', 'start');
+    // Each member voice fills its grid cell (a figure keeps the browser's side margins otherwise).
+    const cells = await page.locator('#voices .oy-card-grid').evaluate((grid) => {
+      const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').map(parseFloat);
+      return Array.from(grid.children).map((card, index) => ({
+        width: card.getBoundingClientRect().width,
+        column: columns[index % columns.length] ?? 0,
+      }));
+    });
+    expect(cells).toHaveLength(3);
+    for (const { width, column } of cells) expect(Math.abs(width - column)).toBeLessThan(1);
+    // The band's button keeps to the right edge of the content, wrapped or not (an edition exists
+    // only with the Studio's content, so CI's placeholder run has no button to measure).
+    const band = page.locator('#lead-event .oy-band-inner');
+    const button = band.locator('.oy-btn');
+    if ((await button.count()) > 0) {
+      const [inner, box] = await Promise.all([band.boundingBox(), button.boundingBox()]);
+      const padding = await band.evaluate((el) => parseFloat(getComputedStyle(el).paddingRight));
+      expect(
+        inner && box && Math.abs(inner.x + inner.width - padding - (box.x + box.width)),
+      ).toBeLessThan(1);
+    }
   });
 
   test('the first door is the one gold action of its view and opens the Enquiry Modal', async ({
