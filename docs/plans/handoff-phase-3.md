@@ -2,7 +2,7 @@
 
 Written 12 September 2026 at the end of the Phase 3 session, for the owner's follow-ups and the
 session that runs Phase 4 (`docs/design/PROMPTS.md`). Branch: `phase-3/chrome-and-forms`, pull
-request against `main` (link in the PR section below). Tickets: `docs/tickets/phase-3/issues/`
+request https://github.com/Oba-One/omo-yoruba-website/pull/4 against `main`. Tickets: `docs/tickets/phase-3/issues/`
 (ten, all resolved, each with a Comments section on what was found). Research with sources:
 `docs/research/phase-3-playwright-and-axe.md`, `phase-3-astro-actions-transitions-islands.md`,
 `phase-3-astro-portabletext.md`, `phase-3-storybook-play-functions.md`. Decisions: ADR 0018 to
