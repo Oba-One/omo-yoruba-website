@@ -85,6 +85,72 @@ _Avoid_: dark mode, dark theme
 The chosen card texture, `data-card="grain-dots"` on the page root.
 _Avoid_: noise, paper grain
 
+**Trust line**:
+The footer line "501(c)(3) nonprofit since 1997 • EIN XX-XXXXXXX • Los Angeles, CA"; the EIN
+reads XX-XXXXXXX until the site settings hold it.
+_Avoid_: legal line, footer credits, disclaimer
+
+**Mobile menu**:
+The full-screen indigo overlay the burger opens under 880px (the ported CSS breakpoint; the
+brief said 760): the same links flattened, Events as a group label, Donate at the bottom.
+_Avoid_: hamburger menu, drawer, nav sheet
+
+**Cross-fade**:
+The 380ms fade between pages, with the 2px gold progress bar while the next page loads; off
+under reduced motion. The only page-level motion.
+_Avoid_: page transition, view transition (the mechanism), animation
+
+**Track event**:
+A named analytics event a component announces (enquiry_opened, give_opened, newsletter_submitted)
+for the site to forward; components never talk to the analytics service themselves.
+_Avoid_: analytics call, capture, ping
+
+### Forms
+
+**Trigger**:
+The button or link that opens a dialog for a kind; focus returns to it on close. Without
+JavaScript it is a link to the same page with the modal open.
+_Avoid_: opener, CTA, launcher
+
+**Action result**:
+What an owned form's action answers with: ok with the success copy, or not ok with a summary
+sentence, one sentence per field and the values as typed.
+_Avoid_: response, error object, payload
+
+**Summary**:
+The one sentence at the top of a form on error, announced as an alert, naming what is missing
+or wrong. Nothing typed is cleared.
+_Avoid_: error banner, toast, validation message
+
+**Success block**:
+The "Ẹ ṣé! ✓" block that replaces the fields after a submission, with the plain sentence that
+says what happens next and who writes.
+_Avoid_: thank-you message, confirmation, toast
+
+**Human fallback**:
+The line beside every form naming the general email and phone for anyone who would rather
+speak to a person; Pending while the settings are empty.
+_Avoid_: contact info, help text, support link
+
+**Honeypot**:
+A hidden field a person never fills. A filled one answers success and writes nothing.
+_Avoid_: spam trap, bot field, captcha
+
+**Address cap**:
+The limit of five enquiries an hour from one reply-to address, checked in Sanity; a capped
+address is told to write to the general inbox.
+_Avoid_: rate limit (the generic mechanism), throttle, ban
+
+**Subscriber**:
+A newsletter address kept as a `subscriber` document until a provider is named; a repeat signup
+reads as success and changes nothing; nothing sends.
+_Avoid_: newsletter enquiry, lead, contact, mailing list entry
+
+**Bottom sheet**:
+The Enquiry Modal's shape under 720px: pinned to the bottom edge with a grab handle look and no
+drag behaviour.
+_Avoid_: drawer, mobile modal, tray
+
 ### Content
 
 **Enquiry**:
