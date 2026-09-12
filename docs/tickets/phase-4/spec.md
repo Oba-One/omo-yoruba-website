@@ -66,3 +66,13 @@ specs use the member door.
   routes, non-GET requests and a form error re-render never set headers.
 - Lighthouse CI: researched and configured in `docs/research/phase-4-lighthouse-ci.md`; the package
   is not installed until the owner says yes.
+
+## Revised after the design review, 12 September 2026
+
+The owner asked for full alignment with `02 Homepage.dc.html`; ADR 0023 records what changed and
+what stays different because a rule outranks the prototype. In short: three program cards, the
+highlight swapping the hero's gold button for the program's action, news oldest first with Read
+more on the tagged page, the prototype's placeholder slots for the voices, `hero.emphasis` and
+`stat.shortLabel`, the prototype's photo framing as hotspots and the Collective's interim
+photograph. The answers above on the highlight's single button, the four cards, the linkless news
+cards and the Collective placeholder are superseded.

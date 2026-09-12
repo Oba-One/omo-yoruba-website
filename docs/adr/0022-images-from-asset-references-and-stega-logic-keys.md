@@ -19,6 +19,12 @@ linker; the test pins the format.
 
 - A URL string from a query would carry stega in draft mode and break the image; the projection
   rule (`asset`, never `asset->url`) is the guard.
-- Adding a discriminator field to the schema means adding its key to the stega filter.
+- Adding a discriminator field to the schema means adding its key to the stega filter; the hero's
+  gold words (`emphasis`) are one, since the site finds them inside the heading by a string match.
+- The hotspot also travels as a CSS `object-position` (`position` on the set, measured within the
+  crop), so a photo under `object-fit: cover` keeps its framing; the seed writes the prototype's
+  `object-position` values as hotspots. Card and door photos are not cropped at the CDN (no
+  `aspect`): their box changes shape with the width, and a CDN crop underneath would be cropped
+  again, which zoomed the doors on a phone (design review, 12 September 2026).
 - If a later release exports `createDataAttribute` from a package the site depends on, the local
   encoder goes.

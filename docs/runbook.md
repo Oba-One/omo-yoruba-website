@@ -97,7 +97,11 @@ Editors and the CDN: Vercel's cache key ignores cookies, so on the public host a
 could be answered from the public cache. Set `PUBLIC_PREVIEW_ORIGIN` (Vercel and `packages/web/.env`)
 to a second hostname of the production deployment, for example `https://preview.omoyorubasocal.org`
 attached under the project's Domains: the Studio then previews there (`previewUrl.origin` and
-`allowOrigins`), the middleware never caches that host, and the public host never sees the cookie.
+`allowOrigins`), the middleware never caches that host and marks every answer `noindex`, and the
+public host never sees the cookie. To attach it: Vercel, the project, Settings, Domains, add
+`preview.omoyorubasocal.org` on the `main` branch; at the DNS provider add the CNAME record
+Vercel shows for it (`preview` pointing at Vercel's DNS target); set `PUBLIC_PREVIEW_ORIGIN` in
+the project's Production environment variables and redeploy.
 Empty, the Studio previews on its own origin, which is right locally (the cache is a no-op in
 dev) and acceptable until the domain exists, with the caveat above. `PUBLIC_*` values are inlined
 at build time, so setting it needs a redeploy.
@@ -256,19 +260,33 @@ to PostHog once it loads, with pageviews on every navigation and never a form's 
 Since Phase 4 (`docs/research/phase-4-lighthouse-ci.md`): `packages/web/lighthouserc.cjs` holds
 the budgets of `docs/design/QUALITY.md` section 3 as assertions (performance 90, accessibility,
 best practices and SEO 100, LCP 2.5 s, CLS 0.05, 60 KB of script), the mobile preset by default
-and the desktop preset with `LHCI_PRESET=desktop`. `@lhci/cli` 0.15.1 (bundling Lighthouse
-12.6.1, Node 22, the runner's Chrome) is not installed until the owner says yes; until then run
-it without adding it:
+and the desktop preset with `LIGHTHOUSE_PRESET=desktop`. `@lhci/cli` 0.15.1 (bundling Lighthouse
+12.6.1; it runs under Node 22 with the machine's Chrome) is a dev dependency of `packages/web`
+since the owner's yes on 12 September 2026:
 
 ```bash
-cd packages/web && LHCI_BASE_URL=https://<host> VERCEL_AUTOMATION_BYPASS_SECRET=<secret> bunx @lhci/cli@0.15.1 autorun
+LIGHTHOUSE_BASE_URL=https://<host> VERCEL_AUTOMATION_BYPASS_SECRET=<secret> bun run --filter @oy/web lighthouse
 ```
 
 Every `vercel.app` host is behind Vercel Authentication, so the audit needs the project's
-Protection Bypass for Automation secret (Deployment Protection settings) in the header; the
-reports embed it and must never be uploaded. The CI job (`lighthouse.yml` on `deployment_status`,
-one job per preset, the secret as `VERCEL_AUTOMATION_BYPASS_SECRET`) is drafted in the research
-note and lands with the dependency.
+Protection Bypass for Automation secret in a header (with `x-vercel-skip-toolbar`, which keeps
+Vercel's preview toolbar out of the numbers). Lighthouse sets headers for the whole page, so the
+secret also reaches every other origin the page requests, the Sanity CDN and PostHog today, and
+the reports embed it: they are never uploaded. Keeping the secret on Vercel alone would take a
+Puppeteer script that sets Vercel's bypass cookie before the audit, a new dependency for the owner
+to approve (`docs/research/phase-4-lighthouse-ci.md`). `.github/workflows/lighthouse.yml` runs
+both presets on every successful `Preview` deployment (`deployment_status`). It skips with a notice
+until the secret exists: in the Vercel project, Settings, Deployment Protection, Protection Bypass
+for Automation, create one named for CI (a team member or Project Administrator can), then store it
+as the repository secret `VERCEL_AUTOMATION_BYPASS_SECRET` (`gh secret set
+VERCEL_AUTOMATION_BYPASS_SECRET`). A fork's preview never runs the workflow (GitHub starts no run
+for a commit no branch here points to). Whether the two jobs become required checks is the
+owner's call: a failed Vercel build or a fork's pull request leaves them missing.
+
+Without the secret, audit the production build locally: `bun run build`, serve
+`.vercel/output` (static files plus the render function's `fetch`, as Phase 4 did), then run the
+command above with `LIGHTHOUSE_BASE_URL=http://localhost:<port>` and no secret. It measures the
+application, not Vercel's CDN.
 
 ## Rollback
 

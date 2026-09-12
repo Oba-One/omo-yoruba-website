@@ -33,3 +33,7 @@ and on its own origin until then (right locally, where the cache is a no-op).
 - The preview host needs `allowOrigins` in the Presentation config, the partitioned cookie the
   enable route already sets, and `frame-ancestors` that admits the Studio's origin when the CSP is
   enforced (Phase 9).
+- As a custom domain the preview host sits outside Vercel Authentication ("all except custom
+  domains"), so anyone can load its uncached published pages; drafts still need the signed enable
+  route. Every response it gives carries `X-Robots-Tag: noindex, nofollow` (the middleware) so it
+  never competes with the public host in search.
