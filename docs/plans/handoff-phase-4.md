@@ -55,35 +55,30 @@ attribute). Wayfinder tickets 15, 20 and 21 resolved; 25 (the webhook) still wai
 
 ## Owner follow-ups, in order
 
-1. The custom domain. Every `vercel.app` host of the project, the production alias included, is
-   behind Vercel Authentication ("all except custom domains"). Until `omoyorubasocal.org` serves
-   the project for anyone, nothing outside a Vercel session reaches the site: not the Sanity
-   webhook, not Lighthouse on a preview, not a browser check of the cache. Then run the checks in
-   `docs/runbook.md` ("Webhook and cache purge", "Lighthouse") and create the webhook (wayfinder
-   ticket 25).
-2. Visual Editing and the preview host: open `/admin`, the Presentation tool, the homepage; check
-   click-to-edit on the hero heading, a photograph, the event band (season) and the mosaic
-   (gallery). For editors on the live site, add `preview.omoyorubasocal.org` under the Vercel
-   project's Domains on `main`, its CNAME at the DNS provider, and `PUBLIC_PREVIEW_ORIGIN` in the
-   Production variables, then redeploy (runbook, "Editors and the CDN"; ADR 0021). Without it an
-   editor's iframe on the public host can show the cached public copy.
-3. Lighthouse CI: create the Protection Bypass for Automation secret and store it as
-   `VERCEL_AUTOMATION_BYPASS_SECRET`, knowing Lighthouse sends it with every request the page
-   makes (the Sanity CDN and PostHog today); keeping it on Vercel alone needs a Puppeteer script and
-   a new dependency to approve. On the local production build the homepage passes accessibility
-   and SEO, misses best practices (0.93: no favicon exists, and the report-only CSP) and misses the
-   mobile performance budget (0.67 to 0.77, simulated LCP about 6 s: a 171 KB logo PNG drawn at
-   40 px and about 470 KB of fonts); desktop scores 0.97 to 0.98. A follow-up task is queued for it.
-4. In the `development` dataset, the recap post's title reads "Ọdúndé 2026: the recap": a seed run
-   wrote the prototype's spelling before ADR 0009 was checked. Change it back to "Odunde 2026: the
-   recap" in the Studio (a scripted patch was not allowed from the session).
-5. Decide the photo hero's size floor: it follows the prototype's 34px on a phone, under the
-   brief's 44px (ADR 0023, `packages/tokens/README.md`).
-6. Supply a Yoruba Cultural Collective photograph: the card shows the prototype's interim one.
-7. Branch protection: whether `Lighthouse (mobile)` and `Lighthouse (desktop)` become required
-   (they are missing when a Vercel build fails or for a fork's pull request).
-8. Wayfinder tickets 02 (contacts, EIN, address, phone), 03 (Zeffy, Eventbrite), 05 (zones),
-   09 (credits) and the testimonials still gate content; the homepage shows their chips.
+Each is a wayfinder ticket (`docs/plans/wayfinder.md`, Frontier) with the steps in it.
+
+1. Ticket 26: check Visual Editing and the homepage against the prototype, then merge pull request
+   5. Production on `omoyorubasocal.org` is a custom domain, outside Vercel Authentication, so after
+   the merge the purge and Lighthouse checks in `docs/runbook.md` run against it.
+2. Ticket 25: create the Sanity webhook on the public domain.
+3. Ticket 27: in `development`, change the recap post's title from "Ọdúndé 2026: the recap" back to
+   "Odunde 2026: the recap" (a seed run wrote the prototype's spelling before ADR 0009 was checked;
+   a scripted patch was not allowed from the session).
+4. Ticket 28: the Lighthouse bypass secret. Lighthouse sends it with every request the page makes
+   (the Sanity CDN and PostHog today); the alternative is a Puppeteer cookie route with a new
+   dependency. Also whether the two Lighthouse checks become required.
+5. Ticket 29: the preview host `preview.omoyorubasocal.org` for editors (domain, CNAME,
+   `PUBLIC_PREVIEW_ORIGIN`, redeploy).
+6. Ticket 30: the photo hero's heading on phones, the prototype's 34px or the brief's 44px.
+7. Ticket 31: a photograph of the Yoruba Cultural Collective (the card shows the interim one).
+8. Ticket 32: the favicon (none exists; best practices scores 0.93 partly because of it).
+9. Still open from earlier phases: 02 (contacts, EIN, address, phone), 03 (Zeffy, Eventbrite), 04
+   and 06 (Gala tables and awards, Phase 5), 05 (zones), 09 (credits), and the testimonials.
+
+Work a session does without the owner: ticket 33 (the homepage misses the mobile Lighthouse budget
+on the local production build, 0.67 to 0.77 with a simulated LCP near 6 s against 2.5 s: a 171 KB
+logo PNG drawn at 40px and about 470 KB of fonts; desktop 0.97 to 0.98) and ticket 34 (Phase 4
+leftovers). The Phase 5 prompt starts with 33.
 
 ## Decisions made without the owner (reverse any)
 
@@ -162,6 +157,8 @@ DevTools MCP into the gitignored `test-results/`; `CHROME_PATH` for lhci can poi
 Chrome for Testing.
 
 ## Suggested skills for the next session
+
+The paste-ready prompt for Phase 5 is `docs/plans/prompt-phase-5.md`; it starts with ticket 33.
 
 `/to-tickets` for Phase 5 (the two event pages), then `/implement` per ticket with `/tdd` on the
 schedule and tier logic; `research` before pinning `astro-portabletext` (Phase 5 renders block
