@@ -1,0 +1,204 @@
+---
+/**
+ * The sticky site nav (ROUTES section 2): the logo lockup, the Events dropdown (Ọdúndé Festival,
+ * End-of-Year Gala), Programs, Get Involved, Impact, Our Story, and the small gold Donate
+ * trigger. The current page reads terracotta with the gold underline: `aria-current="page"` on
+ * the exact link and `data-current` on the Events trigger when a child is current. The dropdown
+ * opens on hover, on focus within and on click, and closes on Escape; the inline element keeps
+ * `aria-expanded` honest. Under 880px (the ported CSS breakpoint) the burger opens the mobile
+ * menu, a native dialog with the same links flattened, Events as a group label and Donate at the
+ * bottom: the browser traps focus and closes on Escape, the element returns focus to the burger
+ * and closes the menu when a link is chosen. Nothing opens on load. Renders once per page and is
+ * persisted across navigations by the layout (ADR 0018, ADR 0020).
+ */
+import Button from '../../core/Button/Button.astro';
+import Logo from '../Logo/Logo.astro';
+import { currentHref, EVENT_LINKS, isEventsPage, NAV_LINKS, pageKeyFor } from './nav';
+
+interface Props {
+  /** The page path; the nav derives the current section and link from it. */
+  path?: string;
+  /** Where every Donate trigger points without JavaScript. */
+  donateHref?: string;
+  /** Story only: renders the mobile menu open. The site never opens it on load. */
+  menuOpen?: boolean;
+}
+
+const { path = '/', donateHref = '/donate#give', menuOpen = false } = Astro.props;
+const page = pageKeyFor(path);
+const current = currentHref(path);
+const eventsCurrent = isEventsPage(page);
+const ariaCurrent = (href: string) => (href === current ? 'page' : undefined);
+---
+
+<oy-site-nav data-menu={menuOpen ? 'open' : 'closed'}>
+  <nav class="oy-nav" aria-label="Main" data-page={page}>
+    <div class="oy-wrap oy-nav-inner">
+      <Logo variant="lockup" href="/" />
+      <div class="oy-nav-links">
+        <div class="oy-nav-drop" data-current={eventsCurrent ? 'true' : undefined}>
+          <button
+            class="oy-nav-trigger"
+            type="button"
+            data-nav="events"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="oy-nav-events"
+          >
+            Events<span class="oy-nav-caret" aria-hidden="true"></span>
+          </button>
+          <div class="oy-nav-drop-menu" id="oy-nav-events">
+            {EVENT_LINKS.map((link) => (
+              <a href={link.href} aria-current={ariaCurrent(link.href)}>
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+        {NAV_LINKS.map((link) => (
+          <a data-nav={link.nav} href={link.href} aria-current={ariaCurrent(link.href)}>
+            {link.label}
+          </a>
+        ))}
+      </div>
+      <Button href={donateHref} size="small" class="oy-nav-donate" data-give>
+        Donate
+      </Button>
+      <button
+        class="oy-nav-burger"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded={menuOpen ? 'true' : 'false'}
+        aria-controls="oy-nav-menu"
+      >
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <dialog class="oy-nav-menu oy-dark" id="oy-nav-menu" aria-label="Menu" open={menuOpen}>
+      <button class="oy-nav-close" type="button" aria-label="Close menu">×</button>
+      <span class="oy-nav-group">Events</span>
+      {EVENT_LINKS.map((link) => (
+        <a class="oy-nav-nested" href={link.href} aria-current={ariaCurrent(link.href)}>
+          {link.label}
+        </a>
+      ))}
+      {NAV_LINKS.map((link) => (
+        <a href={link.href} aria-current={ariaCurrent(link.href)}>
+          {link.label}
+        </a>
+      ))}
+      <div class="oy-nav-menu-give">
+        <Button href={donateHref} data-give>Donate</Button>
+      </div>
+    </dialog>
+  </nav>
+</oy-site-nav>
+
+<style>
+  oy-site-nav {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  /* The caret is drawn, not a glyph: the glyph set is • → ✓ × (docs/design/README.md section 3). */
+  .oy-nav-caret {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    opacity: 0.6;
+  }
+  /* The native dialog replaces the prototype's fixed div; the UA box is reset to fill the screen. */
+  dialog.oy-nav-menu {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    color: var(--white);
+  }
+  dialog.oy-nav-menu:not([open]) {
+    display: none;
+  }
+  dialog.oy-nav-menu::backdrop {
+    background: transparent;
+  }
+  .oy-nav-menu-give {
+    margin-top: 24px;
+  }
+  /* Sticky nav height: anchors land under it, never behind it. */
+  :global([id]) {
+    scroll-margin-top: 96px;
+  }
+</style>
+
+<script is:inline>
+  if (!customElements.get('oy-site-nav')) {
+    customElements.define(
+      'oy-site-nav',
+      class extends HTMLElement {
+        connectedCallback() {
+          const drop = this.querySelector('.oy-nav-drop');
+          const trigger = drop && drop.querySelector('.oy-nav-trigger');
+          const list = drop && drop.querySelector('.oy-nav-drop-menu');
+          if (drop && trigger && list) {
+            const sync = () => {
+              const shown = window.getComputedStyle(list).display !== 'none';
+              trigger.setAttribute('aria-expanded', shown ? 'true' : 'false');
+            };
+            for (const type of ['mouseenter', 'mouseleave', 'focusin', 'focusout']) {
+              drop.addEventListener(type, () => window.setTimeout(sync, 0));
+            }
+            trigger.addEventListener('click', () => {
+              // A click while open (touch, or a second click) closes by giving up focus.
+              if (trigger.getAttribute('aria-expanded') === 'true' && !drop.matches(':hover')) {
+                trigger.blur();
+              }
+              window.setTimeout(sync, 0);
+            });
+            drop.addEventListener('keydown', (event) => {
+              if (event.key !== 'Escape') return;
+              event.stopPropagation();
+              trigger.focus();
+              trigger.blur();
+              trigger.setAttribute('aria-expanded', 'false');
+            });
+          }
+
+          const burger = this.querySelector('.oy-nav-burger');
+          const menu = this.querySelector('dialog.oy-nav-menu');
+          if (burger && menu && typeof menu.showModal === 'function') {
+            const open = () => {
+              menu.showModal();
+              burger.setAttribute('aria-expanded', 'true');
+              this.dataset.menu = 'open';
+            };
+            burger.addEventListener('click', () => (menu.open ? menu.close() : open()));
+            menu.addEventListener('close', () => {
+              burger.setAttribute('aria-expanded', 'false');
+              this.dataset.menu = 'closed';
+              burger.focus();
+            });
+            const close = menu.querySelector('.oy-nav-close');
+            if (close) close.addEventListener('click', () => menu.close());
+            // The browser closes a modal dialog on a real Escape; a synthetic one (a play
+            // function) needs the same answer.
+            menu.addEventListener('keydown', (event) => {
+              if (event.key !== 'Escape') return;
+              event.preventDefault();
+              menu.close();
+            });
+            menu.addEventListener('click', (event) => {
+              if (event.target && event.target.closest && event.target.closest('a')) menu.close();
+            });
+          }
+          this.dataset.ready = 'true';
+        }
+      },
+    );
+  }
+</script>
