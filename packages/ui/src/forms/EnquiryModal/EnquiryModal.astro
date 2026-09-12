@@ -466,12 +466,10 @@ const isOpen = (k: EnquiryKind) => k === kind;
                       showFieldError(form, name, data.fields[name]);
                     }
                   }
-                  showSummary(
-                    form,
-                    (data && data.summary) ||
-                      (result && result.error && result.error.message) ||
-                      this.dataset.fallbackMessage,
-                  );
+                  // The handlers answer results, never throw: an `error` here is the transport
+                  // (offline, a stale deploy), so the visitor gets the fallback sentence.
+                  if (result && result.error) console.error('[enquiry]', result.error);
+                  showSummary(form, (data && data.summary) || this.dataset.fallbackMessage);
                 },
                 () => {
                   setBusy(form, false);

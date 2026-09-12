@@ -8,7 +8,8 @@
     "./enquiry-kinds": "./src/enquiry-kinds.ts",
     "./enquiry-zod": "./src/enquiry-zod.ts",
     "./pending": "./src/pending.ts",
-    "./routes": "./src/routes.ts"
+    "./routes": "./src/routes.ts",
+    "./queries": "./src/queries.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

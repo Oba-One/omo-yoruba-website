@@ -8,6 +8,7 @@
  * `window.oySubmit` when the site provides it (the bridge to the Astro action, ADR 0019), and
  * announces `newsletter_submitted` as an `oy:track` event (ADR 0018).
  */
+import { fallbackSentence, NEWSLETTER_COPY, type SiteContact } from '@oy/content/enquiry-kinds';
 import { EMAIL_MESSAGE } from '@oy/content/enquiry-zod';
 import Button from '../../core/Button/Button.astro';
 
@@ -26,6 +27,8 @@ interface Props {
   /** `footer` sits inline in the dark band; `band` is the homepage variant. */
   variant?: 'footer' | 'band';
   id?: string;
+  /** The general inbox, named in the fallback sentence when the action cannot be reached. */
+  site?: SiteContact;
 }
 
 const {
@@ -36,11 +39,12 @@ const {
   source = '',
   variant = 'footer',
   id = 'oy-newsletter',
+  site = {},
 } = Astro.props;
 
-const LABELS = { idle: 'Subscribe', busy: 'Sending...', success: 'Ẹ ṣé! ✓' } as const;
+const LABELS = { idle: 'Subscribe', busy: 'Sending...', success: NEWSLETTER_COPY.title } as const;
 const REQUIRED = 'We still need an email address.';
-const DONE = 'Ẹ ṣé. You are on the list. The next note goes out with the festival save-the-date.';
+const DONE = NEWSLETTER_COPY.body;
 const errorId = `${id}-error`;
 ---
 
@@ -52,6 +56,7 @@ const errorId = `${id}-error`;
   data-label-done={LABELS.success}
   data-required-message={REQUIRED}
   data-email-message={EMAIL_MESSAGE}
+  data-fallback-message={fallbackSentence(site)}
 >
   <form class="oy-signup" method="POST" action={action} novalidate data-form="newsletter">
     <label class="oy-label oy-hidden" for={id}>Email address</label>
@@ -212,15 +217,16 @@ const errorId = `${id}-error`;
                   return;
                 }
                 setBusy(false);
+                if (result && result.error) console.error('[newsletter]', result.error);
                 showError(
-                  (data && data.summary) ||
-                    (result && result.error && result.error.message) ||
-                    this.dataset.emailMessage,
+                  (data && data.fields && data.fields.email) ||
+                    (data && data.summary) ||
+                    this.dataset.fallbackMessage,
                 );
               },
               () => {
                 setBusy(false);
-                showError(this.dataset.emailMessage);
+                showError(this.dataset.fallbackMessage);
               },
             );
           });

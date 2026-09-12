@@ -1,0 +1,46 @@
+---
+/**
+ * The 2px gold bar at the top of the page while the next page loads (ROUTES section 2). The
+ * layout's router script sets `data-loading` on the root element between
+ * `astro:before-preparation` and `astro:page-load`; the bar grows while it is set and fades when
+ * it clears. Under reduced motion it appears and disappears without animating. Decorative only.
+ */
+interface Props {
+  /** Story only: renders the loading state. */
+  loading?: boolean;
+}
+
+const { loading = false } = Astro.props;
+---
+
+<div class="oy-progress" data-loading={loading ? 'true' : undefined} aria-hidden="true"></div>
+
+<style>
+  .oy-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    height: 2px;
+    width: 0;
+    background: var(--gold-500);
+    opacity: 0;
+    transition:
+      width 0.4s ease,
+      opacity 0.3s ease 0.2s;
+    pointer-events: none;
+  }
+  .oy-progress[data-loading],
+  :global(html[data-loading]) .oy-progress {
+    width: 85%;
+    opacity: 1;
+    transition: width 4s cubic-bezier(0.1, 0.6, 0.2, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .oy-progress,
+    .oy-progress[data-loading],
+    :global(html[data-loading]) .oy-progress {
+      transition: none;
+    }
+  }
+</style>

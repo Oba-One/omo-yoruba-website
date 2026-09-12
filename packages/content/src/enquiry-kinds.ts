@@ -410,6 +410,12 @@ export function contactsByRole(
   return byRole;
 }
 
+/** The newsletter's success copy (wayfinder tickets 01 and 23): the label flips in place, the line sits under it. */
+export const NEWSLETTER_COPY = {
+  title: 'Ẹ ṣé! ✓',
+  body: 'Ẹ ṣé. You are on the list. The next note goes out with the festival save-the-date.',
+} as const;
+
 /** The field that names the sender, in order of preference: the Inbox title and the email subject use it. */
 export const SENDER_FIELDS = ['org', 'biz', 'group', 'name', 'learner'] as const;
 

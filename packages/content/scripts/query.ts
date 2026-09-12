@@ -4,7 +4,7 @@
  * `bun run --filter @oy/content query -- '*[_type == "zone"]{name}'`. Reads the project id, the
  * dataset (`--dataset <name>` overrides) and the Viewer token (the Editor token as a fallback);
  * prints the result as JSON and never prints an environment value. `--perspective drafts` reads
- * drafts too.
+ * drafts too; `--public` reads without a token, the way the site's own client does.
  */
 import { createClient } from '@sanity/client';
 
@@ -27,10 +27,11 @@ if (!query) {
 
 const projectId = process.env.PUBLIC_SANITY_PROJECT_ID;
 const dataset = flag('dataset') ?? process.env.PUBLIC_SANITY_DATASET;
-const token =
-  process.env.SANITY_API_READ_TOKEN ??
-  process.env.SANITY_API_WRITE_TOKEN ??
-  process.env.SANITY_WRITE_TOKEN;
+const token = process.argv.includes('--public')
+  ? undefined
+  : (process.env.SANITY_API_READ_TOKEN ??
+    process.env.SANITY_API_WRITE_TOKEN ??
+    process.env.SANITY_WRITE_TOKEN);
 if (!projectId || !dataset) {
   console.error(
     'query: PUBLIC_SANITY_PROJECT_ID and PUBLIC_SANITY_DATASET are missing from packages/web/.env.',

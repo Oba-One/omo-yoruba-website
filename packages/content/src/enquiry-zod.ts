@@ -48,3 +48,16 @@ export const enquirySchemas = Object.fromEntries(
 export function parseEnquiry(kind: EnquiryKind, data: unknown) {
   return enquirySchemas[kind].safeParse(data);
 }
+
+/** The newsletter signup: one address, the same sentences as the enquiry email fields. */
+export const subscriberSchema = z.object({
+  email: z
+    .string({ error: requiredSentence('an email address') })
+    .trim()
+    .min(1, { error: requiredSentence('an email address') })
+    .pipe(z.email({ error: EMAIL_MESSAGE })),
+});
+
+export function parseSubscriber(data: unknown) {
+  return subscriberSchema.safeParse(data);
+}
