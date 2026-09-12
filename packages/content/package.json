@@ -15,7 +15,8 @@
     "test": "vitest run",
     "sanity": "bash scripts/sanity.sh",
     "typegen": "bash scripts/sanity.sh schema extract --path ./schema.json --force && bash scripts/sanity.sh typegen generate",
-    "seed": "bun --env-file=../web/.env scripts/seed.ts"
+    "seed": "bun --env-file=../web/.env scripts/seed.ts",
+    "query": "bun --env-file=../web/.env scripts/query.ts"
   },
   "dependencies": {
     "@oy/lint": "workspace:*",
