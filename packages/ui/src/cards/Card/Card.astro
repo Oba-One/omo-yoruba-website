@@ -1,0 +1,90 @@
+---
+/**
+ * The base card (COMPONENT-MAP, Cards; Build Brief polish pass 2): paper ground, indigo hairline,
+ * the 8px aṣọ òkè top edge and the grain-dots texture from the tokens' `.oy-card`, and the hover
+ * language of `.v2-card`: the border deepens, the title warms to terracotta, the arrow slides and
+ * the 2px aṣọ òkè rule draws under the action. No lift, no zoom. An optional photo sits above the
+ * body at a fixed height with square corners, framed by the Studio hotspot; the body is the slot.
+ * The dark scope comes from a parent `.oy-dark`. The base resets the browser's margin, so a card
+ * rendered as a `figure` fills its grid cell like the others.
+ */
+import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
+import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
+
+interface Props {
+  as?: 'article' | 'figure' | 'div';
+  image?: ImageInput | null;
+  /** Alt text for the photo; a resolved image's own alt wins when set. */
+  alt?: string;
+  /** The photo's height in pixels; 170 for program cards, 190 for doors. */
+  mediaHeight?: number;
+  /** `sizes` for a resolved image's srcset. */
+  sizes?: string;
+  /** A `data-sanity` attribute for the photo, so click-to-edit reaches the image field. */
+  imageEdit?: string;
+  kicker?: BilingualText | null;
+  title?: string | null;
+  /** Extra class on the body, for example `oy-door`. */
+  bodyClass?: string;
+  /** The aṣọ òkè rule under the action, drawn on hover. */
+  rule?: boolean;
+  class?: string;
+}
+
+const {
+  as: Tag = 'article',
+  image,
+  alt,
+  mediaHeight = 170,
+  sizes = '(min-width: 1100px) 360px, (min-width: 860px) 33vw, 100vw',
+  imageEdit,
+  kicker,
+  title,
+  bodyClass,
+  rule = true,
+  class: className,
+  ...rest
+} = Astro.props as Props;
+
+const img = imgAttributes(image, sizes);
+const altText = altOf(image, alt ?? '');
+const position = positionOf(image);
+const mediaStyle = `height: ${mediaHeight}px${position ? `; object-position: ${position}` : ''}`;
+---
+
+<Tag class:list={['oy-card', 'v2-card', className]} {...rest}>
+  {
+    img && (
+      <img
+        class="oy-card-media"
+        {...img}
+        alt={altText}
+        loading="lazy"
+        decoding="async"
+        style={mediaStyle}
+        data-sanity={imageEdit}
+      />
+    )
+  }
+  <slot name="media" />
+  <div class:list={['oy-card-body', bodyClass]}>
+    {kicker && (kicker.yo || kicker.en) && <Kicker yo={kicker.yo ?? undefined} en={kicker.en ?? undefined} />}
+    {title && <h3>{title}</h3>}
+    <slot />
+    {rule && <div class="v2-rule" aria-hidden="true"></div>}
+  </div>
+</Tag>
+
+<style>
+  .oy-card {
+    margin: 0;
+  }
+  .oy-card-media {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+  }
+  .oy-card-body > :global(.oy-btn--quiet) {
+    padding: 10px 0;
+  }
+</style>

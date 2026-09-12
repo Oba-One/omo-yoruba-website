@@ -1,0 +1,75 @@
+---
+import type { SiteContact } from '@oy/content/enquiry-kinds';
+/**
+ * The newsletter as a band before the footer (`02 Homepage.dc.html`, the `newsletter: band`
+ * option): the dark indigo band with the drifting àdìrẹ dot field, the title and the blurb from
+ * the site settings and the newsletter form in its band variant. When the page shows this band
+ * the footer leaves its own newsletter block out.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+import NewsletterForm, {
+  type NewsletterState,
+} from '../../forms/NewsletterForm/NewsletterForm.astro';
+import PatternBand from '../PatternBand/PatternBand.astro';
+
+interface Props {
+  title?: string | null;
+  blurb?: string | null;
+  action?: string;
+  state?: NewsletterState;
+  error?: string;
+  value?: string;
+  source?: string;
+  site?: SiteContact;
+  /** A `data-sanity` attribute for the band, so click-to-edit reaches the newsletter option. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  title,
+  blurb,
+  action,
+  state,
+  error,
+  value,
+  source,
+  site,
+  edit,
+  class: className,
+} = Astro.props;
+---
+
+<div class:list={['oy-newsletter', 'oy-dark', 'oy-newsletter-band', className]} id="subscribe" data-sanity={edit}>
+  <PatternBand pattern="dots" class="v2-dots--drift" />
+  <div class="oy-wrap oy-newsletter-inner">
+    <div class="oy-newsletter-copy">
+      <h2>{title?.trim() || <Pending what="the newsletter title" />}</h2>
+      {blurb?.trim() && <p>{blurb}</p>}
+    </div>
+    <NewsletterForm
+      variant="band"
+      id="oy-newsletter-band"
+      action={action}
+      state={state}
+      error={error}
+      value={value}
+      source={source}
+      site={site}
+    />
+  </div>
+</div>
+
+<style>
+  .oy-newsletter-band {
+    position: relative;
+    overflow: hidden;
+    background: var(--indigo-900);
+  }
+  .oy-newsletter-inner {
+    position: relative;
+  }
+  .oy-newsletter-copy {
+    max-width: 480px;
+  }
+</style>

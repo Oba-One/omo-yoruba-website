@@ -1,0 +1,90 @@
+---
+/**
+ * One of the four ways in as a card (`02 Homepage.dc.html`, Raise your hand; CONTEXT.md, Door):
+ * the photo or its placeholder, the title, the blurb, what it asks and gives when the page
+ * shows it, and one action that opens the door's enquiry kind or the Give Dialog through the
+ * mounted dialogs. The first door on a view is gold, the rest outline. The row form is
+ * `PathRow`. A missing blurb or empty bullets show the registry's chips; the title is required
+ * in the Studio, so an empty one renders nothing.
+ */
+import { pendingWhat } from '@oy/content/pending';
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+import Pending from '../../core/Pending/Pending.astro';
+import ImagePlaceholder from '../../media/ImagePlaceholder/ImagePlaceholder.astro';
+import type { ImageInput } from '../../media/image';
+import Card from '../Card/Card.astro';
+
+export interface DoorLike {
+  key?: string | null;
+  title?: string | null;
+  blurb?: string | null;
+  bullets?: string[] | null;
+  action?: ActionLike | null;
+  image?: ImageInput | null;
+}
+
+interface Props {
+  door: DoorLike;
+  /** The gold action: once per view. */
+  primary?: boolean;
+  /** Show the "what it asks and gives" bullets (Get Involved); the homepage leaves them out. */
+  bullets?: boolean;
+  /** A `data-sanity` attribute for the photo. */
+  imageEdit?: string;
+  class?: string;
+}
+
+const { door, primary = false, bullets = false, imageEdit, class: className } = Astro.props;
+const title = door.title?.trim();
+const blurbPending = pendingWhat('door', 'blurb');
+const bulletsPending = pendingWhat('door', 'bullets[]');
+---
+
+<Card
+  image={door.image}
+  imageEdit={imageEdit}
+  alt=""
+  mediaHeight={190}
+  sizes="(min-width: 1100px) 540px, (min-width: 860px) 50vw, 100vw"
+  bodyClass="oy-door"
+  class:list={['oy-door-card', className]}
+  data-door={door.key ?? undefined}
+>
+  {
+    !door.image && (
+      <ImagePlaceholder slot="media" what={`a photo for ${title ?? 'this door'}`} aspect="520 / 190" class="oy-door-placeholder" />
+    )
+  }
+  {title && <h3>{title}</h3>}
+  <p>{door.blurb || <Pending what={blurbPending} />}</p>
+  {
+    bullets &&
+      ((door.bullets ?? []).length > 0 ? (
+        <ul class="oy-door-bullets">
+          {(door.bullets ?? []).map((line) => (
+            <li>{line}</li>
+          ))}
+        </ul>
+      ) : (
+        <Pending what={bulletsPending} />
+      ))
+  }
+  <ActionButton action={door.action} variant={primary ? 'primary' : 'secondary'} />
+</Card>
+
+<style>
+  :global(.oy-card) > :global(.oy-door-placeholder) {
+    height: 190px;
+    aspect-ratio: auto;
+  }
+  .oy-door-bullets {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 14.5px;
+    color: var(--text-muted);
+  }
+  .oy-door-bullets li + li {
+    margin-top: 4px;
+  }
+</style>

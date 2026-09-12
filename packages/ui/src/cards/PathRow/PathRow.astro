@@ -1,0 +1,47 @@
+---
+/**
+ * The row form of a door (`02 Homepage.dc.html`, the rows option; COMPONENT-MAP, Cards): the
+ * chip naming the way in, the title and one line, one action that opens the door's enquiry kind
+ * or the Give Dialog. The chip's accent follows the way in through the tokens (`data-accent`);
+ * the border deepens on hover, no rule, no lift. Rows sit inside `PathRows`. The chips are the
+ * prototypes' own: "Membership" and "Partnership" from the homepage rows, "Volunteer" and "Give"
+ * from the take-part rows of `11 Yoruba Language School.dc.html`, which share the accents.
+ */
+import { pendingWhat } from '@oy/content/pending';
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import type { DoorLike } from '../DoorCard/DoorCard.astro';
+
+interface Props {
+  door: DoorLike;
+  /** The gold action: once per view. */
+  primary?: boolean;
+  class?: string;
+}
+
+const CHIPS: Record<string, string> = {
+  member: 'Membership',
+  volunteer: 'Volunteer',
+  partner: 'Partnership',
+  give: 'Give',
+};
+/** The chip accent per door, as the prototype colours them (the member row borrows the performer accent). */
+const ACCENTS: Record<string, string> = {
+  member: 'performer',
+  partner: 'sponsor',
+  volunteer: 'volunteer',
+  give: 'give',
+};
+
+const { door, primary = false, class: className } = Astro.props;
+const key = door.key ?? '';
+---
+
+<div class:list={['oy-path', className]} data-door={key || undefined} data-accent={ACCENTS[key]}>
+  <span class="oy-path-chip">{CHIPS[key] ?? <Pending what="the way in" />}</span>
+  <div class="oy-path-body">
+    {door.title?.trim() && <h3>{door.title}</h3>}
+    <p>{door.blurb || <Pending what={pendingWhat('door', 'blurb')} />}</p>
+  </div>
+  <ActionButton action={door.action} variant={primary ? 'primary' : 'secondary'} />
+</div>

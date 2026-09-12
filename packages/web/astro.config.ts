@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
+import { cacheVercel } from '@astrojs/vercel/cache';
 import sanity from '@sanity/astro';
 import { defineConfig, envField } from 'astro/config';
 import { STUDIO_BASE_PATH } from './src/lib/paths';
@@ -34,6 +35,13 @@ export default defineConfig({
   site: process.env.PUBLIC_SITE_URL ?? 'https://omoyorubasocal.org',
   output: 'server',
   adapter: vercel(),
+
+  // Route caching on the Vercel CDN (ADR 0001, ADR 0021): pages call Astro.cache.set with one
+  // tag per document type and /api/revalidate purges by tag through the provider
+  // (docs/research/phase-4-astro-cache-and-vercel-provider.md). No routeRules: a route that
+  // sets nothing is never cached, which is what keeps the preview, Studio, API and action
+  // routes out of the CDN.
+  cache: { provider: cacheVercel() },
 
   integrations: [
     // The Studio at /admin and the Visual Editing overlay are React islands; nothing else is
@@ -100,6 +108,15 @@ export default defineConfig({
         default: '',
       }),
       PUBLIC_EVENTBRITE_URL: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true,
+        default: '',
+      }),
+      // A second hostname of the same deployment for the Presentation tool, never cached, so an
+      // editor's draft view never meets the public CDN copy (ADR 0021). Empty means the Studio
+      // previews on its own origin, which is right locally and until the domain exists.
+      PUBLIC_PREVIEW_ORIGIN: envField.string({
         context: 'client',
         access: 'public',
         optional: true,

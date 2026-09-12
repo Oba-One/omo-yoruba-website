@@ -75,6 +75,24 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   the routes table's tilde spelling was a typo; one spelling for every success state; owner's
   yes on 11 September 2026.
 
+- [Lists read through the hand-written loadQuery, not a live loader](../tickets/wayfinder/issues/20-sanity-loader-for-live-collections.md):
+  a live loader never sees the perspective cookie and `@sanity/astro` ships none; one `defineQuery`
+  per page in `packages/content/src/queries/` (Phase 4).
+
+- [Draft mode opts out of the cache per request; a preview host keeps editors off the public copy](../tickets/wayfinder/issues/21-cache-and-draft-mode.md):
+  ADR 0021; pages carry `type:` tags and `/api/revalidate` purges by type and by path (Phase 4).
+
+- [The homepage loads 15 KB of gzipped JavaScript; PostHog alone is 89 KB, deferred](../tickets/wayfinder/issues/15-analytics-bundle-vs-js-budget.md):
+  measured on the Phase 4 build; Phase 9 picks between `posthog-js`, its lite build and the snippet.
+
+- [The homepage follows its prototype where ROUTES and the Phase 4 spec differed](../adr/0023-homepage-follows-its-prototype.md):
+  ADR 0023, at the owner's request after the design review on 12 September 2026; repo rules still
+  outrank the prototype (Odunde unmarked, Lessons never School, the Pending chip, no invented copy).
+
+- [Lighthouse CI: `@lhci/cli` 0.15.1 installed, every preview audited](../research/phase-4-lighthouse-ci.md):
+  owner's yes on 12 September 2026; `.github/workflows/lighthouse.yml` skips until the bypass secret
+  exists (ticket 28); the config reads `LIGHTHOUSE_*`, since lhci treats `LHCI_*` as flags.
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.
@@ -90,6 +108,14 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 09 | Photo credits to confirm | Phase 2 seed |
 | 22 | Editor roles on the Sanity plan | Phase 2 |
 | 03 | Zeffy embed URL and Eventbrite event URL | Phase 3, Phase 5 |
+| 26 | Check Visual Editing and the cache, merge pull request 5 | Phase 5 branch, ticket 25 |
+| 25 | Create the Sanity webhook on the public domain | Publish-to-purge in production |
+| 27 | Put the recap post's title back to "Odunde 2026: the recap" in `development` | The homepage news card |
+| 28 | Lighthouse bypass secret (header or cookie route), required Lighthouse checks | Lighthouse on previews |
+| 29 | Preview host `preview.omoyorubasocal.org` for editors | Draft previews on the live site |
+| 30 | Photo hero heading on phones: the prototype's 34px or the brief's 44px | One token |
+| 31 | A photograph of the Yoruba Cultural Collective | Phase 6 program pages |
+| 32 | The favicon | Ticket 33 (best practices) |
 | 04 | Gala tables: enquiry or purchase | Phase 5 |
 | 06 | Gala awards: yes or no | Phase 5 |
 | 07 | Our Story timeline shown by default | Phase 7 |
@@ -98,8 +124,9 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 08 | News cadence: feed or list | Later phase |
 
 Research and design tickets the phases work themselves: 15 (analytics bundle versus the JS
-budget), 20 (Sanity loader for live collections), 21 (cache and draft mode), 25 (Sanity
-webhook after Phase 4). Ticket 19 (fonts) was resolved in Phase 1.
+budget), 20 (Sanity loader for live collections), 21 (cache and draft mode), 33 (the homepage's
+mobile Lighthouse budget, first in Phase 5), 34 (Phase 4 leftovers; the route mapping belongs in
+Phase 5). Ticket 19 (fonts) was resolved in Phase 1.
 
 ## Not yet specified
 

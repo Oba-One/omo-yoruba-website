@@ -1,0 +1,188 @@
+---
+/**
+ * The signature event band (`02 Homepage.dc.html`, COMPONENT-MAP, Page structure): one edition
+ * at a time inside the festival frame, chevron rows and aṣọ òkè stripe seams top and bottom and
+ * the motif columns on the edges, on the theme's band surface. The kicker and the button read by
+ * kind (the Gala: "Coming up next" and "Tickets & tables"; Odunde: "Ọdúndé • The new year has
+ * arrived" and "Vendors & sponsors"); everything else is the edition's own: title, venue, date
+ * and summary, with a Pending chip for a missing date or venue. No edition renders the Pending
+ * line for the next event. The line reads as the prototype's sentence ("June 2027. One village,
+ * four zones, one family.") at the body size, and the button keeps to the right at every width,
+ * below the copy once the row wraps. The root carries no generic `oy-band` class: the tokens size
+ * that family's paragraphs at 15px.
+ */
+import { pendingWhat } from '@oy/content/pending';
+import { ROUTE_SINGLETONS } from '@oy/content/routes';
+import Button from '../../core/Button/Button.astro';
+import Kicker from '../../core/Kicker/Kicker.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import PatternBand from '../PatternBand/PatternBand.astro';
+
+export type EventBandKind = 'festival' | 'gala';
+
+export interface BandEvent {
+  kind?: string | null;
+  title?: string | null;
+  edition?: number | null;
+  start?: string | null;
+  end?: string | null;
+  venueName?: string | null;
+  summary?: string | null;
+}
+
+interface Props {
+  event?: BandEvent | null;
+  /** Overrides the edition's kind for the frame and the copy. */
+  kind?: EventBandKind;
+  /** A `data-sanity` attribute for the band, so click-to-edit reaches the season option. */
+  edit?: string;
+  class?: string;
+  id?: string;
+}
+
+/** The band's own copy by kind (the prototype's kicker and button), and the page it opens. */
+const COPY: Record<
+  EventBandKind,
+  { kicker: { yo?: string; en: string }; button: string; href: string }
+> = {
+  gala: {
+    kicker: { en: 'Coming up next' },
+    button: 'Tickets & tables',
+    href: ROUTE_SINGLETONS.galaPage ?? '/gala',
+  },
+  festival: {
+    kicker: { yo: 'Ọdúndé', en: 'The new year has arrived' },
+    button: 'Vendors & sponsors',
+    href: ROUTE_SINGLETONS.festivalPage ?? '/odunde',
+  },
+};
+
+const { event, kind: kindProp, edit, class: className, ...rest } = Astro.props;
+const kind: EventBandKind = kindProp ?? (event?.kind === 'festival' ? 'festival' : 'gala');
+const copy = COPY[kind];
+const datePending = pendingWhat('event', 'start', kind);
+const venuePending = pendingWhat('event', 'venue.name', kind);
+
+function formatDate(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return undefined;
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'America/Los_Angeles',
+  })
+    .format(date)
+    .replace(/,/g, '');
+}
+const when = formatDate(event?.start);
+---
+
+<div
+  class:list={['oy-dark', 'oy-event-band', className]}
+  data-kind={kind}
+  data-sanity={edit}
+  {...rest}
+>
+  <PatternBand pattern="chevron" />
+  <div class="oy-band-seam" aria-hidden="true"></div>
+  <div class="oy-band-row">
+    <PatternBand pattern="motif" />
+    <div class="oy-wrap oy-band-inner">
+      {
+        event ? (
+          <>
+            <div class="oy-band-copy">
+              <Kicker yo={copy.kicker.yo} en={copy.kicker.en} />
+              {event.title && <h2>{event.title}</h2>}
+              <p class="oy-band-line">
+                {event.venueName ? <span>{event.venueName}</span> : <Pending what={venuePending} />}
+                <span class="oy-band-dot" aria-hidden="true">
+                  •
+                </span>
+                {/* The space ends the sentence for readers and copying; the flex gap does the spacing. */}
+                {when ? <span>{event.summary ? `${when}. ` : when}</span> : <Pending what={datePending} />}
+                {event.summary && (
+                  <span class:list={['oy-band-summary', !when && 'oy-band-summary--apart']}>{event.summary}</span>
+                )}
+              </p>
+            </div>
+            <Button href={copy.href} arrow>
+              {copy.button}
+            </Button>
+          </>
+        ) : (
+          <Pending variant="line" what="the lead event: an edition with a date and a venue" />
+        )
+      }
+    </div>
+    <PatternBand pattern="motif" />
+  </div>
+  <div class="oy-band-seam oy-band-seam--flip" aria-hidden="true"></div>
+  <PatternBand pattern="chevron" flip />
+</div>
+
+<style>
+  .oy-event-band {
+    background: var(--band-surface, var(--indigo-900));
+  }
+  .oy-band-seam {
+    height: 7px;
+    background: linear-gradient(
+      180deg,
+      var(--terra-600) 0 2px,
+      transparent 2px 4px,
+      var(--gold-500) 4px 6px,
+      transparent 6px
+    );
+  }
+  .oy-band-seam--flip {
+    transform: scaleY(-1);
+  }
+  .oy-band-row {
+    display: flex;
+    align-items: stretch;
+  }
+  .oy-band-inner {
+    flex: 1;
+    min-width: 0;
+    padding-top: 44px;
+    padding-bottom: 44px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .oy-band-copy {
+    flex: 1;
+    min-width: 260px;
+  }
+  .oy-event-band h2 {
+    margin: 10px 0 6px;
+    font-size: 30px;
+    color: var(--white);
+  }
+  .oy-band-line {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-on-dark-soft);
+  }
+  .oy-band-dot {
+    color: var(--text-on-dark-faint);
+  }
+  /* After a Pending chip the summary starts its own line rather than running on from the chip. */
+  .oy-band-summary--apart {
+    flex-basis: 100%;
+  }
+  .oy-event-band :global(.oy-btn) {
+    margin-left: auto;
+  }
+  .oy-event-band :global(.oy-pend-line) {
+    flex: 1;
+  }
+</style>

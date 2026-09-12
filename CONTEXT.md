@@ -199,6 +199,42 @@ _Avoid_: assumed, approximate, sample
 A Studio field mirroring a design tweak prop, with the same name across pages.
 _Avoid_: variant flag, feature toggle
 
+**Page root**:
+The body's data attributes that carry a page's layout options (`data-highlight`, `data-pattern`,
+`data-motion` and the rest), which the ported CSS reads.
+_Avoid_: theme wrapper, page state
+
+**Lead event**:
+The one edition the homepage's event band shows: the editor's explicit choice, else the season
+rule's pick (the nearest dated upcoming festival or gala, else the calendar: festival January to
+June, Gala July to December). A past edition never leads.
+_Avoid_: next event, featured event, current event
+
+**Draft mode**:
+A request carrying the perspective cookie the Presentation tool set: reads come back as drafts
+with stega, the overlay mounts, and the response is never cached.
+_Avoid_: preview mode, visual editing mode, the draft cookie (the mechanism)
+
+**Preview host**:
+The second hostname of the same deployment the Presentation tool previews on, never cached, so an
+editor never meets the public copy. Optional; the Studio's own origin until it exists.
+_Avoid_: preview deployment (Vercel's protected branch builds), staging
+
+**Type tag**:
+The cache tag `type:<document type>` a public page carries for every type that reaches its route,
+and the tag a publish purges.
+_Avoid_: route tag (purged as a path), cache key
+
+**Purge**:
+What `/api/revalidate` does with a published document's tags through the cache provider; soft, so
+the stale copy serves once more while the CDN revalidates.
+_Avoid_: invalidation (the provider's verb), cache bust, revalidate (the route's name)
+
+**Edit attribute**:
+The `data-sanity` attribute the site writes on an image or an option's container so click-to-edit
+reaches a field stega cannot mark. Rendered in draft mode only.
+_Avoid_: data attribute, overlay hook
+
 **Elder test**:
 Readable by an elder on a phone in sunlight: AA contrast, 17px body, 44px targets.
 _Avoid_: accessibility pass

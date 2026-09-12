@@ -10,3 +10,10 @@ interface Window {
     formData: FormData,
   ) => Promise<{ data?: unknown; error?: { message: string } | null | undefined }>;
 }
+
+/** What the middleware leaves for the layout after a form posted without JavaScript. */
+declare namespace App {
+  interface Locals {
+    formOutcome?: import('./lib/forms/action-paths').FormOutcome;
+  }
+}

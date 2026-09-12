@@ -5,7 +5,7 @@
  * TypeGen cannot evaluate a built string.
  */
 import { defineQuery } from 'groq';
-import { ENQUIRY_KINDS, replyToField } from './enquiry-kinds';
+import { ENQUIRY_KINDS, replyToField } from '../enquiry-kinds';
 
 /** The site settings every page reads for the chrome, the dialogs and the actions. */
 export const siteSettingsQuery = defineQuery(`*[_id == "siteSettings"][0]{

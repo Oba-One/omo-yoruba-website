@@ -1,6 +1,8 @@
-/* Ported verbatim from docs/design/design/_ds/.../tokens/typography.css. Type scale (design.md): hero 44-64, H2 32-40, H3 20-24, body 17-18, caption 13-14. Headings 1.15, body 1.6. */
+/* Ported verbatim from docs/design/design/_ds/.../tokens/typography.css, plus --text-hero-photo (Phase 4, see the package README). Type scale (design.md): hero 44-64, H2 32-40, H3 20-24, body 17-18, caption 13-14. Headings 1.15, body 1.6. */
 :root {
   --text-hero: clamp(38px, 5.4vw, 60px);
+  /* the homepage's photo hero, set inline in 02 Homepage.dc.html (added in Phase 4) */
+  --text-hero-photo: clamp(34px, 4.8vw, 56px);
   --text-h2: clamp(30px, 3.4vw, 38px);
   --text-h3: 22px;
   --text-h4: 18px;

@@ -1,0 +1,69 @@
+---
+/**
+ * A page section at the content width: `.oy-section` on white, on the theme's alternate ground
+ * (`alt`, the indigo tint under the `adire` theme) or on paper, an optional batik wash behind the
+ * content, and the slot inside `.oy-wrap`. On the tint the
+ * kicker deepens to terracotta 700 and muted text to its on-tint token so both keep AA. Pages
+ * compose sections from this and `SectionHead`; the textures come from the tokens and the
+ * pattern option on the page root dims them.
+ */
+import PatternBand from '../../bands/PatternBand/PatternBand.astro';
+
+export type SectionGround = 'white' | 'alt' | 'paper';
+
+interface Props {
+  id?: string;
+  /** The theme's alternate ground (`.oy-section--alt`), or paper. */
+  ground?: SectionGround;
+  /** A texture behind the content: the batik wash. */
+  texture?: 'batik' | 'none';
+  /** The id of the heading that labels the section. */
+  labelledby?: string;
+  class?: string;
+}
+
+const {
+  id,
+  ground = 'white',
+  texture = 'none',
+  labelledby,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={[
+    'oy-section',
+    ground === 'alt' && 'oy-section--alt',
+    ground === 'paper' && 'oy-section--paper',
+    texture !== 'none' && 'oy-section--textured',
+    className,
+  ]}
+  aria-labelledby={labelledby}
+  {...rest}
+>
+  {texture === 'batik' && <PatternBand pattern="batik" />}
+  <div class="oy-wrap oy-section-inner">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .oy-section--paper {
+    background: var(--paper);
+  }
+  /* The indigo tint is lighter than paper: terracotta 600 and the muted grey both fall under 4.5:1 on it. */
+  .oy-section--alt {
+    --accent-kicker: var(--terra-700);
+    --text-muted: var(--text-muted-on-tint);
+  }
+  .oy-section--textured {
+    position: relative;
+    overflow: hidden;
+  }
+  .oy-section--textured .oy-section-inner {
+    position: relative;
+  }
+</style>

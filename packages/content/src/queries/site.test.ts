@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { ENQUIRY_KINDS } from './enquiry-kinds';
-import { parseSubscriber } from './enquiry-zod';
-import { enquiryCountByEmailQuery, siteSettingsQuery, subscriberByEmailQuery } from './queries';
+import { ENQUIRY_KINDS } from '../enquiry-kinds';
+import { parseSubscriber } from '../enquiry-zod';
+import { enquiryCountByEmailQuery, siteSettingsQuery, subscriberByEmailQuery } from './site';
 
 describe('queries', () => {
   it('reads the site settings the chrome needs in one query', () => {

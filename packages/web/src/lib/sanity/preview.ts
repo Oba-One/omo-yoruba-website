@@ -30,14 +30,27 @@ export function previewCookieOptions(request: Request): PreviewCookieOptions {
 
 export type PreviewPerspective = 'published' | 'drafts' | string[];
 
-/** The perspective the loaders use: published without a cookie, else what the Studio asked for. */
+const RELEASE_NAME = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
+
+/**
+ * The perspective the loaders use: published without a cookie, else what the Studio asked for
+ * (`drafts`, `published`, or a comma-joined release stack). The cookie is readable by anyone,
+ * so a value that is not a perspective name falls back to published.
+ */
 export function perspectiveFromCookie(value: string | undefined): PreviewPerspective {
   if (!value) return 'published';
   if (value === 'drafts' || value === 'published') return value;
-  return value
+  const stack = value
     .split(',')
     .map((part) => part.trim())
     .filter(Boolean);
+  if (stack.length === 0 || !stack.every((part) => RELEASE_NAME.test(part))) return 'published';
+  return stack;
+}
+
+/** Whether a request comes from draft mode: the perspective cookie the enable route sets. */
+export function isDraftRequest(cookieValue: string | undefined): boolean {
+  return perspectiveFromCookie(cookieValue) !== 'published';
 }
 
 /** Two expiring Set-Cookie values: the plain one and the partitioned one. */

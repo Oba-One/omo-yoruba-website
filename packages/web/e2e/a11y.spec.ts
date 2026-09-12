@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { openEnquiry } from './helpers';
 
 const audit = async (page: Page) => {
   // The bottom sheet slides up over 300ms; a half-faded panel is not the contrast to measure.
@@ -30,7 +31,8 @@ test.describe('axe on the layout', () => {
 
   test('with the Enquiry Modal open', async ({ page }) => {
     await page.goto('/');
-    await page.locator('.oy-enquiry-card[data-kind="member"] a[data-enquiry]').click();
+    // The member form in every environment: its door locally, the opener in CI (helpers.ts).
+    await openEnquiry(page, 'member');
     await expect(page.locator('dialog#enquiry')).toHaveAttribute('open', '');
     expect(await audit(page)).toEqual([]);
   });

@@ -1,0 +1,96 @@
+---
+/**
+ * The headline figures (`02 Homepage.dc.html`, COMPONENT-MAP, Page structure): four or six big
+ * serif numbers with a small label each, on white with the two corner dot fields, a hairline
+ * under the band. With `sources` on, each figure carries its source line (the Impact page) and a
+ * missing source shows the registry's Pending chip. Value and label are required in the Studio,
+ * so an empty one renders nothing; no figures at all show the registry's Pending line.
+ */
+import { pendingWhat } from '@oy/content/pending';
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface StripStat {
+  value?: string | null;
+  label?: string | null;
+  source?: string | null;
+}
+
+interface Props {
+  stats?: StripStat[] | null;
+  /** Show the source line under each figure. */
+  sources?: boolean;
+  /** Four or six across; by the count when unset. */
+  columns?: 4 | 6;
+  /** What the Pending line names when there are no figures. */
+  what?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  stats = [],
+  sources = false,
+  columns = (stats?.length ?? 0) > 4 ? 6 : 4,
+  what = pendingWhat('homepage', 'stats[]'),
+  class: className,
+  ...rest
+} = Astro.props;
+const list = stats ?? [];
+const sourcePending = pendingWhat('stat', 'source');
+---
+
+<div class:list={['oy-stat-band', className]} {...rest}>
+  <div class="v2-corner v2-corner--tl" aria-hidden="true"></div>
+  <div class="v2-corner v2-corner--br" aria-hidden="true"></div>
+  <div class:list={['oy-wrap', list.length > 0 && 'oy-stat-strip']} data-columns={columns}>
+    {
+      list.length > 0 ? (
+        list.map((stat) => (
+          <div class="oy-stat">
+            <b>{stat.value}</b>
+            <span>{stat.label}</span>
+            {sources && (
+              <small class="oy-source">{stat.source || <Pending what={sourcePending} />}</small>
+            )}
+          </div>
+        ))
+      ) : (
+        <Pending variant="line" what={what} class="oy-stat-pending" />
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .oy-stat-band {
+    position: relative;
+    background: var(--white);
+    border-bottom: 1px solid var(--border-soft);
+    overflow: hidden;
+  }
+  .oy-stat-band .oy-wrap {
+    position: relative;
+  }
+  .oy-stat-strip[data-columns='6'] {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .oy-source {
+    display: block;
+    margin-top: 8px;
+    font-size: var(--text-caption);
+    color: var(--text-muted);
+  }
+  .oy-stat-pending {
+    margin: 34px 0;
+  }
+  @media (max-width: 1000px) {
+    .oy-stat-strip[data-columns='6'] {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 720px) {
+    .oy-stat-strip[data-columns='6'] {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

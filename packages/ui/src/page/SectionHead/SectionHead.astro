@@ -1,0 +1,75 @@
+---
+/**
+ * The head of a homepage section: the small aṣọ òkè swatch beside the bilingual kicker, the H2
+ * and an optional intro on the left, an optional quiet link on the right (`02 Homepage.dc.html`).
+ * The heading takes `id` so the section can be labelled by it. Empty kicker halves render a
+ * single kicker; no kicker renders none.
+ */
+import Button from '../../core/Button/Button.astro';
+import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
+import Pending from '../../core/Pending/Pending.astro';
+
+interface Props {
+  kicker?: BilingualText | null;
+  title?: string | null;
+  /** The registry's wording for a missing heading; without it an empty heading renders nothing. */
+  pending?: string;
+  intro?: string | null;
+  link?: { label: string; href: string } | null;
+  /** The id of the heading, for `aria-labelledby` on the section. */
+  id?: string;
+  class?: string;
+}
+
+const { kicker, title, intro, link, id, pending, class: className } = Astro.props;
+const hasKicker = Boolean(kicker?.yo || kicker?.en);
+---
+
+<div class:list={['oy-sec-head', className]}>
+  <div>
+    {
+      hasKicker && (
+        <div class="oy-sec-kicker">
+          <span class="oy-sec-swatch" aria-hidden="true" />
+          <Kicker yo={kicker?.yo ?? undefined} en={kicker?.en ?? undefined} />
+        </div>
+      )
+    }
+    {(title?.trim() || pending) && <h2 id={id}>{title?.trim() || <Pending what={pending} />}</h2>}
+    {intro && <p class="oy-sec-intro">{intro}</p>}
+  </div>
+  {
+    link && (
+      <Button variant="quiet" href={link.href} class="oy-sec-link" arrow>
+        {link.label}
+      </Button>
+    )
+  }
+</div>
+
+<style>
+  .oy-sec-kicker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .oy-sec-swatch {
+    display: inline-block;
+    width: 26px;
+    height: 10px;
+    background: var(--pattern-asoke);
+    flex: none;
+  }
+  .oy-sec-head h2 {
+    margin-top: 6px;
+  }
+  .oy-sec-intro {
+    margin: 10px 0 0;
+    max-width: 560px;
+    font-size: var(--text-body-size);
+    color: var(--text-muted);
+  }
+  .oy-sec-head :global(.oy-sec-link) {
+    margin-left: auto;
+  }
+</style>

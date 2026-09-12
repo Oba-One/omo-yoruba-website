@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 /**
  * devalue's flat encoding for a plain object of primitives and nested objects: the root at
@@ -43,4 +43,24 @@ export async function interceptActions(page: Page, answer: ActionAnswer, delayMs
       body: encodeActionResult(answer(name)),
     });
   });
+}
+
+/**
+ * Opens the Enquiry Modal on one kind, the same kind in every environment: from the home page's
+ * own trigger when it has one (the member and partner doors come from the Studio, the footer's
+ * volunteer and contact links are always there), else through the `?enquiry=<kind>` opener, which
+ * serves the dialog open. CI builds with a placeholder project, so the doors hold no trigger
+ * there. Answers the trigger it clicked, so a spec can check focus returns to it.
+ */
+export async function openEnquiry(page: Page, kind: string): Promise<Locator | undefined> {
+  const trigger = page
+    .locator(`main [data-enquiry="${kind}"], footer [data-enquiry="${kind}"]`)
+    .first();
+  if ((await trigger.count()) === 0) {
+    await page.goto(`/?enquiry=${kind}`);
+    return undefined;
+  }
+  await trigger.scrollIntoViewIfNeeded();
+  await trigger.click();
+  return trigger;
 }

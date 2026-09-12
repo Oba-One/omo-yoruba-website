@@ -1,0 +1,58 @@
+# Lighthouse CI against each Vercel preview, one job per preset, with the budgets of
+# docs/design/QUALITY.md section 3 (packages/web/lighthouserc.cjs). Facts and sources:
+# docs/research/phase-4-lighthouse-ci.md. Vercel sends a deployment_status event when a
+# deployment finishes; the checkout is that deployed commit, so a branch carries this workflow
+# before it merges. Vercel names the environments Preview and Production (read from this
+# repository's deployments on 12 September 2026); production is audited on the public domain
+# instead.
+#
+# Every vercel.app host sits behind Vercel Authentication, so the audit needs the project's
+# Protection Bypass for Automation secret as the repository secret
+# VERCEL_AUTOMATION_BYPASS_SECRET. Until the owner creates it the job skips with a notice rather
+# than auditing the login page. A fork's preview never runs here: GitHub does not start a run for
+# a commit no branch of this repository points to. Lighthouse sends the secret on every request the
+# page makes, the Sanity CDN's and PostHog's included, and the reports embed it, so nothing is
+# uploaded.
+
+name: Lighthouse
+
+on: deployment_status
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: Lighthouse (${{ matrix.preset }})
+    if: github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Preview'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [mobile, desktop]
+    env:
+      LIGHTHOUSE_BASE_URL: ${{ github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
+      LIGHTHOUSE_PRESET: ${{ matrix.preset }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+    steps:
+      - name: Lighthouse skipped
+        if: env.VERCEL_AUTOMATION_BYPASS_SECRET == ''
+        shell: bash
+        run: |
+          message='VERCEL_AUTOMATION_BYPASS_SECRET is not set, so the preview (behind Vercel Authentication) was not audited. Create a Protection Bypass for Automation secret in the Vercel project (Settings, Deployment Protection) and store it as this repository secret (docs/runbook.md, Lighthouse).'
+          echo "::notice title=Lighthouse skipped::$message"
+          {
+            echo '### Lighthouse skipped'
+            echo
+            echo "$message"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: env.VERCEL_AUTOMATION_BYPASS_SECRET != ''
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-js
+        if: env.VERCEL_AUTOMATION_BYPASS_SECRET != ''
+      - name: lhci autorun against the preview
+        if: env.VERCEL_AUTOMATION_BYPASS_SECRET != ''
+        run: bun run --filter @oy/web lighthouse

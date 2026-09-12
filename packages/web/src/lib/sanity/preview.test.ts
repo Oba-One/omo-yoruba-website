@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   disableCookieHeaders,
+  isDraftRequest,
   PERSPECTIVE_COOKIE,
   perspectiveFromCookie,
   previewCookieOptions,
@@ -34,6 +35,19 @@ describe('perspectiveFromCookie', () => {
     expect(perspectiveFromCookie('drafts')).toBe('drafts');
     expect(perspectiveFromCookie('published')).toBe('published');
     expect(perspectiveFromCookie('rABC123,drafts')).toEqual(['rABC123', 'drafts']);
+  });
+
+  it('falls back to published for a value that is not a perspective name', () => {
+    expect(perspectiveFromCookie('drafts;evil')).toBe('published');
+    expect(perspectiveFromCookie(' , ')).toBe('published');
+    expect(perspectiveFromCookie('r1 2')).toBe('published');
+  });
+
+  it('knows a draft request from the cookie alone', () => {
+    expect(isDraftRequest(undefined)).toBe(false);
+    expect(isDraftRequest('published')).toBe(false);
+    expect(isDraftRequest('drafts')).toBe(true);
+    expect(isDraftRequest('rABC,drafts')).toBe(true);
   });
 });
 
