@@ -49,6 +49,10 @@ export default defineConfig({
     }),
   ],
 
+  // Playwright starts the dev server with PLAYWRIGHT=1 (playwright.config.ts): the dev toolbar's
+  // shadow DOM would otherwise add headings and controls the specs and axe can see.
+  devToolbar: { enabled: process.env.PLAYWRIGHT !== '1' },
+
   // Astro's built-in CSP renders a <meta> tag, has no report-only mode, and is not
   // supported alongside <ClientRouter />. Until Phase 9 the policy is delivered as a
   // Content-Security-Policy-Report-Only header from src/middleware.ts, built from the

@@ -35,7 +35,14 @@ export default defineConfig({
   webServer: deployed
     ? undefined
     : {
-        command: 'bun run dev',
+        // Node runs Astro directly so the runner's shutdown reaches the server itself. Astro 7
+        // backgrounds the dev server when it detects a coding agent (the process then "exits
+        // early" and the daemon keeps the port); ASTRO_DEV_BACKGROUND set to anything turns that
+        // detection off, so the server stays in the foreground under the runner.
+        command: 'node ./node_modules/astro/bin/astro.mjs dev',
+        env: { ...process.env, PLAYWRIGHT: '1', ASTRO_DEV_BACKGROUND: '0' },
+        stdout: 'ignore',
+        stderr: 'pipe',
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
