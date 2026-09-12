@@ -3,14 +3,20 @@
  * voice: a sentence naming what is missing, never colour alone.
  */
 import { z } from 'zod';
-import { ENQUIRY_KINDS, ENQUIRY_SPECS, type EnquiryKind, type FieldSpec } from './enquiry-kinds';
+import {
+  ENQUIRY_KINDS,
+  ENQUIRY_SPECS,
+  type EnquiryKind,
+  type FieldSpec,
+  requiredSentence,
+} from './enquiry-kinds';
 
 export const EMAIL_MESSAGE = 'That email address does not look right. Check it and send again.';
 const TEXT_MAX = 300;
 const AREA_MAX = 4000;
 
 function fieldSchema(field: FieldSpec): z.ZodType {
-  const phrase = `We still need ${field.req ?? field.label.toLowerCase()}.`;
+  const phrase = requiredSentence(field.req ?? field.label.toLowerCase());
   if (field.kind === 'select') {
     const options = field.options ?? [];
     const schema = z.enum(options as [string, ...string[]], {

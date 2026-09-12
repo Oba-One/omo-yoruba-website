@@ -356,6 +356,60 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
   },
 };
 
+/**
+ * The sentences a form speaks besides the spec's own copy: the missing-field sentence (the site
+ * and the action say the same thing), the summary at the top of a form, and the two fallbacks
+ * that name the general inbox. Templates follow `fillTemplate`: `{req}`, `{list}`, `{email}`,
+ * and a `[[ ]]` segment drops when its slot is empty.
+ */
+export const REQUIRED_TEMPLATE = 'We still need {req}.';
+export const SUMMARY_TEMPLATE = 'We still need {list}. Nothing you typed has been cleared.';
+export const FALLBACK_TEMPLATE = 'We could not send your message.[[ Write to {email} instead.]]';
+export const CAPPED_TEMPLATE =
+  'Too many messages from this address in the last hour.[[ Write to {email} instead.]]';
+
+/** "We still need an email address." */
+export const requiredSentence = (req: string): string => fillTemplate(REQUIRED_TEMPLATE, { req });
+
+/** "We still need a business name, an email address. Nothing you typed has been cleared." */
+export const summarySentence = (reqs: readonly string[]): string =>
+  fillTemplate(SUMMARY_TEMPLATE, { list: reqs.join(', ') });
+
+/** The sentence when the action cannot save, naming the general inbox when there is one. */
+export const fallbackSentence = (site: SiteContact = {}): string =>
+  fillTemplate(FALLBACK_TEMPLATE, { email: site.email });
+
+/** The sentence when an address is past the address cap. */
+export const cappedSentence = (site: SiteContact = {}): string =>
+  fillTemplate(CAPPED_TEMPLATE, { email: site.email });
+
+/** A routing contact entry as a query returns it from `siteSettings.contacts[]`. */
+export interface ContactEntry {
+  role?: string | null;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  responds?: string | null;
+}
+
+/** The entries keyed by role, for `successCopy` and the actions; unknown roles are dropped. */
+export function contactsByRole(
+  entries: readonly ContactEntry[] | null | undefined,
+): Partial<Record<ContactRole, RoutingContact>> {
+  const byRole: Partial<Record<ContactRole, RoutingContact>> = {};
+  for (const entry of entries ?? []) {
+    const role = entry.role as ContactRole | null | undefined;
+    if (!role || !CONTACT_ROLES.includes(role)) continue;
+    byRole[role] = {
+      name: entry.name ?? undefined,
+      email: entry.email ?? undefined,
+      phone: entry.phone ?? undefined,
+      responds: entry.responds ?? undefined,
+    };
+  }
+  return byRole;
+}
+
 /** The field that names the sender, in order of preference: the Inbox title and the email subject use it. */
 export const SENDER_FIELDS = ['org', 'biz', 'group', 'name', 'learner'] as const;
 
