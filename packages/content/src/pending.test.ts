@@ -146,6 +146,9 @@ describe('pendingWhat and pendingTitle', () => {
   it('returns the chip wording for a field and the row title for the Studio', () => {
     expect(pendingWhat('siteSettings', 'ein')).toBe('EIN');
     expect(pendingWhat('siteSettings', 'nothing')).toBeUndefined();
+    expect(pendingWhat('event', 'start', 'kind == "gala"')).toBe('the date');
+    expect(pendingWhat('event', 'start', 'kind == "festival"')).toBe('the date and hours');
+    expect(pendingWhat('event', 'start')).toBe('the date and hours');
     expect(
       pendingTitle({ type: 'siteSettings', fields: ['ein'], where: 'Everywhere', what: 'EIN' }),
     ).toBe('Everywhere: EIN');

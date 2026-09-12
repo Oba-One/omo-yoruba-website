@@ -76,9 +76,20 @@ export function routesFor(type: string, slug?: string): string[] {
     .filter((route): route is string => route !== undefined);
 }
 
-/** Cache tags: the type, then one per affected route. Phase 4 attaches them with Astro.cache. */
+/**
+ * Cache tags a published document invalidates: its type tag, then one per affected route (the
+ * site's revalidate route turns each into the provider's path tag). Pages tag their responses
+ * with `tagsForRoute`, so the type tag alone reaches every page that reads the type.
+ */
 export function cacheTagsFor(type: string, slug?: string): string[] {
   const routes = routesFor(type, slug);
   if (routes.length === 0) return [];
   return [`type:${type}`, ...routes.map((route) => `route:${route}`)];
+}
+
+/** The type tags a route's response carries: one per document type that reaches the route. */
+export function tagsForRoute(route: PublicRoute): string[] {
+  return Object.entries(TYPE_ROUTES)
+    .filter(([, routes]) => routes.includes(route))
+    .map(([type]) => `type:${type}`);
 }

@@ -289,6 +289,12 @@ export const program = defineType({
       description: 'Only Lessons and the Collective have a page; the site derives whether to link.',
       options: { list: [...PROGRAM_PAGES] },
     }),
+    defineField({
+      name: 'action',
+      title: 'Card action',
+      type: 'cta',
+      description: 'The quiet link on the program card. Empty reads "See the program".',
+    }),
     order,
   ],
   orderings: [{ title: 'Order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],

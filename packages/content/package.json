@@ -9,7 +9,9 @@
     "./enquiry-zod": "./src/enquiry-zod.ts",
     "./pending": "./src/pending.ts",
     "./routes": "./src/routes.ts",
-    "./queries": "./src/queries.ts"
+    "./queries": "./src/queries/index.ts",
+    "./images": "./src/images.ts",
+    "./stega": "./src/stega.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

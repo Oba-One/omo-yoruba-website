@@ -17,7 +17,7 @@ import { join } from 'node:path';
 import { ClientError, createClient, type SanityClient } from '@sanity/client';
 import { STUDIO_API_VERSION } from '../src/studio/config';
 import { PHOTOS_DIR, REGISTER_PATH, type RegisterPhoto, registerPhotos } from './register';
-import { buildSeed, type SeedAssets, type SeedDocument } from './seed-data';
+import { buildSeed, missingFields, type SeedAssets, type SeedDocument } from './seed-data';
 
 interface Options {
   dataset: string;
@@ -182,10 +182,9 @@ async function writeDocuments(
         created += 1;
         continue;
       }
-      // Only the fields the owner has not filled since; an edit is never overwritten.
-      const missing = Object.fromEntries(
-        Object.entries(fields).filter(([key]) => current[key] === undefined),
-      );
+      // Only the fields the owner has not filled since; an edit is never overwritten. One level
+      // into an object (`hero.blessing`) so a field added to the schema later still lands.
+      const missing = missingFields(fields, current);
       if (Object.keys(missing).length === 0) {
         unchanged += 1;
         continue;

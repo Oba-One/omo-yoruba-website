@@ -36,6 +36,12 @@ export const homepage = definePage({
         text('sub', 'Line under the heading', 2),
         defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
         defineField({
+          name: 'blessing',
+          title: 'Blessing line',
+          type: 'bilingual',
+          description: 'The line under the buttons: "Oòdúà á gbè wá o! • May Odùduwà bless us".',
+        }),
+        defineField({
           name: 'primaryAction',
           title: 'Primary action',
           type: 'cta',
@@ -58,7 +64,14 @@ export const homepage = definePage({
     }),
     refs('stats', 'Stat strip', 'stat', 'Four figures, in order.'),
     text('programsIntro', 'Programs intro', 2),
+    text('voicesIntro', 'Member voices intro', 2),
     refs('voices', 'Member voices', 'testimonial'),
+    defineField({
+      name: 'voicesProverb',
+      title: 'Proverb under the voices',
+      type: 'bilingual',
+      description: 'Yoruba first, then the English sense. Empty hides the line.',
+    }),
     text('newsIntro', 'News intro', 2),
     defineField({
       name: 'yearInLife',

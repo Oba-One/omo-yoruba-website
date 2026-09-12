@@ -1,10 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { CONTACT_ROLES } from '../src/enquiry-kinds';
 import { documentTypes, SINGLETON_NAMES } from '../src/schema';
-import { buildSeed, type SeedAssets } from './seed-data';
+import { buildSeed, missingFields, type SeedAssets } from './seed-data';
 
 const assets: SeedAssets = new Map(
-  ['community-dance.jpg', 'odunde-2026-ayo-game.jpg', 'gala-2025-group-photo.jpg'].map((file) => [
+  [
+    'community-dance.jpg',
+    'odunde-2026-ayo-game.jpg',
+    'odunde-2026-attendees-learning-yoruba.jpg',
+    'odunde-2026-group-guests-smiling.jpg',
+    'gala-2025-group-photo.jpg',
+  ].map((file) => [
     file,
     {
       assetId: `image-${file.replace(/\W/g, '')}-10x10-jpg`,
@@ -144,5 +150,47 @@ describe('buildSeed', () => {
       'language-lessons-fall-term',
       'odunde-2026-recap',
     ]);
+  });
+});
+
+describe('missingFields', () => {
+  it('fills a top-level field the document lacks and one level into an object', () => {
+    const seed = {
+      hero: { title: 'Seed title', blessing: { yo: 'a', en: 'b' } },
+      voicesIntro: 'Intro',
+      leadEvent: { _type: 'reference', _ref: 'event-gala-2026' },
+      layout: { season: 'auto' },
+    };
+    const current = { hero: { title: 'Owner title' }, layout: { season: 'gala' } };
+    expect(missingFields(seed, current)).toEqual({
+      'hero.blessing': { yo: 'a', en: 'b' },
+      voicesIntro: 'Intro',
+      leadEvent: { _type: 'reference', _ref: 'event-gala-2026' },
+    });
+  });
+
+  it('never overwrites a value the owner filled, at either level', () => {
+    expect(missingFields({ hero: { title: 'x' } }, { hero: { title: 'kept' } })).toEqual({});
+    expect(missingFields({ title: 'x' }, { title: 'kept' })).toEqual({});
+  });
+
+  it('seeds the program and door photographs and the prototype copy', () => {
+    const lessons = byId.get('program-yoruba-lessons') as {
+      image?: unknown;
+      action?: { label: string };
+    };
+    expect(lessons.image).toBeDefined();
+    expect(lessons.action?.label).toBe('Enrol a learner');
+    const exchange = byId.get('program-cultural-exchange') as { image?: unknown; action?: unknown };
+    expect(exchange.image).toBeUndefined();
+    expect(exchange.action).toBeUndefined();
+    const member = byId.get('door-member') as { image?: { alt: string } };
+    expect(member.image?.alt).toBe('Caption for odunde-2026-group-guests-smiling.jpg');
+    const home = byId.get('homepage') as unknown as {
+      hero: { blessing: { yo: string; en: string } };
+      voicesProverb: { yo: string };
+    };
+    expect(home.hero.blessing.yo).toBe('Oòdúà á gbè wá o!');
+    expect(home.voicesProverb.yo).toBe('Àgbájọ ọwọ́ la fi ń sọ̀yà.');
   });
 });

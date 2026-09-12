@@ -5,7 +5,7 @@
  * contain no period (a period makes a document private, see the client research note).
  */
 import { CONTACT_ROLES } from '../src/enquiry-kinds';
-import { schemaTypes } from '../src/schema';
+import { layoutDefaults } from '../src/layout';
 import type { AlbumId, PhotographerId } from './register';
 
 export interface SeedAsset {
@@ -70,20 +70,6 @@ const fact = (label: string, value?: string, note?: string) => ({
   ...(note ? { note } : {}),
 });
 
-/** The layout defaults every page singleton carries, read from the schema so they stay one source. */
-export function layoutDefaults(typeName: string): Record<string, string> | undefined {
-  const type = schemaTypes.find((t) => t.name === typeName) as
-    | { fields?: { name: string; fields?: { name: string; initialValue?: unknown }[] }[] }
-    | undefined;
-  const layout = type?.fields?.find((f) => f.name === 'layout');
-  if (!layout?.fields) return undefined;
-  return Object.fromEntries(
-    layout.fields
-      .filter((f) => typeof f.initialValue === 'string')
-      .map((f) => [f.name, f.initialValue as string]),
-  );
-}
-
 function image(assets: SeedAssets, file: string, caption?: string) {
   const asset = assets.get(file);
   if (!asset) return undefined;
@@ -141,6 +127,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     });
   }
 
+  // The card photographs and links follow the homepage prototype; the Collective and Cultural
+  // Exchange cards keep the placeholder (the prototype's Collective photo is marked interim).
   const programs = [
     {
       id: 'program-yoruba-lessons',
@@ -150,6 +138,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       cadence: 'Online, by arrangement',
       blurb:
         'Speaking, reading, and tone marks, taught over video call by our teacher. Times are set with her.',
+      image: 'odunde-2026-attendees-learning-yoruba.jpg',
+      action: cta('Enrol a learner', 'url', '/programs/yoruba-lessons'),
     },
     {
       id: 'program-cultural-collective',
@@ -158,12 +148,15 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       page: 'collective',
       blurb:
         'Members who put culture to work: the Solar Hub, Green Goods, and a circle that keeps ideas moving.',
+      action: cta('Meet the Collective', 'url', '/programs/cultural-collective'),
     },
     {
       id: 'program-kids-stem',
       name: 'Kids & STEM',
       slug: 'kids-stem',
       blurb: "Àgbàlá Ọmọde, the children's compound, and the STEM Hub.",
+      image: 'odunde-2026-kids-doing-crafts.jpg',
+      action: cta('See youth programs', 'url', '/programs#kids'),
     },
     { id: 'program-cultural-exchange', name: 'Cultural Exchange', slug: 'cultural-exchange' },
   ];
@@ -176,6 +169,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       ...(program.blurb ? { blurb: program.blurb } : {}),
       ...(program.cadence ? { cadence: program.cadence } : {}),
       ...(program.page ? { page: program.page } : {}),
+      ...(program.image ? { image: image(assets, program.image) } : {}),
+      ...(program.action ? { action: program.action } : {}),
       order: index + 1,
     });
   });
@@ -320,6 +315,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       blurb:
         'Members carry the lessons, the festival, and each other. Dues run the year between events, when nothing is being sold and the bills still arrive.',
       action: cta('Become a member', 'enquiry', 'member'),
+      image: 'odunde-2026-group-guests-smiling.jpg',
     },
     {
       id: 'door-volunteer',
@@ -340,6 +336,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         'Four questions. This is a conversation, not an application',
       ],
       action: cta('Partner with us', 'enquiry', 'sponsor'),
+      image: 'odunde-2026-president-receiving-gift.jpg',
     },
     {
       id: 'door-give',
@@ -358,6 +355,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       blurb: door.blurb,
       ...(door.bullets ? { bullets: door.bullets } : {}),
       action: door.action,
+      ...(door.image ? { image: image(assets, door.image) } : {}),
       order: index + 1,
     });
   });
@@ -379,12 +377,18 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Yoruba culture, alive in Southern California',
         sub: 'Language, festival, family. Since 1997.',
         image: image(assets, 'community-dance.jpg'),
+        blessing: bilingual('Oòdúà á gbè wá o!', 'May Odùduwà bless us'),
         primaryAction: cta('See the Odunde Festival', 'url', '/odunde'),
         secondaryActions: withKeys('action', [cta('Get involved', 'url', '/get-involved')]),
       },
       stats: withKeys(
         'stat',
         stats.map((stat) => ref(stat.id)),
+      ),
+      voicesIntro: 'Families, elders, and vendors on what this community holds for them.',
+      voicesProverb: bilingual(
+        'Àgbájọ ọwọ́ la fi ń sọ̀yà.',
+        'With joined hands we beat the chest. Many hands make the load light.',
       ),
       yearInLife: withKeys(
         'tile',
@@ -654,4 +658,29 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
   docs.push(page('newsPage', { header: { title: 'News and events' } }));
 
   return docs;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** The seed fields the document lacks, as `setIfMissing` paths, one level into plain objects. */
+export function missingFields(
+  fields: Record<string, unknown>,
+  current: Record<string, unknown>,
+): Record<string, unknown> {
+  const missing: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(fields)) {
+    const stored = current[key];
+    if (stored === undefined) {
+      missing[key] = value;
+      continue;
+    }
+    if (isPlainObject(value) && isPlainObject(stored) && !('_ref' in value)) {
+      for (const [sub, subValue] of Object.entries(value)) {
+        if (stored[sub] === undefined) missing[`${key}.${sub}`] = subValue;
+      }
+    }
+  }
+  return missing;
 }

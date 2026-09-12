@@ -379,9 +379,15 @@ export function pendingTitle(entry: PendingEntry | PresenceEntry): string {
   return `${entry.where}: ${entry.what}`;
 }
 
-/** The chip wording for an empty field, or undefined when the field is not required for launch. */
-export function pendingWhat(type: string, field: string): string | undefined {
-  return PENDING.find((entry) => entry.type === type && entry.fields?.includes(field))?.what;
+/**
+ * The chip wording for an empty field, or undefined when the field is not required for launch.
+ * `filter` narrows to the row for one kind of document (`kind == "gala"`) where the registry keeps
+ * a row per kind.
+ */
+export function pendingWhat(type: string, field: string, filter?: string): string | undefined {
+  const rows = PENDING.filter((entry) => entry.type === type && entry.fields?.includes(field));
+  const narrowed = filter ? rows.find((entry) => entry.filter?.includes(filter)) : undefined;
+  return (narrowed ?? rows[0])?.what;
 }
 
 /** The GROQ count of a presence entry; run it with the `drafts` perspective so a draft counts once. */

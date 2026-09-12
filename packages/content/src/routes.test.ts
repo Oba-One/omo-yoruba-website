@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cacheTagsFor, PUBLIC_ROUTES, routesFor, TYPE_ROUTES } from './routes';
+import { cacheTagsFor, PUBLIC_ROUTES, routesFor, TYPE_ROUTES, tagsForRoute } from './routes';
 import { documentTypes } from './schema';
 
 describe('PUBLIC_ROUTES', () => {
@@ -63,5 +63,27 @@ describe('cacheTagsFor', () => {
       'route:/gala',
     ]);
     expect(cacheTagsFor('enquiry')).toEqual([]);
+  });
+});
+
+describe('tagsForRoute', () => {
+  it('tags the homepage with every type that reaches it, the settings included', () => {
+    expect(tagsForRoute('/')).toEqual([
+      'type:siteSettings',
+      'type:homepage',
+      'type:event',
+      'type:program',
+      'type:testimonial',
+      'type:newsPost',
+      'type:stat',
+      'type:door',
+    ]);
+  });
+
+  it('matches the type tag a publish invalidates', () => {
+    for (const tag of tagsForRoute('/odunde')) {
+      const type = tag.replace('type:', '');
+      expect(cacheTagsFor(type)[0]).toBe(tag);
+    }
   });
 });
