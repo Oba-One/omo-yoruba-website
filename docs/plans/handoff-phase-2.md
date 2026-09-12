@@ -30,23 +30,21 @@ sources: `docs/research/phase-2-sanity-studio-v6-and-astro.md`,
 
 ## Owner follow-ups, in order
 
-1. `packages/web/.env`: rename `SANITY_READ_TOKEN` and `SANITY_WRITE_TOKEN` to
-   `SANITY_API_READ_TOKEN` and `SANITY_API_WRITE_TOKEN`, add `SANITY_PREVIEW_SECRET` and
-   `SANITY_WEBHOOK_SECRET` (wizard stage 2 generates them), and replace the write token with an
-   Editor token: the current one is a Contributor token (role `contributor`), which uploaded the
-   68 photographs but cannot create published documents. The seed now stops before uploading
-   when the role cannot publish.
-2. `bun seed` (against `development`), then `bun seed` again to confirm nothing changes, then
-   `bun seed -- --dry-run --dataset production` to read the plan before a production run.
-3. Log in at http://localhost:4321/admin (`bun dev`) and open Pending: the field rows fill from
-   the seed, "Missing entirely" lists the document types with nothing yet, and the Inbox is
-   empty until Phase 3. The project's CORS origins must include `http://localhost:4321`
-   (wizard stage 1).
-4. Functions: `bunx sanity login`, `bunx sanity blueprints init`, `bunx sanity blueprints deploy`
+Done on 11 September 2026 after the pull request opened: the token lines were renamed, an Editor
+token replaced the Contributor token, and `bun seed` ran against `development` (42 documents,
+68 photographs; a second and third run left everything unchanged).
+
+1. `packages/web/.env` still lacks `SANITY_PREVIEW_SECRET` and `SANITY_WEBHOOK_SECRET` (wizard
+   stage 2 generates them); `/api/preview/enable` and `/api/revalidate` answer 500 until then.
+2. Log in at http://localhost:4321/admin (`bun dev`) and open Pending: 49 field rows list their
+   documents and "Missing entirely" shows the two unnamed zones and the five absent types. The
+   project's CORS origins must include `http://localhost:4321` (wizard stage 1).
+3. Functions: `bunx sanity login`, `bunx sanity blueprints init`, `bunx sanity blueprints deploy`
    from the repo root, then `bunx sanity functions env add enquiry-notify RESEND_API_KEY <value>`
    and `... ENQUIRY_FROM "<Name> <address on the verified domain>"` (`docs/runbook.md`,
    Functions). Wizard stage 4 creates the Resend domain and key.
-5. Branch protection: add the context `TypeGen drift`.
+4. Branch protection: add the context `TypeGen drift`.
+5. `bun seed -- --dry-run --dataset production` to read the plan before a production run.
 6. Wayfinder tickets 02 (EIN, address, phone, routing emails and response lines), 05 (the two
    zones), 09 (photo credits, the summer camp year) and 22 (roles on the plan) still gate content.
 
@@ -80,7 +78,8 @@ sources: `docs/research/phase-2-sanity-studio-v6-and-astro.md`,
 - The sentence case check warns above two capitalised words per line, so two word labels pass.
 - API version `2026-09-11` in the Studio, the site and the functions; functions run on Node 24 in
   production and Node 22 locally; `.build/` is ignored; the seed accepts the old token name with
-  a warning.
+  a warning, writes every document in one transaction (cross-batch references fail otherwise)
+  and patches only the fields an existing document lacks.
 
 ## Which document won where they disagreed
 

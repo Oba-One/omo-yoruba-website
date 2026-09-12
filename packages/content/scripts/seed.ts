@@ -143,42 +143,67 @@ async function ensureAssets(
   return assets;
 }
 
-const BATCH = 20;
+// One transaction for everything: the documents reference each other (an edition its album, an
+// album its edition), and Sanity checks references when a transaction ends, so a split would
+// fail on whichever side is written first. The body stays far below the 4 MB limit.
+const BATCH = 500;
 
 async function writeDocuments(
   client: SanityClient,
   docs: SeedDocument[],
   replace: boolean,
 ): Promise<void> {
+  const existing = new Map(
+    (
+      await client.fetch<Record<string, unknown>[]>('*[_id in $ids]', {
+        ids: docs.map((doc) => doc._id),
+      })
+    ).map((doc) => [doc._id as string, doc]),
+  );
   let created = 0;
   let updated = 0;
   let unchanged = 0;
   for (let start = 0; start < docs.length; start += BATCH) {
     const transaction = client.transaction();
+    let mutations = 0;
     for (const doc of docs.slice(start, start + BATCH)) {
+      const { _id, _type, ...fields } = doc;
+      const current = existing.get(_id);
       if (replace) {
         transaction.createOrReplace(doc);
-      } else {
-        const { _id, _type, ...fields } = doc;
-        transaction.createIfNotExists({ _id, _type });
-        transaction.patch(_id, (patch) => patch.setIfMissing(fields));
+        mutations += 1;
+        if (current) updated += 1;
+        else created += 1;
+        continue;
       }
+      if (!current) {
+        transaction.create(doc);
+        mutations += 1;
+        created += 1;
+        continue;
+      }
+      // Only the fields the owner has not filled since; an edit is never overwritten.
+      const missing = Object.fromEntries(
+        Object.entries(fields).filter(([key]) => current[key] === undefined),
+      );
+      if (Object.keys(missing).length === 0) {
+        unchanged += 1;
+        continue;
+      }
+      transaction.patch(_id, (patch) => patch.setIfMissing(missing));
+      mutations += 1;
+      updated += 1;
     }
-    let result: Awaited<ReturnType<typeof transaction.commit>>;
+    if (mutations === 0) continue;
     try {
-      result = await transaction.commit({ autoGenerateArrayKeys: true, visibility: 'async' });
+      await transaction.commit({ autoGenerateArrayKeys: true, visibility: 'async' });
     } catch (cause) {
       if (cause instanceof ClientError && cause.statusCode === 403) {
         fail(
-          `the token may not write published documents (${cause.message}). Use an Editor token (wizard stage 2). Documents written so far: ${created} created, ${updated} updated.`,
+          `the token may not write published documents (${cause.message}). Use an Editor token (wizard stage 2).`,
         );
       }
       throw cause;
-    }
-    for (const item of result.results) {
-      if (item.operation === 'create') created += 1;
-      else if (item.operation === 'update') updated += 1;
-      else unchanged += 1;
     }
   }
   console.log(
