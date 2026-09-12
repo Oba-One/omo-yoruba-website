@@ -1,0 +1,328 @@
+---
+/**
+ * The dialog every Donate trigger opens (CONTEXT.md, Give Dialog): the aṣọ òkè top edge, the
+ * title, the lead line, the embed box and the fallback. The embed arrives through the `embed`
+ * slot as a `<template data-zeffy>` holding the iframe (the site's server island, ADR 0020); the
+ * inline element mounts it on first open and starts the timer (4 seconds by default). If the
+ * iframe has not loaded by then, or the template never arrives, the fallback shows: write to us,
+ * send a check to the mailing address (Pending until the settings hold it), Contact us (the
+ * contact enquiry) and Try again. `mode="pending"` is the island's answer when the settings hold
+ * no Zeffy URL. `#give` in the URL opens the dialog on load; a native dialog gives the focus
+ * trap and Escape; the element returns focus to the trigger and strips the hash on close.
+ * Announces `give_opened` and `give_embed_failed` as `oy:track` events (ADR 0018).
+ */
+import Button from '../../core/Button/Button.astro';
+import Pending from '../../core/Pending/Pending.astro';
+
+export type GiveMode = 'embed' | 'fallback' | 'pending';
+
+interface Props {
+  /** Renders the dialog open. The site opens it only for `#give`. */
+  open?: boolean;
+  /** The server state: the embed box, the fallback, or the Pending answer. */
+  mode?: GiveMode;
+  /** The organization name and mailing address for the check line; Pending while empty. */
+  orgName?: string | null;
+  address?: string | null;
+  ein?: string | null;
+  /** The contact enquiry trigger. */
+  contactHref?: string;
+  /** Milliseconds before the fallback shows; stories shorten it. */
+  timeout?: number;
+}
+
+const {
+  open = false,
+  mode = 'embed',
+  orgName,
+  address,
+  ein,
+  contactHref = '?enquiry=contact#enquiry',
+  timeout = 4000,
+} = Astro.props;
+
+const LEADS = {
+  embed: 'Amount, one time or monthly, and card details, all here. You never leave the page.',
+  fallback: 'Two other ways to give while the form is down.',
+  pending: 'Two ways to give until the online form is set up.',
+} as const;
+const HEADINGS = {
+  fallback: 'The giving form did not load.',
+  pending: 'The online giving form is not set up yet.',
+} as const;
+const addressLine = [orgName?.trim(), ...(address ?? '').split(/\r?\n/).map((l) => l.trim())]
+  .filter(Boolean)
+  .join(', ');
+const einText = ein?.trim() || 'XX-XXXXXXX';
+---
+
+<oy-give-dialog
+  data-mode={mode}
+  data-timeout={timeout}
+  data-lead-embed={LEADS.embed}
+  data-lead-fallback={LEADS.fallback}
+  data-heading-fallback={HEADINGS.fallback}
+>
+  <dialog id="give" class="oy-modal-scrim" aria-labelledby="give-title" open={open}>
+    <div class="oy-modal oy-give">
+      <div class="oy-modal-top" aria-hidden="true"></div>
+      <div class="oy-modal-grab" aria-hidden="true"></div>
+      <div class="oy-modal-head">
+        <div>
+          <h2 id="give-title">Give to Omo Yorùbá</h2>
+          <p data-lead>{LEADS[mode]}</p>
+        </div>
+        <button class="oy-modal-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="oy-modal-body">
+        <div class="oy-give-frame" data-embed hidden={mode === 'fallback'}>
+          <p class="oy-give-loading" data-loading hidden={mode === 'pending'}>Loading the giving form...</p>
+          <div class="oy-give-mount" data-mount></div>
+          <slot name="embed" />
+        </div>
+        <div class="oy-ok oy-give-fallback" data-fallback hidden={mode === 'embed'}>
+          <b data-heading>{mode === 'pending' ? HEADINGS.pending : HEADINGS.fallback}</b>
+          <p>
+            Write to us and we will take the gift by hand, or send a check to{' '}
+            {addressLine ? <span>{addressLine}.</span> : <Pending what="mailing address" />}
+          </p>
+          <div class="oy-ok-actions">
+            <Button href={contactHref} data-enquiry="contact" arrow>
+              Contact us
+            </Button>
+            {
+              mode !== 'pending' && (
+                <Button variant="quiet" type="button" data-retry>
+                  Try again
+                </Button>
+              )
+            }
+          </div>
+        </div>
+        <p class="oy-give-foot">
+          <span>Secure • Powered by Zeffy</span>
+          <span>501(c)(3) • EIN <span data-ein>{einText}</span> • Receipts by email</span>
+        </p>
+      </div>
+    </div>
+  </dialog>
+</oy-give-dialog>
+
+<style>
+  dialog.oy-modal-scrim {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    color: var(--ink);
+  }
+  dialog.oy-modal-scrim:not([open]) {
+    display: none;
+  }
+  dialog.oy-modal-scrim::backdrop {
+    background: transparent;
+  }
+  .oy-modal.oy-give {
+    max-width: 520px;
+  }
+  .oy-modal-body {
+    gap: 14px;
+  }
+  [data-embed][hidden],
+  [data-fallback][hidden],
+  [data-loading][hidden] {
+    display: none;
+  }
+  .oy-give-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .oy-give-loading {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .oy-give-mount:empty {
+    display: none;
+  }
+  .oy-give-mount :global(iframe) {
+    display: block;
+    width: 100%;
+    height: min(640px, 70vh);
+    border: 0;
+    border-radius: 6px;
+  }
+  .oy-give-fallback {
+    background: var(--paper);
+    border-color: var(--border-soft);
+  }
+  .oy-ok-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .oy-give-foot {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+</style>
+
+<script is:inline>
+  if (!customElements.get('oy-give-dialog')) {
+    // Persisted across navigations: the internal wiring happens once, the document and window
+    // listeners are added per connection and aborted on disconnection.
+    const wireGiveDialog = (host) => {
+      const dialog = host.querySelector('dialog');
+      if (!dialog || typeof dialog.showModal !== 'function') return null;
+      const lead = host.querySelector('[data-lead]');
+      const embed = host.querySelector('[data-embed]');
+      const mount = host.querySelector('[data-mount]');
+      const loading = host.querySelector('[data-loading]');
+      const fallback = host.querySelector('[data-fallback]');
+      const heading = host.querySelector('[data-heading]');
+      const timeout = Number(host.dataset.timeout) || 4000;
+      const api = { trigger: null, dialog };
+      let timer = 0;
+      let poll = 0;
+      let mounted = false;
+      const track = (event) =>
+        host.dispatchEvent(new CustomEvent('oy:track', { bubbles: true, detail: { event } }));
+      const stop = () => {
+        window.clearTimeout(timer);
+        window.clearInterval(poll);
+        timer = 0;
+        poll = 0;
+      };
+      const fail = () => {
+        stop();
+        if (embed) embed.hidden = true;
+        if (fallback) fallback.hidden = false;
+        if (lead) lead.textContent = host.dataset.leadFallback;
+        if (heading) heading.textContent = host.dataset.headingFallback;
+        host.dataset.state = 'failed';
+        track('give_embed_failed');
+      };
+      const ready = () => {
+        stop();
+        if (loading) loading.hidden = true;
+        host.dataset.state = 'ready';
+      };
+      const mountFrame = () => {
+        const template = host.querySelector('template[data-zeffy]');
+        if (!template || !mount || mounted) return Boolean(template);
+        mounted = true;
+        mount.replaceChildren(template.content.cloneNode(true));
+        const frame = mount.querySelector('iframe');
+        if (frame) frame.addEventListener('load', ready, { once: true });
+        else ready();
+        return true;
+      };
+      const arm = () => {
+        if (host.dataset.mode === 'pending') return;
+        if (embed) embed.hidden = false;
+        if (fallback) fallback.hidden = true;
+        if (loading) loading.hidden = false;
+        if (lead) lead.textContent = host.dataset.leadEmbed;
+        host.dataset.state = 'loading';
+        stop();
+        timer = window.setTimeout(fail, timeout);
+        // The island may still be on its way; keep looking for the template until the timer ends.
+        if (!mountFrame()) poll = window.setInterval(mountFrame, 200);
+      };
+      api.open = (from) => {
+        api.trigger = from || null;
+        dialog.oyTrigger = api.trigger;
+        if (!dialog.open) dialog.showModal();
+        if (!mounted) arm();
+        const close = dialog.querySelector('.oy-modal-close');
+        if (close) close.focus();
+        track('give_opened');
+      };
+      api.openFromHash = () => {
+        if (window.location.hash === '#give' && !dialog.open) api.open(null);
+      };
+      const retry = () => {
+        mounted = false;
+        if (mount) mount.replaceChildren();
+        arm();
+      };
+
+      host.addEventListener('click', (event) => {
+        const target =
+          event.target && event.target.closest && event.target.closest('[data-enquiry]');
+        if (target) dialog.close();
+      });
+      const retryButton = host.querySelector('[data-retry]');
+      if (retryButton) retryButton.addEventListener('click', retry);
+      const closeButton = dialog.querySelector('.oy-modal-close');
+      if (closeButton) closeButton.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        if (window.location.hash === '#give') {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+        const back = api.trigger;
+        if (back && back.isConnected && typeof back.focus === 'function') back.focus();
+        api.trigger = null;
+        dialog.oyTrigger = null;
+      });
+      if (dialog.hasAttribute('open')) {
+        dialog.removeAttribute('open');
+        api.open(null);
+      } else {
+        window.setTimeout(api.openFromHash, 0);
+      }
+      return api;
+    };
+
+    customElements.define(
+      'oy-give-dialog',
+      class extends HTMLElement {
+        connectedCallback() {
+          if (!this.oyApi) this.oyApi = wireGiveDialog(this);
+          const api = this.oyApi;
+          if (!api) return;
+          this.oyListeners = new AbortController();
+          const signal = this.oyListeners.signal;
+          document.addEventListener(
+            'click',
+            (event) => {
+              const target =
+                event.target && event.target.closest && event.target.closest('[data-give]');
+              if (!target) return;
+              event.preventDefault();
+              // A Donate inside the mobile menu closes with it: focus goes back to the burger.
+              const from = target.closest('dialog');
+              api.open(from && from !== api.dialog && from.oyTrigger ? from.oyTrigger : target);
+            },
+            { signal },
+          );
+          window.addEventListener('hashchange', api.openFromHash, { signal });
+          document.addEventListener('astro:page-load', api.openFromHash, { signal });
+          this.dataset.ready = 'true';
+        }
+
+        disconnectedCallback() {
+          if (this.oyListeners) this.oyListeners.abort();
+          delete this.dataset.ready;
+        }
+      },
+    );
+  }
+</script>

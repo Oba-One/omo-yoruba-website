@@ -1,8 +1,41 @@
 ---
-// Phase 0 shell. Phase 3 mounts SiteNav, SiteFooter, the Give Dialog, the Enquiry
-// Modal, <ClientRouter /> and the gold progress bar here.
+/**
+ * The chrome around every page (ROUTES section 2): the tokens, the nav, the page, the footer,
+ * the Enquiry Modal and the Give Dialog with its server island, the cross-fade at 380ms that
+ * reduced motion switches off, the gold progress bar, the form bridge and the analytics bridge.
+ * Site settings come from one query per render; a failed read renders Pending, never an
+ * invented name, address or phone (ADR 0005). Without JavaScript `?enquiry=<kind>` opens the
+ * modal and a posted error re-renders it with the values kept; the middleware redirects a
+ * success to `sent=1`, which renders the success block (ADR 0019). `#give` opens the Give
+ * Dialog on load with JavaScript.
+ */
+import '@oy/tokens';
+import { actions } from 'astro:actions';
 import { PUBLIC_POSTHOG_KEY } from 'astro:env/client';
+import { ClientRouter, fade } from 'astro:transitions';
+import {
+  contactsByRole,
+  ENQUIRY_KINDS,
+  type EnquiryKind,
+  KIND_TO_ROLE,
+  successCopy,
+} from '@oy/content/enquiry-kinds';
+import { siteSettingsQuery } from '@oy/content/queries';
+import EnquiryModal from '@oy/ui/forms/EnquiryModal/EnquiryModal.astro';
+import GiveDialog from '@oy/ui/forms/GiveDialog/GiveDialog.astro';
+import SiteFooter from '@oy/ui/navigation/SiteFooter/SiteFooter.astro';
+import SiteNav from '@oy/ui/navigation/SiteNav/SiteNav.astro';
+import ProgressBar from '@oy/ui/page/ProgressBar/ProgressBar.astro';
 import Analytics from '../components/Analytics.astro';
+import FormBridge from '../components/FormBridge.astro';
+import ZeffyEmbed from '../components/ZeffyEmbed.astro';
+import {
+  type ActionOutcome,
+  modalStateFromResult,
+  modalStateFromUrl,
+  newsletterStateFrom,
+} from '../lib/forms/modal-state';
+import { loadQuery } from '../lib/sanity/load-query';
 
 interface Props {
   title: string;
@@ -10,18 +43,98 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const path = Astro.url.pathname;
+
+const { data: settings } = await loadQuery(siteSettingsQuery, {}, { cookies: Astro.cookies });
+const contacts = contactsByRole(settings?.contacts);
+const site = { email: settings?.generalEmail ?? undefined, phone: settings?.phone ?? undefined };
+const copyFor = (kind: EnquiryKind) => successCopy(kind, contacts[KIND_TO_ROLE[kind]], site);
+
+// A posted enquiry without JavaScript: the middleware redirected a success, so a result here
+// is an error to re-render with the values kept.
+let modal = modalStateFromUrl(Astro.url, copyFor);
+for (const kind of ENQUIRY_KINDS) {
+  const outcome = Astro.getActionResult(actions.enquiry[kind]) as ActionOutcome | undefined;
+  if (!outcome) continue;
+  modal = modalStateFromResult(kind, outcome, site);
+  break;
+}
+
+// The newsletter, without JavaScript, the same way.
+const newsletterOutcome = Astro.getActionResult(actions.newsletter) as ActionOutcome | undefined;
+const newsletter = newsletterStateFrom(Astro.url, newsletterOutcome, site);
+// A posted form with errors re-renders as a 400, so the browser and the logs read it as one.
+if (modal.state === 'error' || newsletter.state === 'error') Astro.response.status = 400;
+
+const actionPaths = Object.fromEntries(
+  ENQUIRY_KINDS.map((kind) => [kind, String(actions.enquiry[kind])]),
+) as Record<EnquiryKind, string>;
+const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';
+// The Studio can pause PostHog without a deploy (siteSettings.analyticsEnabled).
+const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !== false;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" transition:animate={fade({ duration: '380ms' })}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
-    {PUBLIC_POSTHOG_KEY && <Analytics />}
+    <ClientRouter />
+    {analyticsOn && <Analytics />}
   </head>
-  <body>
+  <body class="oy-home" data-card="grain-dots" data-theme={settings?.theme ?? 'adire'}>
+    <ProgressBar />
+    <SiteNav path={path} />
     <slot />
+    <SiteFooter
+      settings={settings ?? {}}
+      newsletterAction={String(actions.newsletter)}
+      newsletterState={newsletter.state}
+      newsletterError={newsletter.state === 'error' ? newsletter.error : undefined}
+      newsletterValue={newsletter.state === 'error' ? newsletter.value : undefined}
+      source={path}
+    />
+    <div transition:persist="oy-dialogs">
+      <EnquiryModal
+        kind={modal.kind}
+        open={modal.open}
+        state={modal.state}
+        values={modal.values}
+        errors={modal.errors}
+        summary={modal.summary}
+        success={modal.success}
+        contacts={contacts}
+        site={site}
+        actions={actionPaths}
+        source={path}
+      />
+      <GiveDialog
+        mode={zeffyMode}
+        orgName={settings?.orgName}
+        address={settings?.address}
+        ein={settings?.ein}
+      >
+        <ZeffyEmbed slot="embed" server:defer />
+      </GiveDialog>
+    </div>
+    <FormBridge />
+    <script>
+      // The progress bar (ProgressBar.astro) watches this attribute across the router's lifecycle.
+      document.addEventListener('astro:before-preparation', () => {
+        document.documentElement.setAttribute('data-loading', 'true');
+      });
+      document.addEventListener('astro:page-load', () => {
+        document.documentElement.removeAttribute('data-loading');
+      });
+    </script>
   </body>
 </html>
+
+<style is:global>
+  /* The sticky nav is 68px tall: an anchor lands under it, never behind it (ROUTES section 2). */
+  [id] {
+    scroll-margin-top: 96px;
+  }
+</style>

@@ -1235,3 +1235,86 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields | EnquiryVendorFields | EnquiryEnrolFields | EnquiryVolunteerFields | EnquiryMemberFields | EnquiryTableFields | EnquiryPerformerFields | EnquirySponsorFields | LintReport | SanityFileAssetReference | GovernanceDoc | GivingLevel | HometownAssociation | Door | SanityImageAssetReference | PhotographerReference | OyImage | Cta | Stat | ProgramReference | Outcome | SourcedFigure | Partner | EventReference | PersonReference | NewsPost | BlockContent | Bilingual | Slug | TimelineEntry | Initiative | Honoree | SponsorLevel | TicketTier | NewsPage | Seo | PageHeader | GalleryPage | DoorReference | GivingLevelReference | DonatePage | TimelineEntryReference | StoryPage | StatReference | OutcomeReference | TestimonialReference | ImpactPage | GetInvolvedPage | InitiativeReference | CollectivePage | Testimonial | LessonsPage | Person | ProgramsPage | Program | GalaPage | FestivalPage | Homepage | AlbumReference | Event | Album | SiteSettings | PullQuote | ContactRole | FaqItem | ZoneReference | ScheduleItem | Zone | Fact | Photographer | SanityImageCrop | SanityImageHotspot | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
 
+// Source: src/queries.ts
+// Variable: siteSettingsQuery
+// Query: *[_id == "siteSettings"][0]{  orgName,  wordmarkLine2,  ein,  address,  phone,  generalEmail,  contacts[]{role, name, email, phone, responds},  socials[]{network, url},  footerBlurb,  newsletterTitle,  newsletterBlurb,  zeffyEmbedUrl,  eventbriteUrl,  analyticsEnabled,  theme}
+export type SiteSettingsQueryResult = {
+  orgName: null;
+  wordmarkLine2: null;
+  ein: null;
+  address: null;
+  phone: null;
+  generalEmail: null;
+  contacts: null;
+  socials: null;
+  footerBlurb: null;
+  newsletterTitle: null;
+  newsletterBlurb: null;
+  zeffyEmbedUrl: null;
+  eventbriteUrl: null;
+  analyticsEnabled: null;
+  theme: null;
+} | {
+  orgName: string | null;
+  wordmarkLine2: string | null;
+  ein: string | null;
+  address: string | null;
+  phone: string | null;
+  generalEmail: string | null;
+  contacts: Array<{
+    role: "general" | "membership" | "partnerships" | "performers" | "tables" | "teacher" | "vendors" | "volunteers" | null;
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    responds: string | null;
+  }> | null;
+  socials: Array<{
+    network: "facebook" | "instagram" | "linkedin" | "youtube" | null;
+    url: string | null;
+  }> | null;
+  footerBlurb: string | null;
+  newsletterTitle: string | null;
+  newsletterBlurb: string | null;
+  zeffyEmbedUrl: string | null;
+  eventbriteUrl: string | null;
+  analyticsEnabled: boolean | null;
+  theme: "adire" | "calm" | "festival" | null;
+} | null;
+
+// Source: src/queries.ts
+// Variable: routingQuery
+// Query: *[_id == "siteSettings"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}
+export type RoutingQueryResult = {
+  contacts: null;
+  generalEmail: null;
+  phone: null;
+} | {
+  contacts: Array<{
+    role: "general" | "membership" | "partnerships" | "performers" | "tables" | "teacher" | "vendors" | "volunteers" | null;
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    responds: string | null;
+  }> | null;
+  generalEmail: string | null;
+  phone: string | null;
+} | null;
+
+// Source: src/queries.ts
+// Variable: subscriberByEmailQuery
+// Query: *[_type == "subscriber" && email == $email][0]._id
+export type SubscriberByEmailQueryResult = string | null;
+
+// Query TypeMap
+declare global {
+  interface SanityQueries {
+    "*[_id == \"siteSettings\"][0]{\n  orgName,\n  wordmarkLine2,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  footerBlurb,\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  eventbriteUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
+    "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;
+    "*[_type == \"subscriber\" && email == $email][0]._id": SubscriberByEmailQueryResult;
+  }
+}
+// Lets @sanity/client releases that predate the global registry read it too
+declare module "@sanity/client" {
+  interface SanityQueries extends globalThis.SanityQueries {}
+}
+

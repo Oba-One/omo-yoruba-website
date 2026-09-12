@@ -1,0 +1,35 @@
+---
+/**
+ * Storybook stands in for the Zeffy embed: the site's server island hands the dialog a
+ * `<template data-zeffy>` with the iframe, which a story cannot carry (string slots drop
+ * templates and iframes). This box shows where the form renders and says so.
+ */
+---
+
+<template data-zeffy>
+  <div class="oy-give-stand-in">
+    <p>Zeffy's embedded form renders in this box on the site. 100 percent of the gift reaches us; Zeffy asks for an optional tip at the last step, which can be set to zero.</p>
+  </div>
+</template>
+<p class="oy-give-stand-in-note">The giving form is a server island on the site; this story shows its frame.</p>
+
+<style>
+  .oy-give-stand-in {
+    border: 1.5px dashed var(--gold-600);
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 20px;
+    min-height: 240px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  .oy-give-stand-in p {
+    margin: 0;
+  }
+  .oy-give-stand-in-note {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+</style>

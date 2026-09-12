@@ -8,14 +8,16 @@
     "./enquiry-kinds": "./src/enquiry-kinds.ts",
     "./enquiry-zod": "./src/enquiry-zod.ts",
     "./pending": "./src/pending.ts",
-    "./routes": "./src/routes.ts"
+    "./routes": "./src/routes.ts",
+    "./queries": "./src/queries.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
     "test": "vitest run",
     "sanity": "bash scripts/sanity.sh",
     "typegen": "bash scripts/sanity.sh schema extract --path ./schema.json --force && bash scripts/sanity.sh typegen generate",
-    "seed": "bun --env-file=../web/.env scripts/seed.ts"
+    "seed": "bun --env-file=../web/.env scripts/seed.ts",
+    "query": "bun --env-file=../web/.env scripts/query.ts"
   },
   "dependencies": {
     "@oy/lint": "workspace:*",

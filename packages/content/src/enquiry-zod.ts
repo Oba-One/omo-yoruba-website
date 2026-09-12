@@ -3,14 +3,22 @@
  * voice: a sentence naming what is missing, never colour alone.
  */
 import { z } from 'zod';
-import { ENQUIRY_KINDS, ENQUIRY_SPECS, type EnquiryKind, type FieldSpec } from './enquiry-kinds';
+import {
+  ENQUIRY_KINDS,
+  ENQUIRY_SPECS,
+  type EnquiryKind,
+  type FieldSpec,
+  requiredSentence,
+} from './enquiry-kinds';
 
 export const EMAIL_MESSAGE = 'That email address does not look right. Check it and send again.';
+/** The shape the inline scripts check before a request (Zod's own check is the server's word). */
+export const EMAIL_PATTERN = '^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$';
 const TEXT_MAX = 300;
 const AREA_MAX = 4000;
 
 function fieldSchema(field: FieldSpec): z.ZodType {
-  const phrase = `We still need ${field.req ?? field.label.toLowerCase()}.`;
+  const phrase = requiredSentence(field.req ?? field.label.toLowerCase());
   if (field.kind === 'select') {
     const options = field.options ?? [];
     const schema = z.enum(options as [string, ...string[]], {
@@ -41,4 +49,17 @@ export const enquirySchemas = Object.fromEntries(
 
 export function parseEnquiry(kind: EnquiryKind, data: unknown) {
   return enquirySchemas[kind].safeParse(data);
+}
+
+/** The newsletter signup: one address, the same sentences as the enquiry email fields. */
+export const subscriberSchema = z.object({
+  email: z
+    .string({ error: requiredSentence('an email address') })
+    .trim()
+    .min(1, { error: requiredSentence('an email address') })
+    .pipe(z.email({ error: EMAIL_MESSAGE })),
+});
+
+export function parseSubscriber(data: unknown) {
+  return subscriberSchema.safeParse(data);
 }

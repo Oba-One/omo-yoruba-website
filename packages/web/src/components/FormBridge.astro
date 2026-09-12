@@ -1,0 +1,25 @@
+---
+/**
+ * The bridge between the inline form elements in @oy/ui and the Astro Actions (ADR 0018, ADR
+ * 0019): `window.oySubmit(name, formData)` posts through `astro:actions`, which the components
+ * cannot import, and answers `{ data, error }`. Without this script the forms post natively.
+ * A module script runs once per page load and the global survives client-side navigation.
+ */
+---
+
+<script>
+  import { ENQUIRY_KINDS, type EnquiryKind } from '@oy/content/enquiry-kinds';
+  import { actions } from 'astro:actions';
+
+  // `actions` is a proxy on the client, so the kind is checked against the spec, not with `in`.
+  const kinds: readonly string[] = ENQUIRY_KINDS;
+
+  window.oySubmit = async (name, formData) => {
+    if (name === 'newsletter') return actions.newsletter(formData);
+    const [group, kind] = name.split('.');
+    if (group === 'enquiry' && kind && kinds.includes(kind)) {
+      return actions.enquiry[kind as EnquiryKind](formData);
+    }
+    return { data: undefined, error: { message: `Unknown form ${name}` } };
+  };
+</script>

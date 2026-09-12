@@ -1,0 +1,117 @@
+---
+/**
+ * One form field from a `FieldSpec` in `enquiry-kinds.ts`: a visible label, the control (text,
+ * email, tel, select or textarea), an optional hint and an error sentence. The hint and the error
+ * are tied to the control through `aria-describedby`; an error also sets `aria-invalid`. Required
+ * fields carry `aria-required` and the phrase the error names (`data-req`), never the `required`
+ * attribute, so the browser's own bubbles stay out and every sentence is ours. The wide variant
+ * spans both columns of the form grid; areas are always wide. Controls meet the 44px target
+ * through `.oy-input`.
+ */
+import type { FieldSpec } from '@oy/content/enquiry-kinds';
+
+interface Props {
+  spec: FieldSpec;
+  /** The control's id, unique on the page. */
+  id: string;
+  /** The submitted name; defaults to the spec's id. */
+  name?: string;
+  /** The kept value after an error, or a story's filled state. */
+  value?: string;
+  /** The error sentence for this field. */
+  error?: string;
+  /** Overrides the spec's wide flag. */
+  wide?: boolean;
+  autocomplete?: string;
+  class?: string;
+}
+
+const {
+  spec,
+  id,
+  name = spec.id,
+  value = '',
+  error,
+  wide,
+  autocomplete,
+  class: className,
+} = Astro.props;
+
+const isWide = wide ?? (spec.wide || spec.kind === 'area');
+const hintId = spec.hint ? `${id}-hint` : undefined;
+const errorId = `${id}-error`;
+const describedBy = [hintId, error ? errorId : undefined].filter(Boolean).join(' ') || undefined;
+const required = spec.required ? 'true' : undefined;
+const invalid = error ? 'true' : undefined;
+const req = spec.required ? (spec.req ?? spec.label.toLowerCase()) : undefined;
+const options = spec.options ?? [];
+const selected = value && options.includes(value) ? value : options[0];
+---
+
+<div class:list={['oy-field', isWide && 'oy-field--wide', error && 'oy-field--error', className]}>
+  <label class="oy-label" for={id}>{spec.label}</label>
+  {
+    spec.kind === 'select' ? (
+      <select
+        id={id}
+        name={name}
+        class="oy-input"
+        aria-required={required}
+        aria-invalid={invalid}
+        aria-describedby={describedBy}
+        data-required={spec.required ? 'true' : undefined}
+        data-req={req}
+      >
+        {options.map((option) => (
+          <option value={option} selected={option === selected}>
+            {option}
+          </option>
+        ))}
+      </select>
+    ) : spec.kind === 'area' ? (
+      <textarea
+        id={id}
+        name={name}
+        class="oy-input"
+        rows="4"
+        aria-required={required}
+        aria-invalid={invalid}
+        aria-describedby={describedBy}
+        data-required={spec.required ? 'true' : undefined}
+        data-req={req}
+        set:text={value}
+      />
+    ) : (
+      <input
+        id={id}
+        name={name}
+        class="oy-input"
+        type={spec.type ?? 'text'}
+        value={value}
+        autocomplete={autocomplete}
+        aria-required={required}
+        aria-invalid={invalid}
+        aria-describedby={describedBy}
+        data-required={spec.required ? 'true' : undefined}
+        data-req={req}
+        data-email={spec.type === 'email' ? 'true' : undefined}
+      />
+    )
+  }
+  {spec.hint && <span class="oy-field-hint" id={hintId}>{spec.hint}</span>}
+  <p class="oy-field-error" id={errorId} hidden={!error}>{error}</p>
+</div>
+
+<style>
+  /* An empty error paragraph takes no space; the script fills and shows it. */
+  .oy-field-error {
+    margin: 0;
+  }
+  .oy-field-error[hidden] {
+    display: none;
+  }
+  textarea.oy-input {
+    resize: vertical;
+    min-height: 112px;
+  }
+</style>

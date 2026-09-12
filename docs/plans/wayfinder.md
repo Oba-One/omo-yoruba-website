@@ -67,6 +67,14 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   configures; pins and the facts that contradict the brief are in the ticket's answer and
   `docs/research/phase-2-*.md` (Phase 2, the owner's yes gates the install).
 
+- [Newsletter: subscriber documents, nothing sends](../tickets/wayfinder/issues/01-newsletter-provider.md):
+  the `newsletter` action stores the address, a repeat reads as success, the Inbox marks exports;
+  a provider is a later forward step (ADR 0019); owner's yes on 11 September 2026.
+
+- [The newsletter success label is "Ẹ ṣé! ✓"](../tickets/wayfinder/issues/23-newsletter-success-label.md):
+  the routes table's tilde spelling was a typo; one spelling for every success state; owner's
+  yes on 11 September 2026.
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.
@@ -81,9 +89,7 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 05 | The two unnamed festival zones | Phase 2 seed, Phase 5 |
 | 09 | Photo credits to confirm | Phase 2 seed |
 | 22 | Editor roles on the Sanity plan | Phase 2 |
-| 01 | Newsletter provider (default: `subscriber` documents, export later) | Phase 3 |
 | 03 | Zeffy embed URL and Eventbrite event URL | Phase 3, Phase 5 |
-| 23 | Newsletter success label spelling in the handoff | Phase 3 |
 | 04 | Gala tables: enquiry or purchase | Phase 5 |
 | 06 | Gala awards: yes or no | Phase 5 |
 | 07 | Our Story timeline shown by default | Phase 7 |

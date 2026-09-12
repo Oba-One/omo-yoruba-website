@@ -15,8 +15,12 @@ Functions. The only package where GROQ lives. Built in Phase 2 from
 - `src/schema/objects/`: the shared objects. `src/schema/singletons/`: `siteSettings` and the
   twelve page singletons through `definePage`. `src/schema/documents/`: the document types, the
   generated enquiry objects and `subscriber`.
-- `src/enquiry-kinds.ts`: the one spec of the eight enquiry kinds (ADR 0007); `src/enquiry-zod.ts`
-  derives the action schemas.
+- `src/enquiry-kinds.ts`: the one spec of the eight enquiry kinds (ADR 0007), the success and
+  foot templates, the form sentences (`requiredSentence`, `summarySentence`, `fallbackSentence`,
+  `cappedSentence`), the newsletter copy and `contactsByRole`; `src/enquiry-zod.ts` derives the
+  action schemas and `parseSubscriber`.
+- `src/queries.ts`: the GROQ the site runs (`siteSettingsQuery`, `routingQuery`, the address cap
+  count, the subscriber lookup), typed by TypeGen through `SanityQueries`.
 - `src/validation/`: the voice rules as Sanity validation (em dash error, marks warning, sentence
   case warning), reusing `@oy/lint`.
 - `src/pending.ts`: the Pending registry (ADR 0014); `src/studio/`: structure, presence pane,
@@ -34,7 +38,8 @@ Functions. The only package where GROQ lives. Built in Phase 2 from
 | --- | --- |
 | `bun typegen` | `sanity schema extract --force`, then `sanity typegen generate` |
 | `bun seed` | seeds `development`; `-- --dry-run`, `-- --replace`, `-- --dataset <name>` |
-| `bun run --filter @oy/content sanity -- documents query '*[_type == "zone"]'` | any CLI command with the env loaded |
+| `bun run --filter @oy/content sanity -- documents query '*[_type == "zone"]'` | any CLI command with the env loaded (needs `sanity login`) |
+| `bun run --filter @oy/content query -- '*[_type == "zone"]{name}'` | one GROQ query with the Viewer token, no login; `--dataset`, `--perspective drafts`, `--public` |
 | `bun run --filter @oy/content test` | Vitest for this package |
 
 ## Deltas from docs/design/CONTENT-MODEL.md
