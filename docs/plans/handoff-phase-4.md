@@ -2,7 +2,7 @@
 
 Written 12 September 2026 at the end of the Phase 4 session, for the owner's follow-ups and the
 session that runs Phase 5 (`docs/design/PROMPTS.md`). Branch: `phase-4/homepage-editing-caching`,
-pull request PR_LINK against `main`. Tickets: `docs/tickets/phase-4/` (the spec from the grill
+pull request https://github.com/Oba-One/omo-yoruba-website/pull/5 against `main`. Tickets: `docs/tickets/phase-4/` (the spec from the grill
 and ten tickets, all resolved, each with a Comments section on what was found). Research with
 sources: `docs/research/phase-4-astro-cache-and-vercel-provider.md`,
 `phase-4-sanity-visual-editing.md`, `phase-4-live-collections-loader.md`,
