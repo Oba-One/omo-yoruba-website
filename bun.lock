@@ -49,6 +49,7 @@
     "packages/ui": {
       "name": "@oy/ui",
       "dependencies": {
+        "@oy/content": "workspace:*",
         "@oy/tokens": "workspace:*",
       },
       "devDependencies": {

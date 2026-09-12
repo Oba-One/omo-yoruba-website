@@ -1,0 +1,232 @@
+---
+/**
+ * The footer signup: a hidden label, the email field, the honeypot, the gold submit and the four
+ * states. Idle reads "Subscribe"; busy reads "Sending..."; success flips the button to "Ẹ ṣé! ✓"
+ * in place and shows the on-the-list line; error shows the sentence under the field and keeps
+ * what was typed. The form posts to the newsletter action without JavaScript. With JavaScript
+ * the inline custom element pre-validates with the same sentences, hands the form to
+ * `window.oySubmit` when the site provides it (the bridge to the Astro action, ADR 0019), and
+ * announces `newsletter_submitted` as an `oy:track` event (ADR 0018).
+ */
+import { EMAIL_MESSAGE } from '@oy/content/enquiry-zod';
+import Button from '../../core/Button/Button.astro';
+
+export type NewsletterState = 'idle' | 'busy' | 'success' | 'error';
+
+interface Props {
+  /** Where the form posts; the site passes the newsletter action's path. */
+  action?: string;
+  state?: NewsletterState;
+  /** The error sentence when `state` is error; the email sentence by default. */
+  error?: string;
+  /** The kept value. */
+  value?: string;
+  /** The page path the form was opened on, stored on the subscriber. */
+  source?: string;
+  /** `footer` sits inline in the dark band; `band` is the homepage variant. */
+  variant?: 'footer' | 'band';
+  id?: string;
+}
+
+const {
+  action = '',
+  state = 'idle',
+  error = state === 'error' ? EMAIL_MESSAGE : undefined,
+  value = '',
+  source = '',
+  variant = 'footer',
+  id = 'oy-newsletter',
+} = Astro.props;
+
+const LABELS = { idle: 'Subscribe', busy: 'Sending...', success: 'Ẹ ṣé! ✓' } as const;
+const REQUIRED = 'We still need an email address.';
+const DONE = 'Ẹ ṣé. You are on the list. The next note goes out with the festival save-the-date.';
+const errorId = `${id}-error`;
+---
+
+<oy-newsletter
+  data-variant={variant}
+  data-state={state}
+  data-label-idle={LABELS.idle}
+  data-label-busy={LABELS.busy}
+  data-label-done={LABELS.success}
+  data-required-message={REQUIRED}
+  data-email-message={EMAIL_MESSAGE}
+>
+  <form class="oy-signup" method="POST" action={action} novalidate data-form="newsletter">
+    <label class="oy-label oy-hidden" for={id}>Email address</label>
+    <input
+      id={id}
+      class="oy-input"
+      type="email"
+      name="email"
+      placeholder="Email address"
+      autocomplete="email"
+      value={value}
+      readonly={state === 'success'}
+      aria-required="true"
+      aria-invalid={state === 'error' ? 'true' : undefined}
+      aria-describedby={state === 'error' ? errorId : undefined}
+    />
+    <input type="hidden" name="source" value={source} />
+    <div class="oy-hidden" aria-hidden="true">
+      <label for={`${id}-website`}>Website</label>
+      <input id={`${id}-website`} type="text" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+    <Button type="submit" busy={state === 'busy'} data-state={state === 'success' ? 'success' : undefined}>
+      {state === 'success' ? LABELS.success : LABELS.idle}
+    </Button>
+  </form>
+  <p class="oy-field-error" id={errorId} role="alert" hidden={state !== 'error'}>{error}</p>
+  <p class="oy-signup-done" hidden={state !== 'success'}>{DONE}</p>
+</oy-newsletter>
+
+<style>
+  oy-newsletter {
+    display: block;
+  }
+  .oy-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .oy-signup {
+    margin-left: 0;
+  }
+  .oy-signup .oy-input {
+    flex: 1;
+    min-width: 200px;
+  }
+  oy-newsletter :global(.oy-btn[data-state='success']) {
+    background: var(--gold-300);
+  }
+  .oy-field-error,
+  .oy-signup-done {
+    margin: 10px 0 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .oy-signup-done {
+    color: var(--text-muted);
+  }
+  :global(.oy-dark) .oy-signup-done {
+    color: var(--text-on-dark-soft);
+  }
+  [hidden] {
+    display: none;
+  }
+  [data-variant='band'] .oy-signup {
+    max-width: 560px;
+  }
+</style>
+
+<script is:inline>
+  if (!customElements.get('oy-newsletter')) {
+    customElements.define(
+      'oy-newsletter',
+      class extends HTMLElement {
+        connectedCallback() {
+          const form = this.querySelector('form');
+          const input = this.querySelector('input[type="email"]');
+          const button = form && form.querySelector('button[type="submit"]');
+          const error = this.querySelector('.oy-field-error');
+          const done = this.querySelector('.oy-signup-done');
+          if (!form || !input || !button || !error || !done) return;
+          const labels = {
+            idle: this.dataset.labelIdle,
+            busy: this.dataset.labelBusy,
+            done: this.dataset.labelDone,
+          };
+          const showError = (sentence) => {
+            error.textContent = sentence;
+            error.hidden = false;
+            input.setAttribute('aria-invalid', 'true');
+            input.setAttribute('aria-describedby', error.id);
+            input.focus();
+          };
+          const clearError = () => {
+            error.hidden = true;
+            error.textContent = '';
+            input.removeAttribute('aria-invalid');
+            input.removeAttribute('aria-describedby');
+          };
+          const setBusy = (busy) => {
+            this.dataset.state = busy ? 'busy' : 'idle';
+            button.textContent = busy ? labels.busy : labels.idle;
+            if (busy) {
+              button.setAttribute('aria-busy', 'true');
+              button.setAttribute('aria-disabled', 'true');
+            } else {
+              button.removeAttribute('aria-busy');
+              button.removeAttribute('aria-disabled');
+            }
+          };
+          const succeed = () => {
+            this.dataset.state = 'success';
+            button.removeAttribute('aria-busy');
+            button.removeAttribute('aria-disabled');
+            button.textContent = labels.done;
+            button.dataset.state = 'success';
+            input.readOnly = true;
+            done.hidden = false;
+            this.dispatchEvent(
+              new CustomEvent('oy:track', {
+                bubbles: true,
+                detail: { event: 'newsletter_submitted' },
+              }),
+            );
+          };
+          input.addEventListener('input', clearError);
+          form.addEventListener('submit', (event) => {
+            if (this.dataset.state === 'busy' || this.dataset.state === 'success') {
+              event.preventDefault();
+              return;
+            }
+            const value = input.value.trim();
+            if (!value) {
+              event.preventDefault();
+              showError(this.dataset.requiredMessage);
+              return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
+              event.preventDefault();
+              showError(this.dataset.emailMessage);
+              return;
+            }
+            const submit = window.oySubmit;
+            if (typeof submit !== 'function') return;
+            event.preventDefault();
+            const source = form.querySelector('input[name="source"]');
+            if (source && !source.value) source.value = window.location.pathname;
+            clearError();
+            setBusy(true);
+            submit('newsletter', new FormData(form)).then(
+              (result) => {
+                const data = result && result.data;
+                if (data && data.ok) {
+                  succeed();
+                  return;
+                }
+                setBusy(false);
+                showError(
+                  (data && data.summary) ||
+                    (result && result.error && result.error.message) ||
+                    this.dataset.emailMessage,
+                );
+              },
+              () => {
+                setBusy(false);
+                showError(this.dataset.emailMessage);
+              },
+            );
+          });
+          this.dataset.ready = 'true';
+        }
+      },
+    );
+  }
+</script>
