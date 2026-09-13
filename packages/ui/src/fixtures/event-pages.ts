@@ -321,3 +321,41 @@ export const GALA_RUNNING_ORDER_PLACEHOLDERS = [
   { _key: 'row-2', title: { en: '[ Dinner ]' }, detail: '[ One line on how dinner is served ]' },
   { _key: 'row-3', title: { en: '[ The performance ]' }, detail: '[ One line on who performs ]' },
 ];
+
+/** The seats intro as the seed writes it. */
+export const GALA_TIERS_INTRO =
+  'Single seats and couples are sold through Eventbrite, which opens in a new tab. A table of ten is arranged with us directly: tell us who is coming and we place the table and send an invoice.';
+
+/**
+ * Ticket tiers in the bracketed placeholder form: the dataset holds none, and the prototype's names,
+ * prices and includes are invented. Two buy-now tiers, the second featured, then the table tier.
+ */
+export const TIER_PLACEHOLDERS = [
+  {
+    _id: 'tier-seat',
+    name: '[ A single seat ]',
+    price: '[ Price ]',
+    includes: ['[ What the seat includes ]'],
+    variant: 'buyNow',
+    featured: false,
+  },
+  {
+    _id: 'tier-pair',
+    name: '[ Two seats ]',
+    price: '[ Price ]',
+    includes: ['[ What the seats include ]'],
+    variant: 'buyNow',
+    featured: true,
+  },
+  {
+    _id: 'tier-table',
+    name: '[ A table of ten ]',
+    price: '[ Price ]',
+    includes: ['[ What the table includes ]'],
+    variant: 'enquiry',
+    featured: false,
+  },
+];
+
+/** Eventbrite's own address, standing in for an edition's event link (none is held yet). */
+export const EVENTBRITE_STAND_IN = 'https://www.eventbrite.com';

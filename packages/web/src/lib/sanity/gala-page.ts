@@ -3,7 +3,8 @@
  * test drives it with a fixture: the layout with the schema defaults, the next gala edition (ADR
  * 0024) and its facts for the header line and the glance strip with the registry's chips where the
  * Studio holds nothing, "Seats from" derived from the edition's tiers (spec Q9), the page's two
- * actions, the evening's intro and running order as the option shows it, the take-part rows with the
+ * actions, the evening's intro and running order as the option shows it, the seats and tables with
+ * the edition's Eventbrite link and the options that draw them, the take-part rows with the
  * intro that counts them (ADR 0025), every photograph resolved to a CDN set with its alt and framing,
  * the head's title and description cleaned of stega, and the `data-sanity` attributes for
  * click-to-edit in draft mode.
@@ -133,6 +134,20 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
         items: (edition?.schedule ?? []).filter((item) => item !== null),
         pending: pending('schedule[]'),
       },
+    },
+    seats: {
+      intro: data?.tiersIntro ?? undefined,
+      tiers: (edition?.tiers ?? [])
+        .filter((tier) => tier !== null)
+        .map((tier) => ({ ...tier, edit: edit('name', tier._id, 'ticketTier') })),
+      layout: layout.tiers,
+      emphasis: layout.emphasis,
+      // The edition's own Eventbrite event, the one source for seats (ADR 0024).
+      ticketsUrl: cleanText(edition?.ticketsUrl),
+      pending: tiersPending,
+      ticketsPending: pending('ticketsUrl'),
+      pricePending: pendingWhat('ticketTier', 'price') ?? 'the price',
+      includesPending: pendingWhat('ticketTier', 'includes[]') ?? 'what the ticket includes',
     },
     takePart: {
       rows: takePart.map((row) => ({ ...row, edit: edit(`takePart[_key=="${row._key}"]`) })),

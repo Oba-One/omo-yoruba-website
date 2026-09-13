@@ -260,4 +260,35 @@ describe('buildGalaPage', () => {
     expect(draft.takePart.rows[0]?.edit).toContain('path=takePart:way-1');
     expect(buildGalaPage(null, options).title).toBe('End-of-Year Gala');
   });
+
+  it('carries the seats: the tiers with their edit attributes, the options and the edition link', () => {
+    const view = buildGalaPage(seeded, options);
+    expect(view.seats).toMatchObject({
+      tiers: [],
+      layout: 'columns',
+      emphasis: 'seats',
+      ticketsUrl: undefined,
+      pending: 'three prices and what each includes',
+      ticketsPending: 'the Eventbrite link',
+      pricePending: 'the price',
+      includesPending: 'what the ticket includes',
+    });
+    const sold = {
+      ...seeded,
+      tiersIntro: '[ intro ]',
+      layout: { tiers: 'rows', emphasis: 'tables' },
+      editions: [
+        edition('event-gala-2026', 2026, {
+          ticketsUrl: 'https://www.eventbrite.com/e/0',
+          tiers: [tier('seat', '[ seat price ]', 'buyNow')],
+        }),
+      ],
+    } as unknown as GalaPageData;
+    const draft = buildGalaPage(sold, { ...options, draft: true });
+    expect(draft.seats.intro).toBe('[ intro ]');
+    expect(draft.seats.ticketsUrl).toBe('https://www.eventbrite.com/e/0');
+    expect(draft.seats.layout).toBe('rows');
+    expect(draft.seats.emphasis).toBe('tables');
+    expect(draft.seats.tiers[0]?.edit).toContain('id=seat;type=ticketTier;path=name');
+  });
 });

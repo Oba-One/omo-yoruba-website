@@ -1,0 +1,118 @@
+---
+/**
+ * A ticket tier (COMPONENT-MAP, Cards; `09 End-of-Year Gala.dc.html`, seats and tables): the name, the
+ * price, what it includes and one button, on the card treatment. Buy now opens the edition's Eventbrite
+ * link in a new tab with `rel="noopener"` and a one-line notice, or shows the registry's chip where the
+ * button goes while the edition holds no link (ADR 0024); an enquiry tier opens the `table` form, with
+ * the line on how tables are invoiced. The featured tier wears the gold inset ring; the gold button is
+ * the block's to give, once. A missing name, price or list of includes shows its chip. The border
+ * deepens on hover, nothing lifts.
+ */
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface TierLike {
+  _id?: string | null;
+  name?: string | null;
+  price?: string | null;
+  includes?: (string | null)[] | null;
+  variant?: string | null;
+  featured?: boolean | null;
+}
+
+interface Props {
+  tier: TierLike;
+  /** The edition's Eventbrite link, for a buy-now tier. */
+  ticketsUrl?: string | null;
+  /** The gold button: the block passes it to one featured tier. */
+  primary?: boolean;
+  /** The registry's wording for a missing link, name, price and includes. */
+  ticketsPending?: string;
+  namePending?: string;
+  pricePending?: string;
+  includesPending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the tier. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  tier,
+  ticketsUrl,
+  primary = false,
+  ticketsPending = 'the Eventbrite link',
+  namePending = 'the tier name',
+  pricePending = 'the price',
+  includesPending = 'what the ticket includes',
+  edit,
+  class: className,
+} = Astro.props;
+
+const enquiry = tier.variant === 'enquiry';
+const link = ticketsUrl?.trim();
+const includes = (tier.includes ?? []).filter((line): line is string => Boolean(line?.trim()));
+const variant = primary ? 'primary' : 'secondary';
+---
+
+<article
+  class:list={['oy-tier', tier.featured && 'oy-tier--featured', className]}
+  data-variant={enquiry ? 'enquiry' : 'buyNow'}
+  data-sanity={edit}
+>
+  <div class="oy-tier-head">
+    <h3 class="oy-tier-name">{tier.name?.trim() || <Pending what={namePending} />}</h3>
+  </div>
+  <p class="oy-tier-price">{tier.price?.trim() || <Pending what={pricePending} />}</p>
+  {
+    enquiry ? (
+      <p class="oy-tier-note">Placed by hand and invoiced. Nothing is charged on this page.</p>
+    ) : (
+      link && <p class="oy-tier-note">Opens Eventbrite in a new tab.</p>
+    )
+  }
+  {
+    includes.length > 0 ? (
+      <ul class="oy-incl">
+        {includes.map((line) => (
+          <li>{line}</li>
+        ))}
+      </ul>
+    ) : (
+      <p class="oy-tier-owed">
+        <Pending what={includesPending} />
+      </p>
+    )
+  }
+  {
+    enquiry ? (
+      <ActionButton
+        action={{ label: 'Reserve a table', kind: 'enquiry', enquiryKind: 'table' }}
+        variant={variant}
+      />
+    ) : link ? (
+      <ActionButton
+        action={{ label: 'Get tickets', kind: 'url', href: link, newTab: true }}
+        variant={variant}
+      />
+    ) : (
+      <p class="oy-tier-owed oy-tier-owed--action">
+        <Pending what={ticketsPending} />
+      </p>
+    )
+  }
+</article>
+
+<style>
+  .oy-tier-name,
+  .oy-tier-price {
+    margin: 0;
+  }
+  .oy-tier-owed {
+    margin: 6px 0 0;
+    flex: 1;
+  }
+  .oy-tier-owed--action {
+    flex: none;
+    margin-top: 16px;
+  }
+</style>

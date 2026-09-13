@@ -7,6 +7,7 @@
 import { countWord } from '../../content/count-word';
 import Prose from '../../content/Prose/Prose.astro';
 import Schedule from '../../content/Schedule/Schedule.astro';
+import TicketTiers from '../../content/TicketTiers/TicketTiers.astro';
 import Divider from '../../core/Divider/Divider.astro';
 import {
   GALA_EVENING_INTRO,
@@ -16,6 +17,8 @@ import {
   GALA_META,
   GALA_RUNNING_ORDER_PLACEHOLDERS,
   GALA_TAKE_PART,
+  GALA_TIERS_INTRO,
+  TIER_PLACEHOLDERS,
 } from '../../fixtures/event-pages';
 import GlanceStrip from '../../page/GlanceStrip/GlanceStrip.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
@@ -77,6 +80,37 @@ export const evening = (schedule: 'shown' | 'hidden'): SlotValue => ({
 });
 
 export const seam: SlotValue = { component: Divider, props: { kind: 'seam' } };
+
+/**
+ * Seats and tables on the tint as the `tiers` and `emphasis` options draw them: placeholder tiers (the
+ * Studio holds none), no Eventbrite link yet, so the buy-now tiers show the chip where their button goes.
+ */
+export const seats = (tiers: 'columns' | 'rows', emphasis: 'seats' | 'tables'): SlotValue => ({
+  component: Section,
+  props: { id: 'seats', ground: 'alt', labelledby: 'seats-heading' },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          kicker: { yo: 'Ìjókòó', en: 'Seats' },
+          title: 'Seats and tables',
+          intro: GALA_TIERS_INTRO,
+          id: 'seats-heading',
+        },
+      },
+      {
+        component: TicketTiers,
+        props: {
+          tiers: TIER_PLACEHOLDERS,
+          layout: tiers,
+          emphasis,
+          pending: 'three prices and what each includes',
+        },
+      },
+    ],
+  },
+});
 
 /** The closing band on the tint: the seed's four rows, the give row last with its quiet Donate. */
 export const takePart = (labels: TakePartLabels): SlotValue => ({

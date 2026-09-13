@@ -12,6 +12,7 @@ import { createImageSet } from '@oy/content/images';
 import { galaPageQuery } from '@oy/content/queries';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
 import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
+import TicketTiers from '@oy/ui/content/TicketTiers/TicketTiers.astro';
 import Divider from '@oy/ui/core/Divider/Divider.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
@@ -86,6 +87,26 @@ cachePage(Astro, '/gala', { draft: preview });
     </Section>
 
     <Divider kind="seam" />
+
+    <Section id="seats" ground="alt" labelledby="seats-heading" data-sanity={page.edit.emphasis}>
+      <SectionHead
+        kicker={{ yo: 'Ìjókòó', en: 'Seats' }}
+        title="Seats and tables"
+        intro={page.seats.intro}
+        id="seats-heading"
+      />
+      <TicketTiers
+        tiers={page.seats.tiers}
+        layout={page.seats.layout}
+        emphasis={page.seats.emphasis}
+        ticketsUrl={page.seats.ticketsUrl}
+        pending={page.seats.pending}
+        ticketsPending={page.seats.ticketsPending}
+        pricePending={page.seats.pricePending}
+        includesPending={page.seats.includesPending}
+        edit={page.edit.tiers}
+      />
+    </Section>
 
     <Section id="take-part" ground="alt" labelledby="take-part-heading" data-sanity={page.edit.labels}>
       <SectionHead

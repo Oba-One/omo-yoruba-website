@@ -29,7 +29,7 @@ test.describe('the End-of-Year Gala page', () => {
         (el) => el.id || (el.classList.contains('oy-seam') ? 'seam' : el.tagName.toLowerCase()),
       ),
     );
-    expect(order.slice(0, 4)).toEqual(['top', 'glance', 'evening', 'seam']);
+    expect(order.slice(0, 5)).toEqual(['top', 'glance', 'evening', 'seam', 'seats']);
     expect(order.at(-1)).toBe('take-part');
     const body = page.locator('body');
     await expect(body).toHaveAttribute('data-treatment', /^(formal|warm)$/);
@@ -60,6 +60,45 @@ test.describe('the End-of-Year Gala page', () => {
       const rows = await aside.locator('.oy-sched > li').count();
       if (rows === 0) await expect(aside.locator('.oy-pend-line')).toBeVisible();
       await expect(aside.locator('details')).toHaveCount(0);
+    }
+  });
+
+  test('seats leave for Eventbrite in a new tab and the table tier opens its form, focus returning', async ({
+    page,
+  }) => {
+    await page.goto('/gala');
+    const seats = page.locator('#seats');
+    await expect(seats.locator('h2')).toHaveText('Seats and tables');
+    const cards = seats.locator('article.oy-tier');
+    if ((await cards.count()) === 0) {
+      // No tiers for the next gala (or CI's placeholder project): the registry's Pending line.
+      await expect(seats.locator('.oy-pend-line')).toContainText(
+        'three prices and what each includes',
+      );
+      return;
+    }
+    const layout = await page.locator('body').getAttribute('data-tiers');
+    await expect(seats.locator('.oy-tiers')).toHaveAttribute('data-layout', layout ?? '');
+    expect(await seats.locator('.oy-btn--primary').count()).toBeLessThanOrEqual(1);
+    for (const link of await seats.locator('article[data-variant="buyNow"] a.oy-btn').all()) {
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', /noopener/);
+    }
+    if ((await page.locator('body').getAttribute('data-emphasis')) === 'tables') {
+      const first = seats.locator('.oy-tiers > article').first();
+      const hasTable = (await seats.locator('article[data-variant="enquiry"]').count()) > 0;
+      if (hasTable) await expect(first).toHaveAttribute('data-variant', 'enquiry');
+    }
+    const table = seats.locator('article[data-variant="enquiry"] a[data-enquiry="table"]').first();
+    if ((await table.count()) === 1) {
+      await table.scrollIntoViewIfNeeded();
+      await table.click();
+      const dialog = page.locator('dialog#enquiry');
+      await expect(dialog).toHaveAttribute('open', '');
+      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS.table.title);
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toHaveAttribute('open', '');
+      await expect(table).toBeFocused();
     }
   });
 

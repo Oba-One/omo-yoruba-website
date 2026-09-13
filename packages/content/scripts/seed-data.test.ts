@@ -273,6 +273,9 @@ describe('the take-part rows and the retired fields', () => {
     expect(retiredFields('festivalPage', { takePartOrder: ['vendor'] })).toEqual(['takePartOrder']);
     expect(retiredFields('festivalPage', {})).toEqual([]);
     expect(retiredFields('galaPage', { takePartOrder: ['table'] })).toEqual(['takePartOrder']);
+    expect(retiredFields('siteSettings', { eventbriteUrl: 'https://x' })).toEqual([
+      'eventbriteUrl',
+    ]);
     expect(retiredFields('homepage', { takePartOrder: [] })).toEqual([]);
   });
 });

@@ -54,12 +54,6 @@ export const PENDING: readonly PendingEntry[] = [
   },
   { type: 'siteSettings', fields: ['socials[]'], where: 'Footer', what: 'social links' },
   { type: 'siteSettings', fields: ['zeffyEmbedUrl'], where: 'Donate', what: 'the Zeffy link' },
-  {
-    type: 'siteSettings',
-    fields: ['eventbriteUrl'],
-    where: 'Gala tickets',
-    what: 'the Eventbrite link',
-  },
 
   // Odunde Festival
   {
@@ -222,6 +216,18 @@ export const PENDING: readonly PendingEntry[] = [
     filter: GALA,
     where: 'Gala, tickets',
     what: 'the Eventbrite link',
+  },
+  {
+    type: 'ticketTier',
+    fields: ['price'],
+    where: 'Gala, seats and tables',
+    what: 'the price',
+  },
+  {
+    type: 'ticketTier',
+    fields: ['includes[]'],
+    where: 'Gala, seats and tables',
+    what: 'what the ticket includes',
   },
 
   // Programs and lessons

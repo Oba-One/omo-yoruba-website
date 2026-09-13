@@ -7173,13 +7173,6 @@
         },
         "optional": true
       },
-      "eventbriteUrl": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "analyticsEnabled": {
         "type": "objectAttribute",
         "value": {

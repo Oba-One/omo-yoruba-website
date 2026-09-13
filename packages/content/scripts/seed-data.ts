@@ -798,11 +798,13 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
 
 /**
  * Fields a schema change retired, per document type: a re-run unsets them where they are still
- * stored, so the Studio shows no unknown field (`takePartOrder` became `takePart`, ADR 0025).
+ * stored, so the Studio shows no unknown field (`takePartOrder` became `takePart`, ADR 0025; the
+ * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024).
  */
 export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   festivalPage: ['takePartOrder'],
   galaPage: ['takePartOrder'],
+  siteSettings: ['eventbriteUrl'],
 };
 
 /** The retired fields a stored document still carries. */

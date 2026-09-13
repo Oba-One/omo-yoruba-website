@@ -13,7 +13,7 @@ Names and roles: `docs/design/README.md` section 7. Schema: `packages/web/astro.
 | `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET` | `packages/web/.env`, Vercel (all environments) | Required since Phase 2: the build stops without them (CI uses placeholders) |
 | `PUBLIC_SITE_URL` | Vercel per environment | Production `https://omoyorubasocal.org` |
 | `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST` | `packages/web/.env`, Vercel | Empty key disables analytics |
-| `PUBLIC_ZEFFY_EMBED_URL`, `PUBLIC_EVENTBRITE_URL` | Vercel | May stay empty (wayfinder ticket 03) |
+| `PUBLIC_ZEFFY_EMBED_URL` | Vercel | May stay empty (wayfinder ticket 03). The Gala's Eventbrite link is no variable: each gala edition holds it as `ticketsUrl` (ADR 0024); remove any `PUBLIC_EVENTBRITE_URL` left in Vercel or a local env file |
 | `PUBLIC_PREVIEW_ORIGIN` | `packages/web/.env`, Vercel | Optional since Phase 4: the uncached second hostname the Presentation tool previews on (ADR 0021); empty previews on the Studio's own origin |
 | `VERCEL_AUTOMATION_BYPASS_SECRET` | GitHub Actions secret | Phase 4: the project's Protection Bypass for Automation, for Lighthouse and Playwright against a protected deployment |
 | `SANITY_API_READ_TOKEN` (Viewer) | `packages/web/.env`, Vercel | Every site read since Phase 3: the datasets are private, so without it every page renders Pending; `/api/preview/enable` validates the Studio's secret with it; stega and drafts (Phase 4) |
