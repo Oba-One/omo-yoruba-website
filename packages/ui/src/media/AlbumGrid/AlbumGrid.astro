@@ -1,0 +1,163 @@
+---
+/**
+ * The gallery's albums (`18 Photo Gallery.dc.html`, ADR 0039), as a list of `AlbumTile`s. The `mosaic` is the
+ * prototype's: four columns of 210px rows, the newest album leading two columns by two rows. Three albums fill
+ * a clean block (the second and third each two columns wide, stacked beside the lead), four or more follow the
+ * prototype (the fourth two columns wide, then single tiles), one spans the width and two sit as halves; two
+ * columns under 900px with the lead across both, one under 560px. The `grid` lays the tiles two, three or four
+ * across at the port's densities (`.oy-albums`). `captions: hover` hides the titles until hover or keyboard
+ * focus, only where the pointer can hover, so a phone always shows them. No albums shows the registry's Pending
+ * line. The first tile loads first, as the page's largest paint.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+import AlbumTile, { type AlbumTileData } from '../AlbumTile/AlbumTile.astro';
+
+interface Props {
+  albums?: (AlbumTileData | null)[] | null;
+  layout?: 'mosaic' | 'grid';
+  /** The grid's density: albums across. */
+  columns?: 2 | 3 | 4;
+  captions?: 'always' | 'hover';
+  /** The registry's wording when there are no albums. */
+  pending?: string;
+  heading?: 'h2' | 'h3';
+  /** A `data-sanity` attribute, so click-to-edit reaches the captions option. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  albums,
+  layout = 'mosaic',
+  columns = 3,
+  captions = 'always',
+  pending = 'the photo albums',
+  heading,
+  edit,
+  class: className,
+} = Astro.props;
+
+const list = (albums ?? []).filter((album): album is AlbumTileData => album !== null);
+const count = list.length;
+
+// A mosaic tile two rows tall takes the lead's title. The widths the tiles are drawn at: the lead across the
+// page under 900px and about 520px wide above it (a cover crops to its 436px height, so it asks wider); a
+// two-column tile about 520px, a single one about 250px, each half the page under 900px and all of it under
+// 560px; the grid's tiles at its density.
+const tall = (at: number) => layout === 'mosaic' && (at === 0 || (count === 2 && at === 1));
+const wide = (at: number) =>
+  layout === 'mosaic' && ((count === 3 && at > 0) || (count >= 4 && at === 3));
+const sizesFor = (at: number) => {
+  if (tall(at) || (layout === 'mosaic' && count === 1))
+    return '(max-width: 900px) calc(100vw - 48px), 660px';
+  if (wide(at))
+    return '(max-width: 560px) calc(100vw - 48px), (max-width: 900px) calc(50vw - 32px), 540px';
+  if (layout === 'grid')
+    return `(max-width: 860px) calc(50vw - 34px), ${Math.round(1100 / columns)}px`;
+  return '(max-width: 560px) calc(100vw - 48px), (max-width: 900px) calc(50vw - 32px), 320px';
+};
+---
+
+{
+  count === 0 ? (
+    <Pending variant="line" what={pending} />
+  ) : (
+    <ul
+      class:list={['oy-album-grid', layout === 'grid' && 'oy-albums', className]}
+      data-layout={layout}
+      data-cols={layout === 'grid' ? columns : undefined}
+      data-count={count >= 4 ? 'many' : count}
+      data-captions={captions}
+      data-sanity={edit}
+    >
+      {list.map((album, at) => (
+        <li>
+          <AlbumTile
+            {...album}
+            size={tall(at) ? 'lead' : 'tile'}
+            sizes={sizesFor(at)}
+            eager={at === 0}
+            heading={heading}
+          />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .oy-album-grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .oy-album-grid > li {
+    min-width: 0;
+  }
+
+  .oy-album-grid[data-layout='mosaic'] {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 210px;
+    gap: 16px;
+  }
+  .oy-album-grid[data-layout='mosaic'] :global(.oy-album-media) {
+    height: 100%;
+  }
+  .oy-album-grid[data-layout='mosaic'][data-count] > li:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  .oy-album-grid[data-layout='mosaic'][data-count='1'] > li:first-child {
+    grid-column: 1 / -1;
+  }
+  .oy-album-grid[data-layout='mosaic'][data-count='2'] > li:nth-child(2) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  .oy-album-grid[data-layout='mosaic'][data-count='3'] > li:nth-child(n + 2) {
+    grid-column: span 2;
+  }
+  .oy-album-grid[data-layout='mosaic'][data-count='many'] > li:nth-child(4) {
+    grid-column: span 2;
+  }
+
+  @media (max-width: 900px) {
+    .oy-album-grid[data-layout='mosaic'] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: 180px;
+    }
+    .oy-album-grid[data-layout='mosaic'][data-count] > li:nth-child(n) {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+    .oy-album-grid[data-layout='mosaic'][data-count] > li:first-child {
+      grid-column: 1 / -1;
+      grid-row: span 2;
+    }
+    /* Two albums: the second takes the row under the lead rather than half of it. */
+    .oy-album-grid[data-layout='mosaic'][data-count='2'] > li:nth-child(2) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .oy-album-grid[data-layout='mosaic'] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .oy-album-grid[data-layout='mosaic'][data-count] > li:nth-child(n) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+
+  @media (hover: hover) {
+    .oy-album-grid[data-captions='hover'] :global(.oy-album-meta) {
+      opacity: 0;
+    }
+    .oy-album-grid[data-captions='hover'] :global(.oy-album:hover .oy-album-meta),
+    .oy-album-grid[data-captions='hover'] :global(.oy-album:focus-visible .oy-album-meta) {
+      opacity: 1;
+    }
+  }
+</style>
