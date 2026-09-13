@@ -640,3 +640,48 @@ describe('Impact', () => {
     ]);
   });
 });
+
+describe('Our Story', () => {
+  const story = byId.get('storyPage') as unknown as {
+    primaryAction?: unknown;
+    foundingFacts: { label: string; value?: string }[];
+    foundingImage?: unknown;
+    staffIntro: string;
+    takePart: { way: string; title: string; line?: string; label: string }[];
+    timeline?: unknown;
+  };
+
+  it('seeds the two confirmed founding facts and the labels of the two owed, and no photograph', () => {
+    expect(story.foundingFacts.map((item) => [item.label, item.value])).toEqual([
+      ['Founded', '1997, Los Angeles'],
+      ['Founders', undefined],
+      ['Status', '501(c)(3) nonprofit'],
+      ['First year', undefined],
+    ]);
+    expect(story.foundingImage).toBeUndefined();
+    expect(story.timeline).toBeUndefined();
+    expect(JSON.stringify(story)).not.toMatch(
+      /Balogun|Sofolahan|Crenshaw|blackboard|Nine children/,
+    );
+  });
+
+  it('seeds the member and volunteer rows without a member vote, and no header action', () => {
+    expect(story.takePart.map((row) => [row.way, row.title, row.line, row.label])).toEqual([
+      ['member', 'Become a member', undefined, 'Become a member'],
+      ['volunteer', 'Raise your hand', 'One form. We place you where you are needed.', 'Volunteer'],
+    ]);
+    expect(JSON.stringify(story.takePart)).not.toMatch(/a say in what gets built/);
+    expect(story.primaryAction).toBeUndefined();
+    const earlier = {
+      primaryAction: {
+        _type: 'cta',
+        label: 'Send a message',
+        kind: 'enquiry',
+        enquiryKind: 'contact',
+      },
+    };
+    expect(revisedFields('storyPage', earlier, buildRevisions(assets)).unset).toEqual([
+      'primaryAction',
+    ]);
+  });
+});

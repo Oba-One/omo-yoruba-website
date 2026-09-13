@@ -622,6 +622,41 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'About, founding',
     what: 'the 1997 story, in your words',
   },
+  {
+    type: 'storyPage',
+    fields: ['foundingImage'],
+    where: 'Our Story, how it began',
+    what: 'the earliest photograph you have: an early gathering, or the founders',
+  },
+  {
+    type: 'storyPage',
+    fields: ['foundingFacts[]'],
+    where: 'Our Story, how it began',
+    what: 'the founding facts',
+  },
+  // The seed labels who founded it and the first year; their values are the owner's.
+  {
+    type: 'storyPage',
+    condition: 'count(foundingFacts[!defined(value)]) > 0',
+    where: 'Our Story, how it began',
+    what: 'a founding fact',
+  },
+  // Our Story's people: a board member's short bio, and the role of anyone listed there.
+  {
+    type: 'person',
+    fields: ['bioShort'],
+    filter: 'group == "board"',
+    where: 'Our Story, board',
+    what: 'a short bio',
+  },
+  {
+    type: 'person',
+    fields: ['role'],
+    filter: 'group in ["board", "staff", "volunteer"]',
+    where: 'Our Story, people',
+    what: 'the role',
+  },
+  ...takePartRows('storyPage', 'Our Story, take part'),
 
   // News and Gallery
   { type: 'newsPost', fields: ['body'], where: 'News', what: 'the body of the post' },

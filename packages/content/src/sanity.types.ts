@@ -369,9 +369,8 @@ export type TimelineEntry = {
   _updatedAt: string;
   _rev: string;
   year?: string;
-  title?: string;
   blurb?: string;
-  image?: OyImage;
+  milestone?: boolean;
   order?: number;
 };
 
@@ -553,6 +552,10 @@ export type StoryPage = {
   _rev: string;
   header?: PageHeader;
   founding?: BlockContent;
+  foundingFacts?: Array<{
+    _key: string;
+  } & Fact>;
+  foundingImage?: OyImage;
   timeline?: Array<{
     _key: string;
   } & TimelineEntryReference>;
@@ -562,6 +565,9 @@ export type StoryPage = {
     title?: string;
     blurb?: string;
   };
+  takePart?: Array<{
+    _key: string;
+  } & TakePartRow>;
   primaryAction?: Cta;
   secondaryActions?: Array<{
     _key: string;
@@ -4146,6 +4152,116 @@ export type ImpactPageQueryResult = {
   } | null;
 } | null;
 
+// Source: src/queries/trust-pages.ts
+// Variable: storyPageQuery
+// Query: *[_type == "storyPage" && _id == "storyPage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  founding,  foundingFacts[]{_key, label, value, note},  foundingImage{_type, alt, caption, hotspot, crop, asset},  "timeline": timeline[]->{_id, year, blurb, milestone},  boardIntro,  staffIntro,  "board": *[_type == "person" && group == "board"] | order(order asc, name asc){    _id, name, role, bioShort, bioFull,    portrait{_type, alt, caption, hotspot, crop, asset}  },  "staff": *[_type == "person" && group in ["staff", "volunteer"]] | order(group asc, order asc, name asc){    _id, group, name, role,    portrait{_type, alt, caption, hotspot, crop, asset}  },  reachUs{title, blurb},  takePart[]{_key, way, chip, title, line, label},  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    generalEmail,    phone,    address,    "general": contacts[role == "general"][0]{name}  },  layout{timeline, bios, portraits},  seo{title, description}}
+export type StoryPageQueryResult = {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
+  founding: BlockContent | null;
+  foundingFacts: Array<{
+    _key: string;
+    label: string | null;
+    value: string | null;
+    note: string | null;
+  }> | null;
+  foundingImage: {
+    _type: "oyImage";
+    alt: string | null;
+    caption: string | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    asset: SanityImageAssetReference | null;
+  } | null;
+  timeline: Array<{
+    _id: string;
+    year: string | null;
+    blurb: string | null;
+    milestone: boolean | null;
+  }> | null;
+  boardIntro: string | null;
+  staffIntro: string | null;
+  board: Array<{
+    _id: string;
+    name: string | null;
+    role: string | null;
+    bioShort: string | null;
+    bioFull: BlockContent | null;
+    portrait: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  staff: Array<{
+    _id: string;
+    group: "board" | "staff" | "teacher" | "volunteer" | null;
+    name: string | null;
+    role: string | null;
+    portrait: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  reachUs: {
+    title: string | null;
+    blurb: string | null;
+  } | null;
+  takePart: Array<{
+    _key: string;
+    way: "enrol" | "give" | "member" | "performer" | "sponsor" | "table" | "updates" | "vendor" | "volunteer" | null;
+    chip: string | null;
+    title: string | null;
+    line: string | null;
+    label: string | null;
+  }> | null;
+  settings: {
+    generalEmail: string | null;
+    phone: string | null;
+    address: string | null;
+    general: {
+      name: string | null;
+    } | null;
+  } | null;
+  layout: {
+    timeline: "hidden" | "shown" | null;
+    bios: "full" | "short" | null;
+    portraits: "hidden" | "shown" | null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | null;
+
 // Query TypeMap
 declare global {
   interface SanityQueries {
@@ -4160,6 +4276,7 @@ declare global {
     "*[_type == \"subscriber\" && email == $email][0]._id": SubscriberByEmailQueryResult;
     "*[_type == \"getInvolvedPage\" && _id == \"getInvolvedPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"doors\": doors[]->{\n    _id, key, title, blurb, bullets,\n    action{label, kind, enquiryKind, href, newTab},\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  hometownAssociations{\n    title,\n    prose,\n    \"stat\": stat->{_id, value, label}\n  },\n  \"associations\": *[_type == \"hometownAssociation\"] | order(name asc){_id, name, url},\n  fallback{title, blurb},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    generalEmail,\n    phone,\n    \"general\": contacts[role == \"general\"][0]{name, responds}\n  },\n  layout{doors, hta},\n  seo{title, description}\n}": GetInvolvedPageQueryResult;
     "*[_type == \"impactPage\" && _id == \"impactPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"stats\": stats[]->{_id, value, label, source},\n  howWeWork,\n  howWeWorkImage{_type, alt, caption, hotspot, crop, asset},\n  \"outcomes\": outcomes[]->{\n    _id,\n    kind,\n    plainStatement,\n    figure{value, label, source},\n    \"program\": program->{_id, name, page, \"slug\": slug.current}\n  },\n  \"programs\": *[_type == \"program\"] | order(order asc){_id, name, page, \"slug\": slug.current},\n  civicInfra,\n  \"festivals\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    edition,\n    start,\n    end,\n    cost,\n    attendance{value, label, source},\n    vendorsHosted{value, label, source},\n    \"album\": album->{_id, \"photos\": count(photos)}\n  },\n  \"festivalPartners\": count(*[_type == \"partner\" && \"odunde\" in scope]),\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  photos[]{_key, _type, alt, caption, hotspot, crop, asset},\n  \"governance\": {\n    \"form990\": *[_type == \"governanceDoc\" && kind == \"form990\"] | order(year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    },\n    \"annualReport\": *[_type == \"governanceDoc\" && kind == \"annualReport\"] | order(year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    },\n    \"audit\": *[_type == \"governanceDoc\" && kind == \"audit\"] | order(year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    }\n  },\n  \"boardCount\": count(*[_type == \"person\" && group == \"board\"]),\n  \"partners\": *[_type == \"partner\"] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  fundersIntro,\n  nextYear{title},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    ein,\n    address,\n    \"partnerships\": contacts[role == \"partnerships\"][0]{name, email, responds}\n  },\n  layout{stats, outcomes, sources, funders},\n  seo{title, description}\n}": ImpactPageQueryResult;
+    "*[_type == \"storyPage\" && _id == \"storyPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  founding,\n  foundingFacts[]{_key, label, value, note},\n  foundingImage{_type, alt, caption, hotspot, crop, asset},\n  \"timeline\": timeline[]->{_id, year, blurb, milestone},\n  boardIntro,\n  staffIntro,\n  \"board\": *[_type == \"person\" && group == \"board\"] | order(order asc, name asc){\n    _id, name, role, bioShort, bioFull,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"staff\": *[_type == \"person\" && group in [\"staff\", \"volunteer\"]] | order(group asc, order asc, name asc){\n    _id, group, name, role,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  reachUs{title, blurb},\n  takePart[]{_key, way, chip, title, line, label},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    generalEmail,\n    phone,\n    address,\n    \"general\": contacts[role == \"general\"][0]{name}\n  },\n  layout{timeline, bios, portraits},\n  seo{title, description}\n}": StoryPageQueryResult;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

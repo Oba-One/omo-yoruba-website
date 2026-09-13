@@ -408,6 +408,10 @@ export const person = defineType({
   },
 });
 
+/**
+ * One entry on Our Story's timeline (ADR 0035): a year or a span and one line, as `15 People and
+ * History.dc.html` draws it; a milestone (the founding, today) is drawn apart from the rest.
+ */
 export const timelineEntry = defineType({
   name: 'timelineEntry',
   title: 'Timeline entry',
@@ -417,21 +421,28 @@ export const timelineEntry = defineType({
       name: 'year',
       title: 'Year',
       type: 'string',
-      description: '"2003", "1998 to 2002".',
+      description: '"2003", "1998 to 2002", "Today".',
       validation: voice.requiredText,
     }),
     defineField({
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-      validation: voice.requiredHeading,
+      name: 'blurb',
+      title: 'What happened',
+      type: 'text',
+      rows: 2,
+      description: 'One line.',
+      validation: voice.requiredText,
     }),
-    text('blurb', 'Blurb', 2),
-    defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
+    defineField({
+      name: 'milestone',
+      title: 'Milestone',
+      type: 'boolean',
+      description: 'Drawn apart from the other entries, as the founding and today are.',
+      initialValue: false,
+    }),
     order,
   ],
   orderings: [{ title: 'Order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
-  preview: { select: { title: 'title', subtitle: 'year', media: 'image' } },
+  preview: { select: { title: 'year', subtitle: 'blurb' } },
 });
 
 export const TESTIMONIAL_CONTEXTS = ['lessons', 'festival', 'collective', 'general'] as const;

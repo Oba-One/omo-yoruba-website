@@ -104,3 +104,40 @@ export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "i
   layout{stats, outcomes, sources, funders},
   seo{title, description}
 }`);
+
+/**
+ * Our Story in one read (ROUTES section 1, ADR 0035): the `storyPage` singleton with its header and
+ * actions, how it began with its facts and its earliest photograph, the timeline entries in order, the
+ * board and the staff and volunteers by group and order (the teacher is listed on the Lessons page only),
+ * Reach us, the take-part rows, and the settings the contact block draws. Images project the asset
+ * reference (ADR 0022). Layout values come back as stored; the page fills the schema defaults.
+ */
+export const storyPageQuery = defineQuery(`*[_type == "storyPage" && _id == "storyPage"][0]{
+  header{kicker{yo, en}, title, line},
+  primaryAction{label, kind, enquiryKind, href, newTab},
+  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},
+  founding,
+  foundingFacts[]{_key, label, value, note},
+  foundingImage{_type, alt, caption, hotspot, crop, asset},
+  "timeline": timeline[]->{_id, year, blurb, milestone},
+  boardIntro,
+  staffIntro,
+  "board": *[_type == "person" && group == "board"] | order(order asc, name asc){
+    _id, name, role, bioShort, bioFull,
+    portrait{_type, alt, caption, hotspot, crop, asset}
+  },
+  "staff": *[_type == "person" && group in ["staff", "volunteer"]] | order(group asc, order asc, name asc){
+    _id, group, name, role,
+    portrait{_type, alt, caption, hotspot, crop, asset}
+  },
+  reachUs{title, blurb},
+  takePart[]{_key, way, chip, title, line, label},
+  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{
+    generalEmail,
+    phone,
+    address,
+    "general": contacts[role == "general"][0]{name}
+  },
+  layout{timeline, bios, portraits},
+  seo{title, description}
+}`);

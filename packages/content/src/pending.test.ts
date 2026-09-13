@@ -437,3 +437,20 @@ describe('Impact', () => {
     expect(reply?.condition).toContain('role == "partnerships"');
   });
 });
+
+describe('Our Story', () => {
+  it('names the founding photograph, the founding facts and a board member without a short bio', () => {
+    expect(pendingWhat('storyPage', 'foundingImage')).toBe(
+      'the earliest photograph you have: an early gathering, or the founders',
+    );
+    expect(pendingWhat('storyPage', 'foundingFacts')).toBe('a founding fact');
+    expect(pendingWhat('storyPage', 'foundingFacts[]')).toBe('the founding facts');
+    expect(pendingWhat('person', 'bioShort', 'board')).toBe('a short bio');
+    // The Lessons page still reads its own row for the linked teacher.
+    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
+    expect(pendingWhat('person', 'role', 'staff')).toBe('the role');
+    expect(pendingWhat('person', 'role', 'teacher')).toBeUndefined();
+    expect(pendingWhat('storyPage', 'takePart[]')).toBe('the ways in');
+    expect(presenceWhat('timelineEntry')?.what).toBe('the dated entries');
+  });
+});

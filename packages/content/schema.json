@@ -2378,13 +2378,6 @@
         },
         "optional": true
       },
-      "title": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "blurb": {
         "type": "objectAttribute",
         "value": {
@@ -2392,11 +2385,10 @@
         },
         "optional": true
       },
-      "image": {
+      "milestone": {
         "type": "objectAttribute",
         "value": {
-          "type": "inline",
-          "name": "oyImage"
+          "type": "boolean"
         },
         "optional": true
       },
@@ -3538,6 +3530,36 @@
         },
         "optional": true
       },
+      "foundingFacts": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "fact"
+            }
+          }
+        },
+        "optional": true
+      },
+      "foundingImage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "oyImage"
+        },
+        "optional": true
+      },
       "timeline": {
         "type": "objectAttribute",
         "value": {
@@ -3592,6 +3614,28 @@
                 "type": "string"
               },
               "optional": true
+            }
+          }
+        },
+        "optional": true
+      },
+      "takePart": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
             }
           }
         },

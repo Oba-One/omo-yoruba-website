@@ -878,11 +878,31 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'People and history',
         line: 'Who carries this work, and how it started in 1997.',
       },
+      // The two facts the client confirmed; who founded it and the first year are theirs to give.
+      foundingFacts: withKeys('fact', [
+        fact('Founded', '1997, Los Angeles'),
+        fact('Founders'),
+        fact('Status', '501(c)(3) nonprofit'),
+        fact('First year'),
+      ]),
+      staffIntro: 'The people who run the programs, and the volunteers who have been here longest.',
       reachUs: {
         title: 'Reach us',
         blurb: 'For anything not covered on Get Involved. Write, call, or send a message.',
       },
-      primaryAction: cta('Send a message', 'enquiry', 'contact'),
+      // Two rows only (the wireframe): someone reading the board bios is close to joining. The prototype's
+      // member line promised a say in what gets built, a member vote the register marks invented.
+      takePart: withKeys('way', [
+        { _type: 'takePartRow', way: 'member', title: 'Become a member', label: 'Become a member' },
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          title: 'Raise your hand',
+          line: 'One form. We place you where you are needed.',
+          label: 'Volunteer',
+        },
+      ]),
+      // No header action: the prototype's header is plain (ADR 0034).
     }),
   );
 
@@ -983,6 +1003,8 @@ export function buildRevisions(assets: SeedAssets): SeedRevision[] {
       path: 'primaryAction',
       was: cta('Become a member', 'enquiry', 'member'),
     },
+    // Our Story (ADR 0034): the header's gold action no prototype draws.
+    { type: 'storyPage', path: 'primaryAction', was: cta('Send a message', 'enquiry', 'contact') },
     {
       type: 'getInvolvedPage',
       path: 'doors',

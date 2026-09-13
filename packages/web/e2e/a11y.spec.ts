@@ -65,6 +65,7 @@ test('headings never skip a level on the content routes', async ({ page }) => {
     '/programs/cultural-collective',
     '/get-involved',
     '/impact',
+    '/our-story',
   ]) {
     await page.goto(route);
     const results = await new AxeBuilder({ page }).withRules(['heading-order']).analyze();

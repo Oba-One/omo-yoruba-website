@@ -508,7 +508,24 @@ export const storyPage = definePage({
       type: 'blockContent',
       description: 'The 1997 story, in your words.',
     }),
-    refs('timeline', 'Timeline', 'timelineEntry'),
+    facts(
+      'foundingFacts',
+      'Founding facts',
+      'Beside the story: when and where, who founded it, its status, the first year. Empty values show Pending.',
+    ),
+    defineField({
+      name: 'foundingImage',
+      title: 'The earliest photograph',
+      type: 'oyImage',
+      description:
+        'The earliest photograph you have, even a poor one: an early gathering, or the founders. Empty shows Pending.',
+    }),
+    refs(
+      'timeline',
+      'Timeline',
+      'timelineEntry',
+      'In order. The layout option keeps the timeline hidden until you confirm you want one (wayfinder ticket 07).',
+    ),
     text('boardIntro', 'Board intro', 2),
     text('staffIntro', 'Staff and volunteers intro', 2),
     defineField({
@@ -520,6 +537,7 @@ export const storyPage = definePage({
         text('blurb', 'Blurb', 2),
       ],
     }),
+    takePart,
   ],
   layout: PAGE_LAYOUTS.storyPage,
 });

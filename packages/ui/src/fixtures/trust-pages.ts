@@ -199,3 +199,82 @@ export const FUND = {
     { label: 'Talk to us', kind: 'enquiry', enquiryKind: 'contact' },
   ],
 };
+
+// Our Story
+
+export const STORY_HEADER = {
+  kicker: { yo: 'Àwọn ènìyàn wa', en: 'Our people' },
+  title: 'People and history',
+  line: 'Who carries this work, and how it started in 1997.',
+};
+
+/** The founding facts as the seed writes them: the two confirmed values, the two owed as chips. */
+export const FOUNDING_FACTS = [
+  { label: 'Founded', value: '1997, Los Angeles', pending: owed('storyPage', 'foundingFacts') },
+  { label: 'Founders', pending: owed('storyPage', 'foundingFacts') },
+  { label: 'Status', value: '501(c)(3) nonprofit', pending: owed('storyPage', 'foundingFacts') },
+  { label: 'First year', pending: owed('storyPage', 'foundingFacts') },
+];
+
+export const FOUNDING_PENDING = owed('storyPage', 'founding');
+export const FOUNDING_PHOTO_WHAT = owed('storyPage', 'foundingImage');
+
+/** Timeline entries in the bracketed form: the prototype's dates and lines are invented. */
+export const TIMELINE_PLACEHOLDERS = [
+  { _id: 'entry-1', year: '[ Year ]', line: '[ The founding, in one line ]', milestone: true },
+  { _id: 'entry-2', year: '[ Year to year ]', line: '[ What happened across these years ]' },
+  { _id: 'entry-3', year: '[ Year ]', line: '[ What happened that year ]' },
+  { _id: 'entry-4', year: '[ Today ]', line: '[ Where the work stands now ]', milestone: true },
+];
+
+const fullBio = blocks('[ The full bio, in their words ]');
+
+/**
+ * Board members in the bracketed form, for the stories of a page that lists them. The one portrait is
+ * the Yoruba lesson's whiteboard, a photograph with no one in it, so no one reads as a named person.
+ */
+export const BOARD_PLACEHOLDERS = [
+  {
+    _id: 'board-1',
+    name: '[ Name ]',
+    role: '[ Role ]',
+    bio: '[ A short bio ]',
+    bioFull: fullBio,
+    image: { ...PHOTOS.teachingSession, alt: '[ Portrait ]' },
+  },
+  { _id: 'board-2', name: '[ Name ]', role: '[ Role ]', bio: '[ A short bio ]', bioFull: fullBio },
+  { _id: 'board-3', name: '[ Name ]', role: '[ Role ]', bio: '[ A short bio ]' },
+  { _id: 'board-4', name: '[ Name ]', role: null, bio: null },
+];
+
+export const STAFF_PLACEHOLDERS = [1, 2, 3, 4, 5].map((n) => ({
+  _id: `staff-${n}`,
+  name: '[ Name ]',
+  role: n === 5 ? '[ Volunteer, since the year ]' : '[ Role ]',
+}));
+
+export const PEOPLE_PENDING = {
+  board: "the board's names, roles and bios",
+  staff: 'the staff and volunteers to list',
+  role: owed('person', 'role', 'board'),
+  bio: owed('person', 'bioShort', 'board'),
+};
+
+export const STAFF_INTRO =
+  'The people who run the programs, and the volunteers who have been here longest.';
+
+export const REACH_US = {
+  title: 'Reach us',
+  intro: 'For anything not covered on Get Involved. Write, call, or send a message.',
+};
+
+export const STORY_TAKE_PART = [
+  { _key: 'way-1', way: 'member', title: 'Become a member', label: 'Become a member' },
+  {
+    _key: 'way-2',
+    way: 'volunteer',
+    title: 'Raise your hand',
+    line: 'One form. We place you where you are needed.',
+    label: 'Volunteer',
+  },
+];

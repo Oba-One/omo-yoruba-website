@@ -1,0 +1,192 @@
+---
+/**
+ * Our Story (`15 People and History.dc.html`, ROUTES sections 1, 4 and 5, ADR 0035): composed from the one
+ * Our Story query through `loadQuery`, with the registry's Pending chips for every fact the Studio does not
+ * hold and the layout options read from the singleton with the schema defaults filled. People first,
+ * because the faces are the argument: the board and the staff and volunteers come from `person` documents,
+ * each group with its own Pending line, and nobody's name or face stands in for them. The timeline stays
+ * hidden until the owner confirms it (wayfinder ticket 07). The page arranges library parts and owns its
+ * copy (the kickers and headings the prototype carries) and its layout.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { storyPageQuery } from '@oy/content/queries';
+import PersonCard from '@oy/ui/cards/PersonCard/PersonCard.astro';
+import ContactBlock from '@oy/ui/content/ContactBlock/ContactBlock.astro';
+import FactList from '@oy/ui/content/FactList/FactList.astro';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Timeline from '@oy/ui/content/Timeline/Timeline.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import EnquiryCard from '@oy/ui/forms/EnquiryCard/EnquiryCard.astro';
+import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
+import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
+import TakePartBand from '@oy/ui/page/TakePartBand/TakePartBand.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { cachePage } from '../lib/cache';
+import { STUDIO_BASE_PATH } from '../lib/paths';
+import { loadQuery } from '../lib/sanity/load-query';
+import { buildStoryPage } from '../lib/sanity/story-page';
+
+const { data, preview, error } = await loadQuery(storyPageQuery, {}, { cookies: Astro.cookies });
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildStoryPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending={page.header.titlePending}
+      line={page.header.line}
+      actions={page.header.actions}
+    />
+
+    <Section id="origin" labelledby="origin-heading">
+      <Split>
+        <SectionHead title="How it began, 1997" id="origin-heading" />
+        {
+          page.founding.prose ? (
+            <Prose value={page.founding.prose} />
+          ) : (
+            <p>
+              <Pending what={page.founding.pending} />
+            </p>
+          )
+        }
+        <FactList facts={page.founding.facts} pending={page.founding.factsPending} columns={1} />
+        <PhotoTile
+          slot="aside"
+          shape="figure"
+          height={340}
+          image={page.founding.photo}
+          caption={page.founding.caption}
+          what={page.founding.photoWhat}
+          sizes="(min-width: 1100px) 480px, (min-width: 900px) 42vw, 100vw"
+          edit={page.founding.photoEdit}
+        />
+      </Split>
+    </Section>
+
+    {
+      page.timeline.shown && (
+        <Section id="timeline" ground="alt" labelledby="timeline-heading" data-sanity={page.edit.timeline}>
+          <SectionHead
+            title="1997 to now"
+            intro="The years before Odunde, and everything since."
+            id="timeline-heading"
+          />
+          <Timeline entries={page.timeline.entries} pending={page.timeline.pending} />
+        </Section>
+      )
+    }
+
+    <Section id="board" labelledby="board-heading" data-sanity={page.edit.bios}>
+      <SectionHead
+        kicker={{ yo: 'Ìgbìmọ̀', en: 'The board' }}
+        title="Board of directors"
+        intro={page.board.intro}
+        id="board-heading"
+      />
+      {
+        page.board.people.length === 0 ? (
+          <Pending variant="line" what={page.board.pending} />
+        ) : (
+          <CardGrid columns={4} data-sanity={page.edit.portraits}>
+            {page.board.people.map((person) => (
+              <PersonCard
+                person={person}
+                variant={person.variant}
+                full={page.board.full}
+                rolePending={page.board.rolePending}
+                bioPending={page.board.bioPending}
+                sizes="(min-width: 1100px) 260px, (min-width: 600px) 50vw, 100vw"
+                edit={person.edit}
+              />
+            ))}
+          </CardGrid>
+        )
+      }
+    </Section>
+
+    <Section id="staff" ground="alt" labelledby="staff-heading">
+      <SectionHead title="Staff and volunteers" intro={page.staff.intro} id="staff-heading" />
+      {
+        page.staff.people.length === 0 ? (
+          <Pending variant="line" what={page.staff.pending} />
+        ) : (
+          <CardGrid columns={5}>
+            {page.staff.people.map((person) => (
+              <PersonCard
+                person={person}
+                variant="compact"
+                rolePending={page.staff.rolePending}
+                sizes="(min-width: 1100px) 200px, 50vw"
+                edit={person.edit}
+              />
+            ))}
+          </CardGrid>
+        )
+      }
+      <Handoff
+        shape="box"
+        variant="quiet"
+        text="Meet the teacher on the Language Lessons page."
+        action={{ label: 'The teacher', kind: 'url', href: '/programs/yoruba-lessons#teacher' }}
+      />
+    </Section>
+
+    <Section id="contact" labelledby="contact-heading">
+      <Split>
+        <SectionHead
+          kicker={{ yo: 'Ẹ kàn sí wa', en: 'Reach us' }}
+          title={page.reach.title}
+          intro={page.reach.intro}
+          id="contact-heading"
+        />
+        <ContactBlock
+          part="facts"
+          settings={page.reach.settings}
+          contact={page.reach.contact}
+          rows={['email', 'phone', 'address', 'name']}
+          nameLabel="Who receives this"
+          namePending={page.reach.namePending}
+        />
+        <Handoff
+          shape="box"
+          variant="quiet"
+          text="Governance, tax status, and financial documents."
+          action={{ label: 'Impact', kind: 'url', href: '/impact#governance' }}
+        />
+        {
+          /* The take-part band's gold member row shares a screen view with this card at 375 and 1440, so
+             the card's trigger is the outline (one gold action per view; ticket 12). */
+        }
+        <div slot="aside">
+          <EnquiryCard kind="contact" variant="secondary" />
+          {page.reach.urgent && <p>If it is urgent, calling reaches a person faster than email does.</p>}
+        </div>
+      </Split>
+    </Section>
+
+    <Section id="take-part" ground="alt" labelledby="take-part-heading">
+      <SectionHead title="Take part" intro={page.takePart.intro} id="take-part-heading" />
+      <TakePartBand
+        rows={page.takePart.rows}
+        labels={page.takePart.labels}
+        pending={page.takePart.pending}
+        rowPending={page.takePart.rowPending}
+      />
+    </Section>
+  </main>
+</SiteLayout>
