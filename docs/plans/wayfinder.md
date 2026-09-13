@@ -147,6 +147,8 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 36 | Check the event pages in the Studio and on the preview, merge pull request 6 | Phase 6 branch |
 | 37 | The photo carousel's controls (ADR 0027's answers) | The Lightbox, Phase 8 |
 | 38 | The event pages' owed facts (Odunde 2027, Gala 2026, albums) | Launch |
+| 39 | Check the program pages in the Studio and on the preview, merge pull request 7 | Phase 7 branch |
+| 40 | The program pages' owed facts (the teacher, the Lessons answers, the initiatives, the Collective's argument and voice) | Launch |
 | 07 | Our Story timeline shown by default | Phase 7 |
 | 10 | Old site URLs for redirects | Phase 9 |
 | 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | Phase 9 |
