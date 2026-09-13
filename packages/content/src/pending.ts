@@ -578,20 +578,37 @@ export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
 
 /**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
- * `kind` picks the row for one kind of document (an event's `gala` or `festival`) where the
- * registry keeps a row per kind; without a matching row the first row for the field answers. An
- * array's name without `[]` answers the row for one of its items missing a value.
+ * `kind` picks the row for one kind of document (an event's `gala` or `festival`): its own row, else
+ * a row every kind shares, never a row the registry keeps for another kind. An array's name without
+ * `[]` answers the row for one of its items missing a value.
  */
 export function pendingWhat(type: string, field: string, kind?: string): string | undefined {
   const rows = PENDING.filter((entry) => entry.type === type && entry.fields?.includes(field));
-  const narrowed = kind
-    ? rows.find((entry) => entry.filter?.includes(`kind == "${kind}"`))
-    : undefined;
-  const found = (narrowed ?? rows[0])?.what;
+  const found = rowForKind(rows, kind)?.what;
   if (found) return found;
   // One item of an array missing its value ("a practical fact") is a condition row on the array.
-  return PENDING.find((entry) => entry.type === type && entry.condition?.includes(`${field}[`))
-    ?.what;
+  const conditions = PENDING.filter(
+    (entry) => entry.type === type && entry.condition?.includes(`${field}[`),
+  );
+  return rowForKind(conditions, kind)?.what;
+}
+
+/** The kinds a row's filter narrows it to (`kind == "festival"`); none for a row every kind shares. */
+function rowKinds(entry: PendingEntry): string[] {
+  return [...(entry.filter ?? '').matchAll(/\bkind == "([^"]+)"/g)].map((match) => match[1] ?? '');
+}
+
+/**
+ * The row that answers for one kind: a row narrowed to that kind, else a row no kind narrows. A row
+ * narrowed to another kind never answers, since the Studio lists it for that kind's documents only.
+ * Without a kind the first row answers.
+ */
+function rowForKind(rows: readonly PendingEntry[], kind: string | undefined) {
+  if (!kind) return rows[0];
+  return (
+    rows.find((row) => rowKinds(row).includes(kind)) ??
+    rows.find((row) => rowKinds(row).length === 0)
+  );
 }
 
 /**

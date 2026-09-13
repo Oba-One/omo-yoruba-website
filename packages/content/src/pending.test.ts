@@ -173,6 +173,24 @@ describe('pendingWhat and pendingTitle', () => {
   });
 });
 
+describe('pendingWhat for one kind', () => {
+  it("never answers a kind from a condition row narrowed to another kind's documents", () => {
+    // The festival and the Gala each keep a row for a schedule row missing its time; no row names "other".
+    expect(pendingWhat('event', 'schedule', 'festival')).toBe('the time');
+    expect(pendingWhat('event', 'schedule', 'gala')).toBe('the time');
+    expect(pendingWhat('event', 'schedule', 'other')).toBeUndefined();
+  });
+
+  it("never answers a kind from a field row narrowed to another kind's documents", () => {
+    // Only the festival's editions list the cost and the exact venue line in the Studio.
+    expect(pendingWhat('event', 'cost', 'festival')).toBe('the cost');
+    expect(pendingWhat('event', 'cost', 'gala')).toBeUndefined();
+    expect(pendingWhat('event', 'venue.line', 'gala')).toBeUndefined();
+    // A row no kind narrows answers for every kind.
+    expect(pendingWhat('ticketTier', 'price', 'gala')).toBe('the price');
+  });
+});
+
 describe('presenceCountQuery', () => {
   it('counts the type, narrowed by the filter when there is one', () => {
     expect(presenceCountQuery({ type: 'zone', minimum: 4, where: 'Odunde', what: 'zones' })).toBe(
