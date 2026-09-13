@@ -115,6 +115,17 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   [the program pages follow their prototypes under the repo rules](../adr/0033-program-pages-follow-their-prototypes-under-the-repo-rules.md):
   placeholders instead of interim photographs, AA greens and kickers on the Collective's strong tint, a
   handoff box white on an alternate ground (Phase 6).
+- [Doors gain the vendor door, and the give door closes Get Involved](../adr/0034-doors-gain-vendor-and-give-closes-get-involved.md),
+  and [the trust pages' content model](../adr/0035-trust-pages-content-model.md): an outcome names one
+  subject (a program or an event page), Impact reads the civic figures from the festival's editions and
+  the newest governance document of each kind, a timeline entry is a year and one line, Our Story's names
+  come from `person` documents, Donate's Zeffy facts stay owed until the form is set up, and the seed
+  moves a value an earlier seed wrote only while it still reads as written (Phase 7 grill, owner's answers
+  in `docs/tickets/phase-7/spec.md`).
+- [The trust pages follow their prototypes under the repo rules](../adr/0036-trust-pages-follow-their-prototypes-under-the-repo-rules.md):
+  a placeholder for the earliest photograph, one gold action per view on all four pages, the prototypes'
+  section lead on every section head, Impact's six photographs as equal tiles, and the People and History
+  prototype's paper grounds read as its runtime, not intent (Phase 7).
 - [The homepage under the mobile performance budget](../tickets/wayfinder/issues/33-homepage-mobile-lighthouse-budget.md):
   right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
   0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).

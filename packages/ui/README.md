@@ -5,16 +5,17 @@ Every visual component, as `.astro`, with a colocated `*.stories.ts` and `*.test
 (Kicker, Button, ActionButton, Divider, Pending), page (Hero, PageHeader, GlanceStrip, StatStrip,
 Section, SectionHead, Split, ButtonRow, CardGrid, Handoff, TakePartBand, YearStrip, Initiative, HomeRoot,
 PageRoot, ProgressBar), cards (Card, ProgramCard, SubprogramCard, DoorCard, PathRow, NewsCard,
-PullQuote, ZoneCard, TicketTierCard, ListRow, PersonCard), content (Prose, PathRows, ProverbLine,
-ZoneGrid, Schedule, ScheduleRow, FactList, PartnerRow, TicketTiers, SponsorLevels, Accordion,
-Disclosure, EntryList, EventList, ContactBlock, and the pure helpers
+PullQuote, ZoneCard, TicketTierCard, ListRow, PersonCard, OutcomeCard), content (Prose, PathRows,
+ProverbLine, ZoneGrid, Schedule, ScheduleRow, FactList, PartnerRow, TicketTiers, SponsorLevels, Accordion,
+Disclosure, EntryList, EventList, ContactBlock, Timeline, and the pure helpers
 `edition-dates`, `vendor-terms`, `figure-sentence`, `count-word`), media (ImagePlaceholder,
 PhotoTile, PhotoMosaic, PhotoCarousel, CreditLine), forms, navigation (SiteNav, SiteFooter, Logo),
 bands (EventBand, NewsletterBand, PatternBand);
 `docs/design/COMPONENT-MAP.md` holds the inventory. `src/fixtures/` holds seed-shaped story data
 (confirmed facts and Pending states only; the photographs import from `docs/design/design/images/w2`
-as URL assets). `src/pages/homepage/`, `odunde/`, `gala/`, `programs/`, `lessons/` and `collective/` hold the page-section stories, one
-file per layout option (`sections.ts` beside them builds each section from the fixtures). Imports nothing from `packages/web`. Components are imported by path:
+as URL assets). `src/pages/homepage/`, `odunde/`, `gala/`, `programs/`, `lessons/`, `collective/`,
+`get-involved/`, `impact/`, `our-story/` and `donate/` hold the page-section stories, one file per layout
+option (`sections.ts` beside them builds each section from the fixtures). Imports nothing from `packages/web`. Components are imported by path:
 `@oy/ui/core/Button/Button.astro`.
 
 Styling comes from `@oy/tokens` (the `.oy-*` and `.v2-*` classes); a component's own `<style>`
