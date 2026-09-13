@@ -72,7 +72,7 @@ describe('the Gallery page-section stories', () => {
       'Photographs: Members and volunteers Pending: photographer credit to confirm',
     );
     expect(
-      [...(root?.querySelectorAll('#photographs .oy-button-row a') ?? [])].map((link) =>
+      [...(root?.querySelectorAll('#photographs .oy-album-intro-links a') ?? [])].map((link) =>
         link.getAttribute('href'),
       ),
     ).toEqual(['/gallery', '/gala']);

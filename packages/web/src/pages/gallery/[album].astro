@@ -1,0 +1,89 @@
+---
+/**
+ * An album's page (`18 Photo Gallery.dc.html`'s album and viewer states, ROUTES sections 1 and 3, ADR 0037, ADR
+ * 0039): composed from the one album query by slug through `loadQuery`. The slim header with the gallery's kicker,
+ * the album's title and its facts; the way back to the gallery and to the edition's page; the credit with its chip
+ * and the consent note; the photographs, each opening the Lightbox; photography credit and permissions. A photo
+ * address (`?photo=<key>`) serves the Lightbox open on that photograph, the one exception beside `#give` to
+ * nothing opening on load; a key the album does not hold serves nothing open. An unknown slug is a 404, and a
+ * failed read is a 503 in the Pending form that no cache keeps. The Lightbox comes first in the section, so a
+ * reader without JavaScript reaches its controls before the photographs behind it.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { albumPageQuery } from '@oy/content/queries';
+import AlbumIntro from '@oy/ui/media/AlbumIntro/AlbumIntro.astro';
+import Lightbox from '@oy/ui/media/Lightbox/Lightbox.astro';
+import PhotoGrid from '@oy/ui/media/PhotoGrid/PhotoGrid.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import GalleryCredits from '../../components/GalleryCredits.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { cachePage } from '../../lib/cache';
+import { STUDIO_BASE_PATH } from '../../lib/paths';
+import { buildAlbumPage } from '../../lib/sanity/album-page';
+import { loadQuery } from '../../lib/sanity/load-query';
+
+const slug = Astro.params.album ?? '';
+const { data, preview, error } = await loadQuery(
+  albumPageQuery,
+  { slug },
+  { cookies: Astro.cookies },
+);
+// No album for the slug: an empty 404, which a 404 page (Phase 9) fills in.
+if (!error && !data?.album) return new Response(null, { status: 404, statusText: 'Not Found' });
+
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildAlbumPage(
+  data,
+  { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH },
+  Astro.url.searchParams.get('photo'),
+);
+if (error) Astro.response.status = 503;
+cachePage(Astro, '/gallery/[album]', { draft: preview, failed: Boolean(error) });
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      facts={page.header.facts}
+    />
+
+    <Section id="photographs">
+      <Lightbox
+        id={page.lightbox.id}
+        label={page.lightbox.label}
+        albumHref={page.lightbox.albumHref}
+        album={page.lightbox.album}
+        photos={page.lightbox.photos}
+        openKey={page.lightbox.openKey}
+      />
+      <AlbumIntro
+        links={[page.links.gallery, page.links.edition]}
+        credited={page.found}
+        credit={page.credit.credit}
+        confirmed={page.credit.confirmed}
+        pending={page.credit.pending}
+        creditEdit={page.credit.edit}
+        consentNote={page.consentNote}
+        consentEdit={page.consentEdit}
+      />
+      <PhotoGrid
+        photos={page.photos.tiles}
+        lightbox={page.lightbox.id}
+        captions={page.photos.captions}
+        eager={page.photos.eager}
+        pending={page.photos.pending}
+        edit={page.photos.edit}
+      />
+    </Section>
+
+    <GalleryCredits credits={page.credits} />
+  </main>
+</SiteLayout>

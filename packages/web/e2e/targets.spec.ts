@@ -29,7 +29,7 @@ test('every visible control on the page and in the open modal is at least 44px',
   expect(await page.evaluate(small)).toEqual([]);
 });
 
-test('every visible control on the event, program and trust pages is at least 44px', async ({
+test('every visible control on the event, program, trust and gallery pages is at least 44px', async ({
   page,
   isMobile,
 }) => {
@@ -44,6 +44,10 @@ test('every visible control on the event, program and trust pages is at least 44
     '/impact',
     '/our-story',
     '/donate',
+    '/gallery',
+    '/gallery/gala-2025',
+    // The Lightbox served open: its controls are measured on screen.
+    '/gallery/gala-2025?photo=gala-2025-attendees-group-photo',
   ]) {
     await page.goto(route);
     expect(await page.evaluate(small), route).toEqual([]);

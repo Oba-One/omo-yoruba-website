@@ -14,8 +14,10 @@
  * `data-photo`) opens it in place and pushes the photo address; Left and Right, the buttons and a sideways swipe
  * move it and replace the address; ×, Escape and a click on the dark background close it, going back one entry
  * when the Lightbox pushed it, or replacing the address with the album's when the page arrived open. Back
- * closes it and Forward reopens it, and the router's refetch between two addresses of this album page is
- * cancelled. Focus returns to the tile of the photograph on screen. Each move announces the count and the
+ * closes it and Forward reopens it: the site layout's history guard hands a traverse between two addresses of
+ * this album page to the element (`window.oyHistoryGuard`) before the router would fetch the page again, and
+ * without the layout the element hears `popstate` itself. Focus returns to the tile of the photograph on
+ * screen. Each move announces the count and the
  * caption; a photograph that fails to load shows its caption in the frame; opening announces
  * `lightbox_opened`. The frame fades in over 0.2s, not at all under reduced motion.
  */
@@ -185,6 +187,8 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
         closing: false,
         // The served-open dialog has been made modal.
         adopted: false,
+        // The address as the Lightbox last knew it: where a Back or Forward comes from.
+        address: location.href,
       };
 
       const wrap = (index) => ((index % frames.length) + frames.length) % frames.length;
@@ -257,6 +261,7 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
           history.pushState(null, '', addressFor(key));
           state.pushed = true;
         }
+        state.address = location.href;
         announce();
       };
 
@@ -264,6 +269,7 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
         if (!dialog.open) return;
         const to = show(state.current + delta);
         history.replaceState(history.state, '', addressFor(keys[to]));
+        state.address = location.href;
         announce();
       };
 
@@ -292,6 +298,7 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
           return;
         }
         if (keyInAddress()) history.replaceState(history.state, '', addressFor(null));
+        state.address = location.href;
         finish();
       };
 
@@ -299,6 +306,7 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
       // opens on its photograph; the album's own address closes it.
       const onHistory = () => {
         state.leaving = false;
+        state.address = location.href;
         const key = keyInAddress();
         if (key) {
           show(keys.indexOf(key));
@@ -328,6 +336,7 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
           history.back();
         } else if (!state.pushed && keyInAddress()) {
           history.replaceState(history.state, '', addressFor(null));
+          state.address = location.href;
         }
         finish();
       });
@@ -424,11 +433,16 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
           event.preventDefault();
           openAt(link.dataset.photo, !dialog.open);
         },
-        // Back and Forward between two addresses of this album page need no new page (ADR 0037).
-        onPreparation(event) {
-          if (event.navigationType !== 'traverse') return;
-          if (event.to.pathname !== albumPath || event.from.pathname !== albumPath) return;
-          event.preventDefault();
+        // Back and Forward between two addresses of this album page need no new page (ADR 0037). The
+        // layout's history guard asks before the router hears of it; true keeps the router out.
+        claims() {
+          const from = new URL(state.address, location.href).pathname;
+          if (from !== albumPath || location.pathname !== albumPath) {
+            state.address = location.href;
+            return false;
+          }
+          onHistory();
+          return true;
         },
         // A page served with the Lightbox open (a photo address) turns it modal once scripts run, once.
         adoptServedOpen() {
@@ -462,8 +476,10 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
           this.oyListeners = new AbortController();
           const { signal } = this.oyListeners;
           document.addEventListener('click', api.onClick, { signal });
+          // Without the site's layout (a story) no guard answers first, so the element listens itself.
           window.addEventListener('popstate', api.onHistory, { signal });
-          document.addEventListener('astro:before-preparation', api.onPreparation, { signal });
+          api.state.address = location.href;
+          window.oyHistoryGuard = api.claims;
           api.adoptServedOpen();
           this.dataset.ready = 'true';
         }
@@ -471,6 +487,7 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
         disconnectedCallback() {
           if (this.oyListeners) this.oyListeners.abort();
           this.oyListeners = null;
+          if (this.oyApi && window.oyHistoryGuard === this.oyApi.claims) window.oyHistoryGuard = null;
           delete this.dataset.ready;
         }
       },

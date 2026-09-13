@@ -1,0 +1,95 @@
+---
+/**
+ * What an album page says before its photographs (`18 Photo Gallery.dc.html`'s album view, spec Q9 of Phase 8):
+ * the quiet way back to the gallery and to the edition's page (text only, since ← is outside the glyph set), the
+ * photo credit with its chip until confirmed, and the album's consent note when it has one. The prototype's row
+ * sits 22px above the credit and the credit 20px above the photographs.
+ */
+import Button from '../../core/Button/Button.astro';
+import CreditLine from '../CreditLine/CreditLine.astro';
+
+export interface AlbumIntroLink {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  /** The gallery first, then the edition's page when the album has one. */
+  links?: (AlbumIntroLink | null | undefined)[];
+  /** Whether an album was read, so its credit is known to be owed or given. */
+  credited?: boolean;
+  credit?: string | null;
+  confirmed?: boolean | null;
+  /** The registry's wording while the credit is unconfirmed. */
+  pending?: string;
+  consentNote?: string | null;
+  /** `data-sanity` attributes for the credit and the consent note. */
+  creditEdit?: string;
+  consentEdit?: string;
+  class?: string;
+}
+
+const {
+  links = [],
+  credited = true,
+  credit,
+  confirmed,
+  pending,
+  consentNote,
+  creditEdit,
+  consentEdit,
+  class: className,
+} = Astro.props;
+const shown = links.filter((link): link is AlbumIntroLink => Boolean(link?.href));
+---
+
+<div class:list={['oy-album-intro', className]}>
+  {
+    shown.length > 0 && (
+      <nav class="oy-album-intro-links" aria-label="Albums">
+        {shown.map((link, at) => (
+          <Button variant="quiet" href={link.href} arrow={at > 0}>
+            {link.label}
+          </Button>
+        ))}
+      </nav>
+    )
+  }
+  {
+    credited && (
+      <div data-sanity={creditEdit}>
+        <CreditLine credit={credit} confirmed={confirmed} pending={pending} />
+      </div>
+    )
+  }
+  {
+    consentNote?.trim() && (
+      <p class="oy-album-intro-note" data-sanity={consentEdit}>
+        {consentNote}
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .oy-album-intro {
+    margin-bottom: 20px;
+  }
+  .oy-album-intro-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 24px;
+    margin-bottom: 22px;
+  }
+  .oy-album-intro :global(.oy-credit-line) {
+    margin: 0;
+  }
+  .oy-album-intro-note {
+    margin: 8px 0 0;
+    max-width: 74ch;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+</style>

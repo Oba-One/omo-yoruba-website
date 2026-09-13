@@ -20,9 +20,12 @@ exit intent). An address that names a photograph is the visitor asking for that 
   closing never leaves the page. Focus returns to the tile of the photograph on screen, scrolled into view.
 - **The router stays out of it.** Astro's ClientRouter (7.3.1) ignores popstate entries whose state is
   `null` but re-fetches and cross-fades the page when Back reaches one of its own entries, even when only
-  the query changed. The Lightbox cancels that one transition: on `astro:before-preparation` for a
-  traverse between two addresses of its own album page it calls `preventDefault()`, which the router
-  checks before any fetch. The layout's progress bar skips a cancelled preparation.
+  the query changed; cancelling its `astro:before-preparation` does not help, since the router then falls
+  back to a full page load (`location.href = to.href`). So the site layout's head carries a classic script,
+  registered before the router's module listener, that offers each `popstate` to the element that owns it
+  (`window.oyHistoryGuard`): the Lightbox claims a traverse between two addresses of its own album page,
+  handles it, and the guard stops the event before the router hears it. Without the layout (a story) the
+  element listens to `popstate` itself.
 
 ## Considered options
 
@@ -35,6 +38,10 @@ exit intent). An address that names a photograph is the visitor asking for that 
   server never sees one, so the photograph could not be served open.
 - Letting the router re-fetch on Back: works, but every close by Back would reload the page, cross-fade and
   lose the focus return.
+- Cancelling the router's preparation for those traverses: tried first; the router answers a cancelled
+  preparation with a full page load.
+- A capturing `popstate` listener on the window, which the DOM now runs before the router's at the target:
+  depends on each browser's ordering at the target, where a listener registered first in the head does not.
 
 ## Consequences
 

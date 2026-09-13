@@ -110,7 +110,8 @@ describe('Lightbox', () => {
     const source = script?.textContent ?? '';
     expect(source).toContain("customElements.get('oy-lightbox')");
     expect(source).toContain("history.pushState(null, '', addressFor(key))");
-    expect(source).toContain('astro:before-preparation');
+    expect(source).toContain('window.oyHistoryGuard = api.claims;');
+    expect(source).not.toContain('astro:before-preparation');
     expect(source).toContain('const SWIPE = 40;');
     expect(source).toContain('window.visualViewport.scale > 1.01');
     expect(source).toContain("'lightbox_opened'");

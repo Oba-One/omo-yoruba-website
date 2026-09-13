@@ -27,7 +27,8 @@ the consequence of an answer or of a repo rule.
   `?enquiry=<kind>`, the no-JavaScript trigger.
 - The site runs Astro's ClientRouter (7.3.1). On Back or Forward between two history entries it owns, it
   re-fetches the page and cross-fades, even when only the query changed; it ignores entries whose state is
-  `null`, and its `astro:before-preparation` event is cancelable before any fetch.
+  `null`. (Found while building ticket 04: cancelling its `astro:before-preparation` makes it load the page in
+  full, so ADR 0037 keeps the router out through a guard in the layout's head instead.)
 - The prototype's copy the register would mark invented: the soon sentence (the gallery waits for Red Carpet
   Media to "deliver the 2026 set", which the dataset already holds), the credits summary ("Many festival sets
   are by Red Carpet Media"), the consent policy (signs at every entrance, written consent at registration) and
