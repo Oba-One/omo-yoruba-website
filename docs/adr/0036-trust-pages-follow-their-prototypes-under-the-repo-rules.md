@@ -22,7 +22,10 @@ program pages, they depart only where a rule that outranks a prototype says so:
   ("Yoruba Language Lessons", never "The school"), the placeholder quote asks what the lessons changed, not
   Saturday mornings, and the header line and give-now section make no claim about Zeffy's fees. The links
   to Our Story use the nav's name, not "People & history". The register's named partnerships lead gives way
-  to "Our partnerships lead answers" and "Talk to us".
+  to "Our partnerships lead answers" and "Talk to us". The timeline keeps its heading without the
+  prototype's lead, "The years before Odunde, and everything since.", which dates the festival after the
+  founding where no confirmed fact does; Donate's box to Impact drops "with a source line under every number"
+  while Impact hides its source lines.
 - **One gold action per screen view.** Get Involved's member card is the only gold door, where the
   prototype draws four; Our Story's contact card is the outline beside the take-part member row (ticket 12);
   Donate's give-now section draws no second Give now under the header's (spec Q14).

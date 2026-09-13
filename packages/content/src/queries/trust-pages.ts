@@ -41,7 +41,8 @@ export const getInvolvedPageQuery =
  * their subjects (a program or an event page's kind) and every program's name for the slots, the civic
  * prose and every festival edition (the newest past one with photographs gives the attendance and the
  * vendors hosted, the next one the cost), the count of the festival page's partners, the voices, the six
- * photographs, the newest governance document of each kind with its file's URL, the board count, every
+ * photographs, the newest governance document of each kind with its file's URL (a dated one first, since
+ * GROQ sorts a missing year ahead of every year in descending order), the board count, every
  * partner, and the settings the governance block and the closing band draw. Images project the asset
  * reference (ADR 0022). Layout values come back as stored; the page fills the schema defaults.
  */
@@ -76,13 +77,13 @@ export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "i
   "voices": voices[]->{_id, quote, name, relation, permissionToName, context},
   photos[]{_key, _type, alt, caption, hotspot, crop, asset},
   "governance": {
-    "form990": *[_type == "governanceDoc" && kind == "form990"] | order(year desc)[0]{
+    "form990": *[_type == "governanceDoc" && kind == "form990"] | order(defined(year) desc, year desc)[0]{
       _id, year, note, "file": file.asset->{url, originalFilename, extension}
     },
-    "annualReport": *[_type == "governanceDoc" && kind == "annualReport"] | order(year desc)[0]{
+    "annualReport": *[_type == "governanceDoc" && kind == "annualReport"] | order(defined(year) desc, year desc)[0]{
       _id, year, note, "file": file.asset->{url, originalFilename, extension}
     },
-    "audit": *[_type == "governanceDoc" && kind == "audit"] | order(year desc)[0]{
+    "audit": *[_type == "governanceDoc" && kind == "audit"] | order(defined(year) desc, year desc)[0]{
       _id, year, note, "file": file.asset->{url, originalFilename, extension}
     }
   },
@@ -146,8 +147,9 @@ export const storyPageQuery = defineQuery(`*[_type == "storyPage" && _id == "sto
  * Donate in one read (ROUTES section 1, ADR 0034, ADR 0035): the `donatePage` singleton with its header and
  * its one gold "Give now", the give-now block with its facts, the doors for organizations, the giving levels
  * in order, the other ways to give, the tax line, and the settings the other ways and the trust block draw
- * (the legal name, the EIN, the mailing address). Images project the asset reference (ADR 0022). Layout
- * values come back as stored; the page fills the schema defaults.
+ * (the legal name, the EIN, the mailing address), and whether Impact shows its source lines, which the trust
+ * block's box promises. Images project the asset reference (ADR 0022). Layout values come back as stored;
+ * the page fills the schema defaults.
  */
 export const donatePageQuery = defineQuery(`*[_type == "donatePage" && _id == "donatePage"][0]{
   header{kicker{yo, en}, title, line},
@@ -167,6 +169,7 @@ export const donatePageQuery = defineQuery(`*[_type == "donatePage" && _id == "d
   otherWays[]{_key, kind, title, blurb, detail},
   taxLine,
   "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{orgName, ein, address},
+  "impactSources": *[_type == "impactPage" && _id == "impactPage"][0].layout.sources,
   layout{impact},
   seo{title, description}
 }`);

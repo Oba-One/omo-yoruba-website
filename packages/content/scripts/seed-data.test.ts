@@ -665,9 +665,14 @@ describe('Impact', () => {
     expect(revisedFields('impactPage', { stats: [...earlier].reverse() }, revisions).set).toEqual(
       {},
     );
-    expect(revisedFields('stat', { label: 'hometown associations' }, revisions).set).toEqual({
-      label: 'hometown associations in the community',
-    });
+    expect(
+      revisedFields('stat', { _id: 'stat-associations', label: 'hometown associations' }, revisions)
+        .set,
+    ).toEqual({ label: 'hometown associations in the community' });
+    // Only the associations figure: another stat with the same label keeps it.
+    expect(
+      revisedFields('stat', { _id: 'stat-other', label: 'hometown associations' }, revisions).set,
+    ).toEqual({});
     expect(
       revisedFields('stat', { label: 'years serving Southern California' }, revisions),
     ).toEqual({ set: {}, unset: [] });

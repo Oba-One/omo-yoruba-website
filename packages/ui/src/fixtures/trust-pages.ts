@@ -9,13 +9,22 @@
 import {
   GENERAL_CONTACT_PENDING,
   GENERAL_RESPONDS_PENDING,
+  IMPACT_SIX_PENDING,
+  OUTCOME_PENDING,
+  PARTNERSHIPS_RESPONDS_PENDING,
   pendingWhat,
+  presenceWhat,
 } from '@oy/content/pending';
 import { DOORS, OTHER_DOORS, STATS } from './homepage';
 import { PHOTOS } from './photos';
 
 /** The registry's own wording for a field, so a story never drifts from the chip the site shows. */
 const owed = (type: string, field: string, kind?: string) => pendingWhat(type, field, kind) ?? '';
+
+/** The registry's wording for a type the page waits for documents of (the board, the partners). */
+const missing = (type: string, kind?: string) => presenceWhat(type, kind)?.what ?? '';
+
+export { IMPACT_SIX_PENDING, OUTCOME_PENDING };
 
 type Block = {
   _type: 'block';
@@ -86,7 +95,7 @@ export const ASSOCIATIONS_PROSE = blocks(
 export const ASSOCIATIONS_CELLS = [
   {
     label: 'Associations',
-    value: STATS[3]?.value,
+    value: STATS.find((stat) => stat._id === 'stat-associations')?.value,
     pending: owed('getInvolvedPage', 'hometownAssociations.stat'),
   },
   { label: 'Listed publicly', value: 'Not yet' },
@@ -138,13 +147,14 @@ export const IMPACT_STATS = [
 export const SOURCES_LEAD =
   'Every number carries a source line: the year it covers and how it was counted.';
 
+export const HOW_WE_WORK_PENDING = owed('impactPage', 'howWeWork');
+
 export const HOW_WE_WORK_PHOTO = {
   ...PHOTOS.atMarket,
   caption: 'Àjọṣe • Partners and friends at the table',
 };
 
-/** The registry's wording for an outcome slot's chip and a figure's missing source. */
-export const OUTCOMES_PENDING = owed('impactPage', 'outcomes[]');
+/** The registry's wording for a figure's missing source; a slot's chip is `OUTCOME_PENDING` (spec Q6). */
 export const OUTCOME_SOURCE_PENDING = owed('outcome', 'figure.source');
 
 /** The four slots Impact keeps while the Studio holds no outcome, each named as the page names it. */
@@ -171,7 +181,7 @@ export const CIVIC_PROSE = blocks(
 export const CIVIC_CELLS = [
   { label: 'Attendance', pending: owed('event', 'attendance', 'festival') },
   { label: 'Vendors hosted', pending: owed('event', 'vendorsHosted', 'festival') },
-  { label: 'Partners', pending: 'partner and funder names' },
+  { label: 'Partners', pending: missing('partner') },
   { label: 'Cost to attend', pending: owed('event', 'cost', 'festival') },
 ];
 
@@ -189,15 +199,15 @@ export const IMPACT_PHOTOS = [
 export const GOVERNANCE_CELLS = [
   { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
   { label: 'EIN', pending: owed('siteSettings', 'ein') },
-  { label: 'Board', pending: "the board's names, roles and bios" },
-  { label: 'Financials', pending: 'the annual report position' },
+  { label: 'Board', pending: missing('person', 'board') },
+  { label: 'Financials', pending: missing('governanceDoc', 'annualReport') },
 ];
 
 export const GOVERNANCE_FACTS = [
   { label: 'Mailing address', pending: owed('siteSettings', 'address') },
-  { label: 'Form 990', pending: 'the Form 990 position' },
-  { label: 'Annual report', pending: 'the annual report position' },
-  { label: 'Audit', pending: 'the audit position' },
+  { label: 'Form 990', pending: missing('governanceDoc', 'form990') },
+  { label: 'Annual report', pending: missing('governanceDoc', 'annualReport') },
+  { label: 'Audit', pending: missing('governanceDoc', 'audit') },
 ];
 
 export const FUNDERS_INTRO = 'Everyone who has supported the work.';
@@ -207,7 +217,7 @@ export const FUND = {
   kicker: { yo: 'Ọdún tí ń bọ̀', en: 'The year ahead' },
   title: 'Fund the next year',
   line: 'Our partnerships lead answers',
-  linePending: 'how soon the partnerships lead replies',
+  linePending: PARTNERSHIPS_RESPONDS_PENDING,
   actions: [
     { label: 'Sponsor or partner', kind: 'enquiry', enquiryKind: 'sponsor' },
     { label: 'Talk to us', kind: 'enquiry', enquiryKind: 'contact' },

@@ -746,8 +746,6 @@ export const stat = defineType({
   },
 });
 
-export { DOOR_KEYS };
-
 /**
  * One of the ways in, shown by the homepage, Get Involved and Donate (ADR 0013); the vendor door joined in
  * Phase 7 (ADR 0034).

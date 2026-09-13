@@ -6,6 +6,7 @@
  * today). No entry shows the registry's Pending line. The page decides whether the timeline shows at all
  * (the `timeline` option, hidden until the owner confirms the entries).
  */
+import { presenceWhat } from '@oy/content/pending';
 import Pending from '../../core/Pending/Pending.astro';
 
 export interface TimelineEntryLike {
@@ -25,7 +26,12 @@ interface Props {
   class?: string;
 }
 
-const { entries, pending = 'the dated entries', edit, class: className } = Astro.props;
+const {
+  entries,
+  pending = presenceWhat('timelineEntry')?.what,
+  edit,
+  class: className,
+} = Astro.props;
 const list = (entries ?? []).filter((entry): entry is TimelineEntryLike =>
   Boolean(entry?.year?.trim() && entry.line?.trim()),
 );

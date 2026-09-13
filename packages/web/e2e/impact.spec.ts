@@ -1,5 +1,6 @@
 import {
   IMPACT_SIX_PENDING,
+  OUTCOME_PENDING,
   PARTNERSHIPS_RESPONDS_PENDING,
   pendingWhat,
   presenceWhat,
@@ -7,6 +8,7 @@ import {
 import { expect, test } from '@playwright/test';
 import {
   axeViolations,
+  bodyOption as body,
   expectEnquiryRoundTrip,
   expectNoMockWhileOwed,
   goldSharingAView,
@@ -18,9 +20,6 @@ import {
 // its content or renders Pending: CI runs with a placeholder project, where every read answers null. Every
 // figure carries its source line or its chip, and none of the register's inventions (the prototype's
 // sources, attendance, learners, outcomes, civic figures, EIN, filings, partners and contact) stands in.
-
-const body = (page: import('@playwright/test').Page, name: string) =>
-  page.locator('body').getAttribute(`data-${name}`);
 
 test.describe('the Impact page', () => {
   test('carries its blocks in order, one h1, the options on the body and nothing open', async ({
@@ -101,7 +100,7 @@ test.describe('the Impact page', () => {
     const text = await section.innerText();
     expect(text).not.toMatch(/\bschool\b/i);
     expectNoMockWhileOwed(text, [
-      [/137|71 percent|4,200|38 vendors|210|2 sites/i, pendingWhat('impactPage', 'outcomes[]')],
+      [/137|71 percent|4,200|38 vendors|210|2 sites/i, OUTCOME_PENDING],
     ]);
     if (!PLACEHOLDER_PROJECT) {
       const hrefs = await section
@@ -152,7 +151,9 @@ test.describe('the Impact page', () => {
   test("names what governance does not yet hold, and the footer's link lands on it", async ({
     page,
   }) => {
-    await page.goto('/impact#governance');
+    await page.goto('/impact');
+    await page.locator('footer a[href="/impact#governance"]').click();
+    await expect(page).toHaveURL(/\/impact#governance$/);
     const section = page.locator('#governance');
     await expect(section).toBeInViewport();
     await expect(section.locator('h2')).toHaveText('Governance and accountability');

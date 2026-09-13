@@ -12,7 +12,7 @@ describe('purgePlan', () => {
     });
     expect(purgePlan(cacheTagsFor('album', 'gala-2025'))).toEqual({
       tags: ['type:album'],
-      paths: ['/gallery/gala-2025', '/gallery', '/odunde', '/gala'],
+      paths: ['/gallery/gala-2025', '/gallery', '/odunde', '/gala', '/impact'],
     });
     expect(purgePlan([])).toEqual({ tags: [], paths: [] });
   });

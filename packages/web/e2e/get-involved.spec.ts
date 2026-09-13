@@ -8,6 +8,7 @@ import { expect, test } from '@playwright/test';
 import {
   axeViolations,
   expectEnquiryRoundTrip,
+  expectGiveRoundTrip,
   expectNoMockWhileOwed,
   goldSharingAView,
   PLACEHOLDER_PROJECT,
@@ -55,6 +56,8 @@ test.describe('the Get Involved page', () => {
     // The footer links the member and partner doors by their anchors.
     expect(ids).toEqual(expect.arrayContaining(['member', 'partner']));
     expect(ids.every((id) => CARD_KEYS.includes(id))).toBe(true);
+    // The Studio's order, which the seed writes as the prototype draws it.
+    if (ids.length === CARD_KEYS.length) expect(ids).toEqual(CARD_KEYS);
     for (const id of ids) {
       const label = page.locator(`#${id} .oy-door-label`);
       await expect(label).toHaveText(DOOR_CHIPS[id as keyof typeof DOOR_CHIPS]);
@@ -73,14 +76,24 @@ test.describe('the Get Involved page', () => {
       [/\$75|\$120|annual meeting|Early booking/i, pendingWhat('door', 'bullets[]')],
       [/second adult|ninety minutes|guardian consent form/i, pendingWhat('door', 'bullets[]')],
       [/\$150|\$275|\$325|1 April|20 April|health permit/i, pendingWhat('door', 'bullets[]')],
+      [/\$2,500|\$10,000|within a working day/i, pendingWhat('door', 'bullets[]')],
       [/four thousand|one Saturday in June/i, pendingWhat('door', 'blurb')],
       [/Tunde Bakare/, pendingWhat('door', 'blurb')],
     ]);
   });
 
-  test("lands the footer's door links on their cards", async ({ page }) => {
-    test.skip(PLACEHOLDER_PROJECT, 'the placeholder project holds no doors');
-    await page.goto('/get-involved#partner');
+  test("lands the footer's door links on their cards, or on the doors' Pending line", async ({
+    page,
+  }) => {
+    await page.goto('/get-involved');
+    await page.locator('footer a[href="/get-involved#partner"]').click();
+    await expect(page).toHaveURL(/\/get-involved#partner$/);
+    if (PLACEHOLDER_PROJECT) {
+      // No door, so no anchor: the page still opens on the doors' section and names them owed.
+      await expect(page.locator('#partner')).toHaveCount(0);
+      await expect(page.locator('#doors .oy-pend-line')).toBeVisible();
+      return;
+    }
     await expect(page.locator('#partner')).toBeInViewport();
   });
 
@@ -142,6 +155,12 @@ test.describe('the Get Involved page', () => {
     const call = section.locator('a[href^="tel:"].oy-btn');
     const phoneLink = facts.nth(1).locator('a[href^="tel:"]');
     await expect(call).toHaveCount(await phoneLink.count());
+    // A link only for what the settings hold: the email is a mailto: link or its chip, never both.
+    const emailOwed = (await facts.nth(0).locator('.oy-pend').count()) === 1;
+    await expect(facts.nth(0).locator('a[href^="mailto:"]')).toHaveCount(emailOwed ? 0 : 1);
+    await expect(phoneLink).toHaveCount(
+      (await facts.nth(1).locator('.oy-pend').count()) === 1 ? 0 : 1,
+    );
     if ((await facts.nth(2).locator('.oy-pend').count()) === 1) {
       await expect(facts.nth(2)).toContainText(GENERAL_CONTACT_PENDING, { ignoreCase: true });
     }
@@ -159,18 +178,18 @@ test.describe('the Get Involved page', () => {
   });
 
   test('closes with the give door, whose Donate opens the Give Dialog', async ({ page }) => {
-    test.skip(PLACEHOLDER_PROJECT, 'the placeholder project holds no give door');
     await page.goto('/get-involved');
-    const box = page.locator('#talk .oy-handoff').last();
-    await expect(box).toContainText('Would rather give than join?');
-    const trigger = box.locator('a[data-give]');
-    await trigger.scrollIntoViewIfNeeded();
-    await trigger.click();
-    const dialog = page.locator('dialog#give');
-    await expect(dialog).toHaveAttribute('open', '');
-    await page.keyboard.press('Escape');
-    await expect(dialog).not.toHaveAttribute('open', '');
-    await expect(trigger).toBeFocused();
+    const trigger = page.locator('#talk .oy-handoff a[data-give]');
+    if (PLACEHOLDER_PROJECT) {
+      // No give door, so no closing box: the Our Story box ends the page.
+      await expect(trigger).toHaveCount(0);
+      await expect(page.locator('#talk .oy-handoff')).toHaveCount(1);
+      return;
+    }
+    await expect(page.locator('#talk .oy-handoff').last()).toContainText(
+      'Would rather give than join?',
+    );
+    await expectGiveRoundTrip(page, trigger);
   });
 
   test('is clean for axe with the page settled', async ({ page }) => {

@@ -1,3 +1,5 @@
+import type { WayIn } from './take-part';
+
 /**
  * The doors (CONTEXT, Door; ADR 0013, ADR 0034): the ways in the homepage, Get Involved and Donate share
  * as documents, each with the chip it wears and the accent it borrows from the take-part rows' ways in. A
@@ -21,7 +23,7 @@ export const DOOR_CHIPS: Readonly<Record<DoorKey, string>> = {
 };
 
 /** The accent each door borrows from a way in (the member door takes the performer accent, as drawn). */
-export const DOOR_ACCENTS: Readonly<Record<DoorKey, string>> = {
+export const DOOR_ACCENTS: Readonly<Record<DoorKey, WayIn>> = {
   member: 'performer',
   volunteer: 'volunteer',
   vendor: 'vendor',

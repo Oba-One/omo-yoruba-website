@@ -1,3 +1,4 @@
+import { OUTCOME_PENDING } from '@oy/content/pending';
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
@@ -48,7 +49,7 @@ describe('the Impact page-section stories', () => {
       'Yoruba Cultural Collective',
     ]);
     expect(slots.map((slot) => text(slot.querySelector('.oy-pend')))).toEqual(
-      Array(4).fill('Pending: participation figures per program'),
+      Array(4).fill(`Pending: ${OUTCOME_PENDING}`),
     );
     expect(
       [...(cards?.querySelectorAll('#outcomes .oy-button-row a') ?? [])].map((a) =>

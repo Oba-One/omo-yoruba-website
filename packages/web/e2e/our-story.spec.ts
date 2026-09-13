@@ -2,6 +2,7 @@ import { GENERAL_CONTACT_PENDING, pendingWhat, presenceWhat } from '@oy/content/
 import { expect, test } from '@playwright/test';
 import {
   axeViolations,
+  bodyOption as body,
   expectEnquiryRoundTrip,
   expectNoMockWhileOwed,
   goldSharingAView,
@@ -13,9 +14,6 @@ import {
 // holds its content or renders Pending: CI runs with a placeholder project, where every read answers null.
 // None of the register's inventions (the founders, the church hall, the first year, the timeline's dates,
 // the nine names and bios, the mock address and contact) stands in for an owed fact.
-
-const body = (page: import('@playwright/test').Page, name: string) =>
-  page.locator('body').getAttribute(`data-${name}`);
 
 test.describe('the Our Story page', () => {
   test('carries its blocks in order, one h1, the options on the body and nothing open', async ({
@@ -81,6 +79,12 @@ test.describe('the Our Story page', () => {
         presenceWhat('timelineEntry')?.what ?? '',
       );
     }
+    expectNoMockWhileOwed(await section.innerText(), [
+      [
+        /\b(2003|2009|2014|2024)\b|Citrus College|three hundred people/,
+        presenceWhat('timelineEntry')?.what,
+      ],
+    ]);
   });
 
   test('lists the board and the staff and volunteers, or names each group owed, never a head teacher', async ({

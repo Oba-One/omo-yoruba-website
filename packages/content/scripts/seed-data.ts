@@ -990,10 +990,12 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
 /**
  * A value an earlier seed wrote that this seed writes differently (ADR 0035): the header actions no
  * prototype draws, a list that gained an item, a caption that became short. `path` is the patch path
- * (`primaryAction`, `photos[_key=="photo-1"].caption`); `now` undefined unsets the field.
+ * (`primaryAction`, `photos[_key=="photo-1"].caption`); `now` undefined unsets the field. `id` narrows it to
+ * one seeded document of the type (a single stat).
  */
 export interface SeedRevision {
   type: string;
+  id?: string;
   path: string;
   was: unknown;
   now?: unknown;
@@ -1044,7 +1046,13 @@ export function buildRevisions(assets: SeedAssets): SeedRevision[] {
       ),
       now: withKeys('stat', IMPACT_STATS.map(ref)),
     },
-    { type: 'stat', path: 'label', was: 'hometown associations', now: ASSOCIATIONS_LABEL },
+    {
+      type: 'stat',
+      id: 'stat-associations',
+      path: 'label',
+      was: 'hometown associations',
+      now: ASSOCIATIONS_LABEL,
+    },
   ];
 }
 
@@ -1089,6 +1097,7 @@ export function revisedFields(
   const unset: string[] = [];
   for (const revision of revisions) {
     if (revision.type !== type) continue;
+    if (revision.id !== undefined && revision.id !== current._id) continue;
     const stored = valueAt(current, revision.path);
     if (stored === undefined || canonical(stored) !== canonical(revision.was)) continue;
     if (revision.now === undefined) unset.push(revision.path);

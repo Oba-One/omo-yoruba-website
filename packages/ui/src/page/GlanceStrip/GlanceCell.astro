@@ -32,10 +32,11 @@ const href = safeHref(fact.noteHref);
 </div>
 
 <style>
-  /* A link on its own under a figure: padding takes it to the 44px target without moving the cell. */
+  /* A link on its own under a figure: the 44px target, its negative margin keeping the cell's height. */
   .oy-glance-link {
-    display: inline-block;
-    padding: 12px 0;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
     margin: -12px 0;
   }
 </style>

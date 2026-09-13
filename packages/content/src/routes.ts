@@ -92,6 +92,8 @@ export function programHref(
 export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   siteSettings: PUBLIC_ROUTES,
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
+  // Donate's trust block keeps its promise of a source line under every number only while Impact shows them.
+  impactPage: ['/impact', '/donate'],
   // The year strip names the festival and the Gala by kind, so no edition reaches the Programs hub.
   // Impact's civic cells read the festival's editions (ADR 0035).
   event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/impact', '/news'],
@@ -109,7 +111,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   // The slimmed Lessons page has no voices; a lessons testimonial fills the homepage's parent slot.
   testimonial: ['/', '/impact', '/programs/cultural-collective'],
   newsPost: ['/news/[slug]', '/news', '/'],
-  album: ['/gallery/[album]', '/gallery', '/odunde', '/gala'],
+  // Impact's civic cells come from the newest past festival edition whose album has photographs.
+  album: ['/gallery/[album]', '/gallery', '/odunde', '/gala', '/impact'],
   photographer: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],
   partner: ['/odunde', '/impact'],
   outcome: ['/impact'],

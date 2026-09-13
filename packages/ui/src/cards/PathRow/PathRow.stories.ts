@@ -7,6 +7,7 @@ import {
   LESSONS_TAKE_PART,
   PROGRAMS_TAKE_PART,
 } from '../../fixtures/program-pages';
+import { VENDOR_DOOR } from '../../fixtures/trust-pages';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import PathRow from './PathRow.astro';
 
@@ -21,7 +22,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Chip, one line, one action: the compact alternative to door cards, and the row of a take-part band. A door names its chip from the prototypes (Membership, Partnership, Volunteer, Give); a take-part row brings its own way in, chip, title, line and action. The accent follows the way in; hover deepens the border. No rule, no lift. The action is outline by default, gold once per view, quiet for the give row.',
+          'Chip, one line, one action: the compact alternative to door cards, and the row of a take-part band. A door names its chip from the prototypes (Membership, Volunteer, Vendors, Partnership, Give); a take-part row brings its own way in, chip, title, line and action. The accent follows the way in; hover deepens the border. No rule, no lift. The action is outline by default, gold once per view, quiet for the give row.',
       },
     },
   },
@@ -43,6 +44,9 @@ export const Volunteer: Story = {
 
 /** The give door: opens the Give Dialog. */
 export const Give: Story = { args: { door: OTHER_DOORS[1] as Args['door'], primary: false } };
+
+/** The vendor door (ADR 0034): the chip "Vendors" and the vendor accent come from the door's key. */
+export const Vendor: Story = { args: { door: VENDOR_DOOR as Args['door'], primary: false } };
 
 export const Pending: Story = { args: { door: {}, primary: false } };
 

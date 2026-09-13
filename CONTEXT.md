@@ -296,7 +296,8 @@ _Avoid_: donation tier, preset, amount selector
 
 **Other way to give**:
 A way to give besides the Give Dialog: by check, employer matching, in-kind goods, a donor-advised
-fund. The check and fund rows carry the address or the EIN from the site settings.
+fund. The check row carries the mailing address, and the matching and fund rows the EIN and the legal
+name, from the site settings.
 _Avoid_: offline donation, alternative payment
 
 **Hometown association**:

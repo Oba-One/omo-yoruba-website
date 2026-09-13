@@ -8,6 +8,7 @@
  * names. `row` sets the name, the figure and the line on one line, the source under them, as Impact's
  * rows option draws it. The border deepens on hover; nothing lifts.
  */
+import { OUTCOME_PENDING, pendingWhat } from '@oy/content/pending';
 import Pending from '../../core/Pending/Pending.astro';
 
 interface Props {
@@ -39,9 +40,9 @@ const {
   line,
   source,
   sources = true,
-  sourcePending = 'a source line under the figure',
+  sourcePending = pendingWhat('outcome', 'figure.source'),
   linePending,
-  pending = 'what is being measured',
+  pending = OUTCOME_PENDING,
   variant = 'card',
   edit,
   class: className,

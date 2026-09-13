@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import {
   axeViolations,
   expectEnquiryRoundTrip,
+  expectGiveRoundTrip,
   expectNoMockWhileOwed,
   goldSharingAView,
   PLACEHOLDER_PROJECT,
@@ -53,12 +54,7 @@ test.describe('the Donate page', () => {
     await expect(gold).toHaveCount(1);
     const trigger = page.locator('header#top a[data-give]');
     await expect(trigger).toContainText('Give now');
-    await trigger.click();
-    const dialog = page.locator('dialog#give');
-    await expect(dialog).toHaveAttribute('open', '');
-    await page.keyboard.press('Escape');
-    await expect(dialog).not.toHaveAttribute('open', '');
-    await expect(trigger).toBeFocused();
+    await expectGiveRoundTrip(page, trigger);
     await expectEnquiryRoundTrip(page, page.locator('header#top a[data-enquiry="sponsor"]'));
   });
 
@@ -150,7 +146,7 @@ test.describe('the Donate page', () => {
     }
     expectNoMockWhileOwed(await section.innerText(), [
       [
-        /Benevity|Double the Donation|Tents, chairs|Tunde Bakare/,
+        /Benevity|Double the Donation|Tents, chairs|Tunde Bakare|95-4612387|Leimert Boulevard/,
         pendingWhat('donatePage', 'otherWays[]'),
       ],
     ]);

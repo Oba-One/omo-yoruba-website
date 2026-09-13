@@ -1,16 +1,13 @@
+import { OUTCOME_PENDING } from '@oy/content/pending';
 import type { ComponentProps } from 'astro/types';
+import { OUTCOME_PLACEHOLDER } from '../../fixtures/trust-pages';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import OutcomeCard from './OutcomeCard.astro';
 
 type Args = StoryArgs<ComponentProps<typeof OutcomeCard>>;
 
 /** Owed content in the bracketed placeholder form: no outcome, figure or source is confirmed yet. */
-const FIGURE = {
-  title: 'Odunde Festival',
-  figure: '[ Figure ]',
-  line: '[ What the figure counts, and for which year ]',
-  source: '[ How it was counted ]',
-};
+const FIGURE = OUTCOME_PLACEHOLDER;
 
 const meta = {
   title: 'Cards/OutcomeCard',
@@ -50,7 +47,7 @@ export const Pending: Story = {
     line: null,
     source: null,
     title: 'Kids & STEM',
-    pending: 'participation figures per program',
+    pending: OUTCOME_PENDING,
   },
 };
 

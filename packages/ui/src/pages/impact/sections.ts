@@ -13,6 +13,7 @@ import PartnerRow from '../../content/PartnerRow/PartnerRow.astro';
 import Prose from '../../content/Prose/Prose.astro';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import Button from '../../core/Button/Button.astro';
+import Pending from '../../core/Pending/Pending.astro';
 import {
   CIVIC_CELLS,
   CIVIC_PROSE,
@@ -20,14 +21,16 @@ import {
   FUNDERS_INTRO,
   GOVERNANCE_CELLS,
   GOVERNANCE_FACTS,
+  HOW_WE_WORK_PENDING,
   HOW_WE_WORK_PHOTO,
   IMPACT_HEADER,
   IMPACT_PHOTOS,
+  IMPACT_SIX_PENDING,
   IMPACT_STATS,
+  OUTCOME_PENDING,
   OUTCOME_PLACEHOLDER,
   OUTCOME_SLOTS,
   OUTCOME_SOURCE_PENDING,
-  OUTCOMES_PENDING,
   SOURCES_LEAD,
 } from '../../fixtures/trust-pages';
 import PhotoMosaic from '../../media/PhotoMosaic/PhotoMosaic.astro';
@@ -72,8 +75,7 @@ export const numbers = (
           stats: IMPACT_STATS,
           sources: sources === 'shown',
           columns: stats === 'six' ? 6 : 4,
-          padPending:
-            stats === 'six' ? 'attendance and learners served, with their sources' : undefined,
+          padPending: stats === 'six' ? IMPACT_SIX_PENDING : undefined,
           what: 'the headline figures',
         },
       },
@@ -91,7 +93,7 @@ export const how: SlotValue = {
       slots: {
         default: [
           { component: SectionHead, props: { title: 'How we work', id: 'how-heading' } },
-          '<p><span class="oy-pend">Pending: your account of the organisation</span></p>',
+          { component: Pending, props: { what: HOW_WE_WORK_PENDING } },
         ],
         aside: {
           component: PhotoTile,
@@ -139,7 +141,7 @@ export const outcomes = (
         },
         {
           component: CardGrid,
-          props: { columns: layout === 'rows' ? 1 : 4, class: 'oy-outcomes' },
+          props: { columns: layout === 'rows' ? 1 : 4 },
           slots: {
             default: [
               ...(placeholder
@@ -159,7 +161,7 @@ export const outcomes = (
                 component: OutcomeCard,
                 props: {
                   title: slot.title,
-                  pending: OUTCOMES_PENDING,
+                  pending: OUTCOME_PENDING,
                   variant: layout === 'rows' ? 'row' : 'card',
                 },
               })),
@@ -291,7 +293,7 @@ export const governance: SlotValue = {
         },
       },
       { component: GlanceStrip, props: { band: false, facts: GOVERNANCE_CELLS } },
-      { component: FactList, props: { facts: GOVERNANCE_FACTS, class: 'oy-governance-facts' } },
+      { component: FactList, props: { facts: GOVERNANCE_FACTS } },
     ],
   },
 };

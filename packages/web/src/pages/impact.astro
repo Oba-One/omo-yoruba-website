@@ -105,7 +105,7 @@ const rows = page.outcomes.layout === 'row';
         intro="Where a program has no number yet, we say what is being measured this year."
         id="outcomes-heading"
       />
-      <CardGrid columns={rows ? 1 : 4} class="oy-outcomes">
+      <CardGrid columns={rows ? 1 : 4}>
         {
           page.outcomes.cards.map((card) => (
             <OutcomeCard
@@ -191,7 +191,7 @@ const rows = page.outcomes.layout === 'row';
         id="governance-heading"
       />
       <GlanceStrip band={false} facts={page.governance.cells} />
-      <FactList facts={page.governance.facts} class="oy-governance-facts" />
+      <FactList facts={page.governance.facts} />
     </Section>
 
     {

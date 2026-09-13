@@ -160,7 +160,7 @@ describe('buildGetInvolvedPage', () => {
     ).associations;
     expect(listed.cells.map((cell) => cell.label)).toEqual(['Associations', 'To connect']);
     expect(listed.list).toEqual([
-      { _id: 'hta-1', name: '[ Association name ]', url: null },
+      { _id: 'hta-1', name: '[ Association name ]', url: undefined },
       { _id: 'hta-2', name: '[ Another association ]', url: 'https://example.org' },
     ]);
     const hidden = buildGetInvolvedPage(

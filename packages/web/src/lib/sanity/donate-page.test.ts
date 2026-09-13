@@ -62,6 +62,7 @@ const seeded = {
   otherWays: null,
   taxLine: 'To the extent allowed by law',
   settings: { orgName: 'Omo Yorùbá of Southern California', ein: null, address: null },
+  impactSources: null,
   layout: { impact: 'shown' },
   seo: null,
 } as unknown as DonatePageData;
@@ -82,6 +83,7 @@ describe('buildDonatePage', () => {
   it('carries the give-now facts, the Zeffy ones owed with one chip wording', () => {
     const view = buildDonatePage(seeded, options).give;
     expect(view.title).toBe('Give now');
+    expect(view.factsPending).toBe('the give-now facts');
     expect(view.facts.map((fact) => [fact.label, fact.value, fact.pending])).toEqual([
       ['Fees', undefined, 'how your Zeffy form handles this'],
       ['Receipt', undefined, 'how your Zeffy form handles this'],
@@ -205,6 +207,12 @@ describe('buildDonatePage', () => {
       ways: [],
       pending: 'which other ways to give you accept',
     });
+    // An EIN without the legal name says what it has, never "undefined".
+    const nameless = buildDonatePage(
+      withData({ otherWays, settings: { orgName: null, ein: '[ EIN ]', address: null } }),
+      options,
+    ).other.ways;
+    expect(nameless[2]).toMatchObject({ detail: 'Our EIN is [ EIN ].', detailPending: undefined });
   });
 
   it('builds the trust block from the settings, the tax line and the receipt fact', () => {
@@ -229,6 +237,15 @@ describe('buildDonatePage', () => {
       'EIN',
       'Deductible',
     ]);
+  });
+
+  it('promises a source line under every number only while Impact shows them', () => {
+    expect(buildDonatePage(seeded, options).trust.handoff).toBe(
+      'What your gift has built so far, with a source line under every number.',
+    );
+    expect(buildDonatePage(withData({ impactSources: 'hidden' }), options).trust.handoff).toBe(
+      'What your gift has built so far.',
+    );
   });
 
   it('puts the edit attributes on the option and the levels in draft mode only', () => {

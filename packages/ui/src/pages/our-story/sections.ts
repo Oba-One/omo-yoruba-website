@@ -70,11 +70,7 @@ export const timeline = (entries: boolean): SlotValue => ({
     default: [
       {
         component: SectionHead,
-        props: {
-          title: '1997 to now',
-          intro: 'The years before Odunde, and everything since.',
-          id: 'timeline-heading',
-        },
+        props: { title: '1997 to now', id: 'timeline-heading' },
       },
       { component: Timeline, props: { entries: entries ? TIMELINE_PLACEHOLDERS : [] } },
     ],

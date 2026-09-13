@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'astro/types';
+import { TIMELINE_PLACEHOLDERS } from '../../fixtures/trust-pages';
 import { type Meta, onDark, type StoryArgs, type StoryObj } from '../../storybook';
 import Timeline from './Timeline.astro';
 
@@ -8,12 +9,7 @@ type Args = StoryArgs<ComponentProps<typeof Timeline>>;
  * Entries in the bracketed placeholder form: the prototype's dates and lines are invented, so no year a
  * story shows is one of them. Wayfinder ticket 07 decides whether the page shows a timeline at all.
  */
-const ENTRIES = [
-  { _id: 'entry-1', year: '[ Year ]', line: '[ The founding, in one line ]', milestone: true },
-  { _id: 'entry-2', year: '[ Year to year ]', line: '[ What happened across these years ]' },
-  { _id: 'entry-3', year: '[ Year ]', line: '[ What happened that year ]' },
-  { _id: 'entry-4', year: '[ Today ]', line: '[ Where the work stands now ]', milestone: true },
-];
+const ENTRIES = TIMELINE_PLACEHOLDERS;
 
 const meta = {
   title: 'Content/Timeline',

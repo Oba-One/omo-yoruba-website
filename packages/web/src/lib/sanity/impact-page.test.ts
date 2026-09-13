@@ -176,10 +176,10 @@ describe('buildImpactPage', () => {
   it('keeps four outcome slots in the prototype order while the page references none', () => {
     const view = buildImpactPage(seeded, options).outcomes;
     expect(view.cards.map((card) => [card.title, card.pending])).toEqual([
-      ['Yoruba Language Lessons', 'participation figures per program'],
-      ['Odunde Festival', 'participation figures per program'],
-      ['Kids & STEM', 'participation figures per program'],
-      ['Yoruba Cultural Collective', 'participation figures per program'],
+      ['Yoruba Language Lessons', OUTCOME_PENDING],
+      ['Odunde Festival', OUTCOME_PENDING],
+      ['Kids & STEM', OUTCOME_PENDING],
+      ['Yoruba Cultural Collective', OUTCOME_PENDING],
     ]);
     expect(view.links.map((link) => [link.name, link.href])).toEqual([
       ['Yoruba Language Lessons', '/programs/yoruba-lessons'],
@@ -217,7 +217,7 @@ describe('buildImpactPage', () => {
       ['End-of-Year Gala', undefined, '[ What is being measured this year ]', OUTCOME_PENDING],
       ['Kids & STEM', undefined, undefined, OUTCOME_PENDING],
       // Three outcomes leave one slot: the first prototype subject none of them names.
-      ['Yoruba Language Lessons', undefined, undefined, 'participation figures per program'],
+      ['Yoruba Language Lessons', undefined, undefined, OUTCOME_PENDING],
     ]);
     expect(view.sourcePending).toBe('a source line under the figure');
     expect(view.links.map((link) => link.href)).toEqual([

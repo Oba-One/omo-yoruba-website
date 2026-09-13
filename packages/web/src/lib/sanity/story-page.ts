@@ -14,7 +14,7 @@ import type { storyPageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
 import { glanceFacts, pageSkeleton } from './page-skeleton';
-import { type BuildOptions, cleanText, resolveImage } from './view';
+import { type BuildOptions, cleanText, present, resolveImage, textOr } from './view';
 
 export type StoryPageData = NonNullable<ClientReturn<typeof storyPageQuery, unknown>>;
 
@@ -27,9 +27,6 @@ export interface StoryLayout extends Record<string, string> {
 const PAGE_TITLE = 'Our Story';
 
 const pending = (field: string) => pendingWhat('storyPage', field) ?? 'this part of the page';
-
-const present = <T>(value: T | null | undefined): value is T =>
-  value !== null && value !== undefined;
 
 /** The prototype's Reach us heading while the Studio holds none. */
 const REACH_TITLE = 'Reach us';
@@ -48,7 +45,10 @@ export function buildStoryPage(data: StoryPageData | null, options: BuildOptions
   const phone = cleanText(settings?.phone);
 
   type Person = NonNullable<StoryPageData['board']>[number];
-  const card = (person: Pick<Person, '_id' | 'name' | 'role' | 'portrait'>, width: number) => {
+  const personCard = (
+    person: Pick<Person, '_id' | 'name' | 'role' | 'portrait'>,
+    width: number,
+  ) => {
     const image = portraits
       ? resolveImage(options.imageSet, person.portrait, { width })
       : undefined;
@@ -93,7 +93,7 @@ export function buildStoryPage(data: StoryPageData | null, options: BuildOptions
       intro: data?.boardIntro ?? undefined,
       full: layout.bios === 'full',
       people: (data?.board ?? []).filter(present).map((person) => ({
-        ...card(person, 640),
+        ...personCard(person, 640),
         bio: person.bioShort ?? undefined,
         bioFull: person.bioFull && person.bioFull.length > 0 ? person.bioFull : undefined,
       })),
@@ -103,12 +103,12 @@ export function buildStoryPage(data: StoryPageData | null, options: BuildOptions
     },
     staff: {
       intro: data?.staffIntro ?? undefined,
-      people: (data?.staff ?? []).filter(present).map((person) => card(person, 400)),
+      people: (data?.staff ?? []).filter(present).map((person) => personCard(person, 400)),
       pending: presenceWhat('person', 'staff')?.what ?? 'the staff and volunteers to list',
       rolePending: pendingWhat('person', 'role', 'staff') ?? 'the role',
     },
     reach: {
-      title: cleanText(data?.reachUs?.title) ? (data?.reachUs?.title ?? REACH_TITLE) : REACH_TITLE,
+      title: textOr(data?.reachUs?.title, REACH_TITLE),
       intro: data?.reachUs?.blurb ?? undefined,
       // The email becomes a `mailto:` and the phone a `tel:`, so both leave stega behind.
       settings: {

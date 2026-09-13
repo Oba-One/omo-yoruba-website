@@ -81,11 +81,9 @@ cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
     {
       page.timeline.shown && (
         <Section id="timeline" ground="alt" labelledby="timeline-heading" data-sanity={page.edit.timeline}>
-          <SectionHead
-            title="1997 to now"
-            intro="The years before Odunde, and everything since."
-            id="timeline-heading"
-          />
+          {/* No lead: the prototype's "The years before Odunde" dates the festival after the founding, which
+              no confirmed fact holds (ticket 07 confirms the entries). */}
+          <SectionHead title="1997 to now" id="timeline-heading" />
           <Timeline entries={page.timeline.entries} pending={page.timeline.pending} />
         </Section>
       )
@@ -119,7 +117,7 @@ cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
       }
     </Section>
 
-    <Section id="staff" ground="alt" labelledby="staff-heading">
+    <Section id="staff" ground="alt" labelledby="staff-heading" data-sanity={page.edit.portraits}>
       <SectionHead title="Staff and volunteers" intro={page.staff.intro} id="staff-heading" />
       {
         page.staff.people.length === 0 ? (

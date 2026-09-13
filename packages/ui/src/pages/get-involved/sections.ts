@@ -81,7 +81,7 @@ export const associations = (listed = false): SlotValue => ({
             ? [
                 {
                   component: PartnerRow,
-                  props: { partners: ASSOCIATIONS_LISTED, class: 'oy-hta-list' },
+                  props: { partners: ASSOCIATIONS_LISTED },
                 },
               ]
             : []),

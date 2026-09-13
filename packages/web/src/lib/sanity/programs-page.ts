@@ -29,7 +29,6 @@ export interface ProgramsLayout extends Record<string, string> {
 const PAGE_TITLE = 'Our programs';
 
 /** The sections the two inline programs keep on this page, by the program's slug. */
-const INLINE_SECTIONS = INLINE_PROGRAM_SECTIONS;
 
 const COLUMNS: Record<ProgramsLayout['cards'], 2 | 3 | 4> = { four: 4, three: 3, pairs: 2 };
 
@@ -72,7 +71,8 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
       // The prototype frames the photographs taller when three cards share the row.
       mediaHeight: layout.cards === 'three' ? 200 : 160,
       items: shown.map((program) => {
-        const section = !program.page && program.slug ? INLINE_SECTIONS[program.slug] : undefined;
+        const section =
+          !program.page && program.slug ? INLINE_PROGRAM_SECTIONS[program.slug] : undefined;
         return {
           program: {
             ...program,

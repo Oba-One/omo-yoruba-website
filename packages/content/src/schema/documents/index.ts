@@ -1,6 +1,5 @@
 export {
   contentDocumentTypes,
-  DOOR_KEYS,
   EVENT_KINDS,
   GOVERNANCE_KINDS,
   OUTCOME_KINDS,

@@ -53,7 +53,7 @@ cachePage(Astro, '/donate', { draft: preview, failed: Boolean(error) });
       <Split align="center">
         <SectionHead kicker={{ yo: 'Ẹ ṣe àánú', en: 'Give' }} title={page.give.title} id="give-heading" />
         {page.give.blurb && <Prose text={page.give.blurb} />}
-        <FactList slot="aside" facts={page.give.facts} columns={1} />
+        <FactList slot="aside" facts={page.give.facts} pending={page.give.factsPending} columns={1} />
       </Split>
     </Section>
 
@@ -125,7 +125,7 @@ cachePage(Astro, '/donate', { draft: preview, failed: Boolean(error) });
       <Handoff
         shape="box"
         variant="quiet"
-        text="What your gift has built so far, with a source line under every number."
+        text={page.trust.handoff}
         action={{ label: 'See our impact', kind: 'url', href: '/impact' }}
       />
     </Section>

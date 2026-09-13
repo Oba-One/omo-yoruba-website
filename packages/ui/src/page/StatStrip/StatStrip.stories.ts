@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'astro/types';
 import { HOMEPAGE_STATS, STATS } from '../../fixtures/homepage';
-import { IMPACT_STATS } from '../../fixtures/trust-pages';
+import { IMPACT_SIX_PENDING, IMPACT_STATS } from '../../fixtures/trust-pages';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import StatStrip from './StatStrip.astro';
 
@@ -58,7 +58,7 @@ export const FramedSix: Story = {
     sources: true,
     stats: IMPACT_STATS,
     columns: 6,
-    padPending: 'attendance and learners served, with their sources',
+    padPending: IMPACT_SIX_PENDING,
   },
 };
 
@@ -71,7 +71,7 @@ export const FramedPending: Story = {
     variant: 'framed',
     stats: [],
     what: 'the headline figures',
-    padPending: 'attendance and learners served, with their sources',
+    padPending: IMPACT_SIX_PENDING,
     columns: 6,
   },
 };

@@ -1,3 +1,4 @@
+import { OUTCOME_PENDING } from '@oy/content/pending';
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
@@ -38,9 +39,7 @@ describe('OutcomeCard', () => {
   it('names what a card with neither figure nor statement waits for', async () => {
     const outcome = await card(Pending);
     expect(text(outcome?.querySelector('h3'))).toBe('Kids & STEM');
-    expect(text(outcome?.querySelector('p .oy-pend'))).toBe(
-      'Pending: participation figures per program',
-    );
+    expect(text(outcome?.querySelector('p .oy-pend'))).toBe(`Pending: ${OUTCOME_PENDING}`);
     expect(outcome?.hasAttribute('data-measured')).toBe(false);
   });
 

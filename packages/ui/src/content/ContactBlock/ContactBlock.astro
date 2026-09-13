@@ -11,7 +11,11 @@
  * or the actions alone, for a page that sets them in two columns. The page passes values cleaned of stega,
  * since two become hrefs.
  */
-import { pendingWhat } from '@oy/content/pending';
+import {
+  GENERAL_CONTACT_PENDING,
+  GENERAL_RESPONDS_PENDING,
+  pendingWhat,
+} from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import Button, { type ButtonVariant } from '../../core/Button/Button.astro';
 import FactList from '../FactList/FactList.astro';
@@ -56,8 +60,8 @@ const {
   contact,
   rows = ['email', 'phone', 'address'],
   nameLabel = 'Who answers',
-  namePending = 'who answers the general inbox',
-  respondsPending = 'how soon the general inbox replies',
+  namePending = GENERAL_CONTACT_PENDING,
+  respondsPending = GENERAL_RESPONDS_PENDING,
   call = false,
   label = 'Send a message',
   variant = 'secondary',
@@ -108,7 +112,7 @@ const callHref = call && digits ? `tel:${digits}` : undefined;
 const showActions = part !== 'facts' && (Boolean(callHref) || label !== false);
 ---
 
-<div class:list={['oy-contact', className]} data-part={part}>
+<div class:list={['oy-contact', className]}>
   {showFacts && <FactList facts={facts} columns={1} />}
   {
     showActions && (

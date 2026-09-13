@@ -27,7 +27,7 @@ import { EVENT_PAGE_NAMES, editionRoute, programHref } from '@oy/content/routes'
 import type { ActionLike } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton } from './page-skeleton';
-import { type BuildOptions, cleanText, resolveImage } from './view';
+import { type BuildOptions, cleanText, oneLine, present, resolveImage, textOr } from './view';
 
 export type ImpactPageData = NonNullable<ClientReturn<typeof impactPageQuery, unknown>>;
 
@@ -41,9 +41,6 @@ export interface ImpactLayout extends Record<string, string> {
 const PAGE_TITLE = 'Impact';
 
 const pending = (field: string) => pendingWhat('impactPage', field) ?? 'this part of the page';
-
-const present = <T>(value: T | null | undefined): value is T =>
-  value !== null && value !== undefined;
 
 /** The lead over the figures, true only while their source lines show. */
 const SOURCES_LEAD =
@@ -131,7 +128,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       figure: undefined,
       line: undefined,
       source: undefined,
-      pending: pending('outcomes[]'),
+      pending: OUTCOME_PENDING,
       edit: undefined,
     })),
   ];
@@ -166,11 +163,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
   // Governance: the newest document of each kind, a file link with its note, the note alone, or a chip.
   const governance = data?.governance;
   const settings = data?.settings;
-  const address = (cleanText(settings?.address) ?? '')
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .join(', ');
+  const address = oneLine(settings?.address);
   const documentFact = (label: string, kind: 'form990' | 'annualReport' | 'audit') => {
     const doc = governance?.[kind];
     const href = fileHref(doc);
@@ -313,7 +306,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       facts: [
         {
           label: 'Mailing address',
-          value: address || undefined,
+          value: address,
           pending: pendingWhat('siteSettings', 'address') ?? 'mailing address',
         },
         documentFact('Form 990', 'form990'),
@@ -340,7 +333,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       pending: presenceWhat('partner')?.what ?? 'partner and funder names',
     },
     fund: {
-      title: cleanText(data?.nextYear?.title) ? (data?.nextYear?.title ?? FUND_TITLE) : FUND_TITLE,
+      title: textOr(data?.nextYear?.title, FUND_TITLE),
       // "{name}, our partnerships lead, answers within a working day." or the role while unnamed.
       line: `${leadName ? `${partnerships?.name}, our partnerships lead,` : 'Our partnerships lead'} answers${responds ? ` ${responds}.` : ''}`,
       linePending: responds ? undefined : PARTNERSHIPS_RESPONDS_PENDING,

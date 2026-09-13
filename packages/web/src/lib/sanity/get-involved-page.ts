@@ -18,7 +18,7 @@ import {
 import type { getInvolvedPageQuery } from '@oy/content/queries';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton } from './page-skeleton';
-import { type BuildOptions, cleanText, resolveImage } from './view';
+import { type BuildOptions, cleanText, present, resolveImage, textOr } from './view';
 
 export type GetInvolvedPageData = NonNullable<ClientReturn<typeof getInvolvedPageQuery, unknown>>;
 
@@ -30,9 +30,6 @@ export interface GetInvolvedLayout extends Record<string, string> {
 const PAGE_TITLE = 'Get Involved';
 
 const pending = (field: string) => pendingWhat('getInvolvedPage', field) ?? 'this part of the page';
-
-const present = <T>(value: T | null | undefined): value is T =>
-  value !== null && value !== undefined;
 
 /** The prototype's headings for the two blocks whose Studio heading is empty. */
 const ASSOCIATIONS_TITLE = 'Hometown associations';
@@ -104,12 +101,12 @@ export function buildGetInvolvedPage(data: GetInvolvedPageData | null, options: 
       list: listed.map((association) => ({
         _id: association._id,
         name: association.name,
-        url: association.url,
+        url: cleanText(association.url),
       })),
       statEdit: edit('hometownAssociations.stat'),
     },
     talk: {
-      title: cleanText(data?.fallback?.title) ? (data?.fallback?.title ?? TALK_TITLE) : TALK_TITLE,
+      title: textOr(data?.fallback?.title, TALK_TITLE),
       intro: data?.fallback?.blurb ?? undefined,
       // The email becomes a `mailto:` and the phone a `tel:`, so both leave stega behind.
       settings: {

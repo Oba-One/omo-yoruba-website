@@ -159,19 +159,24 @@ async function ensureAssets(
 // fail on whichever side is written first. The body stays far below the 4 MB limit.
 const BATCH = 500;
 
+/** The seed's documents as the dataset holds them now, by id. */
+async function storedDocuments(
+  client: SanityClient,
+  docs: readonly SeedDocument[],
+): Promise<Map<string, Record<string, unknown>>> {
+  const stored = await client.fetch<Record<string, unknown>[]>('*[_id in $ids]', {
+    ids: docs.map((doc) => doc._id),
+  });
+  return new Map(stored.map((doc) => [doc._id as string, doc]));
+}
+
 async function writeDocuments(
   client: SanityClient,
   docs: SeedDocument[],
   revisions: readonly SeedRevision[],
   replace: boolean,
 ): Promise<void> {
-  const existing = new Map(
-    (
-      await client.fetch<Record<string, unknown>[]>('*[_id in $ids]', {
-        ids: docs.map((doc) => doc._id),
-      })
-    ).map((doc) => [doc._id as string, doc]),
-  );
+  const existing = await storedDocuments(client, docs);
   let created = 0;
   let updated = 0;
   let unchanged = 0;
@@ -260,9 +265,15 @@ async function main(): Promise<void> {
     const counts: Record<string, number> = {};
     for (const doc of docs) counts[doc._type] = (counts[doc._type] ?? 0) + 1;
     console.log('seed: would write', counts);
-    console.log(
-      `seed: would revise ${revisions.length} earlier seed values where still as that seed wrote them`,
-    );
+    // The same rule a real run applies: a value moves only while it still reads as the earlier seed wrote it.
+    const existing = await storedDocuments(client, docs);
+    const due = docs.reduce((count, doc) => {
+      const current = existing.get(doc._id);
+      if (!current || options.replace) return count;
+      const revision = revisedFields(doc._type, current, revisions);
+      return count + Object.keys(revision.set).length + revision.unset.length;
+    }, 0);
+    console.log(`seed: would revise ${due} earlier seed values still as that seed wrote them`);
     return;
   }
   await writeDocuments(client, docs, revisions, options.replace);

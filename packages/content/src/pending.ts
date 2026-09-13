@@ -249,10 +249,10 @@ export const PENDING: readonly PendingEntry[] = [
   },
   { type: 'galaPage', fields: ['header.title'], where: 'Gala, header', what: 'the page heading' },
   // The program pages' and the trust pages' slim headers draw no photograph, so only the heading is owed.
-  ...['getInvolvedPage', 'impactPage', 'storyPage', 'donatePage'].map((type) => ({
+  ...Object.entries(TRUST_PAGE_NAMES).map(([type, name]) => ({
     type,
     fields: ['header.title'],
-    where: `${TRUST_PAGE_NAMES[type as keyof typeof TRUST_PAGE_NAMES]}, header`,
+    where: `${name}, header`,
     what: 'the page heading',
   })),
   {
@@ -490,9 +490,11 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Get Involved, doors',
     what: 'the ways in',
   },
+  // The give door closes Get Involved as a box, and no page draws its bullets (ADR 0034).
   {
     type: 'door',
     fields: ['bullets[]'],
+    filter: 'key != "give"',
     where: 'Get Involved, doors',
     what: 'what this way in asks and gives',
   },
@@ -533,6 +535,12 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'which other ways to give you accept',
   },
   // Fees, the receipt and monthly giving depend on how the owner's Zeffy form is set up (spec Q14).
+  {
+    type: 'donatePage',
+    fields: ['giveNow.facts[]'],
+    where: 'Donate, give now',
+    what: 'the give-now facts',
+  },
   {
     type: 'donatePage',
     condition: 'count(giveNow.facts[!defined(value)]) > 0',
@@ -894,12 +902,10 @@ export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
  */
 export const IMPACT_VOICE_SLOTS: readonly VoiceSlot[] = HOMEPAGE_VOICE_SLOTS;
 
-export interface OutcomeSlot {
-  /** The program the slot waits for, by its document id. */
-  program?: string;
-  /** Or the event page's kind. */
-  kind?: 'festival' | 'gala';
-}
+/** A subject an outcome slot waits for: a program by its document id, or an event page's kind, never both. */
+export type OutcomeSlot =
+  | { program: string; kind?: never }
+  | { kind: 'festival' | 'gala'; program?: never };
 
 /**
  * The subjects Impact's outcome cards wait for while the page references fewer than four (`14
@@ -927,8 +933,9 @@ export const COLLECTIVE_VOICE_SLOT: VoiceSlot = {
 
 /**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
- * `kind` picks the row for one kind of document (an event's `gala` or `festival`): its own row, else
- * a row every kind shares, never a row the registry keeps for another kind. An array's name without
+ * `kind` picks the row for one kind of document (an event's `gala` or `festival`, a person's `board` or
+ * `staff` group): its own row, else a row every kind shares, never a row the registry keeps for another
+ * kind. An array's name without
  * `[]` answers the row for one of its items missing a value.
  */
 export function pendingWhat(type: string, field: string, kind?: string): string | undefined {

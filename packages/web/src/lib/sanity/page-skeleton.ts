@@ -15,6 +15,7 @@ import {
   type EditAttribute,
   editAttributes,
   type ImageLike,
+  present,
   resolveImage,
 } from './view';
 
@@ -53,9 +54,6 @@ export interface GlanceFactView {
   /** The registry's wording when the note is a missing fact. */
   notePending?: string;
 }
-
-const present = <T>(value: T | null | undefined): value is T =>
-  value !== null && value !== undefined;
 
 /**
  * The parts every page singleton's view shares. `title` is the page's name when neither the SEO title
