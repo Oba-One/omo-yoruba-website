@@ -9,8 +9,8 @@ Blocked by: 10
 wayfinder map (tickets 33 and 34 resolved, the owner follow-ups), and `docs/plans/handoff-phase-5.md`
 with the suggested skills and the Phase 6 prompt.
 
-- [ ] Component map rows for every new or changed component
-- [ ] Runbook and READMEs updated; wayfinder decisions and frontier updated
+- [x] Component map rows for every new or changed component
+- [x] Runbook and READMEs updated; wayfinder decisions and frontier updated
 - [ ] Handoff written after the code review and the pull request
 
 ## Comments

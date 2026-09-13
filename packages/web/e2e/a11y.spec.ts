@@ -51,3 +51,17 @@ test.describe('axe on the layout', () => {
     expect(await audit(page)).toEqual([]);
   });
 });
+
+// Lighthouse's accessibility score also counts axe's best-practice rules, which the WCAG tags above
+// leave out; heading order is the one a page composition can break (Phase 5: the footer's headings
+// followed Odunde's last h2 as h4s).
+test('headings never skip a level on the content routes', async ({ page }) => {
+  for (const route of ['/', '/odunde', '/gala']) {
+    await page.goto(route);
+    const results = await new AxeBuilder({ page }).withRules(['heading-order']).analyze();
+    expect(
+      results.violations.map((violation) => violation.nodes.map((node) => node.target.join(' '))),
+      route,
+    ).toEqual([]);
+  }
+});

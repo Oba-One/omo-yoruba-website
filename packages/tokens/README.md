@@ -15,7 +15,7 @@ the site comes from here: `packages/ui` and `packages/web` use `var(--*)` only, 
 | `src/tokens/patterns.css` | `_ds/.../tokens/patterns.css` | Adds `--pattern-chevron-band`, `--pattern-motif-band`, `--pattern-batik-wash`, `--pattern-ornament-divider`, `--pattern-sun-crest` pointing at `src/patterns/` |
 | `src/base.css` | `_ds/.../css/base.css` | Verbatim: reset, type defaults, the `.oy-dark` scope, layout primitives |
 | `src/components.css` | `_ds/.../css/components.css` | Verbatim: the base `.oy-*` classes (its hover lift and shadows are overridden below) |
-| `src/oy-components.css` | `docs/design/design/oy-components.css` | Pattern urls through the tokens; canvas-only helpers (`.cx-cardlab`, `.sc-host`) dropped; the retired AmountSelector and MultiStepForm blocks left out |
+| `src/oy-components.css` | `docs/design/design/oy-components.css` | Pattern urls through the tokens; canvas-only helpers (`.cx-cardlab`, `.sc-host`) dropped; the retired AmountSelector and MultiStepForm blocks left out; Phase 5: a chip inside a fact row keeps its type, the four-zone mosaic keeps its columns under 820px, the Pending chip has 16px corners, and the Gala page's style block (the warm treatment and the `.oy-seam`) is ported to the end with a vertical warm scrim under 760px (ADR 0028) |
 
 `_ds/...` is `docs/design/design/_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f12-b869c74d646d`.
 The originals stay under `docs/design/design/` as the reference; change the port here, not there.

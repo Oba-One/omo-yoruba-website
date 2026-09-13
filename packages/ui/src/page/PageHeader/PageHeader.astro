@@ -3,7 +3,7 @@
  * The top of an inner page (COMPONENT-MAP, Page structure; `08 Odunde Festival.dc.html` and `09
  * End-of-Year Gala.dc.html`): the kicker, the one H1, the line under it, up to two actions (the
  * first gold, once per view; the second outline) and a short line of facts under the buttons, whose
- * missing facts show the registry's chips. `slim` sits on paper; `photo` lays the copy over the
+ * missing facts show the registry's chips, joined by gold dots that never end a wrapped line. `slim` sits on paper; `photo` lays the copy over the
  * photograph behind the indigo scrim, with the aṣọ òkè rule along the bottom, the photograph
  * breathing slowly when motion is on (`.v2-kb`, off under reduced motion) and the àdìrẹ dot field
  * when the page asks. Without a photograph the band keeps its surface and names the missing
@@ -117,18 +117,18 @@ const shownFacts = facts ?? [];
       }
       {
         shownFacts.length > 0 && (
-          <p class="oy-phead-facts">
-            {shownFacts.map((fact, index) => (
-              <>
-                {index > 0 && (
+          <div class="oy-phead-facts-clip">
+            <p class="oy-phead-facts">
+              {shownFacts.map((fact) => (
+                <span class="oy-phead-fact">
                   <span class="oy-phead-dot" aria-hidden="true">
                     •
                   </span>
-                )}
-                {'text' in fact ? <span>{fact.text}</span> : <Pending what={fact.pending} />}
-              </>
-            ))}
-          </p>
+                  {'text' in fact ? <span>{fact.text}</span> : <Pending what={fact.pending} />}
+                </span>
+              ))}
+            </p>
+          </div>
         )
       }
     </div>
@@ -137,20 +137,36 @@ const shownFacts = facts ?? [];
 </header>
 
 <style>
-  .oy-phead-facts {
+  /*
+   * Every fact carries its dot in front, and the list sits 20px to the left inside a clipping box, so
+   * the dot that starts a line (the first fact's, and any wrapped line's) falls outside and only the
+   * dots between two facts on one line show: a wrapped line never ends on a dot.
+   */
+  .oy-phead-facts-clip {
     margin: 24px 0 0;
+    overflow: hidden;
+  }
+  .oy-phead--photo .oy-phead-facts-clip {
+    margin-top: 26px;
+  }
+  .oy-phead-facts {
+    margin: 0 0 0 -20px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px 10px;
+    row-gap: 6px;
     font-size: 15px;
     /* The dark scope turns the muted token to the soft on-dark text. */
     color: var(--text-muted);
   }
-  .oy-phead--photo .oy-phead-facts {
-    margin-top: 26px;
+  .oy-phead-fact {
+    display: inline-flex;
+    align-items: center;
   }
   .oy-phead-dot {
+    flex: none;
+    width: 20px;
+    text-align: center;
     color: var(--gold-500);
   }
   .oy-phead--photo .oy-phead-media :global(.oy-ph) {

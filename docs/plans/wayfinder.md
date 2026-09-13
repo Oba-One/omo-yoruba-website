@@ -97,6 +97,14 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   `editionRoute` and `programRoute` in `@oy/content/routes` serve the news cards, the event band and
   the Presentation tool; the dead hero switch rules are gone (Phase 5).
 
+- [Event pages show the next edition, the last one as past years](../adr/0024-event-pages-show-the-next-edition.md):
+  Pending between editions, the Eventbrite link on the edition, empty blocks as Pending lines (Phase 5).
+- [Take-part rows live on the page singleton](../adr/0025-take-part-rows-live-on-the-page-singleton.md),
+  [the photo carousel is a tabbed carousel under the repo rules](../adr/0027-photo-carousel-is-a-tabbed-carousel-under-the-repo-rules.md)
+  (ticket 37 holds the owner's review), and
+  [the event pages follow their prototypes under the repo rules](../adr/0028-event-pages-follow-their-prototypes-under-the-repo-rules.md).
+  Page-section stories show owed content in the prototypes' bracketed placeholder form ("[ Price ]",
+  "[ The opening of the day ]") beside Pending chips, never a mock name or price.
 - [The homepage under the mobile performance budget](../tickets/wayfinder/issues/33-homepage-mobile-lighthouse-budget.md):
   right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
   0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).
@@ -126,6 +134,9 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 32 | The favicon | Ticket 33 (best practices) |
 | 04 | Gala tables: enquiry or purchase | Phase 5 |
 | 06 | Gala awards: yes or no | Phase 5 |
+| 36 | Check the event pages in the Studio and on the preview, merge the Phase 5 pull request | Phase 6 branch |
+| 37 | The photo carousel's controls (ADR 0027's answers) | The Lightbox, Phase 8 |
+| 38 | The event pages' owed facts (Odunde 2027, Gala 2026, albums) | Launch |
 | 07 | Our Story timeline shown by default | Phase 7 |
 | 10 | Old site URLs for redirects | Phase 9 |
 | 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | Phase 9 |
@@ -144,8 +155,6 @@ the homepage's mobile LCP, Phase 9). Tickets 33 and 34 were resolved in Phase 5.
 - Nightly `content-lint.yml` delivery: a summary in the Pending view, an email, or both.
 - OG image generation and the 404 page's three doors (Phase 9); redirects list shape
   (ticket 10).
-- Page-section stories for every layout option: how fixtures represent a whole page
-  without mock names or prices.
 - Content Release naming and who may publish one; depends on ticket 22.
 
 ## Out of scope

@@ -36,14 +36,18 @@ describe('PageHeader', () => {
     expect(one).toHaveLength(1);
   });
 
-  it('writes each missing fact as its chip, joined by hidden dots', async () => {
+  it('writes each missing fact as its chip, each behind a hidden dot', async () => {
     const facts = (await renderToBody(Photo)).querySelector('.oy-phead-facts');
     expect(Array.from(facts?.querySelectorAll('.oy-pend') ?? []).map(text)).toEqual([
       'Pending: the date',
       'Pending: the hours',
       'Pending: the cost',
     ]);
-    expect(facts?.querySelectorAll('.oy-phead-dot[aria-hidden="true"]')).toHaveLength(2);
+    // Each fact carries its hidden dot; the first one on a line is clipped away by the layout.
+    expect(
+      facts?.querySelectorAll('.oy-phead-fact > .oy-phead-dot[aria-hidden="true"]'),
+    ).toHaveLength(3);
+    expect(facts?.closest('.oy-phead-facts-clip')).not.toBeNull();
     const mixed = (await renderToBody(MixedFacts)).querySelector('.oy-phead-facts');
     expect(text(mixed)).toContain('Leimert Park');
   });

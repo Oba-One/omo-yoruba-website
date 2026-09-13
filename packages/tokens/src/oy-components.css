@@ -7,7 +7,8 @@
    site renders one button); a chip inside a fact row keeps its own type and colour, and the four-zone
    mosaic keeps its columns under 820px (Phase 5); the Gala page's own style block (the warm
    treatment and the seam) is ported to the end of this file, with a narrow warm scrim in the formal
-   scrim's vertical form (Phase 5).
+   scrim's vertical form; the Pending chip's corners are 16px instead of a full pill, the same on one
+   line and a rounded box when a long chip wraps in a narrow cell (Phase 5).
    Everything else is verbatim. */
 
 /* ---- Card treatment (polish pass 2): sharper corners, paper grounds, indigo hairline,
@@ -1107,7 +1108,7 @@
   color: #7a4409;
   background: #fbeeda;
   border: 1px dashed #c98a3c;
-  border-radius: 999px;
+  border-radius: 16px;
   padding: 6px 13px;
 }
 .oy-pend-line {

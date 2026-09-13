@@ -158,7 +158,9 @@ uploads assets but cannot create published documents, and the script stops befor
 the token's role cannot publish. `bun seed -- --dry-run` prints the plan; `bun seed -- --replace`
 overwrites instead of filling missing fields (the default never overwrites an owner's edit);
 `bun seed -- --dataset production` targets production on purpose. Re-running is safe: assets are
-matched by SHA-1 and documents by id.
+matched by SHA-1 and documents by id. A field a schema change retired is unset where it is still
+stored (`RETIRED_FIELDS` in `scripts/seed-data.ts`: `takePartOrder` on both event singletons and
+`siteSettings.eventbriteUrl` since Phase 5); nothing else is ever removed.
 
 ## Functions
 
@@ -223,6 +225,14 @@ uploads `playwright-report/` when a run fails. Add the context `Playwright and a
 protection once the Phase 3 pull request merges. Vitest keeps to `src/**/*.test.ts`; Playwright
 keeps to `e2e/**`.
 
+Since Phase 5 `odunde.spec.ts` and `gala.spec.ts` check each event page's blocks in order against the
+options on the body, the Studio facts or their chips (never an invented fact), one gold action per
+band, every take-part and tier button opening its form with focus returning, and axe (both Gala
+treatments); `carousel.spec.ts` drives the past years carousel on both routes (buttons, tablist keys,
+reduced motion, no rotation, a client-side navigation, no JavaScript) and skips when the Studio holds
+fewer than two photographs, as in CI; `targets.spec.ts` sweeps both routes at 375. Run locally with
+`--workers=1`: cold parallel navigations of the dev server stall on this machine.
+
 ## Forms and the actions
 
 Since Phase 3 (ADR 0019). Nine Astro Actions in `packages/web/src/actions`, one per enquiry kind
@@ -286,7 +296,17 @@ owner's call: a failed Vercel build or a fork's pull request leaves them missing
 Without the secret, audit the production build locally: `bun run build`, serve
 `.vercel/output` (static files plus the render function's `fetch`, as Phase 4 did), then run the
 command above with `LIGHTHOUSE_BASE_URL=http://localhost:<port>` and no secret. It measures the
-application, not Vercel's CDN.
+application, not Vercel's CDN. The routes are `/`, `/odunde` and `/gala` since Phase 5.
+
+## Comparing a page with its prototype
+
+The prototypes are `.dc.html` files that need HTTP: the `design` entry of `.claude/launch.json` serves
+`docs/design/design` on port 4399 (`python3 -m http.server`), next to the site's `bun dev` on 4321.
+Capture both at 375 and 1440 into the gitignored `test-results/` (full-page captures at a device
+pixel ratio of 1, after a scroll pass so lazy photographs load), then compare section by section.
+Pending content and the rules that outrank a prototype are expected differences (ADR 0023 for the
+homepage, ADR 0028 for the event pages). An edited `@oy/ui` component's scoped stylesheet can stay
+stale in `astro dev` until the server restarts.
 
 ## Rollback
 

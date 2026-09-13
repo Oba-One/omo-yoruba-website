@@ -13,7 +13,7 @@ if (!base)
   throw new Error('LIGHTHOUSE_BASE_URL is required: the preview or production URL to audit');
 const desktop = process.env.LIGHTHOUSE_PRESET === 'desktop';
 // Content routes only: /admin is the Studio and /api/* are endpoints. Later phases append theirs.
-const routes = ['/'];
+const routes = ['/', '/odunde', '/gala'];
 
 module.exports = {
   ci: {

@@ -64,7 +64,9 @@ const rows = (items ?? []).filter((item) => item !== null);
     margin: 0;
     padding: 0;
   }
+  /* Block-level so the auto margin can push the quiet toggle to the right, as the prototype sets it. */
   .oy-schedule--toggle > summary {
+    display: flex;
     list-style: none;
     margin: 0 0 18px auto;
     width: max-content;

@@ -21,3 +21,15 @@ and desktop CLS rose to 0.23. Try metric-matched fallback faces first (`size-adj
 the way Astro's Fonts API generates optimised fallbacks), then inlining again, and check the Phase 9
 CSP (inline `<style>` needs a hash or a nonce under `style-src 'self'`). Measure both presets on the
 local production build as ticket 33 did, with the event pages in `lighthouserc.cjs` too.
+
+## Comments
+
+12 September 2026 (Phase 5, ticket 10). The event pages share the problem, more visibly. On the mobile
+preset some runs shift the glance band when Source Sans 3 and Source Serif 4 swap in after first paint
+(Lighthouse names the font files as the causes): `/odunde` 0.06 and 0.071 in two runs of three, `/gala`
+0.063 in one, `/` 0.033 and 0.036 on the hero; lhci's aggregate passes the 0.05 budget, but single runs
+do not. The photo header is 37px taller with the fallback faces than with the real ones (572px against
+609px on `/odunde` at the preset's 412px width), the same before and after ticket 10's facts line, so
+the shift is the font swap, not the layout. Metric-matched fallback faces would remove this shift and
+the risk inlining showed. The event pages' mobile LCP sits at 2.49 to 2.56 s (the header photograph).
+
