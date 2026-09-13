@@ -7,7 +7,7 @@
  */
 import { withLayoutDefaults } from '@oy/content/layout';
 import { type LeadCandidate, type LeadKind, pastEdition } from '@oy/content/lead-event';
-import { PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
+import { ALBUM_CREDIT_PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { ActionLike } from '@oy/ui/core/ActionButton/action.ts';
 import {
   type BuildOptions,
@@ -135,11 +135,6 @@ interface AlbumLike {
 /** Whether an edition's album has photographs to show: the rule `pastEdition` picks by. */
 const hasPhotos = (event: { album?: AlbumLike | null }) => (event.album?.photos?.length ?? 0) > 0;
 
-/** The album row is a condition ("creditConfirmed != true"), so it is found by its field. */
-const CREDIT_PENDING =
-  PENDING.find((row) => row.type === 'album' && row.condition?.includes('creditConfirmed'))?.what ??
-  'photographer credit to confirm';
-
 /**
  * Past years (Phase 5 spec, Q8): the newest past edition of the kind with photographs, and the `view` of
  * its album the carousel and the credit line take: each photograph resolved at the stage's width with
@@ -168,7 +163,7 @@ export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }
         ? {
             credit: album.credit ?? undefined,
             confirmed: album.creditConfirmed === true,
-            pending: CREDIT_PENDING,
+            pending: ALBUM_CREDIT_PENDING,
             edit: edit('photos', album._id, 'album'),
           }
         : undefined,

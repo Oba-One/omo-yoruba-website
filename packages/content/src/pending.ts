@@ -79,6 +79,18 @@ export const OUTCOME_PENDING = 'participation figures or what is being measured'
 /** A governance document with neither its file nor a note on when it comes. */
 export const GOVERNANCE_NOTE_PENDING = 'a file, or a note such as Copies on request';
 
+/** An album whose photographer has not confirmed the credit: under past years, on its page and in the Lightbox. */
+export const ALBUM_CREDIT_PENDING = 'photographer credit to confirm';
+
+/**
+ * An album with neither its own date nor an edition's year (ADR 0039): the gallery's tile and the album
+ * page's facts line show it where the year would be.
+ */
+export const ALBUM_YEAR_PENDING = 'the year of the album';
+
+/** A photograph that names its own photographer or credit note, not yet confirmed: the Lightbox's bar. */
+export const PHOTO_CREDIT_PENDING = "a photograph's own credit to confirm";
+
 /** A page's take-part band: no rows yet, or a row missing its way in, title or button label. */
 const takePartRows = (type: string, where: string): PendingEntry[] => [
   { type, fields: ['takePart[]'], where, what: 'the ways in' },
@@ -703,9 +715,24 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'album',
     condition: 'creditConfirmed != true',
     where: 'Gallery, credit',
-    what: 'photographer credit to confirm',
+    what: ALBUM_CREDIT_PENDING,
   },
-  { type: 'album', fields: ['date'], where: 'Gallery, albums', what: 'the year of the album' },
+  // A photograph carries a credit of its own only where it differs from the album's (ADR 0013).
+  {
+    type: 'album',
+    condition:
+      'count(photos[(defined(credit) || defined(creditNote)) && creditConfirmed != true]) > 0',
+    where: 'Gallery, photographs',
+    what: PHOTO_CREDIT_PENDING,
+  },
+  // An edition's album takes the edition's year, so only an album with neither asks (ADR 0039).
+  {
+    type: 'album',
+    condition: '!defined(date) && !defined(event->edition)',
+    where: 'Gallery, albums',
+    what: ALBUM_YEAR_PENDING,
+  },
+  { type: 'album', fields: ['photos[]'], where: 'Gallery, album', what: 'the photographs' },
   {
     type: 'galleryPage',
     fields: ['creditsAndConsent'],
@@ -783,9 +810,11 @@ export const PRESENCE: readonly PresenceEntry[] = [
     what: 'the staff and volunteers to list',
   },
   { type: 'partner', minimum: 1, where: 'Partner rows', what: 'partner and funder names' },
+  // The gallery and past years show an album only with a photograph, so an empty one does not count.
   {
     type: 'album',
     minimum: 1,
+    filter: 'count(photos) > 0',
     where: 'Gallery; Odunde and Gala, past years',
     what: 'the photo albums',
   },

@@ -538,9 +538,17 @@ export const album = defineType({
       name: 'date',
       title: 'Date',
       type: 'date',
-      description: 'Empty shows Pending (the summer camp year is unconfirmed).',
+      description:
+        "When the photographs were taken. Empty takes the year of the album's edition; an album with neither shows Pending (the summer camp's year is unconfirmed).",
     }),
-    defineField({ name: 'event', title: 'Edition', type: 'reference', to: [{ type: 'event' }] }),
+    defineField({
+      name: 'event',
+      title: 'Edition',
+      type: 'reference',
+      to: [{ type: 'event' }],
+      description:
+        "The edition the photographs come from: its year dates the album, and the album page links to the edition's page.",
+    }),
     defineField({ name: 'cover', title: 'Cover', type: 'oyImage' }),
     defineField({
       name: 'photos',
@@ -548,7 +556,7 @@ export const album = defineType({
       type: 'array',
       of: [{ type: 'oyImage' }],
       description:
-        'Each photo key is its lightbox deep link. Credits here apply to every photo unless one sets its own.',
+        "In the order the album page and the Lightbox show them; the first is the gallery tile's photograph when no cover is chosen. Each photograph's key is its photo address (?photo=<key>, ADR 0037), so a shared link keeps working while the photograph stays. The album's credit applies to every photograph unless one sets its own.",
     }),
     defineField({
       name: 'credit',

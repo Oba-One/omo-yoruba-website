@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ALBUM_CREDIT_PENDING,
+  ALBUM_YEAR_PENDING,
   COLLECTIVE_VOICE_SLOT,
   GENERAL_CONTACT_PENDING,
   GENERAL_RESPONDS_PENDING,
@@ -11,6 +13,7 @@ import {
   PARTNERSHIPS_RESPONDS_PENDING,
   PENDING,
   type PendingEntry,
+  PHOTO_CREDIT_PENDING,
   PRESENCE,
   pendingFilter,
   pendingTitle,
@@ -452,6 +455,48 @@ describe('Our Story', () => {
     expect(pendingWhat('person', 'role', 'teacher')).toBeUndefined();
     expect(pendingWhat('storyPage', 'takePart[]')).toBe('the ways in');
     expect(presenceWhat('timelineEntry')?.what).toBe('the dated entries');
+  });
+});
+
+describe('the gallery', () => {
+  it("asks for an album's year only where neither its date nor its edition gives one", () => {
+    const row = PENDING.find(
+      (entry) => entry.type === 'album' && entry.what === ALBUM_YEAR_PENDING,
+    );
+    expect(row?.condition).toBe('!defined(date) && !defined(event->edition)');
+    expect(row?.fields).toBeUndefined();
+    expect(ALBUM_YEAR_PENDING).toBe('the year of the album');
+    // The field alone no longer answers: the site reads the named constant.
+    expect(pendingWhat('album', 'date')).toBeUndefined();
+  });
+
+  it("names an album's credit, a photograph's own credit and an album without photographs apart", () => {
+    const credit = PENDING.find(
+      (entry) => entry.type === 'album' && entry.what === ALBUM_CREDIT_PENDING,
+    );
+    expect(credit?.condition).toBe('creditConfirmed != true');
+    const own = PENDING.find(
+      (entry) => entry.type === 'album' && entry.what === PHOTO_CREDIT_PENDING,
+    );
+    expect(own?.condition).toBe(
+      'count(photos[(defined(credit) || defined(creditNote)) && creditConfirmed != true]) > 0',
+    );
+    expect(pendingFilter(own as PendingEntry)).toBe(
+      '_type == "album" && (count(photos[(defined(credit) || defined(creditNote)) && creditConfirmed != true]) > 0)',
+    );
+    expect(pendingWhat('album', 'photos[]')).toBe('the photographs');
+  });
+
+  it('keeps the policy as the owner writes it, and counts only albums that hold a photograph', () => {
+    expect(pendingWhat('galleryPage', 'creditsAndConsent')).toBe(
+      'your photo consent and removal policy',
+    );
+    const albums = PRESENCE.find((entry) => entry.type === 'album');
+    expect(albums?.filter).toBe('count(photos) > 0');
+    expect(presenceCountQuery(albums as (typeof PRESENCE)[number])).toBe(
+      'count(*[_type == "album" && count(photos) > 0])',
+    );
+    expect(presenceWhat('album')).toEqual({ what: 'the photo albums', minimum: 1 });
   });
 });
 

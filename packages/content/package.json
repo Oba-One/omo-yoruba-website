@@ -17,7 +17,8 @@
     "./api-version": "./src/api-version.ts",
     "./take-part": "./src/take-part.ts",
     "./doors": "./src/doors.ts",
-    "./giving": "./src/giving.ts"
+    "./giving": "./src/giving.ts",
+    "./albums": "./src/albums.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

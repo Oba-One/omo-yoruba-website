@@ -94,9 +94,21 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
   // Donate's trust block keeps its promise of a source line under every number only while Impact shows them.
   impactPage: ['/impact', '/donate'],
+  // Every album page closes with the gallery's credit and permissions section and wears its kicker.
+  galleryPage: ['/gallery', '/gallery/[album]'],
   // The year strip names the festival and the Gala by kind, so no edition reaches the Programs hub.
-  // Impact's civic cells read the festival's editions (ADR 0035).
-  event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/impact', '/news'],
+  // Impact's civic cells read the festival's editions (ADR 0035). An album takes its edition's year, and
+  // its page links to the edition's page (ADR 0039).
+  event: [
+    '/',
+    '/odunde',
+    '/gala',
+    '/programs/cultural-collective',
+    '/impact',
+    '/gallery',
+    '/gallery/[album]',
+    '/news',
+  ],
   // The festival page draws the zones; the Gala's running order names a row's zone too.
   zone: ['/odunde', '/gala'],
   ticketTier: ['/gala'],
@@ -113,7 +125,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   newsPost: ['/news/[slug]', '/news', '/'],
   // Impact's civic cells come from the newest past festival edition whose album has photographs.
   album: ['/gallery/[album]', '/gallery', '/odunde', '/gala', '/impact'],
-  photographer: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],
+  // The credit line under an album and in the Lightbox; the gallery's tiles carry no credit (ADR 0039).
+  photographer: ['/gallery/[album]', '/odunde', '/gala'],
   partner: ['/odunde', '/impact'],
   outcome: ['/impact'],
   // Get Involved's associations block shows the count of hometown associations from its stat.

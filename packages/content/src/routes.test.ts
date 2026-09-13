@@ -134,6 +134,34 @@ describe('tagsForRoute', () => {
   });
 });
 
+describe('the gallery routes', () => {
+  it('purges every album page with the gallery singleton and with an edition, whose year and page it shows', () => {
+    expect(TYPE_ROUTES.galleryPage).toEqual(['/gallery', '/gallery/[album]']);
+    expect(TYPE_ROUTES.event).toEqual(expect.arrayContaining(['/gallery', '/gallery/[album]']));
+    expect(tagsForRoute('/gallery/[album]')).toEqual([
+      'type:siteSettings',
+      'type:galleryPage',
+      'type:event',
+      'type:album',
+      'type:photographer',
+    ]);
+  });
+
+  it('tags the gallery with what its tiles read, and no photographer: a tile carries no credit', () => {
+    expect(tagsForRoute('/gallery')).toEqual([
+      'type:siteSettings',
+      'type:galleryPage',
+      'type:event',
+      'type:album',
+    ]);
+    expect(routesFor('photographer', 'odunde-2026')).toEqual([
+      '/gallery/odunde-2026',
+      '/odunde',
+      '/gala',
+    ]);
+  });
+});
+
 describe('EVENT_PAGE_NAMES', () => {
   it('names each event page without a year, as the year strip and the Studio write it', () => {
     expect(EVENT_PAGE_NAMES).toEqual({ festival: 'Odunde Festival', gala: 'End-of-Year Gala' });

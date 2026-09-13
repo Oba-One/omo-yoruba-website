@@ -4,6 +4,7 @@
  * `SanityQueries` and `client.fetch` returns it typed (`bun typegen` after any change).
  */
 export * from './event-pages';
+export * from './gallery';
 export * from './homepage';
 export * from './program-pages';
 export * from './site';

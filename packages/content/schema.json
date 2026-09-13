@@ -3024,18 +3024,10 @@
         },
         "optional": true
       },
-      "intro": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "creditsAndConsent": {
         "type": "objectAttribute",
         "value": {
-          "type": "inline",
-          "name": "blockContent"
+          "type": "string"
         },
         "optional": true
       },
