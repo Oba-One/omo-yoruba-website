@@ -1,7 +1,7 @@
 # 03: /gallery: the albums, the soon state, and photography credit and permissions
 
 Labels: design, content
-Status: open
+Status: claimed
 Blocked by: 01, 02
 
 **What to build:** `/gallery` renders from Sanity (spec Q4 to Q8, Q13 to Q15): the slim header, the albums in

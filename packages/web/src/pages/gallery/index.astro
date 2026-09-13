@@ -1,0 +1,74 @@
+---
+/**
+ * The gallery (`18 Photo Gallery.dc.html`, ROUTES sections 1, 3, 4 and 5, ADR 0039): composed from the one gallery
+ * query through `loadQuery`, with the registry's Pending chips for everything the Studio does not hold and the
+ * layout options read from the singleton with the schema defaults filled. The slim header, then the albums in
+ * the mosaic, newest year first, each tile opening its album's Lightbox on the first photograph (`open: viewer`)
+ * or its page (`grid`); under `state: soon` one sentence and the two event pages instead; then photography
+ * credit and permissions. No filters, no gold action unless the Studio sets one. The page stays out of the nav.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { galleryPageQuery } from '@oy/content/queries';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Button from '@oy/ui/core/Button/Button.astro';
+import AlbumGrid from '@oy/ui/media/AlbumGrid/AlbumGrid.astro';
+import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import GalleryCredits from '../../components/GalleryCredits.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { cachePage } from '../../lib/cache';
+import { STUDIO_BASE_PATH } from '../../lib/paths';
+import { buildGalleryPage } from '../../lib/sanity/gallery-page';
+import { loadQuery } from '../../lib/sanity/load-query';
+
+const { data, preview, error } = await loadQuery(galleryPageQuery, {}, { cookies: Astro.cookies });
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildGalleryPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/gallery', { draft: preview, failed: Boolean(error) });
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending={page.header.titlePending}
+      line={page.header.line}
+      actions={page.header.actions}
+    />
+
+    <Section id="albums" data-sanity={page.edit.state}>
+      {
+        page.soon ? (
+          <>
+            <Prose text={page.soon.text} />
+            <ButtonRow>
+              {page.soon.links.map((link) => (
+                <Button variant="quiet" href={link.href} arrow>
+                  {link.label}
+                </Button>
+              ))}
+            </ButtonRow>
+          </>
+        ) : (
+          <div data-sanity={page.edit.open}>
+            <AlbumGrid
+              albums={page.albums.tiles}
+              captions={page.albums.captions}
+              pending={page.albums.pending}
+              edit={page.edit.captions}
+            />
+          </div>
+        )
+      }
+    </Section>
+
+    <GalleryCredits credits={page.credits} />
+  </main>
+</SiteLayout>
