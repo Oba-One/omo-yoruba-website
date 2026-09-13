@@ -280,3 +280,44 @@ export const GALA_PAST_SLIDES = [
 /** The albums' credits as the dataset holds them, neither confirmed yet. */
 export const ODUNDE_ALBUM_CREDIT = { credit: 'Red Carpet Media', confirmed: false };
 export const GALA_ALBUM_CREDIT = { credit: 'Members and volunteers', confirmed: false };
+
+export const GALA_HEADER = {
+  kicker: { yo: 'Àsè ọdún', en: "The year's celebration" },
+  title: 'End-of-Year Gala',
+  line: 'An evening of culture, community, and celebration, held each year in November or December.',
+  image: PHOTOS.galaSitting,
+  actions: [
+    { label: 'Get tickets', kind: 'anchor', href: '#seats' },
+    { label: 'Sponsor the evening', kind: 'enquiry', enquiryKind: 'sponsor' },
+  ],
+};
+
+/** The header line for Gala 2026 as the seed holds it: the date, the venue and the seats all owed. */
+export const GALA_META = [
+  { pending: 'the date' },
+  { pending: 'the venue' },
+  { pending: 'three prices and what each includes' },
+];
+
+/** The glance for Gala 2026: every fact owed, the date's note from the confirmed season. */
+export const GALA_GLANCE = [
+  { label: 'Date', pending: 'the date', note: 'Held each November or December' },
+  { label: 'Doors', pending: 'the doors time' },
+  { label: 'Venue', pending: 'the venue' },
+  { label: 'Dress', pending: 'the dress code' },
+  { label: 'Seats from', pending: 'three prices and what each includes' },
+];
+
+export const GALA_GLANCE_CAPTION =
+  'Everything you need to say yes: the date, the dress, and the price.';
+
+/** The evening intro as the seed writes it. */
+export const GALA_EVENING_INTRO =
+  "The Gala closes our year. It is the night the community dresses, sits down together, and pays for the work of the next twelve months: the language lessons, the children's programs, and the festival.";
+
+/** Running order rows in the bracketed placeholder form: the prototype's times and acts are invented. */
+export const GALA_RUNNING_ORDER_PLACEHOLDERS = [
+  { _key: 'row-1', title: { en: '[ The reception ]' }, detail: '[ One line on the arrival ]' },
+  { _key: 'row-2', title: { en: '[ Dinner ]' }, detail: '[ One line on how dinner is served ]' },
+  { _key: 'row-3', title: { en: '[ The performance ]' }, detail: '[ One line on who performs ]' },
+];

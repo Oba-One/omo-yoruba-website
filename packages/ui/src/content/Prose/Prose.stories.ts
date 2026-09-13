@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'astro/types';
-import { PROSE_EVERY_NODE, WHAT_IT_IS } from '../../fixtures/event-pages';
+import { GALA_EVENING_INTRO, PROSE_EVERY_NODE, WHAT_IT_IS } from '../../fixtures/event-pages';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import Prose from './Prose.astro';
 
@@ -25,6 +25,9 @@ type Story = StoryObj<Args>;
 
 /** "What Odunde is", as the seed writes it. */
 export const Default: Story = {};
+
+/** A plain text field, the Gala's evening intro as the seed writes it. */
+export const PlainText: Story = { args: { value: undefined, text: GALA_EVENING_INTRO } };
 
 /** Every node the schema allows, written from the seed's copy. */
 export const EveryNode: Story = { args: { value: PROSE_EVERY_NODE } };

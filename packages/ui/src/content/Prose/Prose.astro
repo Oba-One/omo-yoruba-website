@@ -7,7 +7,8 @@
  * own paragraphs and marks. The renderer rewrites the value it is given, so it renders a copy. A node
  * the map does not know throws in dev and in tests, so schema drift fails there; in production it logs
  * and renders the library's fallback, because a throw mid-stream would answer a blank page with a 200.
- * An empty value renders nothing: the page shows the registry's Pending chip instead.
+ * An empty value renders nothing: the page shows the registry's Pending chip instead. `text` takes a
+ * Studio `text` field instead (the Gala's evening intro): a paragraph per blank-line-separated block.
  */
 import { PortableText } from 'astro-portabletext';
 import type { MissingComponentHandler, PortableTextProps } from 'astro-portabletext/types';
@@ -18,11 +19,17 @@ import ProseQuote from './ProseQuote.astro';
 
 interface Props {
   value?: PortableTextProps['value'] | null;
+  /** Plain text in place of Portable Text. */
+  text?: string | null;
   class?: string;
 }
 
-const { value, class: className, ...rest } = Astro.props;
+const { value, text, class: className, ...rest } = Astro.props;
 const own = value ? structuredClone(value) : undefined;
+const paragraphs = (text ?? '')
+  .split(/\n\s*\n/)
+  .map((paragraph) => paragraph.trim())
+  .filter(Boolean);
 
 const components = {
   block: { h3: ProseHeading, blockquote: ProseQuote },
@@ -38,9 +45,18 @@ const onMissingComponent: MissingComponentHandler = (message, { nodeType, type }
 ---
 
 {
-  own && (Array.isArray(own) ? own.length > 0 : true) && (
+  paragraphs.length > 0 ? (
     <div class:list={['oy-prose', className]} {...rest}>
-      <PortableText value={own} components={components} onMissingComponent={onMissingComponent} />
+      {paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
     </div>
+  ) : (
+    own &&
+    (Array.isArray(own) ? own.length > 0 : true) && (
+      <div class:list={['oy-prose', className]} {...rest}>
+        <PortableText value={own} components={components} onMissingComponent={onMissingComponent} />
+      </div>
+    )
   )
 }

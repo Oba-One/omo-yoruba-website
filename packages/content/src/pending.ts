@@ -187,6 +187,12 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'galaPage',
+    fields: ['eveningIntro'],
+    where: 'Gala, the evening',
+    what: 'the evening, in your words',
+  },
+  {
+    type: 'galaPage',
     fields: ['takePart[]'],
     where: 'Gala, take part',
     what: 'the ways in',

@@ -5,7 +5,9 @@
    .oy-amounts, .oy-amount) and MultiStepForm (.oy-steps, .oy-step) blocks are left out
    (docs/design/COMPONENT-MAP.md, Retired); the homepage hero's .v2-cta--* switch is left out (the
    site renders one button); a chip inside a fact row keeps its own type and colour, and the four-zone
-   mosaic keeps its columns under 820px (Phase 5).
+   mosaic keeps its columns under 820px (Phase 5); the Gala page's own style block (the warm
+   treatment and the seam) is ported to the end of this file, with a narrow warm scrim in the formal
+   scrim's vertical form (Phase 5).
    Everything else is verbatim. */
 
 /* ---- Card treatment (polish pass 2): sharper corners, paper grounds, indigo hairline,
@@ -2467,4 +2469,50 @@
    Phase 5 for plan your visit. */
 .oy-fact span.oy-pend {
   color: #7a4409;
+}
+
+/* ---- The Gala's treatment and seam (09 End-of-Year Gala.dc.html, its page style block). Formal is
+   the default: indigo carries the evening. Warm turns the grounds to paper and lets terracotta into
+   the header scrim and the seams. Under 760px the warm scrim runs top to bottom, as the formal one
+   does, so the copy keeps its contrast across the full width. ---- */
+.oy-seam {
+  height: 9px;
+  background: linear-gradient(
+    180deg,
+    var(--indigo-700) 0 3px,
+    transparent 3px 6px,
+    var(--gold-500) 6px 9px
+  );
+}
+.oy-home[data-treatment="warm"] .oy-section {
+  background: var(--paper);
+}
+.oy-home[data-treatment="warm"] .oy-section--alt {
+  background: var(--white);
+}
+.oy-home[data-treatment="warm"] .oy-phead-scrim {
+  background: linear-gradient(
+    90deg,
+    rgba(60, 24, 10, 0.94) 0 34%,
+    rgba(90, 40, 18, 0.76) 58%,
+    rgba(143, 63, 30, 0.34)
+  );
+}
+.oy-home[data-treatment="warm"] .oy-seam {
+  background: linear-gradient(
+    180deg,
+    var(--terra-600) 0 3px,
+    transparent 3px 6px,
+    var(--gold-500) 6px 9px
+  );
+}
+@media (max-width: 760px) {
+  .oy-home[data-treatment="warm"] .oy-phead-scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(60, 24, 10, 0.34) 0 16%,
+      rgba(60, 24, 10, 0.8) 44%,
+      rgba(60, 24, 10, 0.97) 66%
+    );
+  }
 }

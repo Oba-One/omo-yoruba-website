@@ -1,0 +1,105 @@
+---
+/**
+ * The End-of-Year Gala page (`09 End-of-Year Gala.dc.html`, ROUTES sections 1, 4 and 5): composed from
+ * the one Gala query through `loadQuery`, showing the next gala edition (ADR 0024) with the registry's
+ * Pending chips for every fact the Studio does not hold, "Seats from" derived from the edition's tiers,
+ * and the seven layout options read from the singleton with the schema defaults filled. The page
+ * arranges library parts and owns its copy (the section kickers and headings the prototype carries,
+ * "Odunde" unmarked in display text, ADR 0009) and its layout; the warm treatment lives in the tokens.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { galaPageQuery } from '@oy/content/queries';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
+import Divider from '@oy/ui/core/Divider/Divider.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
+import TakePartBand from '@oy/ui/page/TakePartBand/TakePartBand.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { cachePage } from '../lib/cache';
+import { STUDIO_BASE_PATH } from '../lib/paths';
+import { buildGalaPage } from '../lib/sanity/gala-page';
+import { loadQuery } from '../lib/sanity/load-query';
+
+const { data, preview } = await loadQuery(galaPageQuery, {}, { cookies: Astro.cookies });
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildGalaPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/gala', { draft: preview });
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant="photo"
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending="the page heading"
+      line={page.header.line}
+      image={page.header.image}
+      imagePending="the header photograph"
+      imageEdit={page.header.imageEdit}
+      actions={page.header.actions}
+      facts={page.header.facts}
+      dots
+      edit={page.edit.treatment}
+    />
+    <GlanceStrip
+      facts={page.glance}
+      caption="Everything you need to say yes: the date, the dress, and the price."
+    />
+
+    <Section id="evening" labelledby="evening-heading">
+      <Split>
+        <SectionHead
+          kicker={{ yo: 'Alẹ́ náà', en: 'The evening' }}
+          title="The evening"
+          id="evening-heading"
+        />
+        {
+          page.evening.intro ? (
+            <Prose text={page.evening.intro} />
+          ) : (
+            <p>
+              <Pending what={page.evening.introPending} />
+            </p>
+          )
+        }
+        {
+          page.evening.schedule.shown && (
+            <Schedule
+              slot="aside"
+              items={page.evening.schedule.items}
+              pending={page.evening.schedule.pending}
+              edit={page.edit.schedule}
+            />
+          )
+        }
+      </Split>
+    </Section>
+
+    <Divider kind="seam" />
+
+    <Section id="take-part" ground="alt" labelledby="take-part-heading" data-sanity={page.edit.labels}>
+      <SectionHead
+        kicker={{ yo: 'Ẹ dara pọ̀ mọ́ wa', en: 'Join us' }}
+        title="Take part"
+        intro={page.takePart.intro}
+        id="take-part-heading"
+      />
+      <TakePartBand
+        rows={page.takePart.rows}
+        labels={page.takePart.labels}
+        pending={page.takePart.pending}
+        rowPending={page.takePart.rowPending}
+      />
+    </Section>
+  </main>
+</SiteLayout>

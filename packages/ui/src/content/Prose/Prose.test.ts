@@ -3,13 +3,19 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './Prose.stories';
 
-const { Default, EveryNode, UntrustedLink, Empty } = composeStories(stories);
+const { Default, PlainText, EveryNode, UntrustedLink, Empty } = composeStories(stories);
 
 describe('Prose', () => {
   it('renders the seed paragraphs inside the tokens prose column', async () => {
     const prose = (await renderToBody(Default)).querySelector('.oy-prose');
     expect(prose?.querySelectorAll('p')).toHaveLength(2);
     expect(text(prose?.querySelector('p'))).toMatch(/^Odunde marks the Yoruba new year/);
+  });
+
+  it('renders a plain text field as its paragraphs', async () => {
+    const prose = (await renderToBody(PlainText)).querySelector('.oy-prose');
+    expect(prose?.querySelectorAll('p')).toHaveLength(1);
+    expect(text(prose?.querySelector('p'))).toMatch(/^The Gala closes our year\./);
   });
 
   // Rendering every style, decorator, annotation and object blockContent declares proves the map
