@@ -26,7 +26,16 @@ test.describe('the Odunde Festival page', () => {
     const order = await page.evaluate(() =>
       Array.from(document.querySelectorAll('main > *')).map((el) => el.id),
     );
-    expect(order.slice(0, 3)).toEqual(['top', 'glance', 'about-festival']);
+    const schedule = await page.locator('body').getAttribute('data-schedule');
+    const expected = [
+      'top',
+      'glance',
+      'about-festival',
+      'zones',
+      ...(schedule === 'hidden' ? [] : ['schedule']),
+      'plan',
+    ];
+    expect(order.slice(0, expected.length)).toEqual(expected);
     const phead = await page.locator('body').getAttribute('data-phead');
     expect(phead).toMatch(/^(photo|slim)$/);
     await expect(page.locator(`header#top.oy-phead--${phead}`)).toHaveCount(1);
@@ -50,6 +59,51 @@ test.describe('the Odunde Festival page', () => {
     const body = await page.locator('main').innerText();
     expect(body).not.toMatch(/12 June 2027|11am to 7pm|Free entry|43rd Place|since 2003|\$\d/i);
     await expect(page.locator('#about-festival h2')).toHaveText('What Odunde is');
+  });
+
+  test('draws four zone cards, the named zones first, and names the owed ones', async ({
+    page,
+  }) => {
+    await page.goto('/odunde');
+    const layout = await page.locator('body').getAttribute('data-zones');
+    const grid = page.locator(`#zones .oy-zones[data-layout="${layout}"]`);
+    await expect(grid).toHaveCount(1);
+    const cards = grid.locator('article.oy-zone');
+    expect(await cards.count()).toBeGreaterThanOrEqual(4);
+    const named = await grid.locator('article.oy-zone:not(.oy-zone--pending)').count();
+    await expect(grid.locator('article.oy-zone--pending')).toHaveCount(Math.max(0, 4 - named));
+    // Each named zone's Yoruba name is a heading with its marks.
+    for (const heading of await grid.locator('h3.oy-zone-name').all()) {
+      await expect(heading).toHaveAttribute('lang', 'yo');
+    }
+  });
+
+  test('shows the schedule the option asks for, open or behind its toggle, and the plan facts', async ({
+    browser,
+  }) => {
+    // Without JavaScript: the disclosure opens natively.
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto('/odunde');
+    const option = await page.locator('body').getAttribute('data-schedule');
+    const section = page.locator('#schedule');
+    if (option === 'hidden') {
+      await expect(section).toHaveCount(0);
+    } else {
+      const details = section.locator('details.oy-schedule');
+      if ((await details.count()) === 0) {
+        // No rows in the Studio (or CI's placeholder project): the registry's Pending line.
+        await expect(section.locator('.oy-pend-line')).toBeVisible();
+      } else {
+        await expect(details).toHaveJSProperty('open', option === 'shown');
+        await details.locator('summary').click();
+        await expect(details).toHaveJSProperty('open', option !== 'shown');
+      }
+    }
+    const plan = page.locator('#plan');
+    const facts = await plan.locator('.oy-fact').count();
+    expect(facts > 0 || (await plan.locator('.oy-pend-line').count()) === 1).toBe(true);
+    await context.close();
   });
 
   test('is clean for axe with the page settled', async ({ page }) => {

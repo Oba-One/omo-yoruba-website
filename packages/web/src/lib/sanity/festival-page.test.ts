@@ -212,6 +212,58 @@ describe('buildFestivalPage', () => {
     expect(empty.glance.map((fact) => fact.label)).toEqual(['Date', 'Time', 'Where', 'Cost']);
   });
 
+  it('carries the zones, the schedule the option shows and the plan facts with their chips', () => {
+    const withDay = {
+      ...seeded,
+      zones: [
+        {
+          _id: 'zone-oja-balogun',
+          name: { yo: 'Ọjà Balógun', en: 'The market' },
+          line: null,
+          image: image('Elders at the market'),
+        },
+      ],
+      planYourVisit: [{ _key: 'fact-1', label: 'Parking', value: null, note: null }],
+      editions: [
+        edition('event-odunde-2027', 2027, {
+          schedule: [
+            {
+              _key: 'row-1',
+              time: null,
+              day: null,
+              title: { yo: null, en: 'Opening' },
+              detail: null,
+              zone: null,
+            },
+          ],
+        }),
+      ],
+    } as unknown as FestivalPageData;
+    const view = buildFestivalPage(withDay, options);
+    expect(view.zones).toHaveLength(1);
+    expect(view.zones[0]?.image?.alt).toBe('Elders at the market');
+    expect(view.schedule).toMatchObject({
+      shown: true,
+      open: true,
+      pending: 'the rows, times and content',
+    });
+    expect(view.schedule.items).toHaveLength(1);
+    expect(view.plan.facts).toEqual([
+      { _key: 'fact-1', label: 'Parking', value: null, pending: 'a practical fact' },
+    ]);
+    expect(view.plan.pending).toBe('the eight practical facts');
+    const collapsed = buildFestivalPage(
+      { ...withDay, layout: { schedule: 'collapsed' } } as FestivalPageData,
+      options,
+    );
+    expect(collapsed.schedule).toMatchObject({ shown: true, open: false });
+    const hidden = buildFestivalPage(
+      { ...withDay, layout: { schedule: 'hidden' } } as FestivalPageData,
+      options,
+    );
+    expect(hidden.schedule.shown).toBe(false);
+  });
+
   it('writes edit attributes only in draft mode', () => {
     expect(buildFestivalPage(seeded, options).edit.phead).toBeUndefined();
     const draft = buildFestivalPage(seeded, { ...options, draft: true });

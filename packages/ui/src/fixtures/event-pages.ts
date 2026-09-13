@@ -119,3 +119,57 @@ export const PROSE_EVERY_NODE = [
     relation: 'Vendor, Ọjà Balógun',
   },
 ];
+
+/** The two zone documents the seed writes: names with marks and translations, photographs, no lines. */
+export const ZONES = [
+  {
+    _id: 'zone-oja-balogun',
+    name: { yo: 'Ọjà Balógun', en: 'The market' },
+    line: null,
+    image: PHOTOS.atMarket,
+  },
+  {
+    _id: 'zone-agbala-omode',
+    name: { yo: 'Àgbàlá Ọmọde', en: "The children's yard" },
+    line: null,
+    image: PHOTOS.kidsCrafts,
+  },
+];
+
+/**
+ * Schedule rows in the bracketed placeholder form the prototypes use for owed content: the times
+ * and what happens are invented in the prototype, so the rows name what they wait for. The zone
+ * names are the two confirmed zones.
+ */
+export const SCHEDULE_PLACEHOLDERS = [
+  {
+    _key: 'row-1',
+    title: { en: '[ The opening of the day ]' },
+    detail: '[ One line on what happens and who leads it ]',
+    zone: { yo: 'Ọjà Balógun', en: 'The market' },
+  },
+  {
+    _key: 'row-2',
+    title: { en: '[ What the children do ]' },
+    detail: '[ One line on what happens and where ]',
+    zone: { yo: 'Àgbàlá Ọmọde', en: "The children's yard" },
+  },
+  {
+    _key: 'row-3',
+    title: { en: '[ The close of the day ]' },
+    detail: '[ One line on how the day ends ]',
+    zone: null,
+  },
+];
+
+/** Plan your visit as the seed writes it: the eight labels, every value owed. */
+export const PLAN_FACTS = [
+  'Getting there',
+  'Parking',
+  'Transit',
+  'Accessibility',
+  'Seating',
+  'What to bring',
+  'What not to bring',
+  'Lost children',
+].map((label) => ({ label, pending: 'a practical fact' }));

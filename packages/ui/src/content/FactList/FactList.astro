@@ -1,0 +1,65 @@
+---
+/**
+ * A list of practical facts (plan your visit on `08 Odunde Festival.dc.html`): a terracotta label and
+ * the fact beside it, two columns on a wide screen and one under 900px (the tokens' `.oy-facts`). A
+ * fact the Studio holds no value for shows the registry's chip; no facts at all renders the Pending
+ * line.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface FactLike {
+  _key?: string;
+  label?: string | null;
+  value?: string | null;
+  /** The registry's wording when the value is missing. */
+  pending?: string;
+}
+
+interface Props {
+  facts?: (FactLike | null)[] | null;
+  /** The registry's wording when there are no facts. */
+  pending?: string;
+  class?: string;
+}
+
+const { facts, pending = 'the practical facts', class: className } = Astro.props;
+const rows = (facts ?? []).filter((fact) => fact !== null && fact.label?.trim());
+---
+
+{
+  rows.length === 0 ? (
+    <Pending variant="line" what={pending} class={className} />
+  ) : (
+    <dl class:list={['oy-facts', className]}>
+      {rows.map((fact) => (
+        <div class="oy-fact">
+          <dt>{fact?.label}</dt>
+          <dd>{fact?.value?.trim() ? fact.value : <Pending what={fact?.pending} />}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+<style>
+  .oy-facts {
+    margin: 0;
+  }
+  .oy-fact dt {
+    flex: none;
+    width: 128px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--accent-kicker, var(--terra-600));
+    padding-top: 2px;
+  }
+  .oy-fact dd {
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+</style>

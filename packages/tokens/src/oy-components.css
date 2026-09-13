@@ -4,7 +4,9 @@
    (.cx-cardlab, the .sc-host mount) are dropped; the retired AmountSelector (.oy-freq, .oy-freqtabs,
    .oy-amounts, .oy-amount) and MultiStepForm (.oy-steps, .oy-step) blocks are left out
    (docs/design/COMPONENT-MAP.md, Retired); the homepage hero's .v2-cta--* switch is left out (the
-   site renders one button). Everything else is verbatim. */
+   site renders one button); a chip inside a fact row keeps its own type and colour, and the four-zone
+   mosaic keeps its columns under 820px (Phase 5).
+   Everything else is verbatim. */
 
 /* ---- Card treatment (polish pass 2): sharper corners, paper grounds, indigo hairline,
    a woven aṣọ òkè edge on top, faint àdìrẹ dots in the ground. No shadows, no lift, no image zoom. ---- */
@@ -642,6 +644,11 @@
   }
   .oy-zones[data-layout="mosaic"] .oy-zone:nth-child(n + 2) .oy-zone-media {
     display: block;
+  }
+  /* The four-zone rule above outranks the reset; the fourth zone spans the two columns instead
+     (the prototype's rule broke the mosaic into slivers on a phone). */
+  .oy-zones[data-layout="mosaic"] .oy-zone:nth-child(4):last-child {
+    grid-column: 1 / -1;
   }
 }
 @media (max-width: 560px) {
@@ -2444,6 +2451,7 @@
 /* The pending chip keeps its own type wherever it is dropped in */
 .oy-pend,
 .oy-glance span.oy-pend,
+.oy-fact span.oy-pend,
 .oy-tier-price.oy-pend,
 .oy-outcome-fig.oy-pend,
 .oy-sched-time.oy-pend,
@@ -2454,4 +2462,9 @@
   line-height: 1.4;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+/* A fact row sets its spans in ink (.oy-fact span); a chip there keeps its own colour. Added in
+   Phase 5 for plan your visit. */
+.oy-fact span.oy-pend {
+  color: #7a4409;
 }

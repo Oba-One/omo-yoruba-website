@@ -11,7 +11,10 @@ import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/clien
 import { createImageSet } from '@oy/content/images';
 import { pendingWhat } from '@oy/content/pending';
 import { festivalPageQuery } from '@oy/content/queries';
+import FactList from '@oy/ui/content/FactList/FactList.astro';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
+import ZoneGrid from '@oy/ui/content/ZoneGrid/ZoneGrid.astro';
 import Button from '@oy/ui/core/Button/Button.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
@@ -84,6 +87,46 @@ cachePage(Astro, '/odunde', { draft: preview });
           edit={page.figure.edit}
         />
       </Split>
+    </Section>
+
+    <Section id="zones" ground="alt" labelledby="zones-heading">
+      <SectionHead
+        kicker={{ yo: 'Ìlú kan', en: 'One village' }}
+        title="Four zones, one village"
+        intro={page.zonesIntro}
+        id="zones-heading"
+      />
+      <ZoneGrid zones={page.zones} layout={page.layout.zones} edit={page.edit.zones} />
+    </Section>
+
+    {
+      page.schedule.shown && (
+        <Section id="schedule" labelledby="schedule-heading">
+          <SectionHead
+            kicker={{ yo: 'Ètò ọjọ́', en: 'Order of the day' }}
+            title="The day, hour by hour"
+            intro="Enough for a family to decide when to arrive and what not to miss."
+            id="schedule-heading"
+          />
+          <Schedule
+            items={page.schedule.items}
+            toggle
+            open={page.schedule.open}
+            pending={page.schedule.pending}
+            edit={page.edit.schedule}
+          />
+        </Section>
+      )
+    }
+
+    <Section id="plan" ground="alt" labelledby="plan-heading">
+      <SectionHead
+        kicker={{ yo: 'Ẹ múra', en: 'Get ready' }}
+        title="Plan your visit"
+        intro="Everything you need on the day, from getting there to what to bring."
+        id="plan-heading"
+      />
+      <FactList facts={page.plan.facts} pending={page.plan.pending} />
     </Section>
   </main>
 </SiteLayout>

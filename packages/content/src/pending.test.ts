@@ -145,7 +145,7 @@ describe('pendingFilter', () => {
 
 describe('presenceWhat', () => {
   it('answers the presence row wording and the count the page expects', () => {
-    expect(presenceWhat('zone')).toEqual({ what: 'the two unnamed zones', minimum: 4 });
+    expect(presenceWhat('zone')).toEqual({ what: 'the unnamed zones', minimum: 4 });
     expect(presenceWhat('ticketTier')?.what).toBe('three prices and what each includes');
     expect(presenceWhat('event')).toBeUndefined();
   });

@@ -1,0 +1,45 @@
+---
+/**
+ * The zones block (COMPONENT-MAP, Cards; ADR 0024): the festival's zones in order as zone cards, laid
+ * out as the mosaic (the plaza as blocks, the first zone tall), five across, a grid of three or a list,
+ * from the page's `zones` option through the tokens' `.oy-zones[data-layout]`. While the festival is
+ * owed zones (the confirmed count is four), placeholder cards with the registry's wording fill up to
+ * it, so the mosaic keeps its shape and each missing zone is named.
+ */
+import { presenceWhat } from '@oy/content/pending';
+import ZoneCard, { type ZoneLike } from '../../cards/ZoneCard/ZoneCard.astro';
+
+export type ZonesLayout = 'mosaic' | 'five' | 'grid' | 'list';
+
+interface Props {
+  zones?: (ZoneLike & { imageEdit?: string })[] | null;
+  layout?: ZonesLayout;
+  /** How many zones the festival has; placeholders fill up to it. */
+  expected?: number;
+  /** A `data-sanity` attribute for the block, so click-to-edit reaches the zones option. */
+  edit?: string;
+  class?: string;
+}
+
+const presence = presenceWhat('zone');
+const {
+  zones,
+  layout = 'mosaic',
+  expected = presence?.minimum ?? 4,
+  edit,
+  class: className,
+} = Astro.props;
+const shown = (zones ?? []).filter((zone) => zone !== null);
+const owed = Math.max(0, expected - shown.length);
+const sizesFor = (index: number) =>
+  layout === 'mosaic' && index === 0
+    ? '(min-width: 1100px) 460px, (min-width: 820px) 42vw, 100vw'
+    : layout === 'list'
+      ? '(min-width: 860px) 240px, 100vw'
+      : '(min-width: 1100px) 370px, (min-width: 820px) 33vw, 100vw';
+---
+
+<div class:list={['oy-zones', className]} data-layout={layout} data-sanity={edit}>
+  {shown.map((zone, index) => <ZoneCard zone={zone} imageEdit={zone.imageEdit} sizes={sizesFor(index)} />)}
+  {Array.from({ length: owed }, () => <ZoneCard pending={presence?.what ?? 'a zone'} />)}
+</div>

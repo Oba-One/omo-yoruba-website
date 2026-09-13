@@ -371,7 +371,7 @@ export const PENDING: readonly PendingEntry[] = [
 ];
 
 export const PRESENCE: readonly PresenceEntry[] = [
-  { type: 'zone', minimum: 4, where: 'Odunde, zones', what: 'the two unnamed zones' },
+  { type: 'zone', minimum: 4, where: 'Odunde, zones', what: 'the unnamed zones' },
   {
     type: 'ticketTier',
     minimum: 1,

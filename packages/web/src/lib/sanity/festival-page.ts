@@ -2,8 +2,9 @@
  * The festival page view: what `/odunde` hands the library parts, built from the one festival query.
  * Pure, so a test drives it with a fixture: the layout with the schema defaults, the next festival
  * edition (ADR 0024) and its facts for the header line and the glance strip with the registry's
- * chips where the Studio holds nothing, the page's two actions, every photograph resolved to a CDN
- * set with its alt and framing, the head's title and description cleaned of stega, and the
+ * chips where the Studio holds nothing, the page's two actions, the zones, the next edition's
+ * schedule as the option shows it, the plan-your-visit facts, every photograph resolved to a CDN set
+ * with its alt and framing, the head's title and description cleaned of stega, and the
  * `data-sanity` attributes for click-to-edit in draft mode.
  */
 import { withLayoutDefaults } from '@oy/content/layout';
@@ -90,6 +91,34 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     },
     glance,
     whatItIs: data?.whatItIs && data.whatItIs.length > 0 ? data.whatItIs : undefined,
+    zonesIntro: data?.zonesIntro ?? undefined,
+    // The zones in order, framed by their hotspots; the block pads the owed ones.
+    zones: (data?.zones ?? [])
+      .filter((zone) => zone !== null)
+      .map((zone) => ({
+        _id: zone._id,
+        name: zone.name,
+        line: zone.line,
+        image: resolveImage(imageSet, zone.image, { width: 720 }),
+        imageEdit: edit('image', zone._id, 'zone'),
+      })),
+    schedule: {
+      shown: layout.schedule !== 'hidden',
+      open: layout.schedule === 'shown',
+      items: (edition?.schedule ?? []).filter((item) => item !== null),
+      pending: pending('schedule[]'),
+    },
+    plan: {
+      facts: (data?.planYourVisit ?? [])
+        .filter((fact) => fact !== null)
+        .map((fact) => ({
+          _key: fact._key,
+          label: fact.label,
+          value: fact.value,
+          pending: pendingWhat('festivalPage', 'planYourVisit') ?? 'a practical fact',
+        })),
+      pending: pendingWhat('festivalPage', 'planYourVisit[]') ?? 'the practical facts',
+    },
     figure: {
       image: resolveImage(imageSet, data?.whatItIsImage, { width: 560 }),
       caption: data?.whatItIsImage?.caption ?? undefined,
