@@ -134,7 +134,7 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 32 | The favicon | Ticket 33 (best practices) |
 | 04 | Gala tables: enquiry or purchase | Phase 5 |
 | 06 | Gala awards: yes or no | Phase 5 |
-| 36 | Check the event pages in the Studio and on the preview, merge the Phase 5 pull request | Phase 6 branch |
+| 36 | Check the event pages in the Studio and on the preview, merge pull request 6 | Phase 6 branch |
 | 37 | The photo carousel's controls (ADR 0027's answers) | The Lightbox, Phase 8 |
 | 38 | The event pages' owed facts (Odunde 2027, Gala 2026, albums) | Launch |
 | 07 | Our Story timeline shown by default | Phase 7 |

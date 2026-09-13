@@ -9,8 +9,9 @@ Blocked by: none
 
 ## Question
 
-Phase 5 (the Odunde and Gala pages) is the pull request from `phase-5/event-pages` (link in
-`docs/plans/handoff-phase-5.md`). Before merging:
+Phase 5 (the Odunde and Gala pages) is pull request
+https://github.com/Oba-One/omo-yoruba-website/pull/6 from `phase-5/event-pages`
+(`docs/plans/handoff-phase-5.md`). Before merging:
 
 1. Open `/admin`, the Presentation tool and `/odunde`. Click the header photograph, a zone card, a
    take-part row, the take-part and labels options (the band and the section) and the past years

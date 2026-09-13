@@ -23,7 +23,7 @@ interface Props {
 }
 
 const { facts, pending = 'the practical facts', class: className } = Astro.props;
-const rows = (facts ?? []).filter((fact) => fact !== null && fact.label?.trim());
+const rows = (facts ?? []).filter((fact) => fact?.label?.trim());
 ---
 
 {
