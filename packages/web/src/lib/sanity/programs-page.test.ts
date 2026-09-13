@@ -108,6 +108,45 @@ const seeded = {
       action: null,
     },
   ],
+  kidsStem: {
+    title: 'Kids & STEM',
+    blurb: 'Kids & STEM is two things under one name.',
+    subprograms: [
+      {
+        _key: 'sub-1',
+        name: 'Àgbàlá Ọmọde',
+        blurb: "The children's compound.",
+        image: image('A mother and her two children play ayo'),
+        facts: [{ _key: 'fact-1', label: 'Ages', value: null, note: null }],
+        action: url('See it at Odunde', '/odunde'),
+      },
+      {
+        _key: 'sub-2',
+        name: 'STEM Hub',
+        blurb: "The technical half of the children's program.",
+        image: image('Children build with craft sticks'),
+        facts: [
+          { _key: 'fact-1', label: 'Ages', value: null, note: null },
+          { _key: 'fact-2', label: 'What they build', value: null, note: null },
+        ],
+        action: {
+          label: 'Ask about joining',
+          kind: 'enquiry',
+          enquiryKind: 'contact',
+          href: null,
+          newTab: null,
+        },
+      },
+    ],
+  },
+  culturalExchange: {
+    title: 'Cultural Exchange',
+    blurb: null,
+    cadence: null,
+    eligibility: null,
+    howToJoin: null,
+    image: null,
+  },
   layout: { cards: 'four', inline: 'expanded', yearstrip: 'shown' },
   seo: null,
 } as unknown as ProgramsPageData;
@@ -194,11 +233,83 @@ describe('buildProgramsPage', () => {
     expect(buildProgramsPage(null, options).takePart.intro).toBeUndefined();
   });
 
+  it('carries Kids & STEM: its prose and both halves with their photographs, facts and chips', () => {
+    const kids = buildProgramsPage(seeded, options).kids;
+    expect(kids).toMatchObject({
+      shown: true,
+      open: true,
+      title: 'Kids & STEM',
+      blurb: 'Kids & STEM is two things under one name.',
+    });
+    expect(kids.subprograms.map((sub) => sub.name)).toEqual(['Àgbàlá Ọmọde', 'STEM Hub']);
+    expect(kids.subprograms[0]?.image?.alt).toBe('A mother and her two children play ayo');
+    expect(kids.subprograms[1]?.facts).toEqual([
+      { _key: 'fact-1', label: 'Ages', value: null, pending: 'ages and what they build' },
+      {
+        _key: 'fact-2',
+        label: 'What they build',
+        value: null,
+        pending: 'ages and what they build',
+      },
+    ]);
+    expect(kids.subprograms[1]?.action?.enquiryKind).toBe('contact');
+    const collapsed = buildProgramsPage(withLayout({ inline: 'collapsed' }), options);
+    expect(collapsed.kids.open).toBe(false);
+    expect(collapsed.exchange.open).toBe(false);
+  });
+
+  it("carries Cultural Exchange's facts, each its own chip while owed, and the photograph's", () => {
+    const exchange = buildProgramsPage(seeded, options).exchange;
+    expect(exchange).toMatchObject({
+      shown: true,
+      open: true,
+      title: 'Cultural Exchange',
+      blurb: undefined,
+      blurbPending: 'what the exchange is',
+      image: undefined,
+      imagePending: 'a photograph of the exchange',
+    });
+    expect(exchange.facts).toEqual([
+      { label: 'Who it is for', value: undefined, pending: 'who it is for' },
+      { label: 'Cadence', value: undefined, pending: 'the cadence' },
+      { label: 'How to join', value: undefined, pending: 'how to join' },
+    ]);
+    const written = buildProgramsPage(
+      {
+        ...seeded,
+        culturalExchange: { ...seeded.culturalExchange, cadence: '[ Cadence ]' },
+      } as ProgramsPageData,
+      options,
+    );
+    expect(written.exchange.facts[1]?.value).toBe('[ Cadence ]');
+  });
+
+  it('hides the section of the program the three cards leave out, and keeps both without programs', () => {
+    const three = buildProgramsPage(withLayout({ cards: 'three' }), options);
+    expect(three.kids.shown).toBe(true);
+    expect(three.exchange.shown).toBe(false);
+    const reordered = buildProgramsPage(
+      {
+        ...seeded,
+        layout: { cards: 'three' },
+        programs: [seeded.programs[3], seeded.programs[0], seeded.programs[1], seeded.programs[2]],
+      } as unknown as ProgramsPageData,
+      options,
+    );
+    expect([reordered.kids.shown, reordered.exchange.shown]).toEqual([false, true]);
+    const none = buildProgramsPage(null, options);
+    expect([none.kids.shown, none.exchange.shown]).toEqual([true, true]);
+    expect(none.kids.subprograms).toEqual([]);
+  });
+
   it('writes edit attributes only in draft mode', () => {
     expect(buildProgramsPage(seeded, options).edit.cards).toBeUndefined();
     const draft = buildProgramsPage(seeded, { ...options, draft: true });
     expect(draft.edit.cards).toContain('path=layout.cards');
     expect(draft.cards.items[0]?.imageEdit).toContain('id=program-yoruba-lessons;type=program');
     expect(draft.takePart.rows[1]?.edit).toContain('path=takePart:way-2');
+    expect(draft.kids.subprograms[0]?.imageEdit).toContain('path=kidsStem.subprograms:sub-1.image');
+    expect(draft.exchange.imageEdit).toContain('path=culturalExchange.image');
+    expect(draft.edit.inline).toContain('path=layout.inline');
   });
 });

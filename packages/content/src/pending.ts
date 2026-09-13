@@ -288,22 +288,43 @@ export const PENDING: readonly PendingEntry[] = [
   { type: 'program', fields: ['blurb'], where: 'Programs, cards', what: 'what the program is' },
   { type: 'program', fields: ['cadence'], where: 'Programs, cards', what: 'the cadence' },
   { type: 'program', fields: ['ages'], where: 'Programs, cards', what: 'the ages' },
+  // A sub-program's fact with its label and no value: the card shows the chip in the value's place.
   {
     type: 'programsPage',
-    fields: ['kidsStem.ages', 'kidsStem.subprograms[]'],
+    condition: 'count(kidsStem.subprograms[count(facts[!defined(value)]) > 0]) > 0',
     where: 'Programs, Kids & STEM',
     what: 'ages and what they build',
   },
+  // Everything about Cultural Exchange is owed; each fact names itself where the page shows it.
   {
     type: 'programsPage',
-    fields: [
-      'culturalExchange.blurb',
-      'culturalExchange.cadence',
-      'culturalExchange.eligibility',
-      'culturalExchange.howToJoin',
-    ],
+    fields: ['culturalExchange.blurb'],
     where: 'Programs, Cultural Exchange',
-    what: 'everything about this program',
+    what: 'what the exchange is',
+  },
+  {
+    type: 'programsPage',
+    fields: ['culturalExchange.eligibility'],
+    where: 'Programs, Cultural Exchange',
+    what: 'who it is for',
+  },
+  {
+    type: 'programsPage',
+    fields: ['culturalExchange.cadence'],
+    where: 'Programs, Cultural Exchange',
+    what: 'the cadence',
+  },
+  {
+    type: 'programsPage',
+    fields: ['culturalExchange.howToJoin'],
+    where: 'Programs, Cultural Exchange',
+    what: 'how to join',
+  },
+  {
+    type: 'programsPage',
+    fields: ['culturalExchange.image'],
+    where: 'Programs, Cultural Exchange',
+    what: 'a photograph of the exchange',
   },
   ...takePartRows('programsPage', 'Programs, take part'),
   {

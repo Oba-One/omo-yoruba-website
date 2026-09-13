@@ -6,6 +6,7 @@
  * quote, status or date the register marks as invented.
  */
 import { PROGRAMS } from './homepage';
+import { PHOTOS } from './photos';
 
 /**
  * The four programs as the Programs hub shows them: the seeded cadence of the Lessons and no ages yet
@@ -28,6 +29,52 @@ export const PROGRAMS_HEADER = {
   title: 'Our programs',
   line: 'What runs through the year, for children, teenagers, and adults, across Los Angeles. Two programs have their own page. The rest are described in full below.',
   actions: [{ label: 'Enrol a learner', kind: 'enquiry', enquiryKind: 'enrol' }],
+};
+
+/** The registry's wording for a sub-program's fact the Studio holds no value for. */
+export const SUBPROGRAM_FACT_PENDING = 'ages and what they build';
+
+/**
+ * Kids & STEM as the seed writes it: the prose, and both halves with the prototype's photographs and
+ * the labels of their facts, every value owed.
+ */
+export const KIDS_STEM = {
+  title: 'Kids & STEM',
+  blurb:
+    "Kids & STEM is two things under one name. Àgbàlá Ọmọde is the children's compound: it runs at the Odunde Festival and through the year, and it is where the youngest members of this community meet each other. The STEM Hub is the technical half, built on the belief that a child who knows where they come from carries that into everything else they learn.",
+  subprograms: [
+    {
+      _key: 'sub-1',
+      name: 'Àgbàlá Ọmọde',
+      blurb: "The children's compound. Games, art, and ayo, at the festival and through the year.",
+      image: PHOTOS.momGames,
+      facts: [{ _key: 'fact-1', label: 'Ages', pending: SUBPROGRAM_FACT_PENDING }],
+      action: { label: 'See it at Odunde', kind: 'url', href: '/odunde' },
+    },
+    {
+      _key: 'sub-2',
+      name: 'STEM Hub',
+      blurb: "The technical half of the children's program.",
+      image: PHOTOS.kidsPaintArt,
+      facts: [
+        { _key: 'fact-1', label: 'Ages', pending: SUBPROGRAM_FACT_PENDING },
+        { _key: 'fact-2', label: 'What they build', pending: SUBPROGRAM_FACT_PENDING },
+      ],
+      action: { label: 'Ask about joining', kind: 'enquiry', enquiryKind: 'contact' },
+    },
+  ],
+};
+
+/** Cultural Exchange as the seed leaves it: its name only, every fact and the photograph owed. */
+export const CULTURAL_EXCHANGE = {
+  title: 'Cultural Exchange',
+  blurbPending: 'what the exchange is',
+  facts: [
+    { label: 'Who it is for', pending: 'who it is for' },
+    { label: 'Cadence', pending: 'the cadence' },
+    { label: 'How to join', pending: 'how to join' },
+  ],
+  imagePending: 'a photograph of the exchange',
 };
 
 /** The Programs page's take-part rows as the seed writes them. */

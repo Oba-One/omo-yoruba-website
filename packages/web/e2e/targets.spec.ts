@@ -4,7 +4,7 @@ import { openEnquiry } from './helpers';
 // The elder test at 375: every control a finger can reach has a 44px box (QUALITY.md section 2).
 // Inline links in running text are the one exception WCAG allows.
 const small = () =>
-  Array.from(document.querySelectorAll<HTMLElement>('a, button, input, select, textarea'))
+  Array.from(document.querySelectorAll<HTMLElement>('a, button, input, select, textarea, summary'))
     .filter((el) => el.checkVisibility() && !el.closest('[aria-hidden="true"]'))
     .filter((el) => el.getAttribute('tabindex') !== '-1')
     .filter((el) => !(el.tagName === 'A' && el.closest('p')))

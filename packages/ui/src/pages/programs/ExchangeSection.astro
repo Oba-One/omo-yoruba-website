@@ -1,0 +1,37 @@
+---
+/**
+ * Cultural Exchange as the Programs hub composes it, for the `Pages/Programs/Inline` stories: the
+ * section, its disclosure, the Pending chip for what the exchange is, its three owed facts and the
+ * photograph's placeholder. Markup for the same reason as `KidsStemSection.astro`.
+ */
+import Disclosure from '../../content/Disclosure/Disclosure.astro';
+import FactList from '../../content/FactList/FactList.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import { CULTURAL_EXCHANGE } from '../../fixtures/program-pages';
+import PhotoTile from '../../media/PhotoTile/PhotoTile.astro';
+import Section from '../../page/Section/Section.astro';
+import SectionHead from '../../page/SectionHead/SectionHead.astro';
+import Split from '../../page/Split/Split.astro';
+
+interface Props {
+  open?: boolean;
+}
+
+const { open = true } = Astro.props;
+---
+
+<Section id="exchange" labelledby="exchange-heading">
+  <Disclosure open={open} label={CULTURAL_EXCHANGE.title}>
+    <SectionHead
+      slot="head"
+      kicker={{ yo: 'Ìpàdé àṣà', en: 'Meeting of cultures' }}
+      title={CULTURAL_EXCHANGE.title}
+      id="exchange-heading"
+    />
+    <Split>
+      <p><Pending what={CULTURAL_EXCHANGE.blurbPending} /></p>
+      <FactList facts={CULTURAL_EXCHANGE.facts} columns={1} />
+      <PhotoTile slot="aside" shape="figure" what={CULTURAL_EXCHANGE.imagePending} />
+    </Split>
+  </Disclosure>
+</Section>

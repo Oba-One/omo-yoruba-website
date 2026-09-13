@@ -4,14 +4,17 @@
  * with the schema defaults, the slim header with the Studio's actions and the registry's chip for a
  * missing heading, every program as a card in order (the first three under the `cards` option's
  * `three`), a program with its own page linking there and an inline program linking to its section
- * on this page, every photograph resolved to a CDN set with its alt and framing, the take-part rows
- * with the intro that counts them, and the `data-sanity` attributes for click-to-edit in draft mode.
+ * on this page, the two inline programs (Kids & STEM with its sub-programs, Cultural Exchange with its
+ * facts) open or closed by `inline` and hidden with a card the `three` option leaves out, every
+ * photograph resolved to a CDN set with its alt and framing, the take-part rows with the intro that
+ * counts them, and the `data-sanity` attributes for click-to-edit in draft mode.
  */
+import { pendingWhat } from '@oy/content/pending';
 import type { programsPageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton } from './page-skeleton';
-import { type BuildOptions, resolveImage } from './view';
+import { type BuildOptions, cleanText, resolveImage } from './view';
 
 export type ProgramsPageData = NonNullable<ClientReturn<typeof programsPageQuery, unknown>>;
 
@@ -37,12 +40,23 @@ function takePartIntro(count: number): string | undefined {
   return `${countWord(count)} ${count === 1 ? 'way' : 'ways'} to be part of the programs.`;
 }
 
+const pending = (field: string) => pendingWhat('programsPage', field) ?? 'this fact';
+
 export function buildProgramsPage(data: ProgramsPageData | null, options: BuildOptions) {
   const page = pageSkeleton<ProgramsLayout>('programsPage', data, options, PAGE_TITLE);
   const { edit, layout } = page;
 
   const programs = (data?.programs ?? []).filter((program) => program !== null);
   const shown = layout.cards === 'three' ? programs.slice(0, 3) : programs;
+  // A program the cards leave out takes its inline section with it (the prototype hides #exchange).
+  const left = new Set(
+    programs.filter((program) => !shown.includes(program)).map((program) => program.slug),
+  );
+  const open = layout.inline === 'expanded';
+
+  const kidsStem = data?.kidsStem;
+  const exchange = data?.culturalExchange;
+  const factPending = pending('kidsStem.subprograms');
 
   return {
     title: page.title,
@@ -69,6 +83,58 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
           imageEdit: edit('image', program._id, 'program'),
         };
       }),
+    },
+    kids: {
+      shown: !left.has('kids-stem'),
+      open,
+      title: cleanText(kidsStem?.title) ? (kidsStem?.title ?? undefined) : undefined,
+      blurb: kidsStem?.blurb ?? undefined,
+      subprograms: (kidsStem?.subprograms ?? [])
+        .filter((sub) => sub !== null)
+        .map((sub) => ({
+          _key: sub._key,
+          name: sub.name,
+          blurb: sub.blurb,
+          image: resolveImage(options.imageSet, sub.image, { width: 540 }),
+          imageEdit: edit(`kidsStem.subprograms[_key=="${sub._key}"].image`),
+          facts: (sub.facts ?? [])
+            .filter((fact) => fact !== null)
+            .map((fact) => ({
+              _key: fact._key,
+              label: fact.label,
+              value: fact.value,
+              pending: factPending,
+            })),
+          action: sub.action,
+        })),
+    },
+    exchange: {
+      shown: !left.has('cultural-exchange'),
+      open,
+      title: cleanText(exchange?.title) ? (exchange?.title ?? undefined) : undefined,
+      blurb: cleanText(exchange?.blurb) ? (exchange?.blurb ?? undefined) : undefined,
+      blurbPending: pending('culturalExchange.blurb'),
+      // The prototype's facts the schema carries; its "Between" has no field (spec Q4).
+      facts: [
+        {
+          label: 'Who it is for',
+          value: exchange?.eligibility || undefined,
+          pending: pending('culturalExchange.eligibility'),
+        },
+        {
+          label: 'Cadence',
+          value: exchange?.cadence || undefined,
+          pending: pending('culturalExchange.cadence'),
+        },
+        {
+          label: 'How to join',
+          value: exchange?.howToJoin || undefined,
+          pending: pending('culturalExchange.howToJoin'),
+        },
+      ],
+      image: resolveImage(options.imageSet, exchange?.image, { width: 540 }),
+      imagePending: pending('culturalExchange.image'),
+      imageEdit: edit('culturalExchange.image'),
     },
     takePart: {
       ...page.takePart,

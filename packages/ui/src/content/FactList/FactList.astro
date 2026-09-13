@@ -1,9 +1,9 @@
 ---
 /**
  * A list of practical facts (plan your visit on `08 Odunde Festival.dc.html`): a terracotta label and
- * the fact beside it, two columns on a wide screen and one under 900px (the tokens' `.oy-facts`). A
- * fact the Studio holds no value for shows the registry's chip; no facts at all renders the Pending
- * line.
+ * the fact beside it, two columns on a wide screen and one under 900px (the tokens' `.oy-facts`), or one
+ * column throughout inside a card or a narrow split (`columns={1}`, `10 Programs.dc.html`). A fact the
+ * Studio holds no value for shows the registry's chip; no facts at all renders the Pending line.
  */
 import Pending from '../../core/Pending/Pending.astro';
 
@@ -19,10 +19,12 @@ interface Props {
   facts?: (FactLike | null)[] | null;
   /** The registry's wording when there are no facts. */
   pending?: string;
+  /** One column throughout, for a card or a narrow split; two on a wide screen by default. */
+  columns?: 1 | 2;
   class?: string;
 }
 
-const { facts, pending = 'the practical facts', class: className } = Astro.props;
+const { facts, pending = 'the practical facts', columns = 2, class: className } = Astro.props;
 const rows = (facts ?? []).filter((fact) => fact?.label?.trim());
 ---
 
@@ -30,7 +32,7 @@ const rows = (facts ?? []).filter((fact) => fact?.label?.trim());
   rows.length === 0 ? (
     <Pending variant="line" what={pending} class={className} />
   ) : (
-    <dl class:list={['oy-facts', className]}>
+    <dl class:list={['oy-facts', className]} data-columns={columns === 1 ? '1' : undefined}>
       {rows.map((fact) => (
         <div class="oy-fact">
           <dt>{fact?.label}</dt>
@@ -44,6 +46,10 @@ const rows = (facts ?? []).filter((fact) => fact?.label?.trim());
 <style>
   .oy-facts {
     margin: 0;
+  }
+  .oy-facts[data-columns='1'] {
+    grid-template-columns: 1fr;
+    width: 100%;
   }
   .oy-fact dt {
     flex: none;

@@ -176,6 +176,21 @@ describe('pendingWhat and pendingTitle', () => {
   });
 });
 
+describe('the inline programs on the Programs hub', () => {
+  it("names a sub-program's owed fact with the register's wording, and each of Cultural Exchange's facts by itself", () => {
+    expect(pendingWhat('programsPage', 'kidsStem.subprograms')).toBe('ages and what they build');
+    expect(pendingWhat('programsPage', 'culturalExchange.blurb')).toBe('what the exchange is');
+    expect(pendingWhat('programsPage', 'culturalExchange.eligibility')).toBe('who it is for');
+    expect(pendingWhat('programsPage', 'culturalExchange.cadence')).toBe('the cadence');
+    expect(pendingWhat('programsPage', 'culturalExchange.howToJoin')).toBe('how to join');
+    expect(pendingWhat('programsPage', 'culturalExchange.image')).toBe(
+      'a photograph of the exchange',
+    );
+    // The lumped row the register wrote is gone, so no chip reads "everything about this program".
+    expect(PENDING.some((row) => row.what === 'everything about this program')).toBe(false);
+  });
+});
+
 describe('the take-part rows every page with a band registers', () => {
   it('names an empty band and an unfinished row the same way on each page', () => {
     for (const type of [

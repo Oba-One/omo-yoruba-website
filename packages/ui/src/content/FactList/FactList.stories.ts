@@ -35,3 +35,14 @@ export const Mixed: Story = {
 
 /** No facts at all: the Pending line. */
 export const Pending: Story = { args: { facts: [], pending: 'the eight practical facts' } };
+
+/** One column, as a card or a narrow split holds its facts (Kids & STEM, Cultural Exchange). */
+export const OneColumn: Story = {
+  args: {
+    columns: 1,
+    facts: [
+      { label: 'Ages', pending: 'ages and what they build' },
+      { label: 'What they build', pending: 'ages and what they build' },
+    ],
+  },
+};

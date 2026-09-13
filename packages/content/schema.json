@@ -5197,25 +5197,10 @@
               },
               "optional": true
             },
-            "ages": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            },
             "blurb": {
               "type": "objectAttribute",
               "value": {
                 "type": "string"
-              },
-              "optional": true
-            },
-            "image": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "inline",
-                "name": "oyImage"
               },
               "optional": true
             },
@@ -5233,13 +5218,6 @@
                       },
                       "optional": true
                     },
-                    "ages": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "string"
-                      },
-                      "optional": true
-                    },
                     "blurb": {
                       "type": "objectAttribute",
                       "value": {
@@ -5247,10 +5225,33 @@
                       },
                       "optional": true
                     },
-                    "detail": {
+                    "image": {
                       "type": "objectAttribute",
                       "value": {
-                        "type": "string"
+                        "type": "inline",
+                        "name": "oyImage"
+                      },
+                      "optional": true
+                    },
+                    "facts": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "array",
+                        "of": {
+                          "type": "object",
+                          "attributes": {
+                            "_key": {
+                              "type": "objectAttribute",
+                              "value": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "rest": {
+                            "type": "inline",
+                            "name": "fact"
+                          }
+                        }
                       },
                       "optional": true
                     },

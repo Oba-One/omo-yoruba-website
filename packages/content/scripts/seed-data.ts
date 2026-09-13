@@ -605,19 +605,32 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Kids & STEM',
         blurb:
           "Kids & STEM is two things under one name. Àgbàlá Ọmọde is the children's compound: it runs at the Odunde Festival and through the year, and it is where the youngest members of this community meet each other. The STEM Hub is the technical half, built on the belief that a child who knows where they come from carries that into everything else they learn.",
-        image: image(assets, 'odunde-2026-kids-doing-paint-art.jpg'),
+        // Each half keeps the prototype's photograph and framing, and the labels of its facts with no
+        // value: the ages, "Saturdays" and what they build are invented (ADR 0031).
         subprograms: withKeys('sub', [
           {
             _type: 'subprogram',
             name: 'Àgbàlá Ọmọde',
             blurb:
               "The children's compound. Games, art, and ayo, at the festival and through the year.",
+            image: image(
+              assets,
+              'odunde-2026-mom-playing-games-with-kids.jpg',
+              undefined,
+              [50, 45],
+            ),
+            facts: withKeys('fact', [{ _type: 'fact', label: 'Ages' }]),
             action: cta('See it at Odunde', 'url', '/odunde'),
           },
           {
             _type: 'subprogram',
             name: 'STEM Hub',
             blurb: "The technical half of the children's program.",
+            image: image(assets, 'odunde-2026-kids-doing-paint-art.jpg', undefined, [50, 35]),
+            facts: withKeys('fact', [
+              { _type: 'fact', label: 'Ages' },
+              { _type: 'fact', label: 'What they build' },
+            ]),
             action: cta('Ask about joining', 'enquiry', 'contact'),
           },
         ]),
@@ -876,17 +889,50 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
 /**
  * Fields a schema change retired, per document type: a re-run unsets them where they are still
  * stored, so the Studio shows no unknown field (`takePartOrder` became `takePart`, ADR 0025; the
- * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024).
+ * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024; Kids & STEM's
+ * section photograph and ages, and a sub-program's ages and detail line, ADR 0031). A path reaches
+ * into objects with a dot and into every keyed item of an array with `[]`.
  */
 export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   festivalPage: ['takePartOrder'],
   galaPage: ['takePartOrder'],
   siteSettings: ['eventbriteUrl'],
+  programsPage: [
+    'kidsStem.image',
+    'kidsStem.ages',
+    'kidsStem.subprograms[].ages',
+    'kidsStem.subprograms[].detail',
+  ],
 };
 
-/** The retired fields a stored document still carries. */
+/** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`. */
+function storedPaths(value: unknown, steps: readonly string[], prefix: string): string[] {
+  const [step, ...rest] = steps;
+  if (step === undefined) return value === undefined ? [] : [prefix];
+  if (!isPlainObject(value)) return [];
+  if (step.endsWith('[]')) {
+    const name = step.slice(0, -2);
+    const items = value[name];
+    if (!Array.isArray(items)) return [];
+    return items.flatMap((item) =>
+      isPlainObject(item) && typeof item._key === 'string'
+        ? storedPaths(item, rest, `${prefix}${name}[_key=="${item._key}"].`)
+        : [],
+    );
+  }
+  const next = value[step];
+  return rest.length === 0
+    ? next === undefined
+      ? []
+      : [`${prefix}${step}`]
+    : storedPaths(next, rest, `${prefix}${step}.`);
+}
+
+/** The retired fields a stored document still carries, as paths the seed can unset. */
 export function retiredFields(type: string, current: Record<string, unknown>): string[] {
-  return (RETIRED_FIELDS[type] ?? []).filter((field) => current[field] !== undefined);
+  return (RETIRED_FIELDS[type] ?? []).flatMap((field) =>
+    storedPaths(current, field.split('.'), ''),
+  );
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -895,8 +941,9 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 
 /**
  * The seed fields the document lacks, as `setIfMissing` paths: one level into plain objects
- * (`hero.emphasis`) and into the items of a keyed array matched by `_key`
- * (`yearInLife[_key=="tile-0"].hotspot`), so a field added to the schema later still lands on a
+ * (`hero.emphasis`), into the items of a keyed array matched by `_key`
+ * (`yearInLife[_key=="tile-0"].hotspot`) and into the keyed items of an object's array
+ * (`kidsStem.subprograms[_key=="sub-1"].facts`), so a field added to the schema later still lands on a
  * dataset seeded before it. An item the owner removed or re-keyed is left alone, and so is a
  * photograph whose stored asset is not the seed's: its framing and words belong to the photo the
  * owner chose (the Studio keeps an empty hotspot empty when an asset is swapped).
@@ -910,18 +957,26 @@ export function missingFields(
     isPlainObject(value.asset) && typeof value.asset._ref === 'string'
       ? value.asset._ref
       : undefined;
-  const fill = (
-    prefix: string,
-    value: Record<string, unknown>,
-    stored: Record<string, unknown>,
-  ) => {
+  const fillItems = (prefix: string, value: unknown[], stored: unknown[]) => {
+    for (const item of value) {
+      if (!isPlainObject(item) || typeof item._key !== 'string' || '_ref' in item) continue;
+      const match = stored.find((entry) => isPlainObject(entry) && entry._key === item._key);
+      if (isPlainObject(match)) fill(`${prefix}[_key=="${item._key}"]`, item, match);
+    }
+  };
+  // One level into an object, and into the keyed items of an array it holds (Kids & STEM's
+  // sub-programs), never deeper: a nested object the owner emptied stays as they left it.
+  function fill(prefix: string, value: Record<string, unknown>, stored: Record<string, unknown>) {
     const seeded = assetOf(value);
     if (seeded !== undefined && assetOf(stored) !== seeded) return;
     for (const [sub, subValue] of Object.entries(value)) {
-      if (subValue !== undefined && stored[sub] === undefined)
-        missing[`${prefix}.${sub}`] = subValue;
+      if (subValue === undefined) continue;
+      const storedSub = stored[sub];
+      if (storedSub === undefined) missing[`${prefix}.${sub}`] = subValue;
+      else if (Array.isArray(subValue) && Array.isArray(storedSub) && !prefix.includes('['))
+        fillItems(`${prefix}.${sub}`, subValue, storedSub);
     }
-  };
+  }
   for (const [key, value] of Object.entries(fields)) {
     if (value === undefined) continue;
     const stored = current[key];
@@ -933,13 +988,7 @@ export function missingFields(
       fill(key, value, stored);
       continue;
     }
-    if (Array.isArray(value) && Array.isArray(stored)) {
-      for (const item of value) {
-        if (!isPlainObject(item) || typeof item._key !== 'string' || '_ref' in item) continue;
-        const match = stored.find((entry) => isPlainObject(entry) && entry._key === item._key);
-        if (isPlainObject(match)) fill(`${key}[_key=="${item._key}"]`, item, match);
-      }
-    }
+    if (Array.isArray(value) && Array.isArray(stored)) fillItems(key, value, stored);
   }
   return missing;
 }

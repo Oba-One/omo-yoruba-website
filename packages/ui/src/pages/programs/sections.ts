@@ -2,7 +2,9 @@
  * The Programs hub's sections as configured components for the page-section stories (ROUTES section
  * 5: one story per layout option, so the owner compares the values without touching content). Every
  * part comes from the fixtures; the site composes the same parts in packages/web from
- * `buildProgramsPage`. The section kickers and headings are the page's copy, as on the site.
+ * `buildProgramsPage`. The section kickers and headings are the page's copy, as on the site. The two
+ * inline programs come from small compositions in markup (`KidsStemSection.astro`,
+ * `ExchangeSection.astro`), whose nesting the slot descriptors cannot carry.
  */
 
 import ProgramCard from '../../cards/ProgramCard/ProgramCard.astro';
@@ -14,6 +16,8 @@ import Section from '../../page/Section/Section.astro';
 import SectionHead from '../../page/SectionHead/SectionHead.astro';
 import TakePartBand from '../../page/TakePartBand/TakePartBand.astro';
 import type { SlotValue } from '../../storybook';
+import ExchangeSection from './ExchangeSection.astro';
+import KidsStemSection from './KidsStemSection.astro';
 
 export type CardsOption = 'four' | 'three' | 'pairs';
 
@@ -48,6 +52,20 @@ export const cards = (option: CardsOption): SlotValue => {
     },
   };
 };
+
+export type InlineOption = 'expanded' | 'collapsed';
+
+/** Kids & STEM behind its toggle: the prose and both halves, their facts owed. */
+export const kids = (option: InlineOption): SlotValue => ({
+  component: KidsStemSection,
+  props: { open: option === 'expanded' },
+});
+
+/** Cultural Exchange behind its toggle: every fact and the photograph owed. */
+export const exchange = (option: InlineOption): SlotValue => ({
+  component: ExchangeSection,
+  props: { open: option === 'expanded' },
+});
 
 export const takePart: SlotValue = {
   component: Section,

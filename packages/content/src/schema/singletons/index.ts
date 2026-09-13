@@ -169,22 +169,25 @@ export const galaPage = definePage({
   layout: PAGE_LAYOUTS.galaPage,
 });
 
+/**
+ * One half of Kids & STEM (ADR 0031): its own photograph and facts, since the two cards' facts differ
+ * ("Ages" on both, "What they build" on the STEM Hub).
+ */
 const subprogram = {
   type: 'object',
   name: 'subprogram',
   fields: [
     defineField({ name: 'name', title: 'Name', type: 'string', validation: voice.requiredHeading }),
-    defineField({ name: 'ages', title: 'Ages', type: 'string', validation: voice.text }),
     text('blurb', 'Blurb', 2),
-    defineField({
-      name: 'detail',
-      title: 'One detail line',
-      type: 'string',
-      validation: voice.text,
-    }),
+    defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
+    facts(
+      'facts',
+      'Facts',
+      'Each a label and its value ("Ages"). Empty values show Pending on the card.',
+    ),
     defineField({ name: 'action', title: 'Action', type: 'cta' }),
   ],
-  preview: { select: { title: 'name', subtitle: 'ages' } },
+  preview: { select: { title: 'name', media: 'image' } },
 };
 
 export const programsPage = definePage({
@@ -198,9 +201,7 @@ export const programsPage = definePage({
       type: 'object',
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
-        defineField({ name: 'ages', title: 'Ages', type: 'string', validation: voice.text }),
         text('blurb', 'Blurb'),
-        defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
         defineField({
           name: 'subprograms',
           title: 'Sub programs',

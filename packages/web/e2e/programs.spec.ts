@@ -18,9 +18,14 @@ test.describe('the Programs page', () => {
     const order = await page.evaluate(() =>
       Array.from(document.querySelectorAll('main > *')).map((el) => el.id),
     );
+    const cards = await page.locator('body').getAttribute('data-cards');
     expect(order[0]).toBe('top');
     expect(order[1]).toBe('four');
     expect(order.at(-1)).toBe('take-part');
+    // The inline programs follow the cards; `three` takes the fourth program's section with its card.
+    const inline = order.slice(2, order.indexOf('take-part')).filter((id) => id !== 'year');
+    if (cards === 'three') expect(inline.length).toBeLessThanOrEqual(1);
+    else expect(inline).toEqual(['kids', 'exchange']);
     expect(await page.locator('body').getAttribute('data-cards')).toMatch(/^(four|three|pairs)$/);
     await expect(page.locator('header#top.oy-phead--slim')).toHaveCount(1);
     // The nav marks Programs as the current page, in its links and in the mobile menu.
@@ -71,6 +76,76 @@ test.describe('the Programs page', () => {
       [/4 to 14|16\+|All ages/i, pendingWhat('program', 'ages')],
       [/Saturdays|Monthly|Twice a year/i, pendingWhat('program', 'cadence')],
     ]);
+  });
+
+  test('opens and closes the inline programs with Enter and Space, starting as the option says', async ({
+    page,
+  }) => {
+    await page.goto('/programs');
+    const open = (await page.locator('body').getAttribute('data-inline')) === 'expanded';
+    for (const id of ['kids', 'exchange']) {
+      const details = page.locator(`#${id} .oy-disclosure > details`);
+      if ((await details.count()) === 0) continue;
+      await expect(details).toHaveJSProperty('open', open);
+      const toggle = details.locator('summary');
+      await expect(toggle).toContainText(open ? 'Hide details' : 'Show details');
+      await toggle.focus();
+      await page.keyboard.press('Enter');
+      await expect(details).toHaveJSProperty('open', !open);
+      await page.keyboard.press(' ');
+      await expect(details).toHaveJSProperty('open', open);
+    }
+  });
+
+  test('keeps the inline programs working without JavaScript, each owed fact named', async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto('/programs');
+    const exchange = page.locator('#exchange');
+    if ((await exchange.count()) === 1) {
+      const details = exchange.locator('.oy-disclosure > details');
+      const before = await details.evaluate((el) => (el as HTMLDetailsElement).open);
+      await details.locator('summary').click();
+      await expect(details).toHaveJSProperty('open', !before);
+      if (!before) await details.locator('summary').click();
+      await details.evaluate((el) => {
+        (el as HTMLDetailsElement).open = true;
+      });
+      const facts = exchange.locator('.oy-fact');
+      await expect(facts).toHaveCount(3);
+      for (const [label, field] of [
+        ['Who it is for', 'culturalExchange.eligibility'],
+        ['Cadence', 'culturalExchange.cadence'],
+        ['How to join', 'culturalExchange.howToJoin'],
+      ] as const) {
+        const cell = facts.filter({ hasText: label }).locator('dd');
+        const value = await cell.innerText();
+        const chip = `pending: ${pendingWhat('programsPage', field)}`;
+        expect(value.toLowerCase() === chip || !/^pending/i.test(value), label).toBe(true);
+      }
+      // The register's inventions for the exchange (docs/design/design/19 Mock Content Register).
+      expectNoMockWhileOwed(await exchange.innerText(), [
+        [/16 and over|16\+/i, pendingWhat('programsPage', 'culturalExchange.eligibility')],
+        [
+          /twice a year|spring and summer/i,
+          pendingWhat('programsPage', 'culturalExchange.cadence'),
+        ],
+        [/applications each January/i, pendingWhat('programsPage', 'culturalExchange.howToJoin')],
+        [/Ọ̀yọ́ State|Oyo State/i, pendingWhat('programsPage', 'culturalExchange.blurb')],
+      ]);
+    }
+    const kids = page.locator('#kids');
+    if ((await kids.count()) === 1) {
+      expectNoMockWhileOwed(await kids.innerText(), [
+        [
+          /4 to 10|10 to 14|Saturdays|robotics|solar kits|coding club/i,
+          pendingWhat('programsPage', 'kidsStem.subprograms'),
+        ],
+      ]);
+    }
+    await context.close();
   });
 
   test('closes with the take-part rows, one gold action, the give row quiet', async ({ page }) => {

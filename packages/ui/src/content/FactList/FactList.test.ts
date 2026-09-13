@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './FactList.stories';
 
-const { Default, Mixed, Pending } = composeStories(stories);
+const { Default, Mixed, Pending, OneColumn } = composeStories(stories);
 
 describe('FactList', () => {
   it('pairs each label with its fact or the chip, in a description list', async () => {
@@ -20,5 +20,15 @@ describe('FactList', () => {
     const body = await renderToBody(Pending);
     expect(body.querySelector('dl')).toBeNull();
     expect(text(body.querySelector('.oy-pend-line'))).toContain('the eight practical facts');
+  });
+
+  it('lays the facts in one column when asked, and in two by default', async () => {
+    const one = (await renderToBody(OneColumn)).querySelector('dl.oy-facts');
+    expect(one?.getAttribute('data-columns')).toBe('1');
+    expect(text(one?.querySelector('.oy-fact dd .oy-pend'))).toBe(
+      'Pending: ages and what they build',
+    );
+    const two = (await renderToBody(Default)).querySelector('dl.oy-facts');
+    expect(two?.hasAttribute('data-columns')).toBe(false);
   });
 });

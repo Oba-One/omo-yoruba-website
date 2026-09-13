@@ -11,10 +11,17 @@ import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/clien
 import { createImageSet } from '@oy/content/images';
 import { programsPageQuery } from '@oy/content/queries';
 import ProgramCard from '@oy/ui/cards/ProgramCard/ProgramCard.astro';
+import SubprogramCard from '@oy/ui/cards/SubprogramCard/SubprogramCard.astro';
+import Disclosure from '@oy/ui/content/Disclosure/Disclosure.astro';
+import FactList from '@oy/ui/content/FactList/FactList.astro';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
 import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
 import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
 import TakePartBand from '@oy/ui/page/TakePartBand/TakePartBand.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { cachePage } from '../../lib/cache';
@@ -60,6 +67,66 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
         }
       </CardGrid>
     </Section>
+
+    {
+      page.kids.shown && (
+        <Section id="kids" ground="alt" labelledby="kids-heading">
+          <Disclosure open={page.kids.open} label={page.kids.title ?? 'Kids & STEM'} edit={page.edit.inline}>
+            <SectionHead
+              slot="head"
+              kicker={{ yo: 'Àwọn ọmọ', en: 'The children' }}
+              title={page.kids.title ?? 'Kids & STEM'}
+              id="kids-heading"
+            />
+            {page.kids.blurb && <Prose text={page.kids.blurb} />}
+            {page.kids.subprograms.length > 0 && (
+              <CardGrid columns={2}>
+                {page.kids.subprograms.map((subprogram) => (
+                  <SubprogramCard subprogram={subprogram} imageEdit={subprogram.imageEdit} />
+                ))}
+              </CardGrid>
+            )}
+          </Disclosure>
+        </Section>
+      )
+    }
+
+    {
+      page.exchange.shown && (
+        <Section id="exchange" labelledby="exchange-heading">
+          <Disclosure
+            open={page.exchange.open}
+            label={page.exchange.title ?? 'Cultural Exchange'}
+            edit={page.edit.inline}
+          >
+            <SectionHead
+              slot="head"
+              kicker={{ yo: 'Ìpàdé àṣà', en: 'Meeting of cultures' }}
+              title={page.exchange.title ?? 'Cultural Exchange'}
+              id="exchange-heading"
+            />
+            <Split>
+              {page.exchange.blurb ? (
+                <Prose text={page.exchange.blurb} />
+              ) : (
+                <p>
+                  <Pending what={page.exchange.blurbPending} />
+                </p>
+              )}
+              <FactList facts={page.exchange.facts} columns={1} />
+              <PhotoTile
+                slot="aside"
+                shape="figure"
+                image={page.exchange.image}
+                what={page.exchange.imagePending}
+                sizes="(min-width: 1100px) 480px, (min-width: 900px) 45vw, 100vw"
+                edit={page.exchange.imageEdit}
+              />
+            </Split>
+          </Disclosure>
+        </Section>
+      )
+    }
 
     <Section id="take-part" labelledby="take-part-heading">
       <SectionHead

@@ -19,6 +19,7 @@ import guestsSmiling from '../../../../docs/design/design/images/w2/odunde-2026-
 import kidWithElder from '../../../../docs/design/design/images/w2/odunde-2026-kid-playing-with-elder.jpg?url';
 import kidWithMasquerade from '../../../../docs/design/design/images/w2/odunde-2026-kid-playing-with-masquerade-performer.jpg?url';
 import kidsCrafts from '../../../../docs/design/design/images/w2/odunde-2026-kids-doing-crafts.jpg?url';
+import kidsPaintArt from '../../../../docs/design/design/images/w2/odunde-2026-kids-doing-paint-art.jpg?url';
 import momGames from '../../../../docs/design/design/images/w2/odunde-2026-mom-playing-games-with-kids.jpg?url';
 import geleTying from '../../../../docs/design/design/images/w2/odunde-2026-performer-doing-gele-tying.jpg?url';
 import performerGeleSpeaking from '../../../../docs/design/design/images/w2/odunde-2026-performer-gele-speaking.jpg?url';
@@ -68,6 +69,10 @@ export const PHOTOS = {
   vendorSuya: {
     src: vendorSuya,
     alt: 'A vendor in indigo àdìrẹ serves suya to a guest in white',
+  },
+  kidsPaintArt: {
+    src: kidsPaintArt,
+    alt: 'Children build with craft sticks at a long table lined with small blue robots',
   },
   momGames: {
     src: momGames,
