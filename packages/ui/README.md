@@ -2,14 +2,18 @@
 
 Every visual component, as `.astro`, with a colocated `*.stories.ts` and `*.test.ts`. Layout:
 `src/<group>/<Name>/<Name>.astro`. Groups follow `docs/design/README.md` section 5: core
-(Kicker, Button, ActionButton, Divider, Pending), page (Hero, StatStrip, Section, SectionHead,
-CardGrid, HomeRoot, ProgressBar), cards (Card, ProgramCard, DoorCard, PathRow, NewsCard,
-PullQuote), content (PathRows, ProverbLine), media (ImagePlaceholder, PhotoTile, PhotoMosaic),
-forms, navigation (SiteNav, SiteFooter, Logo), bands (EventBand, NewsletterBand, PatternBand);
+(Kicker, Button, ActionButton, Divider, Pending), page (Hero, PageHeader, GlanceStrip, StatStrip,
+Section, SectionHead, Split, ButtonRow, CardGrid, Handoff, TakePartBand, HomeRoot, PageRoot,
+ProgressBar), cards (Card, ProgramCard, DoorCard, PathRow, NewsCard, PullQuote, ZoneCard,
+TicketTierCard, ListRow, PersonCard), content (Prose, PathRows, ProverbLine, ZoneGrid, Schedule,
+ScheduleRow, FactList, PartnerRow, TicketTiers, SponsorLevels, and the pure helpers
+`edition-dates`, `vendor-terms`, `figure-sentence`, `count-word`), media (ImagePlaceholder,
+PhotoTile, PhotoMosaic, PhotoCarousel, CreditLine), forms, navigation (SiteNav, SiteFooter, Logo),
+bands (EventBand, NewsletterBand, PatternBand);
 `docs/design/COMPONENT-MAP.md` holds the inventory. `src/fixtures/` holds seed-shaped story data
 (confirmed facts and Pending states only; the photographs import from `docs/design/design/images/w2`
-as URL assets). `src/pages/homepage/` holds the page-section stories, one file per layout
-option. Imports nothing from `packages/web`. Components are imported by path:
+as URL assets). `src/pages/homepage/`, `src/pages/odunde/` and `src/pages/gala/` hold the page-section stories, one
+file per layout option (`sections.ts` beside them builds each section from the fixtures). Imports nothing from `packages/web`. Components are imported by path:
 `@oy/ui/core/Button/Button.astro`.
 
 Styling comes from `@oy/tokens` (the `.oy-*` and `.v2-*` classes); a component's own `<style>`
@@ -30,7 +34,8 @@ data attributes, and sets `data-ready` on the host once wired (ADR 0018,
 `docs/research/phase-3-storybook-play-functions.md`). The framework serves a hoisted `<script>`
 untransformed in dev and emits nothing for it in a static build, so this is the one form that
 runs in the canvas, in the static build and on the site alike; `<ClientRouter />` leaves inline
-scripts alone on navigation and custom elements upgrade on insertion. A story's `play` function
+scripts alone on navigation and custom elements upgrade on insertion. Since Phase 5 `media/PhotoCarousel` is the third such element (`oy-photo-carousel`, ADR 0027): its four
+play stories drive the buttons and the tablist keys. A story's `play` function
 waits for `data-ready`, then drives the keyboard (a synthetic Escape does not fire a dialog's
 own cancel, so the elements close on Escape themselves). Vitest never runs scripts: tests assert
 the initial markup and ARIA state; the canvas and Playwright prove the behaviour. Forms hand a

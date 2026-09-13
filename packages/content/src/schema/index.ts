@@ -15,6 +15,7 @@ import {
   scheduleItem,
   seo,
   sourcedFigure,
+  takePartRow,
 } from './objects';
 import { SINGLETON_NAMES, singletonTypes } from './singletons';
 
@@ -31,6 +32,7 @@ export const objectTypes: SchemaTypeDefinition[] = [
   pullQuote,
   blockContent,
   pageHeader,
+  takePartRow,
   ...enquiryFieldTypes,
 ];
 

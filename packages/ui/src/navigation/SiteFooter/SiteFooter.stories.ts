@@ -1,7 +1,6 @@
 import type { ComponentProps } from 'astro/types';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
-import lockupLightUrl from '../Logo/logo-lockup-light.png?url';
-import markUrl from '../Logo/logo-mark.png?url';
+import { logoAssets } from '../Logo/story-assets';
 import SiteFooter from './SiteFooter.astro';
 
 type Args = StoryArgs<ComponentProps<typeof SiteFooter>>;
@@ -18,7 +17,7 @@ const meta = {
   component: SiteFooter,
   args: { settings: seeded, source: '/' },
   parameters: {
-    staticBuildAssets: [markUrl, lockupLightUrl],
+    staticBuildAssets: logoAssets,
     layout: 'fullscreen',
     docs: {
       description: {

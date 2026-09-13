@@ -1,0 +1,25 @@
+---
+/**
+ * Two columns for a section's copy and its photograph (`.oy-split` in the tokens, 1.1 to 0.9,
+ * stacking under 900px), as "What Odunde is" and the Gala's evening sit. The default slot is the
+ * copy; the `aside` slot the photograph or the running order. A section head in the copy column sits
+ * 16px above the prose, as the prototypes set it, instead of the 30px a head keeps above a block.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<div class:list={['oy-split', className]} {...rest}>
+  <div class="oy-split-main"><slot /></div>
+  <div class="oy-split-aside"><slot name="aside" /></div>
+</div>
+
+<style>
+  .oy-split-main > :global(.oy-sec-head) {
+    margin-bottom: 16px;
+  }
+</style>
+

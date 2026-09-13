@@ -1,0 +1,45 @@
+---
+/**
+ * The one object body copy allows, `pullQuote`: the quote in the display face with the ayo dot row
+ * above it and who said it beneath, as the member voices set theirs.
+ */
+import type { Props as NodeProps } from 'astro-portabletext/types';
+import Divider from '../../core/Divider/Divider.astro';
+
+interface PullQuoteNode {
+  _type: 'pullQuote';
+  _key: string;
+  quote?: string;
+  name?: string;
+  relation?: string;
+}
+type Props = NodeProps<PullQuoteNode>;
+
+const { node } = Astro.props;
+const who = [node.name, node.relation].filter(Boolean).join(' • ');
+---
+
+<figure class="oy-prose-pullquote">
+  <Divider kind="ayo" />
+  <blockquote>{node.quote}</blockquote>
+  {who && <figcaption>{who}</figcaption>}
+</figure>
+
+<style>
+  .oy-prose-pullquote {
+    margin: 8px 0;
+  }
+  .oy-prose-pullquote blockquote {
+    margin: 10px 0 0;
+    font-family: var(--font-display);
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--indigo-700);
+  }
+  .oy-prose-pullquote figcaption {
+    margin-top: 8px;
+    font-size: var(--text-small);
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+</style>

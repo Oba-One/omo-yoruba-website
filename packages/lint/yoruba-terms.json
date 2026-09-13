@@ -11,6 +11,10 @@
     { "bare": "aso oke", "correct": "aṣọ òkè" },
     { "bare": "adire", "correct": "àdìrẹ", "proseOnly": true },
     { "bare": "gele", "correct": "gèlè", "proseOnly": true },
+    { "bare": "agbada", "correct": "agbádá", "proseOnly": true },
+    { "bare": "fila", "correct": "fìlà", "proseOnly": true },
+    { "bare": "akara", "correct": "àkàrà", "proseOnly": true },
+    { "bare": "shekere", "correct": "ṣẹ̀kẹ̀rẹ̀", "proseOnly": true },
     { "bare": "Ife", "correct": "Ifẹ̀", "caseSensitive": true }
   ]
 }

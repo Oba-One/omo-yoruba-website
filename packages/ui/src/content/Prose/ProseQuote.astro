@@ -1,0 +1,20 @@
+---
+/** The `blockquote` style of body copy: a quoted passage set off by the aṣọ òkè rule. */
+import type { BlockProps } from 'astro-portabletext/types';
+
+type Props = BlockProps;
+---
+
+<blockquote class="oy-prose-quote"><slot /></blockquote>
+
+<style>
+  .oy-prose-quote {
+    margin: 0;
+    padding: 2px 0 2px 18px;
+    border-left: 4px solid var(--gold-500);
+    font-family: var(--font-display);
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--indigo-700);
+  }
+</style>

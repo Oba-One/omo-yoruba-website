@@ -3,11 +3,16 @@
  * The Ifẹ̀ bronze head is the mark. `lockup`: the mark at 40px beside the two-line Source Serif
  * wordmark, whose second line hides under 1060px (nav). `mark`: the head alone. `light`: the
  * light lockup image for dark grounds (footer). The mark alone carries the full name as its alt
- * text; beside the wordmark it is decorative. The two PNGs live beside this file; their imports
- * resolve to `ImageMetadata` in Astro and in Storybook alike.
+ * text; beside the wordmark it is decorative. The images beside this file are WebP at twice and
+ * three times the drawn size (the masters are `docs/design/design/images/logo-*.png`), with the
+ * drawn size as `width` and `height` so nothing shifts while they load; the footer lockup sits
+ * below the fold and loads lazily. Their imports resolve to `ImageMetadata` in Astro and in
+ * Storybook alike.
  */
-import lockupLight from './logo-lockup-light.png';
-import mark from './logo-mark.png';
+import lockupLight2x from './logo-lockup-light-2x.webp';
+import lockupLight3x from './logo-lockup-light-3x.webp';
+import mark2x from './logo-mark-2x.webp';
+import mark3x from './logo-mark-3x.webp';
 
 export type LogoVariant = 'lockup' | 'mark' | 'light';
 
@@ -21,19 +26,32 @@ interface Props {
 const { variant = 'lockup', href, class: className } = Astro.props;
 const name = 'Omo Yorùbá of Southern California';
 const Tag = href ? 'a' : 'span';
+// The drawn sizes: the mark is 40px tall in the nav, the light lockup 58px tall in the footer.
+const markImg = {
+  src: mark2x.src,
+  srcset: `${mark2x.src} 2x, ${mark3x.src} 3x`,
+  width: 17,
+  height: 40,
+};
+const lockupImg = {
+  src: lockupLight2x.src,
+  srcset: `${lockupLight2x.src} 2x, ${lockupLight3x.src} 3x`,
+  width: 188,
+  height: 58,
+};
 ---
 
 {
   variant === 'light' ? (
     <Tag class:list={['oy-logo', 'oy-logo--light', className]} href={href}>
-      <img class="oy-logo-lockup" src={lockupLight.src} alt={name} />
+      <img class="oy-logo-lockup" {...lockupImg} alt={name} loading="lazy" decoding="async" />
     </Tag>
   ) : (
     <Tag class:list={['oy-logo', className]} href={href}>
       {variant === 'mark' ? (
-        <img class="oy-logo-img" src={mark.src} alt={name} />
+        <img class="oy-logo-img" {...markImg} alt={name} />
       ) : (
-        <img class="oy-logo-img" src={mark.src} alt="" aria-hidden="true" />
+        <img class="oy-logo-img" {...markImg} alt="" aria-hidden="true" />
       )}
       {variant === 'lockup' && (
         <span class="oy-logo-text">

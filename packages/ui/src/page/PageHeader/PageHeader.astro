@@ -1,0 +1,176 @@
+---
+/**
+ * The top of an inner page (COMPONENT-MAP, Page structure; `08 Odunde Festival.dc.html` and `09
+ * End-of-Year Gala.dc.html`): the kicker, the one H1, the line under it, up to two actions (the
+ * first gold, once per view; the second outline) and a short line of facts under the buttons, whose
+ * missing facts show the registry's chips, joined by gold dots that never end a wrapped line. `slim` sits on paper; `photo` lays the copy over the
+ * photograph behind the indigo scrim, with the aṣọ òkè rule along the bottom, the photograph
+ * breathing slowly when motion is on (`.v2-kb`, off under reduced motion) and the àdìrẹ dot field
+ * when the page asks. Without a photograph the band keeps its surface and names the missing
+ * photograph; without a heading the H1 carries a Pending chip, so the page keeps its one H1.
+ */
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
+
+export type PageHeaderVariant = 'photo' | 'slim';
+
+/** One fact in the line under the buttons: the text, or the registry's wording for a missing one. */
+export type HeaderFact = { text: string } | { pending: string };
+
+interface Props {
+  variant?: PageHeaderVariant;
+  kicker?: BilingualText | null;
+  title?: string | null;
+  /** The registry's wording for a missing heading. */
+  titlePending?: string;
+  line?: string | null;
+  image?: ImageInput | null;
+  /** Names the missing photograph on the photo band. */
+  imagePending?: string;
+  /** Up to two: the first is the page's gold action, the second an outline. */
+  actions?: (ActionLike | null)[] | null;
+  /** The facts under the buttons, joined by the gold dot. */
+  facts?: HeaderFact[] | null;
+  /** The àdìrẹ dot field over the photograph. */
+  dots?: boolean;
+  /** The breathing photograph. */
+  motion?: boolean;
+  /** A `data-sanity` attribute for the photograph. */
+  imageEdit?: string;
+  /** A `data-sanity` attribute for the header, so click-to-edit reaches the header option. */
+  edit?: string;
+  id?: string;
+  class?: string;
+}
+
+const {
+  variant = 'photo',
+  kicker,
+  title,
+  titlePending = 'the page heading',
+  line,
+  image,
+  imagePending = 'the header photograph',
+  actions,
+  facts,
+  dots = false,
+  motion = true,
+  imageEdit,
+  edit,
+  id = 'top',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const photo = variant === 'photo';
+const img = photo ? imgAttributes(image, '100vw') : undefined;
+const position = positionOf(image);
+const [primary, secondary] = (actions ?? []).filter((action) => action !== null);
+const shownFacts = facts ?? [];
+---
+
+<header
+  class:list={['oy-phead', photo ? 'oy-phead--photo oy-dark' : 'oy-phead--slim', className]}
+  id={id}
+  data-variant={variant}
+  data-sanity={edit}
+  {...rest}
+>
+  {
+    photo &&
+      (img ? (
+        <div class="oy-phead-media" aria-hidden="true">
+          <img
+            class:list={[motion && 'v2-kb']}
+            {...img}
+            alt={altOf(image, '')}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            style={position ? `object-position: ${position}` : undefined}
+            data-sanity={imageEdit}
+          />
+        </div>
+      ) : (
+        <div class="oy-phead-media">
+          <Pending variant="block" what={imagePending} />
+        </div>
+      ))
+  }
+  {photo && <div class="oy-phead-scrim" aria-hidden="true" />}
+  {photo && dots && <div class="v2-dots" aria-hidden="true" />}
+  <div class="oy-wrap oy-phead-inner">
+    <div class={photo ? 'oy-phead-hold' : undefined}>
+      {(kicker?.yo || kicker?.en) && <Kicker yo={kicker?.yo ?? undefined} en={kicker?.en ?? undefined} />}
+      <h1>{title?.trim() ? title : <Pending what={titlePending} />}</h1>
+      {line && <p class="oy-phead-lead">{line}</p>}
+      {
+        (primary || secondary) && (
+          <div class="oy-phead-cta">
+            <ActionButton action={primary} variant="primary" />
+            <ActionButton action={secondary} variant="secondary" arrow={false} />
+          </div>
+        )
+      }
+      {
+        shownFacts.length > 0 && (
+          <div class="oy-phead-facts-clip">
+            <p class="oy-phead-facts">
+              {shownFacts.map((fact) => (
+                <span class="oy-phead-fact">
+                  <span class="oy-phead-dot" aria-hidden="true">
+                    •
+                  </span>
+                  {'text' in fact ? <span>{fact.text}</span> : <Pending what={fact.pending} />}
+                </span>
+              ))}
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+  {photo && <div class="oy-phead-rule" aria-hidden="true" />}
+</header>
+
+<style>
+  /*
+   * Every fact carries its dot in front, and the list sits 20px to the left inside a clipping box, so
+   * the dot that starts a line (the first fact's, and any wrapped line's) falls outside and only the
+   * dots between two facts on one line show: a wrapped line never ends on a dot.
+   */
+  .oy-phead-facts-clip {
+    margin: 24px 0 0;
+    overflow: hidden;
+  }
+  .oy-phead--photo .oy-phead-facts-clip {
+    margin-top: 26px;
+  }
+  .oy-phead-facts {
+    margin: 0 0 0 -20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 6px;
+    font-size: 15px;
+    /* The dark scope turns the muted token to the soft on-dark text. */
+    color: var(--text-muted);
+  }
+  .oy-phead-fact {
+    display: inline-flex;
+    align-items: center;
+  }
+  .oy-phead-dot {
+    flex: none;
+    width: 20px;
+    text-align: center;
+    color: var(--gold-500);
+  }
+  .oy-phead--photo .oy-phead-media :global(.oy-ph) {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+</style>

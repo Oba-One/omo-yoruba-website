@@ -51,7 +51,13 @@ export const PAGE_LAYOUTS = {
     { name: 'treatment', title: 'Treatment', options: ['formal', 'warm'] },
     { name: 'tiers', title: 'Tiers', options: ['columns', 'rows'] },
     { name: 'emphasis', title: 'Emphasis', options: ['seats', 'tables'] },
-    { name: 'awards', title: 'Awards', options: ['shown', 'hidden'] },
+    {
+      name: 'awards',
+      title: 'Awards',
+      options: ['hidden', 'shown'],
+      description:
+        'Hidden until the Gala names honorees; shown with none gives the Pending line (ADR 0024).',
+    },
     { name: 'schedule', title: 'Running order', options: ['shown', 'hidden'] },
     { name: 'past', title: 'Past galas', options: ['shown', 'hidden'] },
     { name: 'labels', title: 'Take-part labels', options: ['column', 'none', 'kicker'] },

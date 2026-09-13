@@ -1,7 +1,7 @@
 # Phase 4 leftovers from the design review
 
 Type: task
-Status: open
+Status: resolved
 Owner: no
 Labels: later
 Phase: 5
@@ -24,3 +24,20 @@ Small items the Phase 4 review recorded and left, none visible to visitors today
    button rules, which nothing uses since the highlight swap moved into `buildHomepage`.
 4. The `Filled` story of `EventBand` shows a sample date (12 June 2027) no dataset holds; fixtures
    carry confirmed facts and Pending states only, so mark it illustrative or drop the date.
+
+## Answer
+
+Resolved 12 September 2026 in Phase 5 (`docs/tickets/phase-5/issues/02-content-one-route-map-and-phase-4-leftovers.md`).
+
+1. `editionRoute(kind)` and `programRoute(page)` in `packages/content/src/routes.ts` are the one map:
+   `newsHref`, the Presentation resolvers and `EventBand` read them. An edition of kind `other` now
+   has no page everywhere (the news card shows no Read more, the Presentation tool lists the map's
+   order); a program without its own page leads with the Programs hub.
+2. Left as it is, on purpose: a Presentation resolver that selects fields sees only its own document,
+   so it cannot know whether a program is among the first three by order. The documented way to see
+   the others is to replace the whole locations map with one function over the document store, a
+   rewrite not worth a location banner. The comment on the resolver says so.
+3. The `.v2-cta--*` rules are gone from `packages/tokens/src/oy-components.css`; its header lists them
+   among the parts not ported.
+4. The `Filled` story's description has said since it was written that its values are illustrative and
+   come from no dataset; it stays, as the only story of a dated band.

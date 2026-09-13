@@ -25,4 +25,7 @@ export const Ayo: Story = { args: { kind: 'ayo' } };
 /** The ornament from the handoff, centred at 280px. */
 export const Ornament: Story = { args: { kind: 'ornament' } };
 
+/** The seam between two full-width sections, as the Gala draws it after the evening. */
+export const Seam: Story = { args: { kind: 'seam' } };
+
 export const OnDark: Story = { ...onDark, args: { kind: 'ayo' } };

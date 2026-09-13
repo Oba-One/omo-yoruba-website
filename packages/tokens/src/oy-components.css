@@ -3,7 +3,14 @@
    Edits in the port: pattern SVG urls point at the --pattern-* tokens; the canvas-only helpers
    (.cx-cardlab, the .sc-host mount) are dropped; the retired AmountSelector (.oy-freq, .oy-freqtabs,
    .oy-amounts, .oy-amount) and MultiStepForm (.oy-steps, .oy-step) blocks are left out
-   (docs/design/COMPONENT-MAP.md, Retired). Everything else is verbatim. */
+   (docs/design/COMPONENT-MAP.md, Retired); the homepage hero's .v2-cta--* switch is left out (the
+   site renders one button); a chip inside a fact row keeps its own type and colour, and the four-zone
+   mosaic keeps its columns under 820px (Phase 5); the Gala page's own style block (the warm
+   treatment and the seam) is ported to the end of this file, with a narrow warm scrim in the formal
+   scrim's vertical form; the Pending chip's corners are 16px instead of a full pill, the same on one
+   line and a rounded box when a long chip wraps in a narrow cell, and a chip keeps its own box in a
+   sponsor level's amount (Phase 5).
+   Everything else is verbatim. */
 
 /* ---- Card treatment (polish pass 2): sharper corners, paper grounds, indigo hairline,
    a woven aṣọ òkè edge on top, faint àdìrẹ dots in the ground. No shadows, no lift, no image zoom. ---- */
@@ -378,18 +385,8 @@
   align-items: center;
   flex-wrap: wrap;
 }
-.v2-cta--school,
-.v2-cta--collective {
-  display: none;
-}
-.oy-home[data-highlight="school"] .v2-cta--festival,
-.oy-home[data-highlight="collective"] .v2-cta--festival {
-  display: none;
-}
-.oy-home[data-highlight="school"] .v2-cta--school,
-.oy-home[data-highlight="collective"] .v2-cta--collective {
-  display: inline-flex;
-}
+/* The prototype's .v2-cta--* rules, which swapped three hero buttons by highlight, are not ported:
+   the site renders the one button the highlight picks (buildHomepage, ADR 0023). */
 
 /* ---- Footer ---- */
 .v2-footer {
@@ -651,6 +648,11 @@
   }
   .oy-zones[data-layout="mosaic"] .oy-zone:nth-child(n + 2) .oy-zone-media {
     display: block;
+  }
+  /* The four-zone rule above outranks the reset; the fourth zone spans the two columns instead
+     (the prototype's rule broke the mosaic into slivers on a phone). */
+  .oy-zones[data-layout="mosaic"] .oy-zone:nth-child(4):last-child {
+    grid-column: 1 / -1;
   }
 }
 @media (max-width: 560px) {
@@ -1107,7 +1109,7 @@
   color: #7a4409;
   background: #fbeeda;
   border: 1px dashed #c98a3c;
-  border-radius: 999px;
+  border-radius: 16px;
   padding: 6px 13px;
 }
 .oy-pend-line {
@@ -2453,6 +2455,8 @@
 /* The pending chip keeps its own type wherever it is dropped in */
 .oy-pend,
 .oy-glance span.oy-pend,
+.oy-fact span.oy-pend,
+.oy-lrow-tier span.oy-pend,
 .oy-tier-price.oy-pend,
 .oy-outcome-fig.oy-pend,
 .oy-sched-time.oy-pend,
@@ -2463,4 +2467,61 @@
   line-height: 1.4;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+/* A fact row sets its spans in ink (.oy-fact span); a chip there keeps its own colour. Added in
+   Phase 5 for plan your visit. */
+.oy-fact span.oy-pend {
+  color: #7a4409;
+}
+/* A sponsor level sets its amount span as a muted block (.oy-lrow-tier span); a chip there keeps its
+   own box and colour. Added in Phase 5 for the Gala's sponsor levels. */
+.oy-lrow-tier span.oy-pend {
+  display: inline-flex;
+  color: #7a4409;
+}
+
+/* ---- The Gala's treatment and seam (09 End-of-Year Gala.dc.html, its page style block). Formal is
+   the default: indigo carries the evening. Warm turns the grounds to paper and lets terracotta into
+   the header scrim and the seams. Under 760px the warm scrim runs top to bottom, as the formal one
+   does, so the copy keeps its contrast across the full width. ---- */
+.oy-seam {
+  height: 9px;
+  background: linear-gradient(
+    180deg,
+    var(--indigo-700) 0 3px,
+    transparent 3px 6px,
+    var(--gold-500) 6px 9px
+  );
+}
+.oy-home[data-treatment="warm"] .oy-section {
+  background: var(--paper);
+}
+.oy-home[data-treatment="warm"] .oy-section--alt {
+  background: var(--white);
+}
+.oy-home[data-treatment="warm"] .oy-phead-scrim {
+  background: linear-gradient(
+    90deg,
+    rgba(60, 24, 10, 0.94) 0 34%,
+    rgba(90, 40, 18, 0.76) 58%,
+    rgba(143, 63, 30, 0.34)
+  );
+}
+.oy-home[data-treatment="warm"] .oy-seam {
+  background: linear-gradient(
+    180deg,
+    var(--terra-600) 0 3px,
+    transparent 3px 6px,
+    var(--gold-500) 6px 9px
+  );
+}
+@media (max-width: 760px) {
+  .oy-home[data-treatment="warm"] .oy-phead-scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(60, 24, 10, 0.34) 0 16%,
+      rgba(60, 24, 10, 0.8) 44%,
+      rgba(60, 24, 10, 0.97) 66%
+    );
+  }
 }

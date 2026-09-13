@@ -127,13 +127,6 @@ export const siteSettings = defineType({
       group: 'services',
     }),
     defineField({
-      name: 'eventbriteUrl',
-      title: 'Eventbrite event URL',
-      type: 'url',
-      description: 'Gala seats open this in a new tab (wayfinder ticket 03).',
-      group: 'services',
-    }),
-    defineField({
       name: 'analyticsEnabled',
       title: 'Analytics on',
       type: 'boolean',

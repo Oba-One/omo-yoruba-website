@@ -54,20 +54,21 @@ export const PENDING: readonly PendingEntry[] = [
   },
   { type: 'siteSettings', fields: ['socials[]'], where: 'Footer', what: 'social links' },
   { type: 'siteSettings', fields: ['zeffyEmbedUrl'], where: 'Donate', what: 'the Zeffy link' },
-  {
-    type: 'siteSettings',
-    fields: ['eventbriteUrl'],
-    where: 'Gala tickets',
-    what: 'the Eventbrite link',
-  },
 
   // Odunde Festival
   {
     type: 'event',
-    fields: ['start', 'end'],
+    fields: ['start'],
     filter: FESTIVAL,
     where: 'Odunde, at a glance',
-    what: 'the date and hours',
+    what: 'the date',
+  },
+  {
+    type: 'event',
+    fields: ['end'],
+    filter: FESTIVAL,
+    where: 'Odunde, at a glance',
+    what: 'the hours',
   },
   {
     type: 'event',
@@ -75,6 +76,13 @@ export const PENDING: readonly PendingEntry[] = [
     filter: FESTIVAL,
     where: 'Odunde, at a glance',
     what: 'the cost',
+  },
+  {
+    type: 'event',
+    fields: ['venue.name'],
+    filter: FESTIVAL,
+    where: 'Odunde, at a glance',
+    what: 'the venue',
   },
   {
     type: 'event',
@@ -89,6 +97,14 @@ export const PENDING: readonly PendingEntry[] = [
     filter: FESTIVAL,
     where: 'Odunde, schedule',
     what: 'the rows, times and content',
+  },
+  // A row saved before its time is set: ScheduleRow shows this chip in the time's place.
+  {
+    type: 'event',
+    condition: 'count(schedule[!defined(time) && !defined(day)]) > 0',
+    filter: FESTIVAL,
+    where: 'Odunde, schedule',
+    what: 'the time',
   },
   {
     type: 'event',
@@ -105,6 +121,37 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'the attendance figure',
   },
   { type: 'zone', fields: ['line'], where: 'Odunde, zones', what: 'the zone description' },
+  // The glance holds five facts and the edition fills four, so only the first extra row can show.
+  {
+    type: 'festivalPage',
+    condition: 'defined(extraFacts[0]) && !defined(extraFacts[0].value)',
+    where: 'Odunde, at a glance',
+    what: 'a glance fact',
+  },
+  {
+    type: 'festivalPage',
+    fields: ['whatItIs'],
+    where: 'Odunde, what the day is',
+    what: 'what Odunde is, in your words',
+  },
+  {
+    type: 'festivalPage',
+    fields: ['whatItIsImage'],
+    where: 'Odunde, what the day is',
+    what: 'a photograph of festival day',
+  },
+  {
+    type: 'festivalPage',
+    fields: ['takePart[]'],
+    where: 'Odunde, take part',
+    what: 'the ways in',
+  },
+  {
+    type: 'festivalPage',
+    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
+    where: 'Odunde, take part',
+    what: 'a way in, its title or its button label',
+  },
   {
     type: 'festivalPage',
     fields: ['planYourVisit[]'],
@@ -141,6 +188,45 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Gala, at a glance',
     what: 'the dress code',
   },
+  // The event pages' headers: the photo band needs its photograph (the Gala always draws it, Odunde by
+  // default), and every page its one heading.
+  {
+    type: 'festivalPage',
+    fields: ['header.title'],
+    where: 'Odunde, header',
+    what: 'the page heading',
+  },
+  {
+    type: 'festivalPage',
+    fields: ['header.image'],
+    where: 'Odunde, header',
+    what: 'the header photograph',
+  },
+  { type: 'galaPage', fields: ['header.title'], where: 'Gala, header', what: 'the page heading' },
+  {
+    type: 'galaPage',
+    fields: ['header.image'],
+    where: 'Gala, header',
+    what: 'the header photograph',
+  },
+  {
+    type: 'galaPage',
+    fields: ['eveningIntro'],
+    where: 'Gala, the evening',
+    what: 'the evening, in your words',
+  },
+  {
+    type: 'galaPage',
+    fields: ['takePart[]'],
+    where: 'Gala, take part',
+    what: 'the ways in',
+  },
+  {
+    type: 'galaPage',
+    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
+    where: 'Gala, take part',
+    what: 'a way in, its title or its button label',
+  },
   {
     type: 'event',
     fields: ['schedule[]'],
@@ -150,10 +236,44 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'event',
+    condition: 'count(schedule[!defined(time) && !defined(day)]) > 0',
+    filter: GALA,
+    where: 'Gala, the evening',
+    what: 'the time',
+  },
+  {
+    type: 'event',
     fields: ['ticketsUrl'],
     filter: GALA,
     where: 'Gala, tickets',
     what: 'the Eventbrite link',
+  },
+  {
+    type: 'ticketTier',
+    fields: ['price'],
+    where: 'Gala, seats and tables',
+    what: 'the price',
+  },
+  {
+    type: 'ticketTier',
+    fields: ['includes[]'],
+    where: 'Gala, seats and tables',
+    what: 'what the ticket includes',
+  },
+  // Only the levels a page shows: the Gala page lists scope gala and org (galaPageQuery).
+  {
+    type: 'sponsorLevel',
+    fields: ['amount'],
+    filter: 'scope in ["gala", "org"]',
+    where: 'Sponsorship',
+    what: 'the amount',
+  },
+  {
+    type: 'sponsorLevel',
+    fields: ['recognition[]'],
+    filter: 'scope in ["gala", "org"]',
+    where: 'Sponsorship',
+    what: 'what the level recognizes',
   },
 
   // Programs and lessons
@@ -333,14 +453,27 @@ export const PENDING: readonly PendingEntry[] = [
 ];
 
 export const PRESENCE: readonly PresenceEntry[] = [
-  { type: 'zone', minimum: 4, where: 'Odunde, zones', what: 'the two unnamed zones' },
+  // The page shows active zones only (festivalPageQuery), so the count skips the inactive ones.
+  {
+    type: 'zone',
+    minimum: 4,
+    filter: 'active != false',
+    where: 'Odunde, zones',
+    what: 'the unnamed zones',
+  },
   {
     type: 'ticketTier',
     minimum: 1,
     where: 'Gala, seats and tables',
     what: 'three prices and what each includes',
   },
-  { type: 'sponsorLevel', minimum: 1, where: 'Sponsorship', what: 'level names and amounts' },
+  {
+    type: 'sponsorLevel',
+    minimum: 1,
+    filter: 'scope in ["gala", "org"]',
+    where: 'Sponsorship',
+    what: 'level names and amounts',
+  },
   { type: 'honoree', minimum: 1, where: 'Gala, honorees', what: 'whether awards exist, and who' },
   {
     type: 'testimonial',
@@ -350,6 +483,12 @@ export const PRESENCE: readonly PresenceEntry[] = [
   },
   { type: 'person', minimum: 1, where: 'About, board and staff', what: 'names, roles and bios' },
   { type: 'partner', minimum: 1, where: 'Partner rows', what: 'partner and funder names' },
+  {
+    type: 'album',
+    minimum: 1,
+    where: 'Gallery; Odunde and Gala, past years',
+    what: 'the photo albums',
+  },
   {
     type: 'outcome',
     minimum: 1,
@@ -440,14 +579,28 @@ export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
 /**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
  * `kind` picks the row for one kind of document (an event's `gala` or `festival`) where the
- * registry keeps a row per kind; without a matching row the first row for the field answers.
+ * registry keeps a row per kind; without a matching row the first row for the field answers. An
+ * array's name without `[]` answers the row for one of its items missing a value.
  */
 export function pendingWhat(type: string, field: string, kind?: string): string | undefined {
   const rows = PENDING.filter((entry) => entry.type === type && entry.fields?.includes(field));
   const narrowed = kind
     ? rows.find((entry) => entry.filter?.includes(`kind == "${kind}"`))
     : undefined;
-  return (narrowed ?? rows[0])?.what;
+  const found = (narrowed ?? rows[0])?.what;
+  if (found) return found;
+  // One item of an array missing its value ("a practical fact") is a condition row on the array.
+  return PENDING.find((entry) => entry.type === type && entry.condition?.includes(`${field}[`))
+    ?.what;
+}
+
+/**
+ * The chip wording for a type the page expects more documents of (the zones, the tiers, the
+ * partners), from the same presence rows the Studio lists, with the count the page expects.
+ */
+export function presenceWhat(type: string): { what: string; minimum: number } | undefined {
+  const entry = PRESENCE.find((row) => row.type === type);
+  return entry ? { what: entry.what, minimum: entry.minimum } : undefined;
 }
 
 /** The GROQ count of a presence entry; run it with the `drafts` perspective so a draft counts once. */

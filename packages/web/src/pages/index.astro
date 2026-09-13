@@ -33,13 +33,13 @@ import { STUDIO_BASE_PATH } from '../lib/paths';
 import { buildHomepage } from '../lib/sanity/homepage';
 import { loadQuery } from '../lib/sanity/load-query';
 
-const { data, preview } = await loadQuery(homepageQuery, {}, { cookies: Astro.cookies });
+const { data, preview, error } = await loadQuery(homepageQuery, {}, { cookies: Astro.cookies });
 const imageSet = createImageSet({
   projectId: PUBLIC_SANITY_PROJECT_ID,
   dataset: PUBLIC_SANITY_DATASET,
 });
 const home = buildHomepage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
-cachePage(Astro, '/', { draft: preview });
+cachePage(Astro, '/', { draft: preview, failed: Boolean(error) });
 ---
 
 <SiteLayout

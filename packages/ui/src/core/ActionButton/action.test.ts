@@ -48,6 +48,11 @@ describe('resolveAction', () => {
       pending: 'which form this button opens',
     });
     expect(resolveAction({ label: 'x', kind: 'url' })).toEqual({ ok: false, pending: 'the link' });
+    // A link written past the Studio's validation never becomes an href.
+    expect(resolveAction({ label: 'x', kind: 'url', href: 'javascript:alert(1)' })).toEqual({
+      ok: false,
+      pending: 'the link',
+    });
     expect(resolveAction({ label: 'x', kind: 'anchor', href: 'plan' })).toEqual({
       ok: false,
       pending: 'the section this button goes to',

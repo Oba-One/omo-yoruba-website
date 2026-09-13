@@ -4,7 +4,9 @@
  * photograph with its caption over a scrim, Yoruba first with the gold dot before the English,
  * square corners, no zoom, framed by the Studio hotspot; the scrim deepens on hover through the
  * tokens. Without a photograph the tile is the placeholder with the àdìrẹ dot field naming the
- * missing photo.
+ * missing photo. The `figure` shape is the framed photograph beside an event page's prose (`08
+ * Odunde Festival.dc.html`): 360px tall with the card's 6px corners. The first half of a caption is
+ * marked as Yoruba only when it carries Yoruba letters ("Festival day • Leimert Park" has none).
  */
 import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
 import { altOf, type ImageInput, imgAttributes, positionOf } from '../image';
@@ -19,6 +21,8 @@ interface Props {
   sizes?: string;
   /** A `data-sanity` attribute for the tile, so click-to-edit reaches the image. */
   edit?: string;
+  /** `tile` fills its mosaic cell with square corners; `figure` is the framed 360px photograph. */
+  shape?: 'tile' | 'figure';
   class?: string;
 }
 
@@ -29,6 +33,7 @@ const {
   what = 'a photograph',
   sizes = '(min-width: 1100px) 550px, (min-width: 860px) 50vw, 100vw',
   edit,
+  shape = 'tile',
   class: className,
   ...rest
 } = Astro.props;
@@ -37,9 +42,15 @@ const img = imgAttributes(image, sizes);
 const position = positionOf(image);
 const [yo, ...restCaption] = (caption ?? '').split(' • ');
 const en = restCaption.join(' • ');
+// Accented Latin letters or a combining mark: what an English half never carries.
+const yoruba = /[\u00c0-\u024f\u1e00-\u1eff]|\p{Mn}/u.test(yo ?? '');
 ---
 
-<figure class:list={['v2-mo', 'oy-photo-tile', className]} data-sanity={edit} {...rest}>
+<figure
+  class:list={['v2-mo', 'oy-photo-tile', shape === 'figure' && 'oy-photo-tile--figure', className]}
+  data-sanity={edit}
+  {...rest}
+>
   {
     img ? (
       <img
@@ -58,7 +69,7 @@ const en = restCaption.join(' • ');
       <figcaption>
         {en ? (
           <>
-            <span lang="yo">{yo}</span>
+            <span lang={yoruba ? 'yo' : undefined}>{yo}</span>
             <span class="oy-photo-tile-dot" aria-hidden="true">
               {' • '}
             </span>
@@ -102,5 +113,12 @@ const en = restCaption.join(' • ');
   }
   .oy-photo-tile-dot {
     color: var(--gold-300);
+  }
+  .oy-photo-tile--figure {
+    height: 360px;
+    border-radius: 6px;
+  }
+  .oy-photo-tile--figure figcaption {
+    padding: 40px 18px 14px;
   }
 </style>

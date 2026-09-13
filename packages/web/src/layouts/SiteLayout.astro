@@ -65,11 +65,14 @@ const rootAttributes = Object.fromEntries(
     .map(([key, value]) => [`data-${key}`, value]),
 );
 
-const { data: settings, preview } = await loadQuery(
-  siteSettingsQuery,
-  {},
-  { cookies: Astro.cookies },
-);
+const {
+  data: settings,
+  preview,
+  error: settingsError,
+} = await loadQuery(siteSettingsQuery, {}, { cookies: Astro.cookies });
+// A failed settings read renders the chrome's Pending facts; the CDN must not keep that copy. The
+// layout renders after the page's frontmatter, so this wins over the page's cachePage.
+if (settingsError) Astro.cache.set(false);
 const contacts = contactsByRole(settings?.contacts);
 const site = { email: settings?.generalEmail ?? undefined, phone: settings?.phone ?? undefined };
 const copyFor = (kind: EnquiryKind) => successCopy(kind, contacts[KIND_TO_ROLE[kind]], site);

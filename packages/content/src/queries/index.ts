@@ -3,5 +3,6 @@
  * ADR 0003). Every query is a `defineQuery` literal so TypeGen registers its result on
  * `SanityQueries` and `client.fetch` returns it typed (`bun typegen` after any change).
  */
+export * from './event-pages';
 export * from './homepage';
 export * from './site';

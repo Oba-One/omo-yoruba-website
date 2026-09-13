@@ -1,0 +1,77 @@
+---
+/**
+ * The glance strip under an event page's header (COMPONENT-MAP, Page structure; CONTEXT, Glance
+ * strip): the hard facts of the next edition in a row of four or five cells on white, each a
+ * terracotta label, the value in the display face and an optional note, with the registry's chip
+ * wherever the Studio holds no value. Five show at most; under 900px the cells fall into two
+ * columns (the tokens' `.oy-glance`). An optional line under the strip speaks to the reader.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface GlanceFact {
+  label: string;
+  value?: string | null;
+  note?: string | null;
+  /** The registry's wording when the value is missing. */
+  pending?: string;
+  /** The registry's wording when the note is a missing fact (the venue line). */
+  notePending?: string;
+}
+
+interface Props {
+  facts: GlanceFact[];
+  /** A line under the strip. */
+  caption?: string | null;
+  /** A `data-sanity` attribute for the strip. */
+  edit?: string;
+  id?: string;
+  class?: string;
+}
+
+const { facts, caption, edit, id = 'glance', class: className } = Astro.props;
+const shown = facts.slice(0, 5);
+const columns = shown.length === 5 ? undefined : String(shown.length);
+---
+
+<div class:list={['oy-glance-band', className]} id={id} data-sanity={edit}>
+  <div class="oy-wrap">
+    <div class="oy-glance" data-cols={columns}>
+      {
+        shown.map((fact) => (
+          <div>
+            <b>{fact.label}</b>
+            {fact.value?.trim() ? <span>{fact.value}</span> : <Pending what={fact.pending} />}
+            {fact.note?.trim() ? (
+              <small>{fact.note}</small>
+            ) : (
+              fact.notePending && (
+                <small>
+                  <Pending what={fact.notePending} />
+                </small>
+              )
+            )}
+          </div>
+        ))
+      }
+    </div>
+    {caption && <p class="oy-glance-caption">{caption}</p>}
+  </div>
+</div>
+
+<style>
+  .oy-glance-band {
+    background: var(--white);
+    padding: 40px 0 8px;
+  }
+  .oy-glance :global(.oy-pend) {
+    margin-top: 10px;
+  }
+  .oy-glance small :global(.oy-pend) {
+    margin-top: 0;
+  }
+  .oy-glance-caption {
+    margin: 14px 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+</style>

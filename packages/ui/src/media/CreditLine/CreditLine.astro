@@ -1,0 +1,43 @@
+---
+/**
+ * Who took an album's photographs, under a carousel or an album (`18 Photo Gallery.dc.html`, the
+ * album's "Photographs: Red Carpet Media."): the credit as the Studio holds it, and the registry's
+ * chip while the album's credit is not confirmed (spec Q8), the row that lists it. A confirmed album
+ * with no photographer named shows no line.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+
+interface Props {
+  credit?: string | null;
+  confirmed?: boolean | null;
+  /** The registry's wording while the credit is unconfirmed. */
+  pending?: string;
+  class?: string;
+}
+
+const {
+  credit,
+  confirmed = false,
+  pending = 'photographer credit to confirm',
+  class: className,
+} = Astro.props;
+const name = credit?.trim();
+const owed = !confirmed;
+---
+
+{
+  (name || owed) && (
+    <p class:list={['oy-credit-line', className]}>
+      Photographs: {name && (owed ? `${name} ` : `${name}.`)}
+      {owed && <Pending what={pending} />}
+    </p>
+  )
+}
+
+<style>
+  .oy-credit-line {
+    margin: 12px 0 0;
+    font-size: 14.5px;
+    color: var(--text-muted);
+  }
+</style>

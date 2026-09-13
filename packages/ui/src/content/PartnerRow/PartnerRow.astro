@@ -1,0 +1,102 @@
+---
+/**
+ * The partners and sponsors of a page (COMPONENT-MAP, Lists and rows; `08 Odunde Festival.dc.html`):
+ * the tokens' `.oy-partners` row of chips, each partner's name as a text chip, or its logo when the
+ * Studio holds one, linked to the partner's site when it has one. No partner renders the registry's
+ * Pending line. The border deepens on a linked chip's hover; nothing lifts.
+ */
+import { safeHref } from '../../core/ActionButton/action';
+import Pending from '../../core/Pending/Pending.astro';
+import { altOf, type ImageInput, imgAttributes } from '../../media/image';
+
+export interface PartnerLike {
+  _id?: string | null;
+  name?: string | null;
+  url?: string | null;
+  logo?: ImageInput | null;
+}
+
+interface Props {
+  partners?: (PartnerLike | null)[] | null;
+  /** The registry's wording when there are no partners. */
+  pending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the block. */
+  edit?: string;
+  class?: string;
+}
+
+const { partners, pending = 'partner and funder names', edit, class: className } = Astro.props;
+const list = (partners ?? []).filter(
+  (partner): partner is PartnerLike => partner !== null && Boolean(partner.name?.trim()),
+);
+---
+
+{
+  list.length === 0 ? (
+    <div class:list={['oy-partner-row', className]} data-sanity={edit}>
+      <Pending variant="line" what={pending} />
+    </div>
+  ) : (
+    <ul class:list={['oy-partners', 'oy-partner-row', className]} role="list" data-sanity={edit}>
+      {list.map((partner) => {
+        const logo = imgAttributes(partner.logo, '140px');
+        // Checked again here: the Studio's URL rule does not run on API or seed writes.
+        const url = safeHref(partner.url);
+        const classes = ['oy-partner', logo && 'oy-partner--logo'];
+        const face = logo ? (
+          <img
+            class="oy-partner-logo"
+            {...logo}
+            alt={altOf(partner.logo, '') || (partner.name ?? '')}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          partner.name
+        );
+        return (
+          <li>
+            {url ? (
+              <a class:list={classes} href={url}>
+                {face}
+              </a>
+            ) : (
+              <span class:list={classes}>{face}</span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  )
+}
+
+<style>
+  .oy-partners {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .oy-partner {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+  }
+  a.oy-partner {
+    text-decoration: none;
+    transition: border-color 0.2s ease;
+  }
+  a.oy-partner:hover {
+    border-color: var(--indigo-700);
+    color: var(--indigo-700);
+  }
+  .oy-partner--logo {
+    padding: 6px 16px;
+  }
+  .oy-partner-logo {
+    display: block;
+    height: 32px;
+    width: auto;
+    max-width: 140px;
+    object-fit: contain;
+  }
+</style>

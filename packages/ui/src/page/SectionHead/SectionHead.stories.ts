@@ -42,6 +42,25 @@ export const NoKicker: Story = { args: { kicker: undefined, title: 'Raise your h
 /** The kicker test string at 12px. */
 export const Diacritics: Story = { args: { kicker: { yo: TEST_STRING, en: 'Welcome' } } };
 
+/** The festival's past years as the dataset holds them: no intro yet, the attendance figure owed. */
+export const NotePending: Story = {
+  args: {
+    kicker: { yo: 'Ọdún tí ó kọjá', en: 'Years past' },
+    title: 'Odunde in past years',
+    notePending: 'the attendance figure',
+  },
+};
+
+/** An intro with a note after it in the same paragraph (the note in the bracketed placeholder form). */
+export const IntroAndNote: Story = {
+  args: {
+    kicker: { yo: 'Àwọn ohùn wa', en: 'Our voices' },
+    title: 'Member voices',
+    intro: 'Families, elders, and vendors on what this community holds for them.',
+    note: '[ A figure and its source ]',
+  },
+};
+
 /** The heading still owed by the Studio, named by the registry. */
 export const Pending: Story = { args: { title: undefined, pending: 'the heading' } };
 

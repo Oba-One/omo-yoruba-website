@@ -1,4 +1,6 @@
+import { wayAction } from '@oy/content/take-part';
 import type { ComponentProps } from 'astro/types';
+import { FESTIVAL_TAKE_PART, GALA_TAKE_PART } from '../../fixtures/event-pages';
 import { DOORS, OTHER_DOORS } from '../../fixtures/homepage';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import PathRow from './PathRow.astro';
@@ -14,7 +16,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Chip, one line, one action: the compact alternative to door cards. The chips are the prototypes' own (Membership, Partnership, Volunteer, Give) and the accent follows the way in; hover deepens the border. No rule, no lift.",
+          'Chip, one line, one action: the compact alternative to door cards, and the row of a take-part band. A door names its chip from the prototypes (Membership, Partnership, Volunteer, Give); a take-part row brings its own way in, chip, title, line and action. The accent follows the way in; hover deepens the border. No rule, no lift. The action is outline by default, gold once per view, quiet for the give row.',
       },
     },
   },
@@ -38,5 +40,47 @@ export const Volunteer: Story = {
 export const Give: Story = { args: { door: OTHER_DOORS[1] as Args['door'], primary: false } };
 
 export const Pending: Story = { args: { door: {}, primary: false } };
+
+const [vendor] = FESTIVAL_TAKE_PART;
+const give = GALA_TAKE_PART[3];
+
+/** A take-part row: the festival's vendor row as the seed writes it, with the band's gold action. */
+export const TakePartRow: Story = {
+  args: {
+    door: undefined,
+    way: 'vendor',
+    chip: 'Vendors',
+    title: vendor?.title,
+    line: vendor?.line,
+    action: wayAction('vendor', vendor?.label),
+    primary: true,
+  },
+};
+
+/** The give row of the Gala's band: its action is quiet and opens the Give Dialog. */
+export const Quiet: Story = {
+  args: {
+    door: undefined,
+    way: 'give',
+    chip: 'Give',
+    title: give?.title,
+    line: give?.line,
+    action: wayAction('give', give?.label),
+    primary: false,
+    variant: 'quiet',
+  },
+};
+
+/** A take-part row the Studio has not finished: the registry's chip where the title and the button go. */
+export const TakePartRowPending: Story = {
+  args: {
+    door: undefined,
+    way: 'sponsor',
+    chip: 'Sponsors',
+    line: 'Four questions, and we send the deck with our impact numbers.',
+    pending: 'a way in, its title or its button label',
+    primary: false,
+  },
+};
 
 export const Hover: Story = { parameters: { pseudo: { hover: '.oy-path' } } };

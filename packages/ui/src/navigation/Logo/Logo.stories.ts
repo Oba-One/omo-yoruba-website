@@ -1,11 +1,7 @@
 import type { ComponentProps } from 'astro/types';
 import { type Meta, onDark, type StoryArgs, type StoryObj } from '../../storybook';
 import Logo from './Logo.astro';
-// The static build rewrites the component's dev-only image paths to emitted assets, but only for
-// files that reach the client bundle, and .astro imports never do. These two imports put the PNGs
-// in the bundle so the prerendered Logo resolves them (framework limitation, docs/plans/handoff-phase-1.md).
-import lockupLightUrl from './logo-lockup-light.png?url';
-import markUrl from './logo-mark.png?url';
+import { logoAssets } from './story-assets';
 
 type Args = StoryArgs<ComponentProps<typeof Logo>>;
 
@@ -13,7 +9,7 @@ const meta = {
   title: 'Navigation/Logo',
   component: Logo,
   args: { variant: 'lockup', href: '/' },
-  parameters: { staticBuildAssets: [markUrl, lockupLightUrl] },
+  parameters: { staticBuildAssets: logoAssets },
 } satisfies Meta<Args>;
 
 export default meta;

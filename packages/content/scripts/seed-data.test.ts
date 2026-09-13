@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CONTACT_ROLES } from '../src/enquiry-kinds';
 import { documentTypes, SINGLETON_NAMES } from '../src/schema';
-import { buildSeed, missingFields, type SeedAssets } from './seed-data';
+import { buildSeed, missingFields, retiredFields, type SeedAssets } from './seed-data';
 
 const assets: SeedAssets = new Map(
   [
@@ -245,5 +245,37 @@ describe('missingFields', () => {
     expect(home.hero.title).toContain(home.hero.emphasis);
     expect(home.hero.blessing.yo).toBe('Oòdúà á gbè wá o!');
     expect(home.voicesProverb.yo).toBe('Àgbájọ ọwọ́ la fi ń sọ̀yà.');
+  });
+});
+
+describe('the take-part rows and the retired fields', () => {
+  it('seeds each event page with its rows, each way in once and no invented fact', () => {
+    for (const [id, ways] of [
+      ['festivalPage', ['vendor', 'sponsor', 'performer', 'volunteer']],
+      ['galaPage', ['sponsor', 'table', 'volunteer', 'give']],
+    ] as const) {
+      const rows = (byId.get(id)?.takePart ?? []) as {
+        way: string;
+        title: string;
+        line: string;
+        label: string;
+      }[];
+      expect(rows.map((row) => row.way)).toEqual(ways);
+      for (const row of rows) {
+        expect(row.title && row.label, `${id} ${row.way}`).toBeTruthy();
+        expect(`${row.title} ${row.line}`).not.toMatch(/\$\d|\d+(am|pm)|April|March|free/i);
+      }
+      expect(byId.get(id)).not.toHaveProperty('takePartOrder');
+    }
+  });
+
+  it('unsets a retired field only where it is still stored', () => {
+    expect(retiredFields('festivalPage', { takePartOrder: ['vendor'] })).toEqual(['takePartOrder']);
+    expect(retiredFields('festivalPage', {})).toEqual([]);
+    expect(retiredFields('galaPage', { takePartOrder: ['table'] })).toEqual(['takePartOrder']);
+    expect(retiredFields('siteSettings', { eventbriteUrl: 'https://x' })).toEqual([
+      'eventbriteUrl',
+    ]);
+    expect(retiredFields('homepage', { takePartOrder: [] })).toEqual([]);
   });
 });

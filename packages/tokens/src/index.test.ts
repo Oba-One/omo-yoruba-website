@@ -77,3 +77,45 @@ describe('the interaction layer wins on conflict', () => {
     }
   });
 });
+
+describe('fonts.css', () => {
+  const fonts = read('fonts.css');
+  const faces = [...fonts.matchAll(/@font-face\s*\{([^}]*)\}/g)].map((m) => m[1] ?? '');
+  const field = (face: string, name: string) =>
+    new RegExp(`${name}:\\s*([^;]+);`).exec(face)?.[1]?.trim() ?? '';
+  const urlOf = (face: string) => /url\("([^"]+)"\)/.exec(face)?.[1] ?? '';
+
+  it('points every face at a file that exists, Source Serif 4 at the weight-only files', () => {
+    for (const face of faces) {
+      const url = urlOf(face).replace(/\?no-inline$/, '');
+      const file = url.startsWith('./')
+        ? new URL(url, src)
+        : new URL(`../node_modules/${url}`, src);
+      expect(existsSync(file), url).toBe(true);
+    }
+    expect(fonts).not.toMatch(/-opsz-/);
+  });
+
+  it('declares the Yoruba letters of latin-ext as their own renamed faces, kept out of the inliner', () => {
+    const yoruba = faces.filter((face) => field(face, 'font-family').includes('OY Yoruba'));
+    expect(yoruba).toHaveLength(4);
+    for (const face of yoruba) {
+      expect(field(face, 'font-family')).not.toContain('Source');
+      expect(field(face, 'unicode-range')).toBe(
+        'U+0143-0144, U+01F8-01F9, U+1E3E-1E3F, U+1E62-1E63',
+      );
+      expect(urlOf(face)).toMatch(
+        /^\.\/fonts\/oy-yoruba-(sans|serif)-wght-(normal|italic)\.woff2\?no-inline$/,
+      );
+    }
+    // The fonts' own notices, the Reserved Font Name among them, travel with the cut files.
+    expect(readFileSync(new URL('fonts/OFL.txt', src), 'utf8')).toMatch(/Reserved Font Name/);
+  });
+
+  it('puts each Yoruba face first in its stack, before Source', () => {
+    const stack = (name: string) =>
+      new RegExp(`${name}:\\s*([^;]+);`).exec(fonts)?.[1]?.replace(/\s+/g, ' ').trim() ?? '';
+    expect(stack('--font-display')).toMatch(/^"OY Yoruba Serif", "Source Serif 4",/);
+    expect(stack('--font-body')).toMatch(/^"OY Yoruba Sans", "Source Sans 3",/);
+  });
+});

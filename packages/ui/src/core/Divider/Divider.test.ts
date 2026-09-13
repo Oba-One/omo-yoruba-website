@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody } from '../../test/stories';
 import * as stories from './Divider.stories';
 
-const { Default, Thin, Ayo, Ornament, OnDark } = composeStories(stories);
+const { Default, Thin, Ayo, Ornament, Seam, OnDark } = composeStories(stories);
 
 describe('Divider', () => {
   it('draws the aṣọ òkè stripe by default, hidden from assistive technology', async () => {
@@ -28,6 +28,12 @@ describe('Divider', () => {
   it('draws the ornament as a decorative block', async () => {
     const body = await renderToBody(Ornament);
     expect(body.querySelector('.oy-divider-ornament')?.getAttribute('aria-hidden')).toBe('true');
+    expect(body.querySelector('.oy-divider-asoke')).toBeNull();
+  });
+
+  it('draws the seam as a decorative band of its own', async () => {
+    const body = await renderToBody(Seam);
+    expect(body.querySelector('.oy-seam')?.getAttribute('aria-hidden')).toBe('true');
     expect(body.querySelector('.oy-divider-asoke')).toBeNull();
   });
 

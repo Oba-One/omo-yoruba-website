@@ -23,7 +23,7 @@ describe('SiteFooter', () => {
 
   it('keeps the seeded newsletter copy and still shows the owed facts as Pending', async () => {
     const body = await renderToBody(Default);
-    expect(text(body.querySelector('.oy-footer-newsletter h4'))).toBe(
+    expect(text(body.querySelector('.oy-footer-newsletter h2'))).toBe(
       'Festival news and updates, in your inbox',
     );
     expect(body.querySelectorAll('.oy-pend')).toHaveLength(3);
@@ -59,7 +59,9 @@ describe('SiteFooter', () => {
       '?enquiry=volunteer#enquiry',
     );
     expect(body.querySelector('a[data-give]')?.getAttribute('href')).toBe('/donate#give');
-    const columns = Array.from(body.querySelectorAll('.oy-footer-grid > div > h4')).map((h) =>
+    // h2, not the prototype's h4: the footer never skips a heading level after a page's last h2.
+    expect(body.querySelector('.oy-footer h4')).toBeNull();
+    const columns = Array.from(body.querySelectorAll('.oy-footer-grid > div > h2')).map((h) =>
       text(h),
     );
     expect(columns).toEqual(['Take part', 'Learn more']);

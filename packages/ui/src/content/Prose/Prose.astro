@@ -1,0 +1,62 @@
+---
+/**
+ * Body copy from the Studio (`blockContent`, CONTENT-MODEL principle 7) through astro-portabletext
+ * 1.0.0 (docs/research/phase-5-portable-text-renderer.md): normal paragraphs, the `h3` and
+ * `blockquote` styles, `strong` and `em`, the `link` annotation with its scheme check, and the
+ * `pullQuote` object, inside the tokens' `.oy-prose` column, whose global rules style the library's
+ * own paragraphs and marks. The renderer rewrites the value it is given, so it renders a copy. A node
+ * the map does not know throws in dev and in tests, so schema drift fails there; in production it logs
+ * and renders the library's fallback, because a throw mid-stream would answer a blank page with a 200.
+ * An empty value renders nothing: the page shows the registry's Pending chip instead. `text` takes a
+ * Studio `text` field instead (the Gala's evening intro): a paragraph per blank-line-separated block.
+ */
+import { PortableText } from 'astro-portabletext';
+import type { MissingComponentHandler, PortableTextProps } from 'astro-portabletext/types';
+import ProseHeading from './ProseHeading.astro';
+import ProseLink from './ProseLink.astro';
+import ProsePullQuote from './ProsePullQuote.astro';
+import ProseQuote from './ProseQuote.astro';
+
+interface Props {
+  value?: PortableTextProps['value'] | null;
+  /** Plain text in place of Portable Text. */
+  text?: string | null;
+  class?: string;
+}
+
+const { value, text, class: className, ...rest } = Astro.props;
+const own = value ? structuredClone(value) : undefined;
+const paragraphs = (text ?? '')
+  .split(/\n\s*\n/)
+  .map((paragraph) => paragraph.trim())
+  .filter(Boolean);
+
+const components = {
+  block: { h3: ProseHeading, blockquote: ProseQuote },
+  mark: { link: ProseLink },
+  type: { pullQuote: ProsePullQuote },
+};
+
+const onMissingComponent: MissingComponentHandler = (message, { nodeType, type }) => {
+  const text = `Prose: ${message} (nodeType ${nodeType}, type ${type})`;
+  if (import.meta.env.DEV) throw new Error(text);
+  console.error(text);
+};
+---
+
+{
+  paragraphs.length > 0 ? (
+    <div class:list={['oy-prose', className]} {...rest}>
+      {paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+  ) : (
+    own &&
+    (Array.isArray(own) ? own.length > 0 : true) && (
+      <div class:list={['oy-prose', className]} {...rest}>
+        <PortableText value={own} components={components} onMissingComponent={onMissingComponent} />
+      </div>
+    )
+  )
+}

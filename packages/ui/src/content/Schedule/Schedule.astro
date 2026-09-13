@@ -1,0 +1,85 @@
+---
+/**
+ * An edition's schedule (COMPONENT-MAP, Lists and rows): its rows in order, time-led or day-led,
+ * inside an ordered list. With `toggle` it sits in a native disclosure whose quiet summary reads
+ * "Hide the schedule" or "Show the schedule" and opens without JavaScript; `open` sets how it starts
+ * (the festival's `schedule` option: shown starts open, collapsed starts closed). No rows renders the
+ * registry's Pending line instead.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+import ScheduleRow, { type ScheduleItemLike } from '../ScheduleRow/ScheduleRow.astro';
+
+interface Props {
+  items?: (ScheduleItemLike | null)[] | null;
+  /** Day-led rows for a multi-day edition. */
+  mode?: 'time' | 'day';
+  /** The disclosure the festival's schedule sits in. */
+  toggle?: boolean;
+  open?: boolean;
+  /** The registry's wording when there are no rows, and for a row without its time. */
+  pending?: string;
+  timePending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the schedule option. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  items,
+  mode,
+  toggle = false,
+  open = true,
+  pending = 'the schedule',
+  timePending,
+  edit,
+  class: className,
+} = Astro.props;
+const rows = (items ?? []).filter((item) => item !== null);
+---
+
+{
+  rows.length === 0 ? (
+    <div class:list={['oy-schedule', className]} data-sanity={edit}>
+      <Pending variant="line" what={pending} />
+    </div>
+  ) : toggle ? (
+    <details class:list={['oy-schedule', 'oy-schedule--toggle', className]} open={open} data-sanity={edit}>
+      <summary class="oy-btn oy-btn--quiet">
+        <span class="oy-schedule-hide">Hide the schedule</span>
+        <span class="oy-schedule-show">Show the schedule</span>
+      </summary>
+      <ol class:list={['oy-sched', mode === 'day' && 'oy-sched--day']}>
+        {rows.map((item) => <ScheduleRow item={item} mode={mode} timePending={timePending} />)}
+      </ol>
+    </details>
+  ) : (
+    <div class:list={['oy-schedule', className]} data-sanity={edit}>
+      <ol class:list={['oy-sched', mode === 'day' && 'oy-sched--day']}>
+        {rows.map((item) => <ScheduleRow item={item} mode={mode} timePending={timePending} />)}
+      </ol>
+    </div>
+  )
+}
+
+<style>
+  .oy-sched {
+    margin: 0;
+    padding: 0;
+  }
+  /* Block-level so the auto margin can push the quiet toggle to the right, as the prototype sets it. */
+  .oy-schedule--toggle > summary {
+    display: flex;
+    list-style: none;
+    margin: 0 0 18px auto;
+    width: max-content;
+    min-height: 44px;
+    cursor: pointer;
+  }
+  .oy-schedule--toggle > summary::-webkit-details-marker {
+    display: none;
+  }
+  .oy-schedule--toggle:not([open]) .oy-schedule-hide,
+  .oy-schedule--toggle[open] .oy-schedule-show {
+    display: none;
+  }
+</style>

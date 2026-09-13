@@ -1,0 +1,57 @@
+---
+/**
+ * One row of an edition's schedule (COMPONENT-MAP, Lists and rows; `08 Odunde Festival.dc.html` and
+ * `09 End-of-Year Gala.dc.html`): the time in the display face, or the day as a terracotta label for a
+ * day-led row, then what happens (the title, Yoruba first when it has a Yoruba half, and one line),
+ * and on the festival the zone it happens in as a tag. A missing time or day shows the chip.
+ */
+import type { BilingualText } from '../../core/Kicker/Kicker.astro';
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface ScheduleItemLike {
+  _key?: string;
+  time?: string | null;
+  day?: string | null;
+  title?: BilingualText | null;
+  detail?: string | null;
+  /** The zone's name, for the tag. */
+  zone?: BilingualText | null;
+}
+
+interface Props {
+  item: ScheduleItemLike;
+  /** `day` sets the day as a label instead of a time. */
+  mode?: 'time' | 'day';
+  /** The registry's wording for a row without its time. */
+  timePending?: string;
+  class?: string;
+}
+
+const {
+  item,
+  mode = item.time ? 'time' : item.day ? 'day' : 'time',
+  timePending = 'the time',
+  class: className,
+} = Astro.props;
+const when = mode === 'day' ? item.day : item.time;
+const title = [item.title?.yo, item.title?.en].filter(Boolean).join(' • ');
+const zone = item.zone?.yo || item.zone?.en;
+---
+
+<li class:list={['oy-sched-row', className]}>
+  <span class="oy-sched-time">{when?.trim() ? when : <Pending what={mode === 'day' ? 'the day' : timePending} />}</span>
+  <div class="oy-sched-what">
+    {title && <b>{title}</b>}
+    {item.detail && <p>{item.detail}</p>}
+  </div>
+  {zone && <span class="oy-sched-tag" lang={item.zone?.yo ? 'yo' : undefined}>{zone}</span>}
+</li>
+
+<style>
+  .oy-sched-row {
+    list-style: none;
+  }
+  .oy-sched-what p {
+    margin: 3px 0 0;
+  }
+</style>

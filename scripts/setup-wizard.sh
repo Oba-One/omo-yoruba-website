@@ -307,7 +307,7 @@ if (( VERCEL_READY )) && confirm "Push the values from $ENV_FILE to Vercel now? 
 else
   SKIPPED+=("Vercel environment variables: push them later by re-running stage 3, or add them in the dashboard")
 fi
-note "PUBLIC_ZEFFY_EMBED_URL and PUBLIC_EVENTBRITE_URL are added the same way once you have them (wayfinder ticket 03)."
+note "PUBLIC_ZEFFY_EMBED_URL is added the same way once you have it (wayfinder ticket 03); the Gala's ticket link lives on the edition in the Studio."
 note "Public values are baked in at build time: redeploy after changing one."
 pause
 

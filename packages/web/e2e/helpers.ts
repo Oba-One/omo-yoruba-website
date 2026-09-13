@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 /**
  * devalue's flat encoding for a plain object of primitives and nested objects: the root at
@@ -63,4 +63,33 @@ export async function openEnquiry(page: Page, kind: string): Promise<Locator | u
   await trigger.scrollIntoViewIfNeeded();
   await trigger.click();
   return trigger;
+}
+
+/** Waits for every finite animation on the page, so axe reads the settled colours. */
+export const settle = (page: Page) =>
+  page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ),
+  );
+
+/**
+ * A prototype's mock value never stands in for a fact the page still owes. Each pair is the mock
+ * value and the registry wording of its fact: while the page shows that fact's Pending chip or
+ * line, the mock value appears nowhere. Once the Studio holds the fact the chip goes, and the same
+ * words may be the confirmed value, so the check stops there.
+ */
+export function expectNoMockWhileOwed(
+  text: string,
+  mocks: readonly (readonly [mock: RegExp, what: string | undefined])[],
+) {
+  for (const [mock, what] of mocks) {
+    expect(what, `the registry names the fact behind ${mock}`).toBeDefined();
+    const wording = (what as string).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const owed = new RegExp(`Pending(?::\\s*|\\s*from you\\s*)${wording}`, 'i');
+    if (owed.test(text)) expect(text, `${mock} while "${what}" is owed`).not.toMatch(mock);
+  }
 }

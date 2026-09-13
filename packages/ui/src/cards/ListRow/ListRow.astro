@@ -1,0 +1,69 @@
+---
+/**
+ * A list row (COMPONENT-MAP, Lists and rows; `09 End-of-Year Gala.dc.html`, the sponsor levels): the
+ * tokens' `.oy-lrow` inside an `.oy-list`. Phase 5 builds its sponsor tier form, `kind="tier"`: the level's
+ * name and amount on the left, what it recognizes as the ticked list beside it, each with the
+ * registry's chip while the Studio owes it. The row warms on hover, nothing lifts. The event, recurring
+ * and news forms arrive with the pages that use them.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface TierRowLike {
+  _id?: string | null;
+  name?: string | null;
+  amount?: string | null;
+  recognition?: (string | null)[] | null;
+}
+
+interface Props {
+  kind?: 'tier';
+  row: TierRowLike;
+  /** The registry's wording for a missing name, amount and recognition. */
+  namePending?: string;
+  amountPending?: string;
+  recognitionPending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the row. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  row,
+  namePending = 'the level name',
+  amountPending = 'the amount',
+  recognitionPending = 'what the level recognizes',
+  edit,
+  class: className,
+} = Astro.props;
+const recognition = (row.recognition ?? []).filter((line): line is string => Boolean(line?.trim()));
+---
+
+<li class:list={['oy-lrow', 'oy-lrow--tier', className]} data-sanity={edit}>
+  <div class="oy-lrow-tier">
+    <h3><b>{row.name?.trim() || <Pending what={namePending} />}</b></h3>
+    <span>{row.amount?.trim() || <Pending what={amountPending} />}</span>
+  </div>
+  {
+    recognition.length > 0 ? (
+      <ul class="oy-incl">
+        {recognition.map((line) => (
+          <li>{line}</li>
+        ))}
+      </ul>
+    ) : (
+      <p class="oy-lrow-owed">
+        <Pending what={recognitionPending} />
+      </p>
+    )
+  }
+</li>
+
+<style>
+  .oy-lrow-tier h3 {
+    margin: 0;
+    font-size: inherit;
+  }
+  .oy-lrow-owed {
+    margin: 0;
+  }
+</style>

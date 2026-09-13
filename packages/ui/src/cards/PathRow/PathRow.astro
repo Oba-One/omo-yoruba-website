@@ -1,21 +1,40 @@
 ---
 /**
- * The row form of a door (`02 Homepage.dc.html`, the rows option; COMPONENT-MAP, Cards): the
- * chip naming the way in, the title and one line, one action that opens the door's enquiry kind
- * or the Give Dialog. The chip's accent follows the way in through the tokens (`data-accent`);
- * the border deepens on hover, no rule, no lift. Rows sit inside `PathRows`. The chips are the
+ * The row form of a door or a way in (`02 Homepage.dc.html`, the rows option; the take-part rows of
+ * `08 Odunde Festival.dc.html` and `09 End-of-Year Gala.dc.html`; COMPONENT-MAP, Cards): the chip
+ * naming the way in, the title and one line, one action that opens an enquiry kind or the Give
+ * Dialog. Two sources: a homepage `door`, whose key names the chip and the accent, or a take-part
+ * row's own `way`, `chip`, `title`, `line` and `action` (`TakePartBand`). The chip's accent follows
+ * the way in through the tokens (`data-accent`); the border deepens on hover, no rule, no lift. The
+ * default slot follows the line inside its paragraph (the festival's vendor terms). The action is
+ * outline by default, gold once per view, quiet for the give row. The door chips are the
  * prototypes' own: "Membership" and "Partnership" from the homepage rows, "Volunteer" and "Give"
  * from the take-part rows of `11 Yoruba Language School.dc.html`, which share the accents.
  */
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import { type ActionLike, resolveAction } from '../../core/ActionButton/action';
+import type { ButtonVariant } from '../../core/Button/Button.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import type { DoorLike } from '../DoorCard/DoorCard.astro';
 
 interface Props {
-  door: DoorLike;
+  /** A homepage door: its key names the chip and the accent. */
+  door?: DoorLike;
+  /** A take-part row's way in, which names the accent; ignored with `door`. */
+  way?: string | null;
+  chip?: string;
+  title?: string | null;
+  line?: string | null;
+  action?: ActionLike | null;
+  /** The registry's wording where a take-part row is missing its way in, title or button label. */
+  pending?: string;
   /** The gold action: once per view. */
   primary?: boolean;
+  /** The action's look; overrides `primary` (the give row's action is quiet). */
+  variant?: ButtonVariant;
+  /** A `data-sanity` attribute, so click-to-edit reaches the row. */
+  edit?: string;
   class?: string;
 }
 
@@ -33,15 +52,76 @@ const ACCENTS: Record<string, string> = {
   give: 'give',
 };
 
-const { door, primary = false, class: className } = Astro.props;
-const key = door.key ?? '';
+const { door, primary = false, variant, edit, class: className } = Astro.props;
+const key = door?.key ?? '';
+const row = door
+  ? {
+      chip: CHIPS[key],
+      accent: ACCENTS[key],
+      title: door.title,
+      line: door.blurb,
+      action: door.action,
+      chipPending: 'the way in',
+      linePending: pendingWhat('door', 'blurb'),
+      rowPending: undefined,
+    }
+  : {
+      chip: Astro.props.chip,
+      accent: Astro.props.way ?? undefined,
+      title: Astro.props.title,
+      line: Astro.props.line,
+      action: Astro.props.action,
+      chipPending: Astro.props.pending ?? 'the way in',
+      linePending: undefined,
+      rowPending: Astro.props.pending,
+    };
+const title = row.title?.trim();
+const line = row.line?.trim();
+const hasTerms = Astro.slots.has('default');
+const actionReady = resolveAction(row.action)?.ok === true;
 ---
 
-<div class:list={['oy-path', className]} data-door={key || undefined} data-accent={ACCENTS[key]}>
-  <span class="oy-path-chip">{CHIPS[key] ?? <Pending what="the way in" />}</span>
+<div
+  class:list={['oy-path', className]}
+  data-door={key || undefined}
+  data-way={door ? undefined : row.accent}
+  data-accent={row.accent}
+  data-sanity={edit}
+>
+  <span class="oy-path-chip">{row.chip ?? <Pending what={row.chipPending} />}</span>
   <div class="oy-path-body">
-    {door.title?.trim() && <h3>{door.title}</h3>}
-    <p>{door.blurb || <Pending what={pendingWhat('door', 'blurb')} />}</p>
+    {
+      title ? (
+        <h3>{title}</h3>
+      ) : (
+        row.rowPending && (
+          <h3>
+            <Pending what={row.rowPending} />
+          </h3>
+        )
+      )
+    }
+    {
+      line || hasTerms ? (
+        <p>
+          {line}
+          {line && hasTerms && ' '}
+          <slot />
+        </p>
+      ) : (
+        row.linePending && (
+          <p>
+            <Pending what={row.linePending} />
+          </p>
+        )
+      )
+    }
   </div>
-  <ActionButton action={door.action} variant={primary ? 'primary' : 'secondary'} />
+  {
+    actionReady ? (
+      <ActionButton action={row.action} variant={variant ?? (primary ? 'primary' : 'secondary')} />
+    ) : (
+      row.rowPending && <Pending what={row.rowPending} />
+    )
+  }
 </div>

@@ -23,6 +23,11 @@
   max-width: 360px;
 }
 
+/* The event pages' figure keeps the width of its half of the split. */
+.sb-oy-medium {
+  max-width: 480px;
+}
+
 /* Docs pages wear the design system type: Source Serif 4 headings in indigo, Source Sans 3 body
    at 17px (docs/design/COMPONENT-MAP.md, Storybook organisation). */
 .sbdocs.sbdocs-content h1,

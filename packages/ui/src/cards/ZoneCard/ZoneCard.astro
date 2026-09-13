@@ -1,0 +1,96 @@
+---
+/**
+ * A festival zone (COMPONENT-MAP, Cards; `08 Odunde Festival.dc.html`): the photograph, the English
+ * translation as a terracotta label, the Yoruba name with its marks in the display face and one line,
+ * on the card treatment (6px corners, paper, hairline, the aṣọ òkè edge; the border deepens and the
+ * name warms on hover, the photo holds still). The zones block decides the size: the first card of
+ * the mosaic is the tall one. A missing line shows the registry's chip; a zone the page is still owed
+ * renders as a placeholder card naming it.
+ */
+import { pendingWhat } from '@oy/content/pending';
+import type { BilingualText } from '../../core/Kicker/Kicker.astro';
+import Pending from '../../core/Pending/Pending.astro';
+import ImagePlaceholder from '../../media/ImagePlaceholder/ImagePlaceholder.astro';
+import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
+
+export interface ZoneLike {
+  _id?: string;
+  name?: BilingualText | null;
+  line?: string | null;
+  image?: ImageInput | null;
+}
+
+interface Props {
+  zone?: ZoneLike | null;
+  /** A zone the page is owed: the registry's wording, rendered as a placeholder card. */
+  pending?: string;
+  sizes?: string;
+  /** A `data-sanity` attribute for the photograph. */
+  imageEdit?: string;
+  class?: string;
+}
+
+const {
+  zone,
+  pending,
+  sizes = '(min-width: 1100px) 460px, (min-width: 820px) 40vw, 100vw',
+  imageEdit,
+  class: className,
+} = Astro.props;
+const img = imgAttributes(zone?.image, sizes);
+const position = positionOf(zone?.image);
+const yo = zone?.name?.yo?.trim();
+const en = zone?.name?.en?.trim();
+---
+
+{
+  zone ? (
+    <article class:list={['oy-zone', className]} data-zone={zone._id}>
+      <div class="oy-zone-media">
+        {img ? (
+          <img
+            {...img}
+            alt={altOf(zone.image, '')}
+            loading="lazy"
+            decoding="async"
+            style={position ? `object-position: ${position}` : undefined}
+            data-sanity={imageEdit}
+          />
+        ) : (
+          <ImagePlaceholder what={`a photograph of ${yo || en || 'the zone'}`} tone="adire" />
+        )}
+      </div>
+      <div class="oy-zone-body">
+        {en && yo && <span class="oy-zone-tr">{en}</span>}
+        <h3 class="oy-zone-name" lang={yo ? 'yo' : undefined}>
+          {yo || en || <Pending what="the zone name" />}
+        </h3>
+        <p class="oy-zone-line">{zone.line?.trim() ? zone.line : <Pending what={pendingWhat('zone', 'line')} />}</p>
+      </div>
+    </article>
+  ) : (
+    <article class:list={['oy-zone', 'oy-zone--pending', className]}>
+      <div class="oy-zone-media">
+        <ImagePlaceholder what="a photograph of the zone" tone="adire" />
+      </div>
+      <div class="oy-zone-body">
+        <p class="oy-zone-line">
+          <Pending what={pending} />
+        </p>
+      </div>
+    </article>
+  )
+}
+
+<style>
+  .oy-zone-name {
+    margin: 0;
+  }
+  .oy-zone-line {
+    margin: 0;
+  }
+  .oy-zone-media :global(.oy-ph) {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+</style>

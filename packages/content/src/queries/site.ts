@@ -21,7 +21,6 @@ export const siteSettingsQuery = defineQuery(`*[_id == "siteSettings"][0]{
   newsletterTitle,
   newsletterBlurb,
   zeffyEmbedUrl,
-  eventbriteUrl,
   analyticsEnabled,
   theme
 }`);

@@ -5,15 +5,17 @@ import { facts, refs, text } from '../helpers';
 import { definePage } from './page';
 import { siteSettings } from './siteSettings';
 
-export const WAY_INS = ['vendor', 'sponsor', 'performer', 'volunteer', 'table', 'give'] as const;
-
-const takePartOrder = defineField({
-  name: 'takePartOrder',
-  title: 'Take-part band order',
+const takePart = defineField({
+  name: 'takePart',
+  title: 'Take-part band',
   type: 'array',
-  of: [{ type: 'string' }],
-  options: { list: WAY_INS.map((key) => ({ title: key, value: key })) },
-  description: 'The ways in, in the order the closing band shows them.',
+  of: [{ type: 'takePartRow' }],
+  description: 'The ways in, in the order the closing band shows them; each way in once.',
+  validation: (rule) =>
+    rule.custom((rows) => {
+      const ways = ((rows ?? []) as { way?: string }[]).map((row) => row.way).filter(Boolean);
+      return new Set(ways).size === ways.length ? true : 'Each way in appears once.';
+    }),
 });
 
 export const homepage = definePage({
@@ -124,7 +126,7 @@ export const festivalPage = definePage({
     facts(
       'extraFacts',
       'Extra glance facts',
-      'Rows beyond date, time, place and cost, which come from the edition.',
+      'The glance holds five facts and the edition fills four (date, time, place and cost), so the first row here shows and later rows wait for a free place.',
     ),
     defineField({
       name: 'whatItIs',
@@ -132,9 +134,16 @@ export const festivalPage = definePage({
       type: 'blockContent',
       description: 'Includes the Lunar New Year, Diwali and Nowruz framing.',
     }),
+    defineField({
+      name: 'whatItIsImage',
+      title: 'Photograph beside What Odunde is',
+      type: 'oyImage',
+      description:
+        'A festival-day photograph; its caption shows over it ("Festival day • Leimert Park"). Empty shows Pending.',
+    }),
     text('zonesIntro', 'Zones intro', 2),
     facts('planYourVisit', 'Plan your visit', 'Eight practical facts. Empty values show Pending.'),
-    takePartOrder,
+    takePart,
     text('pastYearsIntro', 'Past years intro', 2),
     text('partnersIntro', 'Partners intro', 2),
   ],
@@ -148,14 +157,14 @@ export const galaPage = definePage({
     facts(
       'extraFacts',
       'Extra glance facts',
-      'Rows beyond date, doors, venue and dress, which come from the edition.',
+      'The glance holds five facts and the edition fills all five (date, doors, venue, dress and seats from), so rows here show only if the page drops one of those.',
     ),
     text('eveningIntro', 'The evening intro'),
     text('tiersIntro', 'Seats and tables intro', 2),
     text('sponsorIntro', 'Sponsor intro', 2),
     text('honoreesIntro', 'Honorees intro', 2),
     text('pastIntro', 'Past galas intro', 2),
-    takePartOrder,
+    takePart,
   ],
   layout: PAGE_LAYOUTS.galaPage,
 });
@@ -519,6 +528,8 @@ export const newsPage = definePage({
   fields: [],
   layout: PAGE_LAYOUTS.newsPage,
 });
+
+export { WAY_INS } from '../../take-part';
 
 export const singletonTypes = [
   siteSettings,

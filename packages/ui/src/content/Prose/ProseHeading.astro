@@ -1,0 +1,21 @@
+---
+/**
+ * The `h3` style of body copy (`blockContent`): a heading inside a section's prose, in the display
+ * face below the section's H2.
+ */
+import type { BlockProps } from 'astro-portabletext/types';
+
+type Props = BlockProps;
+---
+
+<h3 class="oy-prose-h3"><slot /></h3>
+
+<style>
+  .oy-prose-h3 {
+    margin: 10px 0 0;
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.25;
+    color: var(--indigo-700);
+  }
+</style>

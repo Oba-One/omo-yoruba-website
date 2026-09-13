@@ -136,7 +136,9 @@ const NETWORK_NAMES: Record<SocialNetwork, string> = {
       {
         newsletter && (
           <div class="oy-footer-newsletter">
-            <h4>{settings.newsletterTitle?.trim() || <Pending what="the newsletter title" />}</h4>
+            <h2 class="oy-footer-heading">
+              {settings.newsletterTitle?.trim() || <Pending what="the newsletter title" />}
+            </h2>
             {settings.newsletterBlurb?.trim() && <p>{settings.newsletterBlurb}</p>}
             <NewsletterForm
               action={newsletterAction}
@@ -151,14 +153,14 @@ const NETWORK_NAMES: Record<SocialNetwork, string> = {
       }
     </div>
     <div>
-      <h4>Take part</h4>
+      <h2 class="oy-footer-heading">Take part</h2>
       <a href="/get-involved#member">Become a member</a>
       <a href="?enquiry=volunteer#enquiry" data-enquiry="volunteer">Volunteer</a>
       <a href="/get-involved#partner">Sponsor</a>
       <a href="/donate#give" data-give>Donate</a>
     </div>
     <div>
-      <h4>Learn more</h4>
+      <h2 class="oy-footer-heading">Learn more</h2>
       <a href="/impact">Our impact</a>
       <a href="/our-story">Our story</a>
       <a href="/impact#governance">501(c)(3) &amp; financials</a>
@@ -169,6 +171,17 @@ const NETWORK_NAMES: Record<SocialNetwork, string> = {
 </footer>
 
 <style>
+  /*
+   * The prototype sets the footer's headings as h4; the site makes them h2, the footer's own level
+   * under the page's h1, so a page whose last section ends on an h2 (Odunde's partners) never skips a
+   * level before them (axe heading-order). They keep the tokens' h4 look.
+   */
+  .oy-footer-heading {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: var(--weight-heading-2);
+    margin: 0 0 12px;
+  }
   .oy-footer {
     position: relative;
     overflow: hidden;

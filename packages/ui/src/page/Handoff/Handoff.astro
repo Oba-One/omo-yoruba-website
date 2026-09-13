@@ -1,29 +1,54 @@
 ---
 /**
- * The closing "where this page hands off" line (COMPONENT-MAP, Page structure): one button and a
- * short line beside it, centred, as the homepage's gallery section ends ("Open the photo gallery"
- * and the line under the mosaic in `02 Homepage.dc.html`). The button is a Studio-shaped action
- * so a page can pass a link, an enquiry kind or the Give Dialog; outline by default, quiet where
- * the page asks.
+ * Where a section or a page hands off (COMPONENT-MAP, Page structure), in two shapes. The line: one
+ * button and a short line beside it, centred, as the homepage's gallery section ends ("Open the photo
+ * gallery" and the line under the mosaic in `02 Homepage.dc.html`). The box: the tokens' tinted
+ * `.oy-handoff` with the line on the left and up to two buttons on the right, as the event pages
+ * close their take-part and partners sections (`08 Odunde Festival.dc.html`). The buttons are
+ * Studio-shaped actions so a page can pass a link, an enquiry kind or the Give Dialog; the first is
+ * outline by default, quiet or gold where the page asks, and the second is always the outline
+ * without an arrow. On the box's tint a quiet button deepens to terracotta 700 for AA.
  */
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import type { ActionLike } from '../../core/ActionButton/action';
 
 interface Props {
   action?: ActionLike | null;
+  /** The box only: a second button after the first ("Sponsor Odunde" beside Donate). */
+  secondAction?: ActionLike | null;
   /** The line beside the button. */
   text?: string | null;
   variant?: 'secondary' | 'quiet' | 'primary';
+  shape?: 'line' | 'box';
   class?: string;
 }
 
-const { action, text, variant = 'secondary', class: className } = Astro.props;
+const {
+  action,
+  secondAction,
+  text,
+  variant = 'secondary',
+  shape = 'line',
+  class: className,
+} = Astro.props;
 ---
 
-<p class:list={['oy-handoff-line', className]}>
-  <ActionButton action={action} variant={variant} />
-  {text && <span class="oy-handoff-text">{text}</span>}
-</p>
+{
+  shape === 'box' ? (
+    <div class:list={['oy-handoff', className]}>
+      {text && <p class="oy-handoff-say">{text}</p>}
+      <div class="oy-handoff-actions">
+        <ActionButton action={action} variant={variant} />
+        {secondAction && <ActionButton action={secondAction} variant="secondary" arrow={false} />}
+      </div>
+    </div>
+  ) : (
+    <p class:list={['oy-handoff-line', className]}>
+      <ActionButton action={action} variant={variant} />
+      {text && <span class="oy-handoff-text">{text}</span>}
+    </p>
+  )
+}
 
 <style>
   .oy-handoff-line {
@@ -37,5 +62,24 @@ const { action, text, variant = 'secondary', class: className } = Astro.props;
   .oy-handoff-text {
     font-size: var(--text-small);
     color: var(--text-muted);
+  }
+  /* On the indigo tint the quiet button's terracotta deepens to 700 to keep AA, as on the alt ground. */
+  .oy-handoff {
+    margin-top: 20px;
+    --accent-kicker: var(--terra-700);
+  }
+  .oy-handoff-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .oy-handoff-actions :global(.oy-btn) {
+    margin-left: 0;
+  }
+  @media (max-width: 900px) {
+    .oy-handoff-actions {
+      margin-left: 0;
+    }
   }
 </style>

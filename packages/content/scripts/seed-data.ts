@@ -481,6 +481,13 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         image: image(assets, 'odunde-2026-procession-with-drummer.jpg'),
       },
       extraFacts: withKeys('fact', [fact('Family', 'All ages', "Children's compound on site")]),
+      // The prototype's figure beside the prose, with its framing and its place caption.
+      whatItIsImage: image(
+        assets,
+        'odunde-2026-kid-playing-with-masquerade-performer.jpg',
+        'Festival day • Leimert Park',
+        [45, 50],
+      ),
       whatItIs: blocks(
         'Odunde marks the Yoruba new year. It is held in June at Leimert Park, and it is open to the whole neighborhood, not only to Yoruba families. The park is laid out as a village for the day, with four zones and a program that runs from the opening procession to the last drum.',
         'If you have never been: this sits alongside Lunar New Year, Diwali, and Nowruz. Communities that pause the world for a day to celebrate who they are, in public, with their neighbors, and with anyone who wants to come and eat.',
@@ -500,7 +507,38 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           'Lost children',
         ].map((label) => fact(label)),
       ),
-      takePartOrder: ['vendor', 'sponsor', 'performer', 'volunteer', 'give'],
+      // The prototype's rows without the facts the register marks as invented (fees, deadlines,
+      // level amounts, times, roles); the vendor row's terms come from the edition (ADR 0025).
+      takePart: withKeys('way', [
+        {
+          _type: 'takePartRow',
+          way: 'vendor',
+          title: 'Sell at Ọjà Balógun',
+          line: 'A booth is held once the fee is paid.',
+          label: 'Apply for a booth',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'sponsor',
+          title: 'Keep the day open',
+          line: 'Four questions, and we send the deck with our impact numbers.',
+          label: 'Sponsor Odunde',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'performer',
+          title: 'Drummers, dancers, cultural groups',
+          line: 'One short form, and the program committee sees every one.',
+          label: 'Ask about performing',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          title: 'Festival day needs hands',
+          line: 'One short form, and we place you where the gap is.',
+          label: 'Volunteer',
+        },
+      ]),
       partnersIntro: 'The day is open because these organizations help pay for it.',
       primaryAction: cta('Plan your day', 'anchor', '#plan'),
       secondaryActions: withKeys('action', [cta('Apply as a vendor', 'enquiry', 'vendor')]),
@@ -521,7 +559,36 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         'Single seats and couples are sold through Eventbrite, which opens in a new tab. A table of ten is arranged with us directly: tell us who is coming and we place the table and send an invoice.',
       sponsorIntro: 'One enquiry covers this evening, Odunde, or both: just tick which.',
       honoreesIntro: 'Who we are honoring this year, and who has been honored before.',
-      takePartOrder: ['sponsor', 'table', 'volunteer', 'give'],
+      takePart: withKeys('way', [
+        {
+          _type: 'takePartRow',
+          way: 'sponsor',
+          title: 'Sponsor the evening',
+          line: 'Four questions and we send the deck. One enquiry covers the Gala, Odunde, or both.',
+          label: 'Sponsor the Gala',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'table',
+          title: 'Bring your table',
+          line: 'Ten seats together, placed by hand and invoiced afterwards.',
+          label: 'Reserve a table',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          title: 'The night needs hands',
+          line: 'One form, and we place you.',
+          label: 'Volunteer',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'give',
+          title: 'Cannot come this year?',
+          line: 'A gift does the same work as a seat, and monthly does more.',
+          label: 'Donate',
+        },
+      ]),
       primaryAction: cta('Get tickets', 'anchor', '#seats'),
       secondaryActions: withKeys('action', [cta('Sponsor the evening', 'enquiry', 'sponsor')]),
     }),
@@ -727,6 +794,22 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
   docs.push(page('newsPage', { header: { title: 'News and events' } }));
 
   return docs;
+}
+
+/**
+ * Fields a schema change retired, per document type: a re-run unsets them where they are still
+ * stored, so the Studio shows no unknown field (`takePartOrder` became `takePart`, ADR 0025; the
+ * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024).
+ */
+export const RETIRED_FIELDS: Record<string, readonly string[]> = {
+  festivalPage: ['takePartOrder'],
+  galaPage: ['takePartOrder'],
+  siteSettings: ['eventbriteUrl'],
+};
+
+/** The retired fields a stored document still carries. */
+export function retiredFields(type: string, current: Record<string, unknown>): string[] {
+  return (RETIRED_FIELDS[type] ?? []).filter((field) => current[field] !== undefined);
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
