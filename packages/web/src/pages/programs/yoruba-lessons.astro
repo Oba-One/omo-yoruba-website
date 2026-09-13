@@ -11,6 +11,10 @@ import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/clien
 import { createImageSet } from '@oy/content/images';
 import { lessonsPageQuery } from '@oy/content/queries';
 import PersonCard from '@oy/ui/cards/PersonCard/PersonCard.astro';
+import EntryList from '@oy/ui/content/EntryList/EntryList.astro';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
 import EnquiryCard from '@oy/ui/forms/EnquiryCard/EnquiryCard.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
 import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
@@ -75,6 +79,50 @@ cachePage(Astro, '/programs/yoruba-lessons', { draft: preview, failed: Boolean(e
         />
       </Split>
     </Section>
+
+    <Section id="learn" ground="alt" labelledby="learn-heading">
+      <Split>
+        <SectionHead
+          kicker={{ yo: 'Ohun tí a ń kọ́', en: 'What we teach' }}
+          title="What you learn"
+          id="learn-heading"
+        />
+        {
+          page.learn.prose ? (
+            <Prose value={page.learn.prose} />
+          ) : (
+            <p>
+              <Pending what={page.learn.pending} />
+            </p>
+          )
+        }
+        <EntryList
+          slot="aside"
+          entries={page.learn.levels}
+          pending={page.learn.levelsPending}
+          linePending={page.learn.linePending}
+        />
+      </Split>
+    </Section>
+
+    {
+      page.lesson.shown && (
+        <Section id="lesson" labelledby="lesson-heading" data-sanity={page.edit.lesson}>
+          <SectionHead
+            kicker={{ yo: 'Ẹ̀kọ́ kan', en: 'One lesson' }}
+            title="What a lesson looks like"
+            intro="So a first-time parent knows what to expect."
+            id="lesson-heading"
+          />
+          <Schedule
+            items={page.lesson.steps}
+            mode="day"
+            pending={page.lesson.pending}
+            timePending={page.lesson.stepPending}
+          />
+        </Section>
+      )
+    }
 
     <Section id="take-part" labelledby="take-part-heading">
       <SectionHead

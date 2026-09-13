@@ -4,9 +4,10 @@
  * it with a fixture: the layout with the schema defaults, the slim header with its gold "Write to the
  * teacher", the glance's facts with the registry's chip for an owed one, the teacher (the woven tick,
  * "Teacher" and the chip for her name before she is linked; her name, role, short bio and portrait
- * after, the portrait by the `portraits` option) with her routing contact's email or its chip, the
- * take-part rows, and the `data-sanity` attributes for click-to-edit in draft mode. The page is Yoruba
- * Language Lessons: never "School", no terms, no Saturdays, no venue.
+ * after, the portrait by the `portraits` option) with her routing contact's email or its chip, what
+ * you learn (the prose and the levels, or their chips), the steps of a lesson as the `lesson` option
+ * shows them, the take-part rows, and the `data-sanity` attributes for click-to-edit in draft mode. The
+ * page is Yoruba Language Lessons: never "School", no terms, no Saturdays, no venue.
  */
 import { PENDING, pendingWhat } from '@oy/content/pending';
 import type { lessonsPageQuery } from '@oy/content/queries';
@@ -23,6 +24,8 @@ export interface LessonsLayout extends Record<string, string> {
 }
 
 const PAGE_TITLE = 'Yoruba Language Lessons';
+
+const pending = (field: string) => pendingWhat('lessonsPage', field) ?? 'this part of the page';
 
 /** One teacher is a confirmed fact, so her card says "Teacher" before the Studio names her. */
 const TEACHER_ROLE = 'Teacher';
@@ -65,6 +68,29 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
       // Null while the settings hold no address, so the card shows the registry's chip.
       email: cleanText(data?.teacherEmail) ?? null,
       emailPending: EMAIL_PENDING,
+    },
+    learn: {
+      prose: data?.learn && data.learn.length > 0 ? data.learn : undefined,
+      pending: pending('learn'),
+      levels: (data?.levels ?? [])
+        .filter((level) => level !== null)
+        .map((level) => ({ _key: level._key, title: level.name, line: level.blurb })),
+      levelsPending: pending('levels[]'),
+      linePending: pending('levels'),
+    },
+    lesson: {
+      shown: layout.lesson !== 'hidden',
+      // Day-led schedule rows: the step's place in the lesson where a festival row shows its time.
+      steps: (data?.oneLesson ?? [])
+        .filter((step) => step !== null)
+        .map((step) => ({
+          _key: step._key,
+          day: step.step,
+          title: step.title ? { en: step.title } : null,
+          detail: step.detail,
+        })),
+      pending: pending('oneLesson[]'),
+      stepPending: pending('oneLesson'),
     },
     takePart: { ...page.takePart, labels: 'column' as const },
     edit: page.layoutEdit,

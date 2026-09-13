@@ -1,10 +1,11 @@
 ---
 /**
- * A list row (COMPONENT-MAP, Lists and rows; `09 End-of-Year Gala.dc.html`, the sponsor levels): the
- * tokens' `.oy-lrow` inside an `.oy-list`. Phase 5 builds its sponsor tier form, `kind="tier"`: the level's
- * name and amount on the left, what it recognizes as the ticked list beside it, each with the
- * registry's chip while the Studio owes it. The row warms on hover, nothing lifts. The event, recurring
- * and news forms arrive with the pages that use them.
+ * A list row (COMPONENT-MAP, Lists and rows): the tokens' `.oy-lrow` inside an `.oy-list`. The sponsor
+ * tier form, `kind="tier"` (`09 End-of-Year Gala.dc.html`): the level's name and amount on the left,
+ * what it recognizes as the ticked list beside it, each with the registry's chip while the Studio owes
+ * it. The entry form, `kind="entry"`: a title as the heading and its line, alone in one column as the
+ * Lessons levels draw it (`11 Yoruba Language School.dc.html`), with the registry's chip for a missing
+ * line. The row warms on hover, nothing lifts.
  */
 import Pending from '../../core/Pending/Pending.astro';
 
@@ -15,50 +16,88 @@ export interface TierRowLike {
   recognition?: (string | null)[] | null;
 }
 
-interface Props {
-  kind?: 'tier';
-  row: TierRowLike;
-  /** The registry's wording for a missing name, amount and recognition. */
-  namePending?: string;
-  amountPending?: string;
-  recognitionPending?: string;
-  /** A `data-sanity` attribute, so click-to-edit reaches the row. */
-  edit?: string;
-  class?: string;
+export interface EntryRowLike {
+  _key?: string | null;
+  title?: string | null;
+  line?: string | null;
 }
 
-const {
-  row,
-  namePending = 'the level name',
-  amountPending = 'the amount',
-  recognitionPending = 'what the level recognizes',
-  edit,
-  class: className,
-} = Astro.props;
-const recognition = (row.recognition ?? []).filter((line): line is string => Boolean(line?.trim()));
+type Props =
+  | {
+      kind?: 'tier';
+      row: TierRowLike;
+      /** The registry's wording for a missing name, amount and recognition. */
+      namePending?: string;
+      amountPending?: string;
+      recognitionPending?: string;
+      /** A `data-sanity` attribute, so click-to-edit reaches the row. */
+      edit?: string;
+      class?: string;
+    }
+  | {
+      kind: 'entry';
+      row: EntryRowLike;
+      /** The registry's wording for a missing title and a missing line. */
+      titlePending?: string;
+      linePending?: string;
+      edit?: string;
+      class?: string;
+    };
+
+const props = Astro.props;
+const { edit, class: className } = props;
 ---
 
-<li class:list={['oy-lrow', 'oy-lrow--tier', className]} data-sanity={edit}>
-  <div class="oy-lrow-tier">
-    <h3><b>{row.name?.trim() || <Pending what={namePending} />}</b></h3>
-    <span>{row.amount?.trim() || <Pending what={amountPending} />}</span>
-  </div>
-  {
-    recognition.length > 0 ? (
-      <ul class="oy-incl">
-        {recognition.map((line) => (
-          <li>{line}</li>
-        ))}
-      </ul>
-    ) : (
-      <p class="oy-lrow-owed">
-        <Pending what={recognitionPending} />
-      </p>
-    )
-  }
-</li>
+{
+  props.kind === 'entry' ? (
+    <li class:list={['oy-lrow', 'oy-lrow--entry', 'oy-lrow--plain', className]} data-sanity={edit}>
+      <div class="oy-lrow-body">
+        <h3>{props.row.title?.trim() || <Pending what={props.titlePending ?? 'the title'} />}</h3>
+        {props.row.line?.trim() ? (
+          <p>{props.row.line}</p>
+        ) : (
+          props.linePending && (
+            <p>
+              <Pending what={props.linePending} />
+            </p>
+          )
+        )}
+      </div>
+    </li>
+  ) : (
+    <li class:list={['oy-lrow', 'oy-lrow--tier', className]} data-sanity={edit}>
+      <div class="oy-lrow-tier">
+        <h3>
+          <b>{props.row.name?.trim() || <Pending what={props.namePending ?? 'the level name'} />}</b>
+        </h3>
+        <span>
+          {props.row.amount?.trim() || <Pending what={props.amountPending ?? 'the amount'} />}
+        </span>
+      </div>
+      {(props.row.recognition ?? []).some((line) => line?.trim()) ? (
+        <ul class="oy-incl">
+          {(props.row.recognition ?? [])
+            .filter((line): line is string => Boolean(line?.trim()))
+            .map((line) => (
+              <li>{line}</li>
+            ))}
+        </ul>
+      ) : (
+        <p class="oy-lrow-owed">
+          <Pending what={props.recognitionPending ?? 'what the level recognizes'} />
+        </p>
+      )}
+    </li>
+  )
+}
 
 <style>
+  .oy-lrow--plain {
+    grid-template-columns: 1fr;
+  }
+  .oy-lrow-body h3 {
+    margin: 0;
+  }
   .oy-lrow-tier h3 {
     margin: 0;
     font-size: inherit;

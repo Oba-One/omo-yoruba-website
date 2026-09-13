@@ -4768,6 +4768,14 @@
         },
         "optional": true
       },
+      "learn": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "blockContent"
+        },
+        "optional": true
+      },
       "levels": {
         "type": "objectAttribute",
         "value": {

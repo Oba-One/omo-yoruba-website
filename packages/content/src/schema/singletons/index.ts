@@ -307,6 +307,13 @@ export const lessonsPage = definePage({
     defineField({ name: 'teacher', title: 'Teacher', type: 'reference', to: [{ type: 'person' }] }),
     text('teacherIntro', 'Teacher intro', 2),
     defineField({
+      name: 'learn',
+      title: 'What you learn',
+      type: 'blockContent',
+      description:
+        'What the lessons teach, in her words: the marks, the tones, how learners move up. Empty shows Pending.',
+    }),
+    defineField({
       name: 'levels',
       title: 'Levels',
       type: 'array',

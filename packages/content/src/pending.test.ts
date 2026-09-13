@@ -212,6 +212,16 @@ describe('the Lessons page', () => {
   });
 });
 
+describe("the Lessons page's teaching sections", () => {
+  it('names the prose, the levels, the lesson and a step without its place', () => {
+    expect(pendingWhat('lessonsPage', 'learn')).toBe('what the lessons teach, in her words');
+    expect(pendingWhat('lessonsPage', 'levels[]')).toBe('what each level covers');
+    expect(pendingWhat('lessonsPage', 'oneLesson[]')).toBe('the shape of a lesson');
+    expect(pendingWhat('lessonsPage', 'oneLesson')).toBe('the step');
+    expect(pendingWhat('lessonsPage', 'levels')).toBe('what the level covers');
+  });
+});
+
 describe('the take-part rows every page with a band registers', () => {
   it('names an empty band and an unfinished row the same way on each page', () => {
     for (const type of [

@@ -6,6 +6,9 @@
  */
 
 import PersonCard from '../../cards/PersonCard/PersonCard.astro';
+import EntryList from '../../content/EntryList/EntryList.astro';
+import Schedule from '../../content/Schedule/Schedule.astro';
+import Pending from '../../core/Pending/Pending.astro';
 import { PHOTOS } from '../../fixtures/photos';
 import {
   LESSONS_GLANCE,
@@ -81,6 +84,72 @@ export const teacher = (portraits: 'shown' | 'hidden', linked = false): SlotValu
               emailPending: TEACHER_PENDING.emailPending,
             },
           },
+        },
+      },
+    ],
+  },
+});
+
+/** What you learn as the Studio stands: the prose and the levels owed. */
+export const learn: SlotValue = {
+  component: Section,
+  props: { id: 'learn', ground: 'alt', labelledby: 'learn-heading' },
+  slots: {
+    default: {
+      component: Split,
+      slots: {
+        default: [
+          {
+            component: SectionHead,
+            props: {
+              kicker: { yo: 'Ohun tí a ń kọ́', en: 'What we teach' },
+              title: 'What you learn',
+              id: 'learn-heading',
+            },
+          },
+          { component: Pending, props: { what: 'what the lessons teach, in her words' } },
+        ],
+        aside: {
+          component: EntryList,
+          props: { entries: [], pending: 'what each level covers' },
+        },
+      },
+    },
+  },
+};
+
+/**
+ * What a lesson looks like. `placeholders` draws its rows in the bracketed form to show the layout
+ * the Studio's steps will take; the prototype's steps are invented. Without them, the Pending line.
+ */
+export const lesson = (placeholders: boolean): SlotValue => ({
+  component: Section,
+  props: { id: 'lesson', labelledby: 'lesson-heading' },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          kicker: { yo: 'Ẹ̀kọ́ kan', en: 'One lesson' },
+          title: 'What a lesson looks like',
+          intro: 'So a first-time parent knows what to expect.',
+          id: 'lesson-heading',
+        },
+      },
+      {
+        component: Schedule,
+        props: {
+          mode: 'day',
+          pending: 'the shape of a lesson',
+          timePending: 'the step',
+          items: placeholders
+            ? [1, 2, 3].map((n) => ({
+                _key: `step-${n}`,
+                day: '[ Step ]',
+                title: { en: '[ The shape of a lesson ]' },
+                detail: '[ One line on what happens ]',
+              }))
+            : [],
         },
       },
     ],

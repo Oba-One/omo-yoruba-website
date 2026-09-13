@@ -1,0 +1,41 @@
+---
+/**
+ * A list of entry rows in the tokens' `.oy-list` (COMPONENT-MAP, Lists and rows): the Lessons levels,
+ * each a title and its line (`11 Yoruba Language School.dc.html`, What you learn). No entry renders the
+ * registry's Pending line.
+ */
+import ListRow, { type EntryRowLike } from '../../cards/ListRow/ListRow.astro';
+import Pending from '../../core/Pending/Pending.astro';
+
+interface Props {
+  entries?: ((EntryRowLike & { edit?: string }) | null)[] | null;
+  /** The registry's wording for no entries. */
+  pending?: string;
+  /** The registry's wording for an entry missing its line. */
+  linePending?: string;
+  class?: string;
+}
+
+const { entries, pending = 'the entries', linePending, class: className } = Astro.props;
+const list = (entries ?? []).filter((entry) => entry !== null);
+---
+
+{
+  list.length === 0 ? (
+    <Pending variant="line" what={pending} class={className} />
+  ) : (
+    <ul class:list={['oy-list', className]} role="list">
+      {list.map((entry) => (
+        <ListRow kind="entry" row={entry} linePending={linePending} edit={entry.edit} />
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .oy-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

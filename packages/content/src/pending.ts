@@ -362,15 +362,34 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'lessonsPage',
+    fields: ['learn'],
+    where: 'Lessons, what you learn',
+    what: 'what the lessons teach, in her words',
+  },
+  {
+    type: 'lessonsPage',
     fields: ['levels[]'],
     where: 'Lessons, levels',
     what: 'what each level covers',
   },
   {
     type: 'lessonsPage',
+    condition: 'count(levels[!defined(blurb)]) > 0',
+    where: 'Lessons, levels',
+    what: 'what the level covers',
+  },
+  {
+    type: 'lessonsPage',
     fields: ['oneLesson[]'],
     where: 'Lessons, one lesson',
     what: 'the shape of a lesson',
+  },
+  // A step saved before its place in the lesson ("Before", "First half"): the row shows this chip there.
+  {
+    type: 'lessonsPage',
+    condition: 'count(oneLesson[!defined(step)]) > 0',
+    where: 'Lessons, one lesson',
+    what: 'the step',
   },
   {
     type: 'lessonsPage',

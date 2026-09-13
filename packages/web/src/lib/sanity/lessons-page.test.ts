@@ -37,6 +37,9 @@ const seeded = {
   teacher: null,
   teacherIntro:
     'There is no sign-up form and no fixed timetable. You write, she places the learner and proposes a time, and the first lesson follows.',
+  learn: null,
+  levels: null,
+  oneLesson: null,
   takePart: [
     {
       _key: 'way-1',
@@ -126,6 +129,66 @@ describe('buildLessonsPage', () => {
     );
     expect(hidden.teacher.variant).toBe('nophoto');
     expect(hidden.teacher.person.image).toBeUndefined();
+  });
+
+  it('carries what you learn: the prose or its chip, and the levels or their Pending line', () => {
+    const empty = buildLessonsPage(seeded, options).learn;
+    expect(empty).toEqual({
+      prose: undefined,
+      pending: 'what the lessons teach, in her words',
+      levels: [],
+      levelsPending: 'what each level covers',
+      linePending: 'what the level covers',
+    });
+    const written = buildLessonsPage(
+      {
+        ...seeded,
+        learn: [
+          {
+            _type: 'block',
+            _key: 'b1',
+            style: 'normal',
+            markDefs: [],
+            children: [{ _type: 'span', _key: 's1', text: '[ In her words ]', marks: [] }],
+          },
+        ],
+        levels: [
+          { _key: 'level-1', name: '[ Level one ]', blurb: '[ What it covers ]' },
+          { _key: 'level-2', name: '[ Level two ]', blurb: null },
+        ],
+      } as unknown as LessonsPageData,
+      options,
+    ).learn;
+    expect(written.prose).toHaveLength(1);
+    expect(written.levels).toEqual([
+      { _key: 'level-1', title: '[ Level one ]', line: '[ What it covers ]' },
+      { _key: 'level-2', title: '[ Level two ]', line: null },
+    ]);
+  });
+
+  it("carries a lesson's steps as day-led rows, shown or hidden by the option", () => {
+    const view = buildLessonsPage(seeded, options).lesson;
+    expect(view).toEqual({
+      shown: true,
+      steps: [],
+      pending: 'the shape of a lesson',
+      stepPending: 'the step',
+    });
+    const steps = buildLessonsPage(
+      {
+        ...seeded,
+        oneLesson: [{ _key: 'step-1', step: '[ Step ]', title: '[ What happens ]', detail: null }],
+      } as unknown as LessonsPageData,
+      options,
+    ).lesson.steps;
+    expect(steps).toEqual([
+      { _key: 'step-1', day: '[ Step ]', title: { en: '[ What happens ]' }, detail: null },
+    ]);
+    const hidden = buildLessonsPage(
+      { ...seeded, layout: { lesson: 'hidden' } } as LessonsPageData,
+      options,
+    );
+    expect(hidden.lesson.shown).toBe(false);
   });
 
   it('carries the take-part rows without a lead, and edit attributes in draft mode only', () => {

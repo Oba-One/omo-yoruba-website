@@ -19,7 +19,9 @@ test.describe('the Yoruba Language Lessons page', () => {
     const order = await page.evaluate(() =>
       Array.from(document.querySelectorAll('main > *')).map((el) => el.id),
     );
-    expect(order.slice(0, 3)).toEqual(['top', 'glance', 'teacher']);
+    expect(order.slice(0, 4)).toEqual(['top', 'glance', 'teacher', 'learn']);
+    const lesson = await page.locator('body').getAttribute('data-lesson');
+    expect(order.includes('lesson')).toBe(lesson !== 'hidden');
     expect(order.at(-1)).toBe('take-part');
     await expect(page.locator('header#top.oy-phead--slim')).toHaveCount(1);
     expect(await page.locator('body').getAttribute('data-portraits')).toMatch(/^(shown|hidden)$/);
@@ -67,6 +69,41 @@ test.describe('the Yoruba Language Lessons page', () => {
     const link = email.locator('a');
     if ((await link.count()) === 1) await expect(link).toHaveAttribute('href', /^mailto:/);
     else await expect(email).toContainText(/pending: the teacher's email/i);
+  });
+
+  test('teaches what the Studio holds, or names what is owed: the prose, the levels and the lesson', async ({
+    page,
+  }) => {
+    await page.goto('/programs/yoruba-lessons');
+    const learn = page.locator('#learn');
+    await expect(learn.locator('h2')).toHaveText('What you learn');
+    const levels = learn.locator('.oy-list .oy-lrow');
+    if ((await levels.count()) === 0) {
+      await expect(learn.locator('.oy-pend-line')).toContainText(
+        pendingWhat('lessonsPage', 'levels[]') ?? '',
+      );
+    }
+    const text = await learn.innerText();
+    expectNoMockWhileOwed(text, [
+      [/first words|reading and tone|conversation/i, pendingWhat('lessonsPage', 'levels[]')],
+      [/from the first lesson|three tones/i, pendingWhat('lessonsPage', 'learn')],
+    ]);
+    const lesson = page.locator('#lesson');
+    if ((await lesson.count()) === 1) {
+      await expect(lesson.locator('h2')).toHaveText('What a lesson looks like');
+      const steps = lesson.locator('ol.oy-sched--day li');
+      if ((await steps.count()) === 0) {
+        await expect(lesson.locator('.oy-pend-line')).toContainText(
+          pendingWhat('lessonsPage', 'oneLesson[]') ?? '',
+        );
+      }
+      expectNoMockWhileOwed(await lesson.innerText(), [
+        [
+          /About an hour|Homework by email|Ten minutes off camera|Nobody leaves without speaking/i,
+          pendingWhat('lessonsPage', 'oneLesson[]'),
+        ],
+      ]);
+    }
   });
 
   test('opens the enrol form from the header and from the card, focus returning each time', async ({
