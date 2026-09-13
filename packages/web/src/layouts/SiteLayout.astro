@@ -166,9 +166,13 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
     <FormBridge />
     <VisualEditing enabled={preview} zIndex={1000} />
     <script>
-      // The progress bar (ProgressBar.astro) watches this attribute across the router's lifecycle.
-      document.addEventListener('astro:before-preparation', () => {
-        document.documentElement.setAttribute('data-loading', 'true');
+      // The progress bar (ProgressBar.astro) watches this attribute across the router's lifecycle. A
+      // preparation another listener cancels loads nothing (the Lightbox's Back and Forward, ADR 0037), so
+      // the bar waits until every listener has run and stays down for it.
+      document.addEventListener('astro:before-preparation', (event) => {
+        queueMicrotask(() => {
+          if (!event.defaultPrevented) document.documentElement.setAttribute('data-loading', 'true');
+        });
       });
       document.addEventListener('astro:page-load', () => {
         document.documentElement.removeAttribute('data-loading');

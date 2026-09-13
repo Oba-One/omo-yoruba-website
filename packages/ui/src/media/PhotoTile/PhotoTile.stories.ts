@@ -60,3 +60,6 @@ export const FigureShort: Story = {
   args: { ...Figure.args, height: 280 },
   decorators: [wrap('sb-oy-medium')],
 };
+
+/** The first photograph of an album page's first row: loaded at once, and first. */
+export const FirstInView: Story = { args: { eager: true, priority: true } };

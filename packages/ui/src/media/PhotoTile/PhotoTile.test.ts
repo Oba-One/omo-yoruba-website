@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PhotoTile.stories';
 
-const { Default, Framed, EnglishOnly, NoCaption, Pending, Figure, FigureShort } =
+const { Default, Framed, EnglishOnly, NoCaption, Pending, Figure, FigureShort, FirstInView } =
   composeStories(stories);
 
 describe('PhotoTile', () => {
@@ -51,5 +51,13 @@ describe('PhotoTile', () => {
     expect(short?.getAttribute('style')).toBe('--photo-tile-height: 280px');
     const standard = (await renderToBody(Figure)).querySelector('figure.oy-photo-tile--figure');
     expect(standard?.hasAttribute('style')).toBe(false);
+  });
+
+  it('loads a photograph in the first view at once, and the largest paint first', async () => {
+    const img = (await renderToBody(FirstInView)).querySelector('figure.v2-mo img');
+    expect(img?.getAttribute('loading')).toBe('eager');
+    expect(img?.getAttribute('fetchpriority')).toBe('high');
+    const lazy = (await renderToBody(Default)).querySelector('figure.v2-mo img');
+    expect(lazy?.hasAttribute('fetchpriority')).toBe(false);
   });
 });

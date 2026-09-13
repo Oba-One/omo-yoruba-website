@@ -7,7 +7,9 @@
  * missing photo. The `figure` shape is the framed photograph beside an event page's prose (`08
  * Odunde Festival.dc.html`): 360px tall with the card's 6px corners, or the `height` a page's split draws
  * (280px beside the Collective's argument, 340px beside an initiative). The first half of a caption is
- * marked as Yoruba only when it carries Yoruba letters ("Festival day • Leimert Park" has none).
+ * marked as Yoruba only when it carries Yoruba letters ("Festival day • Leimert Park" has none). A tile in
+ * the first view loads at once (`eager`, an album page's first row), and the page's largest paint first
+ * (`priority`); every other tile loads lazily.
  */
 import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
 import { altOf, type ImageInput, imgAttributes, positionOf } from '../image';
@@ -26,6 +28,10 @@ interface Props {
   shape?: 'tile' | 'figure';
   /** The figure's height in pixels where a prototype draws it shorter than 360px. */
   height?: number;
+  /** A photograph in the first view (an album page's first row): fetched at once rather than lazily. */
+  eager?: boolean;
+  /** The page's largest paint: fetched first. */
+  priority?: boolean;
   class?: string;
 }
 
@@ -38,6 +44,8 @@ const {
   edit,
   shape = 'tile',
   height,
+  eager = false,
+  priority = false,
   class: className,
   ...rest
 } = Astro.props;
@@ -61,7 +69,8 @@ const yoruba = /[\u00c0-\u024f\u1e00-\u1eff]|\p{Mn}/u.test(yo ?? '');
       <img
         {...img}
         alt={altOf(image, alt ?? '')}
-        loading="lazy"
+        loading={eager || priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
         decoding="async"
         style={position ? `object-position: ${position}` : undefined}
       />
