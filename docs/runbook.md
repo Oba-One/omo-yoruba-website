@@ -297,8 +297,8 @@ Without the secret, audit the production build locally: `bun run build`, serve
 `.vercel/output` (static files plus the render function's `fetch`, as Phase 4 did), then run the
 command above with `LIGHTHOUSE_BASE_URL=http://localhost:<port>` and no secret. It measures the
 application, not Vercel's CDN. The routes are `/`, `/odunde`, `/gala`, `/programs`,
-`/programs/yoruba-lessons` and `/programs/cultural-collective` since Phase 6, and `/get-involved`,
-`/impact`, `/our-story` and `/donate` since Phase 7.
+`/programs/yoruba-lessons` and `/programs/cultural-collective` since Phase 6, `/get-involved`,
+`/impact`, `/our-story` and `/donate` since Phase 7, and `/gallery` and `/gallery/odunde-2026` since Phase 8.
 
 ## Comparing a page with its prototype
 

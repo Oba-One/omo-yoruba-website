@@ -24,6 +24,9 @@ const routes = [
   '/impact',
   '/our-story',
   '/donate',
+  // Photograph-heavy: the mosaic's covers and an album's grid (the seed's slug in every dataset).
+  '/gallery',
+  '/gallery/odunde-2026',
 ];
 
 module.exports = {
