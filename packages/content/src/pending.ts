@@ -523,13 +523,13 @@ export const PENDING: readonly PendingEntry[] = [
   {
     type: 'donatePage',
     fields: ['whatYourGiftDoes[]'],
-    where: 'Donate',
+    where: 'Donate, what your gift does',
     what: 'the preset amounts and what each buys',
   },
   {
     type: 'donatePage',
     fields: ['otherWays[]'],
-    where: 'Donate',
+    where: 'Donate, other ways to give',
     what: 'which other ways to give you accept',
   },
   // Fees, the receipt and monthly giving depend on how the owner's Zeffy form is set up (spec Q14).
@@ -650,7 +650,7 @@ export const PENDING: readonly PendingEntry[] = [
   {
     type: 'storyPage',
     fields: ['founding'],
-    where: 'About, founding',
+    where: 'Our Story, how it began',
     what: 'the 1997 story, in your words',
   },
   {
@@ -809,11 +809,11 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Impact, governance',
     what: 'the audit position',
   },
-  { type: 'timelineEntry', minimum: 1, where: 'About, timeline', what: 'the dated entries' },
+  { type: 'timelineEntry', minimum: 1, where: 'Our Story, timeline', what: 'the dated entries' },
   {
     type: 'givingLevel',
     minimum: 1,
-    where: 'Donate',
+    where: 'Donate, what your gift does',
     what: 'the preset amounts and what each buys',
   },
   // Still to come as GROQ reads it (ADR 0030): dated, with an end ahead, or no end and a start within the

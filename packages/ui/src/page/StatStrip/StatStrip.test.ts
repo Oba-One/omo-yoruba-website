@@ -58,8 +58,8 @@ describe('StatStrip', () => {
     expect(cells.map((cell) => text(cell.querySelector('span')))).toEqual([
       'years serving Southern California',
       'Yoruba community in Southern California',
+      'hometown associations in the community',
       'festival zones at Odunde',
-      'hometown associations',
     ]);
     expect(cells.map((cell) => text(cell.querySelector('.oy-source')))).toEqual(
       Array(4).fill('Pending: a source line under the figure'),

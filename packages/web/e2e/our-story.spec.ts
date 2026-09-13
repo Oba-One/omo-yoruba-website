@@ -159,6 +159,8 @@ test.describe('the Our Story page', () => {
       return;
     }
     expect(await section.innerText()).not.toMatch(/a say in what gets built/i);
+    // The prototype's chips, the volunteer door's own rather than the way in's "Volunteers".
+    await expect(rows.locator('.oy-path-chip')).toHaveText(['Membership', 'Volunteer']);
     for (const trigger of await section.locator('.oy-takepart a[data-enquiry]').all()) {
       await expectEnquiryRoundTrip(page, trigger);
     }

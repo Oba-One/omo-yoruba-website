@@ -56,9 +56,11 @@ test.describe('the Get Involved page', () => {
     expect(ids).toEqual(expect.arrayContaining(['member', 'partner']));
     expect(ids.every((id) => CARD_KEYS.includes(id))).toBe(true);
     for (const id of ids) {
-      await expect(page.locator(`#${id} .oy-door-label`)).toHaveText(
-        DOOR_CHIPS[id as keyof typeof DOOR_CHIPS],
-      );
+      const label = page.locator(`#${id} .oy-door-label`);
+      await expect(label).toHaveText(DOOR_CHIPS[id as keyof typeof DOOR_CHIPS]);
+      // The prototype's 12px kicker, which never grows with a shorter card in its row.
+      await expect(label).toHaveCSS('font-size', '12px');
+      expect((await label.boundingBox())?.height ?? 0).toBeLessThan(24);
     }
     const rows = (await page.locator('body').getAttribute('data-doors')) === 'rows';
     await expect(page.locator('#doors .oy-door-card--row')).toHaveCount(rows ? ids.length : 0);

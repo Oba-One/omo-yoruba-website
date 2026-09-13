@@ -75,8 +75,8 @@ const seeded = {
   stats: [
     stat('stat-years', '29', 'years serving Southern California'),
     stat('stat-community', '3,000+', 'Yoruba community in Southern California'),
+    stat('stat-associations', '9', 'hometown associations in the community'),
     stat('stat-zones', '4', 'festival zones at Odunde'),
-    stat('stat-associations', '9', 'hometown associations'),
   ],
   howWeWork: null,
   howWeWorkImage: image(
@@ -158,7 +158,7 @@ describe('buildImpactPage', () => {
 
   it('carries the four figures with their sources, and the lead that promises them only while they show', () => {
     const view = buildImpactPage(seeded, options).numbers;
-    expect(view.stats.map((figure) => figure.value)).toEqual(['29', '3,000+', '4', '9']);
+    expect(view.stats.map((figure) => figure.value)).toEqual(['29', '3,000+', '9', '4']);
     expect(view).toMatchObject({
       columns: 4,
       sources: true,

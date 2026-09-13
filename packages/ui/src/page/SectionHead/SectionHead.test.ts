@@ -3,8 +3,17 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './SectionHead.stories';
 
-const { Default, WithLink, WithIntro, SingleKicker, NoKicker, NotePending, IntroAndNote, Pending } =
-  composeStories(stories);
+const {
+  Default,
+  WithLink,
+  WithIntro,
+  SingleKicker,
+  NoKicker,
+  NoSwatch,
+  NotePending,
+  IntroAndNote,
+  Pending,
+} = composeStories(stories);
 
 describe('SectionHead', () => {
   it('renders the swatch, the bilingual kicker and the heading', async () => {
@@ -27,6 +36,12 @@ describe('SectionHead', () => {
   it('renders a single English kicker, or none', async () => {
     expect(text((await renderToBody(SingleKicker)).querySelector('.oy-kicker'))).toBe('Stay close');
     expect((await renderToBody(NoKicker)).querySelector('.oy-kicker')).toBeNull();
+  });
+
+  it('can draw the kicker without the swatch', async () => {
+    const body = await renderToBody(NoSwatch);
+    expect(text(body.querySelector('.oy-kicker'))).toBe('Ọdún tí ń bọ̀•The year ahead');
+    expect(body.querySelector('.oy-sec-swatch')).toBeNull();
   });
 
   it('follows the intro with the note, or the registry chip while it is owed', async () => {

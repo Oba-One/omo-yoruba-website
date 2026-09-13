@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'astro/types';
 import { HOMEPAGE_STATS, STATS } from '../../fixtures/homepage';
+import { IMPACT_STATS } from '../../fixtures/trust-pages';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import StatStrip from './StatStrip.astro';
 
@@ -47,22 +48,22 @@ export const WithOneSource: Story = {
 /** No figures: the Pending line. */
 export const Pending: Story = { args: { stats: [] } };
 
-/** Impact's framed grid: the four seeded figures, each waiting for its source line. */
-export const Framed: Story = { args: { variant: 'framed', sources: true, stats: STATS } };
+/** Impact's framed grid: the four seeded figures in its order, each waiting for its source line. */
+export const Framed: Story = { args: { variant: 'framed', sources: true, stats: IMPACT_STATS } };
 
 /** Impact's six with the four seeded figures: the two empty cells name what they wait for. */
 export const FramedSix: Story = {
   args: {
     variant: 'framed',
     sources: true,
-    stats: STATS,
+    stats: IMPACT_STATS,
     columns: 6,
     padPending: 'attendance and learners served, with their sources',
   },
 };
 
 /** Impact's grid with its source lines hidden. */
-export const FramedSourcesHidden: Story = { args: { variant: 'framed', stats: STATS } };
+export const FramedSourcesHidden: Story = { args: { variant: 'framed', stats: IMPACT_STATS } };
 
 /** Impact's grid with no figures: the Pending line. */
 export const FramedPending: Story = {

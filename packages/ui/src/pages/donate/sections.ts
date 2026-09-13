@@ -41,6 +41,7 @@ export const give: SlotValue = {
   slots: {
     default: {
       component: Split,
+      props: { align: 'center' },
       slots: {
         default: [
           {

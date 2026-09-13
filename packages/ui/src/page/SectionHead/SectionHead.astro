@@ -5,7 +5,9 @@
  * A note can follow the intro in the same paragraph, or the registry's chip while it is owed (the
  * festival's past years: its intro, then the past edition's attendance).
  * The heading takes `id` so the section can be labelled by it. Empty kicker halves render a
- * single kicker; no kicker renders none.
+ * single kicker; no kicker renders none. The intro is the page prototypes' section lead (`.oy-sec-lead`:
+ * 64ch, 12px under the heading), and the heading sits 6px under a kicker and flush without one, as they
+ * draw it. A dark closing band's kicker can go without the swatch (`14 Impact.dc.html`, Fund the next year).
  */
 import Button from '../../core/Button/Button.astro';
 import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
@@ -13,6 +15,8 @@ import Pending from '../../core/Pending/Pending.astro';
 
 interface Props {
   kicker?: BilingualText | null;
+  /** The aṣọ òkè swatch beside the kicker; on by default. */
+  swatch?: boolean;
   title?: string | null;
   /** The registry's wording for a missing heading; without it an empty heading renders nothing. */
   pending?: string;
@@ -29,6 +33,7 @@ interface Props {
 
 const {
   kicker,
+  swatch = true,
   title,
   intro,
   note,
@@ -47,7 +52,7 @@ const hasKicker = Boolean(kicker?.yo || kicker?.en);
     {
       hasKicker && (
         <div class="oy-sec-kicker">
-          <span class="oy-sec-swatch" aria-hidden="true" />
+          {swatch && <span class="oy-sec-swatch" aria-hidden="true" />}
           <Kicker yo={kicker?.yo ?? undefined} en={kicker?.en ?? undefined} />
         </div>
       )
@@ -85,13 +90,14 @@ const hasKicker = Boolean(kicker?.yo || kicker?.en);
     background: var(--pattern-asoke);
     flex: none;
   }
-  .oy-sec-head h2 {
+  .oy-sec-kicker + h2 {
     margin-top: 6px;
   }
   .oy-sec-intro {
-    margin: 10px 0 0;
-    max-width: 560px;
+    margin: 12px 0 0;
+    max-width: 64ch;
     font-size: var(--text-body-size);
+    line-height: 1.7;
     color: var(--text-muted);
   }
   .oy-sec-head :global(.oy-sec-link) {

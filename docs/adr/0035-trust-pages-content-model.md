@@ -50,8 +50,9 @@ time on a page (owner's yes; every retired field is empty in `development`).
 
 - The seed gains revisions: a stored value that still reads exactly as an earlier seed wrote it moves to
   the new seed's value, and a value anyone edited stays. Phase 7 uses it for the two header actions, Get
-  Involved's door list and Impact's six captions; the seed still never inserts into a list the owner
-  changed.
+  Involved's door list and Impact's six captions, and after the prototype comparison for Impact's
+  headline order and the associations figure's label (ADR 0036); the seed still never inserts into a list
+  the owner changed.
 - `event` and `person` reach `/impact` and `stat` reaches `/get-involved`; the Presentation locations and
   cache tags follow the route map.
 - CONTENT-MODEL section 3's `impactPage.governance`, `storyPage.timeline` entries with titles and

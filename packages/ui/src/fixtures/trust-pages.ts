@@ -118,8 +118,22 @@ export const IMPACT_HEADER = {
   ],
 };
 
-/** The four confirmed figures with the Impact page's full labels, each still waiting for its source. */
-export const IMPACT_STATS = STATS.map(({ value, label }) => ({ value, label, source: null }));
+/**
+ * The four confirmed figures in the Impact prototype's order (the associations before the zones) with the
+ * page's full labels, each still waiting for its source.
+ */
+export const IMPACT_STATS = [
+  'stat-years',
+  'stat-community',
+  'stat-associations',
+  'stat-zones',
+].flatMap((id) =>
+  STATS.filter((stat) => stat._id === id).map(({ value, label }) => ({
+    value,
+    label,
+    source: null,
+  })),
+);
 
 export const SOURCES_LEAD =
   'Every number carries a source line: the year it covers and how it was counted.';
@@ -273,6 +287,7 @@ export const STORY_TAKE_PART = [
   {
     _key: 'way-2',
     way: 'volunteer',
+    chip: 'Volunteer',
     title: 'Raise your hand',
     line: 'One form. We place you where you are needed.',
     label: 'Volunteer',

@@ -639,6 +639,39 @@ describe('Impact', () => {
       'nextYear.blurb',
     ]);
   });
+
+  it("reads the headline numbers in the prototype's order, the associations under their full label", () => {
+    const seeded = buildSeed(impactAssets);
+    const page = seeded.find((doc) => doc._id === 'impactPage') as unknown as {
+      stats: { _key: string; _ref: string }[];
+    };
+    expect(page.stats.map((stat) => stat._ref)).toEqual([
+      'stat-years',
+      'stat-community',
+      'stat-associations',
+      'stat-zones',
+    ]);
+    expect(seeded.find((doc) => doc._id === 'stat-associations')).toMatchObject({
+      label: 'hometown associations in the community',
+      shortLabel: 'hometown associations',
+    });
+    const revisions = buildRevisions(impactAssets);
+    const earlier = ['stat-years', 'stat-community', 'stat-zones', 'stat-associations'].map(
+      (id, index) => ({ _key: `stat-${index + 1}`, _type: 'reference', _ref: id }),
+    );
+    expect(revisedFields('impactPage', { stats: earlier }, revisions).set.stats).toEqual(
+      page.stats,
+    );
+    expect(revisedFields('impactPage', { stats: [...earlier].reverse() }, revisions).set).toEqual(
+      {},
+    );
+    expect(revisedFields('stat', { label: 'hometown associations' }, revisions).set).toEqual({
+      label: 'hometown associations in the community',
+    });
+    expect(
+      revisedFields('stat', { label: 'years serving Southern California' }, revisions),
+    ).toEqual({ set: {}, unset: [] });
+  });
 });
 
 describe('Our Story', () => {
@@ -647,7 +680,7 @@ describe('Our Story', () => {
     foundingFacts: { label: string; value?: string }[];
     foundingImage?: unknown;
     staffIntro: string;
-    takePart: { way: string; title: string; line?: string; label: string }[];
+    takePart: { way: string; chip?: string; title: string; line?: string; label: string }[];
     timeline?: unknown;
   };
 
@@ -666,9 +699,17 @@ describe('Our Story', () => {
   });
 
   it('seeds the member and volunteer rows without a member vote, and no header action', () => {
-    expect(story.takePart.map((row) => [row.way, row.title, row.line, row.label])).toEqual([
-      ['member', 'Become a member', undefined, 'Become a member'],
-      ['volunteer', 'Raise your hand', 'One form. We place you where you are needed.', 'Volunteer'],
+    expect(
+      story.takePart.map((row) => [row.way, row.chip, row.title, row.line, row.label]),
+    ).toEqual([
+      ['member', undefined, 'Become a member', undefined, 'Become a member'],
+      [
+        'volunteer',
+        'Volunteer',
+        'Raise your hand',
+        'One form. We place you where you are needed.',
+        'Volunteer',
+      ],
     ]);
     expect(JSON.stringify(story.takePart)).not.toMatch(/a say in what gets built/);
     expect(story.primaryAction).toBeUndefined();

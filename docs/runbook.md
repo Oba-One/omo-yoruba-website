@@ -297,7 +297,8 @@ Without the secret, audit the production build locally: `bun run build`, serve
 `.vercel/output` (static files plus the render function's `fetch`, as Phase 4 did), then run the
 command above with `LIGHTHOUSE_BASE_URL=http://localhost:<port>` and no secret. It measures the
 application, not Vercel's CDN. The routes are `/`, `/odunde`, `/gala`, `/programs`,
-`/programs/yoruba-lessons` and `/programs/cultural-collective` since Phase 6.
+`/programs/yoruba-lessons` and `/programs/cultural-collective` since Phase 6, and `/get-involved`,
+`/impact`, `/our-story` and `/donate` since Phase 7.
 
 ## Comparing a page with its prototype
 
@@ -306,10 +307,13 @@ The prototypes are `.dc.html` files that need HTTP: the `design` entry of `.clau
 Capture both at 375 and 1440 into the gitignored `test-results/` (full-page captures at a device
 pixel ratio of 1, after a scroll pass so lazy photographs load), then compare section by section.
 Pending content and the rules that outrank a prototype are expected differences (ADR 0023 for the
-homepage, ADR 0028 for the event pages, ADR 0033 for the program pages). A prototype's runtime can draw
-its sections outside `.oy-home`, so its theme never reaches them (`12 Yoruba Cultural Collective.dc.html`
-reads paper where the `adire` tint belongs): check a surprising ground with `getComputedStyle` before
-matching it. An edited `@oy/ui` component's scoped stylesheet can stay stale in `astro dev` until the
+homepage, ADR 0028 for the event pages, ADR 0033 for the program pages, ADR 0036 for the trust pages). A
+prototype's runtime can draw its sections outside `.oy-home`, so its theme never reaches them
+(`12 Yoruba Cultural Collective.dc.html` and `15 People and History.dc.html` read paper where the `adire`
+tint belongs): check a surprising ground with `getComputedStyle` before matching it. A prototype's inline
+style can also override the tokens' mobile rules (`16 Donate.dc.html`'s give-now split runs off the screen
+at 375), so read its markup before copying a mobile layout. A page whose option hides a block (Our Story's
+timeline) is compared through its page-section story, with the prototype's section forced visible. An edited `@oy/ui` component's scoped stylesheet can stay stale in `astro dev` until the
 server restarts.
 
 ## Rollback

@@ -62,7 +62,7 @@ const seeded = {
     {
       _key: 'way-2',
       way: 'volunteer',
-      chip: null,
+      chip: 'Volunteer',
       title: 'Raise your hand',
       line: 'One form. We place you where you are needed.',
       label: 'Volunteer',

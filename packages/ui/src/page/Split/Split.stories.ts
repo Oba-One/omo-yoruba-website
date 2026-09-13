@@ -31,3 +31,6 @@ export const Person: Story = {
     },
   },
 };
+
+/** The columns centred on each other, as Donate sets the give-now copy beside its facts. */
+export const Centred: Story = { args: { align: 'center' } };

@@ -50,7 +50,7 @@ cachePage(Astro, '/donate', { draft: preview, failed: Boolean(error) });
     />
 
     <Section id="give-now" labelledby="give-heading">
-      <Split>
+      <Split align="center">
         <SectionHead kicker={{ yo: 'Ẹ ṣe àánú', en: 'Give' }} title={page.give.title} id="give-heading" />
         {page.give.blurb && <Prose text={page.give.blurb} />}
         <FactList slot="aside" facts={page.give.facts} columns={1} />

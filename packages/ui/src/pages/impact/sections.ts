@@ -321,6 +321,7 @@ export const fund: SlotValue = {
         component: SectionHead,
         props: {
           kicker: FUND.kicker,
+          swatch: false,
           title: FUND.title,
           intro: FUND.line,
           notePending: FUND.linePending,

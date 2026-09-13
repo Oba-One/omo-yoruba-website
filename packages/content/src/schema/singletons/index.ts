@@ -617,7 +617,8 @@ export const donatePage = definePage({
               name: 'detail',
               title: 'Detail',
               type: 'string',
-              description: '"Registered with Benevity." The address or the EIN is added for you.',
+              description:
+                'A practical line: what to write on the check, what an employer form asks for. The address or the EIN is added for you.',
               validation: voice.text,
             }),
           ],

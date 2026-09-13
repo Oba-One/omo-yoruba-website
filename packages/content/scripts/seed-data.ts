@@ -127,6 +127,12 @@ const GET_INVOLVED_DOORS = withKeys(
   ['door-member', 'door-volunteer', 'door-vendor', 'door-partner', 'door-give'].map(ref),
 );
 
+/** Impact's headline numbers in `14 Impact.dc.html`'s order: the associations before the zones. */
+const IMPACT_STATS = ['stat-years', 'stat-community', 'stat-associations', 'stat-zones'];
+
+/** The associations figure's full label as Impact reads it; the homepage strip keeps the short one. */
+const ASSOCIATIONS_LABEL = 'hometown associations in the community';
+
 function page(name: string, fields: Record<string, unknown>): SeedDocument {
   const layout = layoutDefaults(name);
   return { _id: name, _type: name, ...fields, ...(layout ? { layout } : {}) };
@@ -165,7 +171,12 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       shortLabel: 'Yoruba community in SoCal',
     },
     { id: 'stat-zones', value: '4', label: 'festival zones at Odunde' },
-    { id: 'stat-associations', value: '9', label: 'hometown associations' },
+    {
+      id: 'stat-associations',
+      value: '9',
+      label: ASSOCIATIONS_LABEL,
+      shortLabel: 'hometown associations',
+    },
   ];
   for (const stat of stats)
     docs.push({
@@ -847,10 +858,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'What we have built since 1997',
         line: 'A 501(c)(3) serving the Yoruba community of Southern California through language, festival, and family programs.',
       },
-      stats: withKeys(
-        'stat',
-        stats.map((stat) => ref(stat.id)),
-      ),
+      stats: withKeys('stat', IMPACT_STATS.map(ref)),
       civicInfra: blocks(
         'Odunde is a public cultural day held in Leimert Park. It is open to the whole neighborhood, not only to Yoruba families, and it is one of the few days in the year when the park is programmed end to end by a community organization rather than rented out.',
       ),
@@ -897,6 +905,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         {
           _type: 'takePartRow',
           way: 'volunteer',
+          // The prototype's chip, the volunteer door's own (ADR 0034), where the way in's is "Volunteers".
+          chip: 'Volunteer',
           title: 'Raise your hand',
           line: 'One form. We place you where you are needed.',
           label: 'Volunteer',
@@ -1023,6 +1033,18 @@ export function buildRevisions(assets: SeedAssets): SeedRevision[] {
       ),
       now: GET_INVOLVED_DOORS,
     },
+    // Impact (ticket 15, the prototype comparison): the homepage strip's order, and the associations
+    // figure's short label where the page reads the full one.
+    {
+      type: 'impactPage',
+      path: 'stats',
+      was: withKeys(
+        'stat',
+        ['stat-years', 'stat-community', 'stat-zones', 'stat-associations'].map(ref),
+      ),
+      now: withKeys('stat', IMPACT_STATS.map(ref)),
+    },
+    { type: 'stat', path: 'label', was: 'hometown associations', now: ASSOCIATIONS_LABEL },
   ];
 }
 

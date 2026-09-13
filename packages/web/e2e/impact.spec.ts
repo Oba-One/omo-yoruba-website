@@ -136,7 +136,13 @@ test.describe('the Impact page', () => {
     await expect(voices).toHaveCount(3);
     expect(await page.locator('#voices').innerText()).not.toMatch(/Saturday mornings/i);
     const photographs = page.locator('#photographs');
-    await expect(photographs.locator('.oy-mosaic[data-count="6"] > *')).toHaveCount(6);
+    const tiles = photographs.locator('.oy-mosaic[data-count="6"] > *');
+    await expect(tiles).toHaveCount(6);
+    // Equal tiles at every width, three across or two (no wide first tile leaving the sixth alone).
+    const widths = await tiles.evaluateAll((items) =>
+      items.map((item) => Math.round(item.getBoundingClientRect().width)),
+    );
+    expect(new Set(widths).size).toBe(1);
     await expect(photographs.locator('a[href="/gallery"]')).toContainText('Open the gallery');
     if (!PLACEHOLDER_PROJECT) {
       await expect(photographs.locator('figcaption').first()).toContainText('2026');

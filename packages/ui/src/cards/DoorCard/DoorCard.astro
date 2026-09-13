@@ -77,7 +77,10 @@ const row = layout === 'row';
       <ImagePlaceholder slot="media" what={`a photo for ${title ?? 'this door'}`} aspect="520 / 190" class="oy-door-placeholder" />
     )
   }
-  {chip && <p class="oy-person-role oy-door-label">{chip}</p>}
+  {
+    /* A span as in the prototype: the card's `.oy-door p` rules would grow it and set it at 15px. */
+    chip && <span class="oy-person-role oy-door-label">{chip}</span>
+  }
   {title && <h3>{title}</h3>}
   <p>{door.blurb || <Pending what={blurbPending} />}</p>
   {
@@ -101,17 +104,29 @@ const row = layout === 'row';
     aspect-ratio: auto;
   }
   .oy-door-label {
-    margin: 0;
     color: var(--accent-kicker, var(--terra-600));
   }
+  /* The prototype's `gi-bullets`: a gold bullet glyph, 15px lines, 9px apart. */
   .oy-door-bullets {
+    list-style: none;
     margin: 0;
-    padding-left: 18px;
-    font-size: 14.5px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    width: 100%;
+  }
+  .oy-door-bullets li {
+    display: flex;
+    gap: 11px;
+    font-size: 15px;
+    line-height: 1.55;
     color: var(--text-muted);
   }
-  .oy-door-bullets li + li {
-    margin-top: 4px;
+  .oy-door-bullets li::before {
+    content: '•';
+    color: var(--gold-500);
+    font-weight: 700;
   }
   /* The row form (`13 Get Involved.dc.html`, the rows option): the photograph fills the row's height. */
   .oy-door-card--row {
