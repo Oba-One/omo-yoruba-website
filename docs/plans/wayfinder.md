@@ -110,6 +110,11 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   and [the program pages follow the slimmed prototypes](../adr/0031-program-pages-content-model.md): Lessons
   without voices, sub-programs with their own photographs and facts, the year strip naming kinds, green
   inside the Collective page's `main` (Phase 6 grill, owner's answers in `docs/tickets/phase-6/spec.md`).
+- [The FAQ accordion and the inline programs are native disclosures](../adr/0032-native-disclosures-for-the-accordion-and-inline-programs.md)
+  with no script (`docs/research/phase-6-faq-accordion.md`), and
+  [the program pages follow their prototypes under the repo rules](../adr/0033-program-pages-follow-their-prototypes-under-the-repo-rules.md):
+  placeholders instead of interim photographs, AA greens and kickers on the Collective's strong tint, a
+  handoff box white on an alternate ground (Phase 6).
 - [The homepage under the mobile performance budget](../tickets/wayfinder/issues/33-homepage-mobile-lighthouse-budget.md):
   right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
   0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).

@@ -306,8 +306,11 @@ The prototypes are `.dc.html` files that need HTTP: the `design` entry of `.clau
 Capture both at 375 and 1440 into the gitignored `test-results/` (full-page captures at a device
 pixel ratio of 1, after a scroll pass so lazy photographs load), then compare section by section.
 Pending content and the rules that outrank a prototype are expected differences (ADR 0023 for the
-homepage, ADR 0028 for the event pages). An edited `@oy/ui` component's scoped stylesheet can stay
-stale in `astro dev` until the server restarts.
+homepage, ADR 0028 for the event pages, ADR 0033 for the program pages). A prototype's runtime can draw
+its sections outside `.oy-home`, so its theme never reaches them (`12 Yoruba Cultural Collective.dc.html`
+reads paper where the `adire` tint belongs): check a surprising ground with `getComputedStyle` before
+matching it. An edited `@oy/ui` component's scoped stylesheet can stay stale in `astro dev` until the
+server restarts.
 
 ## Rollback
 

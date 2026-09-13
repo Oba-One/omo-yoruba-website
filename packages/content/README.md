@@ -22,13 +22,17 @@ Functions. The only package where GROQ lives. Built in Phase 2 from
 - `src/queries/`: the GROQ the site runs, one file per concern (`site.ts`: `siteSettingsQuery`,
   `routingQuery`, the address cap count, the subscriber lookup; `homepage.ts`: the one composed
   homepage read; `event-pages.ts`: `festivalPageQuery` and `galaPageQuery`, each page in one read with
-  every edition of its kind), typed by TypeGen through `SanityQueries`.
+  every edition of its kind; `program-pages.ts`: `programsPageQuery`, `lessonsPageQuery` and
+  `collectivePageQuery`, each filtered by `_type` as well as `_id` so TypeGen types the singleton
+  alone), typed by TypeGen through `SanityQueries`.
 - `src/layout.ts` (`layoutDefaults`, `withLayoutDefaults`), `src/lead-event.ts` (the season
-  rule, and since Phase 5 `pageEdition` and `pastEdition`, ADR 0024), `src/images.ts`
+  rule, since Phase 5 `pageEdition` and `pastEdition`, ADR 0024, and since Phase 6 `collectiveEvents`,
+  ADR 0030), `src/images.ts`
   (`createImageSet`, CDN URLs from the asset reference), `src/stega.ts` (the filter that keeps the
   discriminators and layout values clean): Phase 4, ADR 0021 and 0022.
-- `src/take-part.ts`: the six ways in and what each opens (`WAY_INS`, `wayAction`), read by the
-  schema's `takePartRow`, the seed and the site (ADR 0025).
+- `src/take-part.ts`: the nine ways in and what each opens (`WAY_INS`, `wayAction`: an enquiry kind,
+  the Give Dialog, or the newsletter's `#subscribe` for `updates`), read by the schema's `takePartRow`,
+  the seed and the site (ADR 0025, ADR 0029).
 - `src/validation/`: the voice rules as Sanity validation (em dash error, marks warning, sentence
   case warning), reusing `@oy/lint`.
 - `src/pending.ts`: the Pending registry (ADR 0014); `src/studio/`: structure, presence pane,
@@ -88,5 +92,11 @@ Decided with the owner on 11 September 2026; each has its ADR.
   festival page gains `whatItIsImage`, the Gala's Eventbrite link lives only on the edition's
   `ticketsUrl` (`siteSettings.eventbriteUrl` retired, ADR 0024), and the Gala's `awards` option
   defaults to hidden.
+- Phase 6: `takePart[]` on the three program singletons with the row's own `chip`; sub-programs with
+  `image` and `facts[]`; `yearStripRow.kind` (festival, gala) naming an event page instead of an edition;
+  `lessonsPage.learn`; retired and unset by the seed where stored: `kidsStem.image`, `kidsStem.ages`, a
+  sub-program's `ages` and `detail`, `yearStrip[].event`, `lessonsPage.voices` (ADR 0031). The
+  registry names each owed fact of Cultural Exchange and of an initiative on its own, the teacher and her
+  email apart, and counts the Collective events still to come; `presenceWhat` finds a row by kind.
 - The seed accepts `SANITY_WRITE_TOKEN` as an alias of `SANITY_API_WRITE_TOKEN` with a warning,
   because the owner's `packages/web/.env` predates the wizard's names.
