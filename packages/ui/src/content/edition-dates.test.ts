@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { editionHours, longDate, shortDate } from './edition-dates';
+import { dayMonthYear, editionHours, longDate, shortDate } from './edition-dates';
 
 // 12 June 2027, 11am to 7pm in Los Angeles (UTC-7 in June).
 const start = '2027-06-12T18:00:00.000Z';
@@ -19,6 +19,14 @@ describe('edition dates', () => {
       '6pm to 12am',
     );
     expect(editionHours('2027-06-12T18:30:00.000Z', null)).toBe('From 11:30am');
+  });
+
+  it('writes a calendar date on its own day, whatever the zone', () => {
+    expect(dayMonthYear('2027-04-01')).toBe('1 April 2027');
+    expect(dayMonthYear('2027-12-31')).toBe('31 December 2027');
+    expect(dayMonthYear('2027-02-30')).toBeUndefined();
+    expect(dayMonthYear('2027-04-01T10:00:00Z')).toBeUndefined();
+    expect(dayMonthYear(null)).toBeUndefined();
   });
 
   it('answers undefined for a missing or unreadable value', () => {

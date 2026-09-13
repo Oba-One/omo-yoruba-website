@@ -14,7 +14,8 @@
     "./layout": "./src/layout.ts",
     "./lead-event": "./src/lead-event.ts",
     "./stega": "./src/stega.ts",
-    "./api-version": "./src/api-version.ts"
+    "./api-version": "./src/api-version.ts",
+    "./take-part": "./src/take-part.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

@@ -1,0 +1,119 @@
+---
+/**
+ * The closing take-part band's rows (COMPONENT-MAP, Page structure; ADR 0025): the page singleton's
+ * `takePart[]` as path rows in the tokens' `.oy-takepart` column, each row's chip, accent and button
+ * following its way in (an enquiry kind, or the Give Dialog for `give`) with the row's own title,
+ * line and button label. The label style is the page's `labels` option. `lead` moves one way in to
+ * the top in the markup, never with CSS `order`, so reading and tab order follow what is seen (Odunde's
+ * `takepart` option). The first row with a working button carries the band's one gold action; the
+ * give row's is quiet. With `vendorTerms` the vendor row's line goes on with the edition's terms
+ * (`vendorTermsText`) and the registry's chip while the fees or either date is missing, since the
+ * vendor form says they are on the festival page.
+ * No rows renders the registry's Pending line.
+ */
+import { isWayIn, type WayIn, wayAction } from '@oy/content/take-part';
+import PathRow from '../../cards/PathRow/PathRow.astro';
+import PathRows from '../../content/PathRows/PathRows.astro';
+import { type VendorTermsLike, vendorTermsText } from '../../content/vendor-terms';
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface TakePartRowLike {
+  _key?: string | null;
+  way?: string | null;
+  title?: string | null;
+  line?: string | null;
+  label?: string | null;
+  /** A `data-sanity` attribute for the row. */
+  edit?: string;
+}
+
+export type TakePartLabels = 'column' | 'none' | 'kicker';
+
+interface Props {
+  rows?: (TakePartRowLike | null)[] | null;
+  labels?: TakePartLabels;
+  /** The way in the page puts first. */
+  lead?: string;
+  /**
+   * The festival edition's vendor terms for the vendor row. The festival page always passes it, null
+   * while the edition holds none (the row then shows the chip); a page without it adds no terms.
+   */
+  vendorTerms?: VendorTermsLike | null;
+  /** The registry's wording while the fees or either date is missing. */
+  vendorTermsPending?: string;
+  /** The registry's wording for no rows. */
+  pending?: string;
+  /** The registry's wording for a row missing its way in, title or button label. */
+  rowPending?: string;
+  /** A `data-sanity` attribute for the band, so click-to-edit reaches the option. */
+  edit?: string;
+  class?: string;
+}
+
+/** The chips as the event prototypes name each way in. */
+const CHIPS: Record<WayIn, string> = {
+  vendor: 'Vendors',
+  sponsor: 'Sponsors',
+  performer: 'Performers',
+  volunteer: 'Volunteers',
+  table: 'Tables',
+  give: 'Give',
+};
+
+const {
+  rows,
+  labels = 'column',
+  lead,
+  vendorTerms,
+  vendorTermsPending = 'the vendor terms',
+  pending = 'the ways in',
+  rowPending = 'the way in',
+  edit,
+  class: className,
+} = Astro.props;
+
+const list = (rows ?? []).filter((row) => row !== null);
+const leadAt = lead ? list.findIndex((row) => row.way === lead) : -1;
+const ordered =
+  leadAt > 0 ? [list[leadAt] as TakePartRowLike, ...list.filter((_, at) => at !== leadAt)] : list;
+
+const views = ordered.map((row) => {
+  const way = isWayIn(row.way) ? row.way : undefined;
+  return { row, way, action: way ? wayAction(way, row.label) : undefined };
+});
+const goldAt = views.findIndex((view) => view.action && view.way !== 'give');
+
+const { text: terms, missing: termsMissing } = vendorTermsText(vendorTerms);
+---
+
+{
+  views.length === 0 ? (
+    <div class:list={['oy-takepart', className]} data-labels={labels} data-sanity={edit}>
+      <Pending variant="line" what={pending} />
+    </div>
+  ) : (
+    <PathRows labels={labels} class={className} data-sanity={edit}>
+      {views.map(({ row, way, action }, at) => {
+        const props = {
+          way,
+          chip: way ? CHIPS[way] : undefined,
+          title: row.title,
+          line: row.line,
+          action,
+          pending: rowPending,
+          variant: way === 'give' ? 'quiet' : at === goldAt ? 'primary' : 'secondary',
+          edit: row.edit,
+        } as const;
+        return way === 'vendor' && vendorTerms !== undefined ? (
+          <PathRow {...props}>
+            {terms}
+            {terms && termsMissing && ' '}
+            {termsMissing && <Pending what={vendorTermsPending} />}
+          </PathRow>
+        ) : (
+          <PathRow {...props} />
+        );
+      })}
+    </PathRows>
+  )
+}

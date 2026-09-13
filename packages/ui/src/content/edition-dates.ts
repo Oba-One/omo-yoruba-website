@@ -1,8 +1,8 @@
 /**
  * An edition's date and hours in words, in Los Angeles time, as the event prototypes write them:
  * "Saturday 12 June 2027" in a header line, "Sat 12 June 2027" in a glance strip, "11am to 7pm" for
- * the hours. A missing or unreadable value answers undefined, and the component shows the
- * registry's Pending chip instead.
+ * the hours, "1 April 2027" for a calendar date such as the vendor deadline. A missing or unreadable
+ * value answers undefined, and the component shows the registry's Pending chip instead.
  */
 const ZONE = 'America/Los_Angeles';
 
@@ -54,4 +54,21 @@ export function editionHours(
   if (!from) return undefined;
   const to = dateOf(end);
   return to ? `${clock(from)} to ${clock(to)}` : `From ${clock(from)}`;
+}
+
+/**
+ * "1 April 2027" for a calendar date (a Sanity `date`, stored as `2027-04-01` with no time or zone),
+ * so no time zone moves it to the day before.
+ */
+export function dayMonthYear(value: string | null | undefined): string | undefined {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+  const date = new Date(`${value}T00:00:00Z`);
+  // An impossible day ("2027-02-30") rolls into the next month instead of failing.
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) return undefined;
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(date);
 }

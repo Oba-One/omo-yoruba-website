@@ -10,3 +10,4 @@ export { pageHeader } from './pageHeader';
 export { scheduleItem } from './scheduleItem';
 export { seo } from './seo';
 export { sourcedFigure } from './sourcedFigure';
+export { takePartRow } from './takePartRow';

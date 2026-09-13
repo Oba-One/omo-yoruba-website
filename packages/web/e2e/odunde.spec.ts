@@ -1,4 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
+import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { expect, type Page, test } from '@playwright/test';
 
 // The Odunde Festival page in the prototype's order (ROUTES section 4), each block present whether
@@ -34,6 +35,7 @@ test.describe('the Odunde Festival page', () => {
       'zones',
       ...(schedule === 'hidden' ? [] : ['schedule']),
       'plan',
+      'take-part',
     ];
     expect(order.slice(0, expected.length)).toEqual(expected);
     const phead = await page.locator('body').getAttribute('data-phead');
@@ -104,6 +106,63 @@ test.describe('the Odunde Festival page', () => {
     const facts = await plan.locator('.oy-fact').count();
     expect(facts > 0 || (await plan.locator('.oy-pend-line').count()) === 1).toBe(true);
     await context.close();
+  });
+
+  test('draws the take-part rows with the lead way in first in the markup and one gold action', async ({
+    page,
+  }) => {
+    await page.goto('/odunde');
+    const section = page.locator('#take-part');
+    await expect(section.locator('h2')).toHaveText('Take part in Odunde');
+    const lead = await page.locator('body').getAttribute('data-takepart');
+    const labels = await page.locator('body').getAttribute('data-labels');
+    const rows = section.locator('.oy-takepart > .oy-path');
+    if ((await rows.count()) === 0) {
+      // No rows in the Studio (or CI's placeholder project): the registry's Pending line.
+      await expect(section.locator('.oy-takepart .oy-pend-line')).toBeVisible();
+      await expect(section.locator('.oy-btn--primary')).toHaveCount(0);
+    } else {
+      await expect(section.locator('.oy-takepart')).toHaveAttribute('data-labels', labels ?? '');
+      const ways = await rows.evaluateAll((els) => els.map((el) => el.getAttribute('data-way')));
+      if (lead && ways.includes(lead)) expect(ways[0]).toBe(lead);
+      expect(new Set(ways).size).toBe(ways.length);
+      await expect(section.locator('.oy-btn--primary')).toHaveCount(1);
+      // The vendor row carries the edition's terms or the registry's chip, never an invented fee.
+      const vendor = rows.and(page.locator('[data-way="vendor"]'));
+      if ((await vendor.count()) === 1) {
+        const line = await vendor.locator('.oy-path-body p').innerText();
+        expect(
+          /Applications close|Decisions by|pending: fees, deadline and permit rules/i.test(line),
+        ).toBe(true);
+      }
+    }
+    await expect(section.locator('.oy-handoff a[data-give]')).toHaveCount(1);
+  });
+
+  test('each take-part button opens its own form and the handoff the Give Dialog, focus returning', async ({
+    page,
+  }) => {
+    await page.goto('/odunde');
+    const section = page.locator('#take-part');
+    const dialog = page.locator('dialog#enquiry');
+    for (const trigger of await section.locator('.oy-takepart a[data-enquiry]').all()) {
+      const kind = (await trigger.getAttribute('data-enquiry')) as EnquiryKind;
+      await trigger.scrollIntoViewIfNeeded();
+      await trigger.click();
+      await expect(dialog).toHaveAttribute('open', '');
+      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS[kind].title);
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toHaveAttribute('open', '');
+      await expect(trigger).toBeFocused();
+    }
+    const give = section.locator('.oy-handoff a[data-give]');
+    await give.scrollIntoViewIfNeeded();
+    await give.click();
+    const giveDialog = page.locator('dialog#give');
+    await expect(giveDialog).toHaveAttribute('open', '');
+    await page.keyboard.press('Escape');
+    await expect(giveDialog).not.toHaveAttribute('open', '');
+    await expect(give).toBeFocused();
   });
 
   test('is clean for axe with the page settled', async ({ page }) => {

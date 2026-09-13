@@ -9,7 +9,8 @@
  * Reads PUBLIC_SANITY_PROJECT_ID and SANITY_API_WRITE_TOKEN from packages/web/.env (the package
  * script passes --env-file). Stops before writing anything when either is missing or the
  * dataset does not answer. Idempotent: documents are created if missing and their fields set
- * only where missing, so an owner's edit survives a re-run; assets are matched by SHA-1.
+ * only where missing, so an owner's edit survives a re-run; fields a schema change retired are
+ * unset (`RETIRED_FIELDS`); assets are matched by SHA-1.
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -17,7 +18,13 @@ import { join } from 'node:path';
 import { ClientError, createClient, type SanityClient } from '@sanity/client';
 import { STUDIO_API_VERSION } from '../src/studio/config';
 import { PHOTOS_DIR, REGISTER_PATH, type RegisterPhoto, registerPhotos } from './register';
-import { buildSeed, missingFields, type SeedAssets, type SeedDocument } from './seed-data';
+import {
+  buildSeed,
+  missingFields,
+  retiredFields,
+  type SeedAssets,
+  type SeedDocument,
+} from './seed-data';
 
 interface Options {
   dataset: string;
@@ -186,11 +193,15 @@ async function writeDocuments(
       // into an object (`hero.blessing`) and into keyed array items (`yearInLife[_key=="tile-0"]`),
       // so a field added to the schema later still lands.
       const missing = missingFields(fields, current);
-      if (Object.keys(missing).length === 0) {
+      const retired = retiredFields(_type, current);
+      if (Object.keys(missing).length === 0 && retired.length === 0) {
         unchanged += 1;
         continue;
       }
-      transaction.patch(_id, (patch) => patch.setIfMissing(missing));
+      transaction.patch(_id, (patch) => {
+        const filled = Object.keys(missing).length > 0 ? patch.setIfMissing(missing) : patch;
+        return retired.length > 0 ? filled.unset(retired) : filled;
+      });
       mutations += 1;
       updated += 1;
     }

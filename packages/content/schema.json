@@ -5682,12 +5682,24 @@
         },
         "optional": true
       },
-      "takePartOrder": {
+      "takePart": {
         "type": "objectAttribute",
         "value": {
           "type": "array",
           "of": {
-            "type": "string"
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
+            }
           }
         },
         "optional": true
@@ -5974,12 +5986,24 @@
         },
         "optional": true
       },
-      "takePartOrder": {
+      "takePart": {
         "type": "objectAttribute",
         "value": {
           "type": "array",
           "of": {
-            "type": "string"
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
+            }
           }
         },
         "optional": true
@@ -7183,6 +7207,76 @@
           ]
         },
         "optional": true
+      }
+    }
+  },
+  {
+    "name": "takePartRow",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "takePartRow"
+          }
+        },
+        "way": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "vendor"
+              },
+              {
+                "type": "string",
+                "value": "sponsor"
+              },
+              {
+                "type": "string",
+                "value": "performer"
+              },
+              {
+                "type": "string",
+                "value": "volunteer"
+              },
+              {
+                "type": "string",
+                "value": "table"
+              },
+              {
+                "type": "string",
+                "value": "give"
+              }
+            ]
+          },
+          "optional": true
+        },
+        "title": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
+        "line": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
+        "label": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        }
       }
     }
   },

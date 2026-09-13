@@ -139,6 +139,18 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'festivalPage',
+    fields: ['takePart[]'],
+    where: 'Odunde, take part',
+    what: 'the ways in',
+  },
+  {
+    type: 'festivalPage',
+    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
+    where: 'Odunde, take part',
+    what: 'a way in, its title or its button label',
+  },
+  {
+    type: 'festivalPage',
     fields: ['planYourVisit[]'],
     where: 'Odunde, plan your visit',
     what: 'the eight practical facts',
@@ -172,6 +184,18 @@ export const PENDING: readonly PendingEntry[] = [
     filter: GALA,
     where: 'Gala, at a glance',
     what: 'the dress code',
+  },
+  {
+    type: 'galaPage',
+    fields: ['takePart[]'],
+    where: 'Gala, take part',
+    what: 'the ways in',
+  },
+  {
+    type: 'galaPage',
+    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
+    where: 'Gala, take part',
+    what: 'a way in, its title or its button label',
   },
   {
     type: 'galaPage',

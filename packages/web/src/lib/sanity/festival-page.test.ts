@@ -73,6 +73,22 @@ const seeded = {
   whatItIsImage: image('A dancer plays with a young girl', 'Festival day • Leimert Park'),
   zonesIntro: null,
   planYourVisit: null,
+  takePart: [
+    {
+      _key: 'way-1',
+      way: 'vendor',
+      title: 'Sell at Ọjà Balógun',
+      line: 'A booth is held once the fee is paid.',
+      label: 'Apply for a booth',
+    },
+    {
+      _key: 'way-2',
+      way: 'sponsor',
+      title: 'Keep the day open',
+      line: 'Four questions, and we send the deck with our impact numbers.',
+      label: 'Sponsor Odunde',
+    },
+  ],
   pastYearsIntro: null,
   partnersIntro: null,
   editions: [
@@ -270,5 +286,47 @@ describe('buildFestivalPage', () => {
     expect(draft.edit.phead).toContain('path=layout.phead');
     expect(draft.header.imageEdit).toContain('path=header.image');
     expect(draft.figure.edit).toContain('path=whatItIsImage');
+  });
+
+  it('carries the take-part rows, the options that draw them and the vendor terms of the next edition', async () => {
+    const view = buildFestivalPage(seeded, options);
+    expect(view.takePart.rows.map((row) => row.way)).toEqual(['vendor', 'sponsor']);
+    expect(view.takePart).toMatchObject({
+      intro: 'Two ways in. Each one says what it asks of you, then opens a short form.',
+      lead: 'vendor',
+      labels: 'column',
+      vendorTerms: null,
+      vendorTermsPending: 'fees, deadline and permit rules',
+      pending: 'the ways in',
+      rowPending: 'a way in, its title or its button label',
+    });
+    const withTerms = {
+      ...seeded,
+      editions: [
+        edition('event-odunde-2027', 2027, {
+          vendorTerms: {
+            fees: null,
+            closeDate: '2027-04-01',
+            decisionDate: null,
+            permitNote: null,
+          },
+        }),
+      ],
+    } as unknown as FestivalPageData;
+    expect(buildFestivalPage(withTerms, options).takePart.vendorTerms?.closeDate).toBe(
+      '2027-04-01',
+    );
+    const none = buildFestivalPage(null, options);
+    expect(none.takePart.rows).toEqual([]);
+    expect(none.takePart.intro).toBeUndefined();
+    const one = buildFestivalPage(
+      { ...seeded, takePart: seeded.takePart?.slice(0, 1) } as FestivalPageData,
+      options,
+    );
+    expect(one.takePart.intro).toBe(
+      'One way in. It says what it asks of you, then opens a short form.',
+    );
+    const draft = buildFestivalPage(seeded, { ...options, draft: true });
+    expect(draft.takePart.rows[1]?.edit).toContain('path=takePart:way-2');
   });
 });

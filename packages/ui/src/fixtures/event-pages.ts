@@ -173,3 +173,76 @@ export const PLAN_FACTS = [
   'What not to bring',
   'Lost children',
 ].map((label) => ({ label, pending: 'a practical fact' }));
+
+/** The festival page's take-part rows as the seed writes them (ADR 0025): no fee, date or level in a line. */
+export const FESTIVAL_TAKE_PART = [
+  {
+    _key: 'way-1',
+    way: 'vendor',
+    title: 'Sell at Ọjà Balógun',
+    line: 'A booth is held once the fee is paid.',
+    label: 'Apply for a booth',
+  },
+  {
+    _key: 'way-2',
+    way: 'sponsor',
+    title: 'Keep the day open',
+    line: 'Four questions, and we send the deck with our impact numbers.',
+    label: 'Sponsor Odunde',
+  },
+  {
+    _key: 'way-3',
+    way: 'performer',
+    title: 'Drummers, dancers, cultural groups',
+    line: 'One short form, and the program committee sees every one.',
+    label: 'Ask about performing',
+  },
+  {
+    _key: 'way-4',
+    way: 'volunteer',
+    title: 'Festival day needs hands',
+    line: 'One short form, and we place you where the gap is.',
+    label: 'Volunteer',
+  },
+];
+
+/** The Gala's take-part rows as the seed writes them, the give row last. */
+export const GALA_TAKE_PART = [
+  {
+    _key: 'way-1',
+    way: 'sponsor',
+    title: 'Sponsor the evening',
+    line: 'Four questions and we send the deck. One enquiry covers the Gala, Odunde, or both.',
+    label: 'Sponsor the Gala',
+  },
+  {
+    _key: 'way-2',
+    way: 'table',
+    title: 'Bring your table',
+    line: 'Ten seats together, placed by hand and invoiced afterwards.',
+    label: 'Reserve a table',
+  },
+  {
+    _key: 'way-3',
+    way: 'volunteer',
+    title: 'The night needs hands',
+    line: 'One form, and we place you.',
+    label: 'Volunteer',
+  },
+  {
+    _key: 'way-4',
+    way: 'give',
+    title: 'Cannot come this year?',
+    line: 'A gift does the same work as a seat, and monthly does more.',
+    label: 'Donate',
+  },
+];
+
+/** The registry's wording for the vendor row while the edition holds no terms, as Odunde 2027 does. */
+export const VENDOR_TERMS_PENDING = 'fees, deadline and permit rules';
+
+/** The page's give handoff under the Odunde band (the prototype's own line). */
+export const FESTIVAL_GIVE_HANDOFF = {
+  text: 'Too small to sponsor, but want the day to happen? A gift does the same work.',
+  action: { label: 'Donate', kind: 'give' },
+};

@@ -20,10 +20,12 @@ import Pending from '@oy/ui/core/Pending/Pending.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
 import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
 import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
 import Split from '@oy/ui/page/Split/Split.astro';
+import TakePartBand from '@oy/ui/page/TakePartBand/TakePartBand.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { cachePage } from '../lib/cache';
 import { STUDIO_BASE_PATH } from '../lib/paths';
@@ -127,6 +129,31 @@ cachePage(Astro, '/odunde', { draft: preview });
         id="plan-heading"
       />
       <FactList facts={page.plan.facts} pending={page.plan.pending} />
+    </Section>
+
+    <Section id="take-part" labelledby="take-part-heading" data-sanity={page.edit.labels}>
+      <SectionHead
+        kicker={{ yo: 'Ẹ dara pọ̀ mọ́ wa', en: 'Join us' }}
+        title="Take part in Odunde"
+        intro={page.takePart.intro}
+        id="take-part-heading"
+      />
+      <TakePartBand
+        rows={page.takePart.rows}
+        lead={page.takePart.lead}
+        labels={page.takePart.labels}
+        vendorTerms={page.takePart.vendorTerms}
+        vendorTermsPending={page.takePart.vendorTermsPending}
+        pending={page.takePart.pending}
+        rowPending={page.takePart.rowPending}
+        edit={page.edit.takepart}
+      />
+      <Handoff
+        shape="box"
+        variant="quiet"
+        text="Too small to sponsor, but want the day to happen? A gift does the same work."
+        action={{ label: 'Donate', kind: 'give' }}
+      />
     </Section>
   </main>
 </SiteLayout>

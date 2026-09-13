@@ -2,7 +2,7 @@ import { defineQuery } from 'groq';
 
 /**
  * The festival page in one read (ROUTES section 1): the `festivalPage` singleton with its header,
- * actions, glance facts, Portable Text and plan-your-visit facts; every festival edition with the
+ * actions, glance facts, Portable Text, plan-your-visit facts and take-part rows; every festival edition with the
  * facts the page reads (the page picks the next one and the past one, ADR 0024), its schedule with
  * the zone names, its vendor terms and attendance, and the first eight photographs of its album
  * with the album's credit; the zones in order; the partners scoped to Odunde. Images project the
@@ -23,6 +23,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
   whatItIsImage{_type, alt, caption, hotspot, crop, asset},
   zonesIntro,
   planYourVisit[]{_key, label, value, note},
+  takePart[]{_key, way, title, line, label},
   pastYearsIntro,
   partnersIntro,
   "editions": *[_type == "event" && kind == "festival"] | order(edition desc){

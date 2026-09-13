@@ -5,17 +5,21 @@
  * from `buildFestivalPage`. The section kickers and headings are the page's copy, as on the site.
  */
 
+import { countWord } from '../../content/count-word';
 import FactList from '../../content/FactList/FactList.astro';
 import Prose from '../../content/Prose/Prose.astro';
 import Schedule from '../../content/Schedule/Schedule.astro';
 import ZoneGrid, { type ZonesLayout } from '../../content/ZoneGrid/ZoneGrid.astro';
 import Button from '../../core/Button/Button.astro';
 import {
+  FESTIVAL_GIVE_HANDOFF,
   FESTIVAL_GLANCE,
   FESTIVAL_HEADER,
   FESTIVAL_META,
+  FESTIVAL_TAKE_PART,
   PLAN_FACTS,
   SCHEDULE_PLACEHOLDERS,
+  VENDOR_TERMS_PENDING,
   WHAT_IT_IS,
   WHAT_IT_IS_FIGURE,
   ZONES,
@@ -23,10 +27,12 @@ import {
 import PhotoTile from '../../media/PhotoTile/PhotoTile.astro';
 import ButtonRow from '../../page/ButtonRow/ButtonRow.astro';
 import GlanceStrip from '../../page/GlanceStrip/GlanceStrip.astro';
+import Handoff from '../../page/Handoff/Handoff.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
 import Section from '../../page/Section/Section.astro';
 import SectionHead from '../../page/SectionHead/SectionHead.astro';
 import Split from '../../page/Split/Split.astro';
+import TakePartBand, { type TakePartLabels } from '../../page/TakePartBand/TakePartBand.astro';
 import type { SlotValue } from '../../storybook';
 
 export const header = (variant: 'photo' | 'slim'): SlotValue => ({
@@ -162,3 +168,40 @@ export const plan: SlotValue = {
     ],
   },
 };
+
+/**
+ * The closing take-part band as the `takepart` and `labels` options draw it: the seed's four rows
+ * with the lead way in first in the markup, the vendor terms Pending, then the give handoff.
+ */
+export const takePart = (lead: 'vendor' | 'sponsor', labels: TakePartLabels): SlotValue => ({
+  component: Section,
+  props: { id: 'take-part', labelledby: 'take-part-heading' },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          kicker: { yo: 'Ẹ dara pọ̀ mọ́ wa', en: 'Join us' },
+          title: 'Take part in Odunde',
+          intro: `${countWord(FESTIVAL_TAKE_PART.length)} ways in. Each one says what it asks of you, then opens a short form.`,
+          id: 'take-part-heading',
+        },
+      },
+      {
+        component: TakePartBand,
+        props: {
+          rows: FESTIVAL_TAKE_PART,
+          lead,
+          labels,
+          vendorTerms: null,
+          vendorTermsPending: VENDOR_TERMS_PENDING,
+          rowPending: 'a way in, its title or its button label',
+        },
+      },
+      {
+        component: Handoff,
+        props: { shape: 'box', variant: 'quiet', ...FESTIVAL_GIVE_HANDOFF },
+      },
+    ],
+  },
+});

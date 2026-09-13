@@ -3,7 +3,8 @@
  * Pure, so a test drives it with a fixture: the layout with the schema defaults, the next festival
  * edition (ADR 0024) and its facts for the header line and the glance strip with the registry's
  * chips where the Studio holds nothing, the page's two actions, the zones, the next edition's
- * schedule as the option shows it, the plan-your-visit facts, every photograph resolved to a CDN set
+ * schedule as the option shows it, the plan-your-visit facts, the take-part rows with the next
+ * edition's vendor terms and the intro that counts them (ADR 0025), every photograph resolved to a CDN set
  * with its alt and framing, the head's title and description cleaned of stega, and the
  * `data-sanity` attributes for click-to-edit in draft mode.
  */
@@ -11,6 +12,7 @@ import { withLayoutDefaults } from '@oy/content/layout';
 import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat } from '@oy/content/pending';
 import type { festivalPageQuery } from '@oy/content/queries';
+import { countWord } from '@oy/ui/content/count-word.ts';
 import { editionHours, longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import type { ClientReturn } from '@sanity/client';
 import { type BuildOptions, cleanText, editAttributes, resolveImage } from './view';
@@ -32,6 +34,14 @@ const GLANCE_MAX = 5;
 
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';
 
+/** The take-part intro, counting the rows the band draws ("Four ways in."). */
+function takePartIntro(count: number): string | undefined {
+  if (count === 0) return undefined;
+  return count === 1
+    ? 'One way in. It says what it asks of you, then opens a short form.'
+    : `${countWord(count)} ways in. Each one says what it asks of you, then opens a short form.`;
+}
+
 export function buildFestivalPage(data: FestivalPageData | null, options: BuildOptions) {
   const { imageSet, now = new Date() } = options;
   const edit = editAttributes(options, 'festivalPage');
@@ -50,6 +60,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     .slice(0, 2);
 
   const extraFacts = (data?.extraFacts ?? []).filter((fact) => fact !== null);
+  const takePart = (data?.takePart ?? []).filter((row) => row !== null);
   const glance = [
     { label: 'Date', value: shortDate(edition?.start), pending: pending('start') },
     { label: 'Time', value: hours, pending: pending('end') },
@@ -118,6 +129,18 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
           pending: pendingWhat('festivalPage', 'planYourVisit') ?? 'a practical fact',
         })),
       pending: pendingWhat('festivalPage', 'planYourVisit[]') ?? 'the practical facts',
+    },
+    takePart: {
+      rows: takePart.map((row) => ({ ...row, edit: edit(`takePart[_key=="${row._key}"]`) })),
+      intro: takePartIntro(takePart.length),
+      lead: layout.takepart,
+      labels: layout.labels,
+      // Null while the next edition holds no terms, so the vendor row shows the registry's chip.
+      vendorTerms: edition?.vendorTerms ?? null,
+      vendorTermsPending: pending('vendorTerms.fees'),
+      pending: pendingWhat('festivalPage', 'takePart[]') ?? 'the ways in',
+      rowPending:
+        pendingWhat('festivalPage', 'takePart') ?? 'a way in, its title or its button label',
     },
     figure: {
       image: resolveImage(imageSet, data?.whatItIsImage, { width: 560 }),
