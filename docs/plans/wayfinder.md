@@ -97,6 +97,10 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   `editionRoute` and `programRoute` in `@oy/content/routes` serve the news cards, the event band and
   the Presentation tool; the dead hero switch rules are gone (Phase 5).
 
+- [The homepage under the mobile performance budget](../tickets/wayfinder/issues/33-homepage-mobile-lighthouse-budget.md):
+  right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
+  0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.
@@ -128,8 +132,8 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 08 | News cadence: feed or list | Later phase |
 
 Research and design tickets the phases work themselves: 15 (analytics bundle versus the JS
-budget), 20 (Sanity loader for live collections), 21 (cache and draft mode), 33 (the homepage's
-mobile Lighthouse budget, first in Phase 5). Ticket 34 was resolved in Phase 5. Ticket 19 (fonts) was resolved in Phase 1.
+budget), 20 (Sanity loader for live collections), 21 (cache and draft mode), 35 (the last 0.2 s of
+the homepage's mobile LCP, Phase 9). Tickets 33 and 34 were resolved in Phase 5. Ticket 19 (fonts) was resolved in Phase 1.
 
 ## Not yet specified
 

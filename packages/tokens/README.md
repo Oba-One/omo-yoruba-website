@@ -9,7 +9,7 @@ the site comes from here: `packages/ui` and `packages/web` use `var(--*)` only, 
 
 | File | Source | Edits in the port |
 | --- | --- | --- |
-| `src/fonts.css` | `_ds/.../tokens/fonts.css` | Self-hosted `@font-face` rules from the pinned fontsource packages instead of the Google Fonts import (`docs/research/fonts-source-serif-sans-subsets.md`) |
+| `src/fonts.css` | `_ds/.../tokens/fonts.css` | Self-hosted `@font-face` rules from the pinned fontsource packages instead of the Google Fonts import (`docs/research/fonts-source-serif-sans-subsets.md`); Source Serif 4 from the weight-only files, and the OY Yoruba faces first in both stacks for Ń ń Ǹ ǹ Ḿ ḿ Ṣ ṣ, cut into `src/fonts/` by `scripts/make-yoruba-subsets.sh` with `OFL.txt` beside them (ADR 0026) |
 | `src/tokens/colors.css`, `typography.css`, `themes.css` | `_ds/.../tokens/` | Verbatim, plus two Phase 4 additions: `--text-muted-on-tint` (colors) and `--text-hero-photo` (typography, the homepage prototype's hero scale) |
 | `src/tokens/spacing.css` | `_ds/.../tokens/spacing.css` | `--radius-card` 6px and `--radius-media` 4px: the interaction layer wins (`docs/design/README.md` section 3) |
 | `src/tokens/patterns.css` | `_ds/.../tokens/patterns.css` | Adds `--pattern-chevron-band`, `--pattern-motif-band`, `--pattern-batik-wash`, `--pattern-ornament-divider`, `--pattern-sun-crest` pointing at `src/patterns/` |
