@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PersonCard.stories';
 
-const { NoPortrait, Portrait, Compact, Pending } = composeStories(stories);
+const { NoPortrait, Portrait, Compact, Pending, BioPending } = composeStories(stories);
 
 describe('PersonCard', () => {
   it('draws the woven tick without a portrait, then the role, the name and the bio', async () => {
@@ -29,5 +29,9 @@ describe('PersonCard', () => {
     ).not.toBeNull();
     const owed = (await renderToBody(Pending)).querySelector('article.oy-person');
     expect(text(owed?.querySelector('h3 .oy-pend'))).toBe('Pending: the name');
+    // No bio and no wording: nothing drawn where the page does not ask.
+    expect(owed?.querySelector('.oy-person-bio')).toBeNull();
+    const bio = (await renderToBody(BioPending)).querySelector('article.oy-person .oy-person-bio');
+    expect(text(bio?.querySelector('.oy-pend'))).toBe("Pending: the teacher's short bio");
   });
 });

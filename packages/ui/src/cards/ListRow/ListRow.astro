@@ -1,11 +1,17 @@
 ---
 /**
- * A list row (COMPONENT-MAP, Lists and rows; `09 End-of-Year Gala.dc.html`, the sponsor levels): the
- * tokens' `.oy-lrow` inside an `.oy-list`. Phase 5 builds its sponsor tier form, `kind="tier"`: the level's
- * name and amount on the left, what it recognizes as the ticked list beside it, each with the
- * registry's chip while the Studio owes it. The row warms on hover, nothing lifts. The event, recurring
- * and news forms arrive with the pages that use them.
+ * A list row (COMPONENT-MAP, Lists and rows): the tokens' `.oy-lrow` inside an `.oy-list`. The sponsor
+ * tier form, `kind="tier"` (`09 End-of-Year Gala.dc.html`): the level's name and amount on the left,
+ * what it recognizes as the ticked list beside it, each with the registry's chip while the Studio owes
+ * it. The entry form, `kind="entry"`: a title as the heading and its line, alone in one column as the
+ * Lessons levels draw it (`11 Yoruba Language School.dc.html`), with the registry's chip for a missing
+ * line. The event form, `kind="event"` (`12 Yoruba Cultural Collective.dc.html`, Collective events): the
+ * month and day in the date block, the title, the summary, the weekday and start time with the venue or
+ * its chip, and a quiet action; the page words the date in Los Angeles time (`content/edition-dates`).
+ * The row warms on hover, nothing lifts.
  */
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
 
 export interface TierRowLike {
@@ -15,50 +21,139 @@ export interface TierRowLike {
   recognition?: (string | null)[] | null;
 }
 
-interface Props {
-  kind?: 'tier';
-  row: TierRowLike;
-  /** The registry's wording for a missing name, amount and recognition. */
-  namePending?: string;
-  amountPending?: string;
-  recognitionPending?: string;
-  /** A `data-sanity` attribute, so click-to-edit reaches the row. */
-  edit?: string;
-  class?: string;
+export interface EntryRowLike {
+  _key?: string | null;
+  title?: string | null;
+  line?: string | null;
 }
 
-const {
-  row,
-  namePending = 'the level name',
-  amountPending = 'the amount',
-  recognitionPending = 'what the level recognizes',
-  edit,
-  class: className,
-} = Astro.props;
-const recognition = (row.recognition ?? []).filter((line): line is string => Boolean(line?.trim()));
+/** An event row as the page words it: the date block and the weekday and time already in words. */
+export interface EventRowLike {
+  _id?: string | null;
+  title?: string | null;
+  summary?: string | null;
+  /** "Oct", over the day. */
+  month?: string | null;
+  /** "17". */
+  day?: string | null;
+  /** "Saturday, 10am". */
+  when?: string | null;
+  venue?: { name?: string | null } | null;
+}
+
+type Props =
+  | {
+      kind?: 'tier';
+      row: TierRowLike;
+      /** The registry's wording for a missing name, amount and recognition. */
+      namePending?: string;
+      amountPending?: string;
+      recognitionPending?: string;
+      /** A `data-sanity` attribute, so click-to-edit reaches the row. */
+      edit?: string;
+      class?: string;
+    }
+  | {
+      kind: 'entry';
+      row: EntryRowLike;
+      /** The registry's wording for a missing title and a missing line. */
+      titlePending?: string;
+      linePending?: string;
+      edit?: string;
+      class?: string;
+    }
+  | {
+      kind: 'event';
+      row: EventRowLike;
+      /** The registry's wording for a missing date, title and venue. */
+      datePending?: string;
+      titlePending?: string;
+      venuePending?: string;
+      /** The quiet action at the row's end ("Ask to join"). */
+      action?: ActionLike | null;
+      edit?: string;
+      class?: string;
+    };
+
+const props = Astro.props;
+const { edit, class: className } = props;
+const event = props.kind === 'event' ? props.row : undefined;
+const dated = Boolean(event?.month?.trim() && event?.day?.trim());
+const when = event?.when?.trim();
 ---
 
-<li class:list={['oy-lrow', 'oy-lrow--tier', className]} data-sanity={edit}>
-  <div class="oy-lrow-tier">
-    <h3><b>{row.name?.trim() || <Pending what={namePending} />}</b></h3>
-    <span>{row.amount?.trim() || <Pending what={amountPending} />}</span>
-  </div>
-  {
-    recognition.length > 0 ? (
-      <ul class="oy-incl">
-        {recognition.map((line) => (
-          <li>{line}</li>
-        ))}
-      </ul>
-    ) : (
-      <p class="oy-lrow-owed">
-        <Pending what={recognitionPending} />
-      </p>
-    )
-  }
-</li>
+{
+  props.kind === 'event' ? (
+    <li class:list={['oy-lrow', 'oy-lrow--event', className]} data-sanity={edit}>
+      <div class="oy-lrow-date">
+        {dated ? (
+          <>
+            <b>{props.row.month}</b>
+            <span>{props.row.day}</span>
+          </>
+        ) : (
+          <Pending what={props.datePending ?? 'the date'} />
+        )}
+      </div>
+      <div class="oy-lrow-body">
+        <h3>{props.row.title?.trim() || <Pending what={props.titlePending ?? 'the title'} />}</h3>
+        {props.row.summary?.trim() && <p>{props.row.summary}</p>}
+        <div class="oy-lrow-where">
+          {when && `${when} • `}
+          {props.row.venue?.name?.trim() || <Pending what={props.venuePending ?? 'the venue'} />}
+        </div>
+      </div>
+      {props.action && <ActionButton action={props.action} variant="quiet" />}
+    </li>
+  ) : props.kind === 'entry' ? (
+    <li class:list={['oy-lrow', 'oy-lrow--entry', 'oy-lrow--plain', className]} data-sanity={edit}>
+      <div class="oy-lrow-body">
+        <h3>{props.row.title?.trim() || <Pending what={props.titlePending ?? 'the title'} />}</h3>
+        {props.row.line?.trim() ? (
+          <p>{props.row.line}</p>
+        ) : (
+          props.linePending && (
+            <p>
+              <Pending what={props.linePending} />
+            </p>
+          )
+        )}
+      </div>
+    </li>
+  ) : (
+    <li class:list={['oy-lrow', 'oy-lrow--tier', className]} data-sanity={edit}>
+      <div class="oy-lrow-tier">
+        <h3>
+          <b>{props.row.name?.trim() || <Pending what={props.namePending ?? 'the level name'} />}</b>
+        </h3>
+        <span>
+          {props.row.amount?.trim() || <Pending what={props.amountPending ?? 'the amount'} />}
+        </span>
+      </div>
+      {(props.row.recognition ?? []).some((line) => line?.trim()) ? (
+        <ul class="oy-incl">
+          {(props.row.recognition ?? [])
+            .filter((line): line is string => Boolean(line?.trim()))
+            .map((line) => (
+              <li>{line}</li>
+            ))}
+        </ul>
+      ) : (
+        <p class="oy-lrow-owed">
+          <Pending what={props.recognitionPending ?? 'what the level recognizes'} />
+        </p>
+      )}
+    </li>
+  )
+}
 
 <style>
+  .oy-lrow--plain {
+    grid-template-columns: 1fr;
+  }
+  .oy-lrow-body h3 {
+    margin: 0;
+  }
   .oy-lrow-tier h3 {
     margin: 0;
     font-size: inherit;

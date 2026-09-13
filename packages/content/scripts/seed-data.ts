@@ -605,39 +605,84 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Kids & STEM',
         blurb:
           "Kids & STEM is two things under one name. Àgbàlá Ọmọde is the children's compound: it runs at the Odunde Festival and through the year, and it is where the youngest members of this community meet each other. The STEM Hub is the technical half, built on the belief that a child who knows where they come from carries that into everything else they learn.",
-        image: image(assets, 'odunde-2026-kids-doing-paint-art.jpg'),
+        // Each half keeps the prototype's photograph and framing, and the labels of its facts with no
+        // value: the ages, "Saturdays" and what they build are invented (ADR 0031).
         subprograms: withKeys('sub', [
           {
             _type: 'subprogram',
             name: 'Àgbàlá Ọmọde',
             blurb:
               "The children's compound. Games, art, and ayo, at the festival and through the year.",
+            image: image(
+              assets,
+              'odunde-2026-mom-playing-games-with-kids.jpg',
+              undefined,
+              [50, 45],
+            ),
+            facts: withKeys('fact', [{ _type: 'fact', label: 'Ages' }]),
             action: cta('See it at Odunde', 'url', '/odunde'),
           },
           {
             _type: 'subprogram',
             name: 'STEM Hub',
             blurb: "The technical half of the children's program.",
+            image: image(assets, 'odunde-2026-kids-doing-paint-art.jpg', undefined, [50, 35]),
+            facts: withKeys('fact', [
+              { _type: 'fact', label: 'Ages' },
+              { _type: 'fact', label: 'What they build' },
+            ]),
             action: cta('Ask about joining', 'enquiry', 'contact'),
           },
         ]),
       },
       culturalExchange: { title: 'Cultural Exchange' },
+      // By program or by the event's kind, never an edition (ADR 0031). Only the confirmed whens and
+      // notes: June, November or December, Leimert Park, Àgbàlá Ọmọde at the festival, the Collective's
+      // two initiatives; "Year-round", "Saturdays" and "Monthly" stay Pending.
       yearStrip: withKeys('row', [
         {
           _type: 'yearStripRow',
           program: ref('program-yoruba-lessons'),
           note: 'Online, scheduled with the teacher',
         },
+        { _type: 'yearStripRow', when: 'June', kind: 'festival', note: 'Leimert Park' },
+        { _type: 'yearStripRow', when: 'Nov or Dec', kind: 'gala' },
         {
           _type: 'yearStripRow',
-          when: 'June',
-          event: ref('event-odunde-2027'),
-          note: 'Leimert Park',
+          program: ref('program-kids-stem'),
+          note: 'Àgbàlá Ọmọde runs at the festival',
         },
-        { _type: 'yearStripRow', when: 'Nov or Dec', event: ref('event-gala-2026') },
-        { _type: 'yearStripRow', program: ref('program-kids-stem') },
-        { _type: 'yearStripRow', program: ref('program-cultural-collective') },
+        {
+          _type: 'yearStripRow',
+          program: ref('program-cultural-collective'),
+          note: 'Solar Hub, Green Goods',
+        },
+      ]),
+      // The prototypes' rows without the volunteer roles, dues, member benefits and what a gift buys
+      // (spec Q14, ADR 0029); a chip only where the page names the way in differently.
+      takePart: withKeys('way', [
+        {
+          _type: 'takePartRow',
+          way: 'enrol',
+          title: 'Start Yoruba lessons',
+          line: 'Online lessons for children and adults, scheduled with the teacher. Write to her to start.',
+          label: 'Enrol a learner',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          chip: 'Volunteer',
+          title: 'Help with a program',
+          line: 'One form, and we place you.',
+          label: 'Volunteer',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'give',
+          title: 'Give toward the programs',
+          line: "Gifts hold up the language lessons, the children's programs, and the festival.",
+          label: 'Donate',
+        },
       ]),
       primaryAction: cta('Enrol a learner', 'enquiry', 'enrol'),
     }),
@@ -668,6 +713,31 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           'What if my child already understands some Yoruba?',
         ].map((question) => ({ _type: 'faqItem', question })),
       ),
+      // "Help with lessons" would claim a lesson-helper role the register marks invented, so the
+      // volunteer row takes the volunteer door's words; the give row states nothing a gift buys.
+      takePart: withKeys('way', [
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          chip: 'Volunteer',
+          title: 'Volunteer with us',
+          line: 'One short form. You tell us when you are free and what you can do, and we place you where the gap is.',
+          label: 'Raise your hand',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'member',
+          title: 'Become a member',
+          line: 'Members carry the lessons and every other program.',
+          label: 'Become a member',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'give',
+          title: 'Give toward the lessons',
+          label: 'Donate',
+        },
+      ]),
       primaryAction: cta('Write to the teacher', 'enquiry', 'enrol'),
     }),
   );
@@ -684,6 +754,32 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         ref('initiative-green-goods'),
       ]),
       keepsOwnList: false,
+      // The skills the projects need are invented; the Updates row points at the newsletter form.
+      takePart: withKeys('way', [
+        {
+          _type: 'takePartRow',
+          way: 'sponsor',
+          chip: 'Partner',
+          title: 'Partner or fund a project',
+          line: 'Organizations, funders, and civic partners. Four questions and we send the deck.',
+          label: 'Talk to us',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          chip: 'Skills',
+          title: 'Bring a skill',
+          line: 'Tell us what you can do and we will find where it fits.',
+          label: 'Volunteer a skill',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'updates',
+          title: 'Follow the Collective',
+          line: 'Collective news goes out with our newsletter, once or twice a month.',
+          label: 'Subscribe',
+        },
+      ]),
       primaryAction: cta('Partner with the Collective', 'enquiry', 'sponsor'),
       secondaryActions: withKeys('action', [cta('See what is on', 'anchor', '#events')]),
     }),
@@ -799,17 +895,54 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
 /**
  * Fields a schema change retired, per document type: a re-run unsets them where they are still
  * stored, so the Studio shows no unknown field (`takePartOrder` became `takePart`, ADR 0025; the
- * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024).
+ * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024; Kids & STEM's
+ * section photograph and ages, a sub-program's ages and detail line, a year strip row's edition
+ * reference, and the Lessons page's voices, ADR 0031). A path reaches
+ * into objects with a dot and into every keyed item of an array with `[]`.
  */
 export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   festivalPage: ['takePartOrder'],
   galaPage: ['takePartOrder'],
   siteSettings: ['eventbriteUrl'],
+  programsPage: [
+    'kidsStem.image',
+    'kidsStem.ages',
+    'kidsStem.subprograms[].ages',
+    'kidsStem.subprograms[].detail',
+    'yearStrip[].event',
+  ],
+  lessonsPage: ['voices'],
 };
 
-/** The retired fields a stored document still carries. */
+/** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`. */
+function storedPaths(value: unknown, steps: readonly string[], prefix: string): string[] {
+  const [step, ...rest] = steps;
+  // A retired path names a field, never a whole array item.
+  if (step === undefined) return [];
+  if (!isPlainObject(value)) return [];
+  if (step.endsWith('[]')) {
+    const name = step.slice(0, -2);
+    const items = value[name];
+    if (!Array.isArray(items)) return [];
+    return items.flatMap((item) =>
+      isPlainObject(item) && typeof item._key === 'string'
+        ? storedPaths(item, rest, `${prefix}${name}[_key=="${item._key}"].`)
+        : [],
+    );
+  }
+  const next = value[step];
+  return rest.length === 0
+    ? next === undefined
+      ? []
+      : [`${prefix}${step}`]
+    : storedPaths(next, rest, `${prefix}${step}.`);
+}
+
+/** The retired fields a stored document still carries, as paths the seed can unset. */
 export function retiredFields(type: string, current: Record<string, unknown>): string[] {
-  return (RETIRED_FIELDS[type] ?? []).filter((field) => current[field] !== undefined);
+  return (RETIRED_FIELDS[type] ?? []).flatMap((field) =>
+    storedPaths(current, field.split('.'), ''),
+  );
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -818,8 +951,9 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 
 /**
  * The seed fields the document lacks, as `setIfMissing` paths: one level into plain objects
- * (`hero.emphasis`) and into the items of a keyed array matched by `_key`
- * (`yearInLife[_key=="tile-0"].hotspot`), so a field added to the schema later still lands on a
+ * (`hero.emphasis`), into the items of a keyed array matched by `_key`
+ * (`yearInLife[_key=="tile-0"].hotspot`) and into the keyed items of an object's array
+ * (`kidsStem.subprograms[_key=="sub-1"].facts`), so a field added to the schema later still lands on a
  * dataset seeded before it. An item the owner removed or re-keyed is left alone, and so is a
  * photograph whose stored asset is not the seed's: its framing and words belong to the photo the
  * owner chose (the Studio keeps an empty hotspot empty when an asset is swapped).
@@ -833,18 +967,26 @@ export function missingFields(
     isPlainObject(value.asset) && typeof value.asset._ref === 'string'
       ? value.asset._ref
       : undefined;
-  const fill = (
-    prefix: string,
-    value: Record<string, unknown>,
-    stored: Record<string, unknown>,
-  ) => {
+  const fillItems = (prefix: string, value: unknown[], stored: unknown[]) => {
+    for (const item of value) {
+      if (!isPlainObject(item) || typeof item._key !== 'string' || '_ref' in item) continue;
+      const match = stored.find((entry) => isPlainObject(entry) && entry._key === item._key);
+      if (isPlainObject(match)) fill(`${prefix}[_key=="${item._key}"]`, item, match);
+    }
+  };
+  // One level into an object, and into the keyed items of an array it holds (Kids & STEM's
+  // sub-programs), never deeper: a nested object the owner emptied stays as they left it.
+  function fill(prefix: string, value: Record<string, unknown>, stored: Record<string, unknown>) {
     const seeded = assetOf(value);
     if (seeded !== undefined && assetOf(stored) !== seeded) return;
     for (const [sub, subValue] of Object.entries(value)) {
-      if (subValue !== undefined && stored[sub] === undefined)
-        missing[`${prefix}.${sub}`] = subValue;
+      if (subValue === undefined) continue;
+      const storedSub = stored[sub];
+      if (storedSub === undefined) missing[`${prefix}.${sub}`] = subValue;
+      else if (Array.isArray(subValue) && Array.isArray(storedSub) && !prefix.includes('['))
+        fillItems(`${prefix}.${sub}`, subValue, storedSub);
     }
-  };
+  }
   for (const [key, value] of Object.entries(fields)) {
     if (value === undefined) continue;
     const stored = current[key];
@@ -856,13 +998,7 @@ export function missingFields(
       fill(key, value, stored);
       continue;
     }
-    if (Array.isArray(value) && Array.isArray(stored)) {
-      for (const item of value) {
-        if (!isPlainObject(item) || typeof item._key !== 'string' || '_ref' in item) continue;
-        const match = stored.find((entry) => isPlainObject(entry) && entry._key === item._key);
-        if (isPlainObject(match)) fill(`${key}[_key=="${item._key}"]`, item, match);
-      }
-    }
+    if (Array.isArray(value) && Array.isArray(stored)) fillItems(key, value, stored);
   }
   return missing;
 }

@@ -3,25 +3,34 @@
  * The card arrangements of the page prototypes: two, three or four across at the content width,
  * collapsing the way `02 Homepage.dc.html` does (three and two to one column under 860px; four to
  * two under 1000px and to one under 600px). Children are the cards; the page only chooses the
- * count.
+ * count, and may close the grid with a short muted note (the Programs hub's line under its cards).
  */
 interface Props {
   columns?: 2 | 3 | 4;
+  /** A line under the cards. */
+  note?: string | null;
   class?: string;
 }
 
-const { columns = 3, class: className, ...rest } = Astro.props;
+const { columns = 3, note, class: className, ...rest } = Astro.props;
 ---
 
 <div class:list={['oy-card-grid', className]} data-columns={columns} {...rest}>
   <slot />
 </div>
+{note?.trim() && <p class="oy-card-grid-note">{note}</p>}
 
 <style>
   .oy-card-grid {
     display: grid;
     gap: 22px;
     grid-template-columns: repeat(3, 1fr);
+  }
+  .oy-card-grid-note {
+    margin: 18px 0 0;
+    max-width: 74ch;
+    font-size: 14.5px;
+    color: var(--text-muted);
   }
   .oy-card-grid[data-columns='2'] {
     grid-template-columns: 1fr 1fr;

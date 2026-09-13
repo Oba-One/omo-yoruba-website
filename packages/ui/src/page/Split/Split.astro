@@ -3,16 +3,24 @@
  * Two columns for a section's copy and its photograph (`.oy-split` in the tokens, 1.1 to 0.9,
  * stacking under 900px), as "What Odunde is" and the Gala's evening sit. The default slot is the
  * copy; the `aside` slot the photograph or the running order. A section head in the copy column sits
- * 16px above the prose, as the prototypes set it, instead of the 30px a head keeps above a block.
+ * 16px above the prose, as the prototypes set it, instead of the 30px a head keeps above a block, and
+ * a list of facts after the copy keeps the 22px `10 Programs.dc.html` sets above Cultural Exchange's.
+ * The `person` shape puts a 320px card in the first column beside the second at full height, stacking
+ * under 860px, as `11 Yoruba Language School.dc.html` sets the teacher beside her form.
  */
 interface Props {
+  shape?: 'copy' | 'person';
   class?: string;
 }
 
-const { class: className, ...rest } = Astro.props;
+const { shape = 'copy', class: className, ...rest } = Astro.props;
 ---
 
-<div class:list={['oy-split', className]} {...rest}>
+<div
+  class:list={['oy-split', className]}
+  data-shape={shape === 'person' ? 'person' : undefined}
+  {...rest}
+>
   <div class="oy-split-main"><slot /></div>
   <div class="oy-split-aside"><slot name="aside" /></div>
 </div>
@@ -20,6 +28,26 @@ const { class: className, ...rest } = Astro.props;
 <style>
   .oy-split-main > :global(.oy-sec-head) {
     margin-bottom: 16px;
+  }
+  .oy-split-main > :global(* + .oy-facts) {
+    margin-top: 22px;
+  }
+  .oy-split[data-shape='person'] {
+    grid-template-columns: 320px 1fr;
+    gap: 28px;
+    align-items: stretch;
+  }
+  .oy-split[data-shape='person'] > div {
+    display: flex;
+    flex-direction: column;
+  }
+  .oy-split[data-shape='person'] > div > :global(*) {
+    flex: 1;
+  }
+  @media (max-width: 860px) {
+    .oy-split[data-shape='person'] {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 

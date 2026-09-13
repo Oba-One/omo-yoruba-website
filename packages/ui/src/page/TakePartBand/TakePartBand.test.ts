@@ -3,8 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './TakePartBand.stories';
 
-const { Default, SponsorFirst, Gala, NoLabels, Kicker, RowPending, Pending } =
-  composeStories(stories);
+const {
+  Default,
+  SponsorFirst,
+  Gala,
+  Programs,
+  Lessons,
+  Collective,
+  NoLabels,
+  Kicker,
+  RowPending,
+  Pending,
+} = composeStories(stories);
 
 const rowsOf = (body: HTMLElement) => [...body.querySelectorAll('.oy-takepart > .oy-path')];
 
@@ -82,6 +92,55 @@ describe('TakePartBand', () => {
     expect(give?.hasAttribute('data-give')).toBe(true);
     expect(body.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
     expect(body.querySelector('.oy-pend')).toBeNull();
+  });
+
+  it('draws the program ways in: enrol and member open their forms on the performer accent', async () => {
+    const programs = rowsOf(await renderToBody(Programs));
+    expect(programs.map((row) => row.getAttribute('data-accent'))).toEqual([
+      'enrol',
+      'volunteer',
+      'give',
+    ]);
+    expect(programs.map((row) => text(row.querySelector('.oy-path-chip')))).toEqual([
+      'Enrol',
+      'Volunteer',
+      'Give',
+    ]);
+    const enrol = programs[0]?.querySelector('a.oy-btn');
+    expect(enrol?.getAttribute('data-enquiry')).toBe('enrol');
+    expect(enrol?.className).toContain('oy-btn--primary');
+
+    const lessons = rowsOf(await renderToBody(Lessons));
+    expect(lessons.map((row) => text(row.querySelector('.oy-path-chip')))).toEqual([
+      'Volunteer',
+      'Membership',
+      'Give',
+    ]);
+    expect(lessons[0]?.querySelector('.oy-btn--primary')).not.toBeNull();
+    expect(lessons[1]?.querySelector('a.oy-btn')?.getAttribute('data-enquiry')).toBe('member');
+    // A row without a line draws no empty paragraph and no chip for it.
+    expect(lessons[2]?.querySelector('.oy-path-body p')).toBeNull();
+  });
+
+  it("puts a row's own chip in place of its way in's, and sends Updates quietly to the newsletter form", async () => {
+    const body = await renderToBody(Collective);
+    const rows = rowsOf(body);
+    expect(rows.map((row) => row.getAttribute('data-way'))).toEqual([
+      'sponsor',
+      'volunteer',
+      'updates',
+    ]);
+    expect(rows.map((row) => text(row.querySelector('.oy-path-chip')))).toEqual([
+      'Partner',
+      'Skills',
+      'Updates',
+    ]);
+    expect(rows[0]?.querySelector('a.oy-btn')?.getAttribute('data-enquiry')).toBe('sponsor');
+    const updates = rows[2]?.querySelector('a.oy-btn');
+    expect(updates?.getAttribute('href')).toBe('#subscribe');
+    expect(updates?.hasAttribute('data-enquiry')).toBe(false);
+    expect(updates?.className).toContain('oy-btn--quiet');
+    expect(body.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
   });
 
   it('carries the label style on the column', async () => {

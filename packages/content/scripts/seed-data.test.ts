@@ -10,6 +10,8 @@ const assets: SeedAssets = new Map(
     'odunde-2026-attendees-learning-yoruba.jpg',
     'odunde-2026-attendee-smiling-2.jpg',
     'odunde-2026-group-guests-smiling.jpg',
+    'odunde-2026-mom-playing-games-with-kids.jpg',
+    'odunde-2026-kids-doing-paint-art.jpg',
     'gala-2025-group-photo.jpg',
   ].map((file) => [
     file,
@@ -195,6 +197,31 @@ describe('missingFields', () => {
     });
   });
 
+  it("fills a missing field inside a keyed item of an object's array, as the Kids & STEM sub-programs keep them", () => {
+    const facts = [{ _key: 'fact-1', label: 'Ages' }];
+    const seed = {
+      kidsStem: {
+        title: 'Kids & STEM',
+        subprograms: [
+          { _key: 'sub-1', name: 'Seed name', facts },
+          { _key: 'sub-2', name: 'Second', facts },
+        ],
+      },
+    };
+    const current = {
+      kidsStem: {
+        title: 'Owner title',
+        subprograms: [
+          { _key: 'sub-1', name: 'Owner name' },
+          { _key: 'owner-sub', name: 'Added by the owner' },
+        ],
+      },
+    };
+    expect(missingFields(seed, current)).toEqual({
+      'kidsStem.subprograms[_key=="sub-1"].facts': facts,
+    });
+  });
+
   it('leaves a photograph the owner replaced with its own framing and words', () => {
     const seeded = { _ref: 'image-seed-1024x683-jpg' };
     const owners = { _ref: 'image-owner-1200x800-jpg' };
@@ -267,6 +294,140 @@ describe('the take-part rows and the retired fields', () => {
       }
       expect(byId.get(id)).not.toHaveProperty('takePartOrder');
     }
+  });
+
+  it('seeds each program page with its rows and chips, and none of the facts the register invents', () => {
+    for (const [id, rows] of [
+      [
+        'programsPage',
+        [
+          ['enrol', undefined, 'Enrol a learner'],
+          ['volunteer', 'Volunteer', 'Volunteer'],
+          ['give', undefined, 'Donate'],
+        ],
+      ],
+      [
+        'lessonsPage',
+        [
+          ['volunteer', 'Volunteer', 'Raise your hand'],
+          ['member', undefined, 'Become a member'],
+          ['give', undefined, 'Donate'],
+        ],
+      ],
+      [
+        'collectivePage',
+        [
+          ['sponsor', 'Partner', 'Talk to us'],
+          ['volunteer', 'Skills', 'Volunteer a skill'],
+          ['updates', undefined, 'Subscribe'],
+        ],
+      ],
+    ] as const) {
+      const stored = (byId.get(id)?.takePart ?? []) as {
+        way: string;
+        chip?: string;
+        title: string;
+        line?: string;
+        label: string;
+      }[];
+      expect(
+        stored.map((row) => [row.way, row.chip, row.label]),
+        id,
+      ).toEqual(rows);
+      for (const row of stored) {
+        expect(row.title, `${id} ${row.way}`).toBeTruthy();
+        // Dues, member benefits, volunteer roles and hours, what a gift buys, the fee policy.
+        expect(`${row.title} ${row.line ?? ''}`).not.toMatch(
+          /\$\d|a year|vote|hours|classroom|second adult|books|cannot pay|engineering|permitting/i,
+        );
+      }
+    }
+    // Lessons' give row states nothing a gift buys, so it has no line.
+    const lessons = byId.get('lessonsPage')?.takePart as { way: string; line?: string }[];
+    expect(lessons.find((row) => row.way === 'give')).not.toHaveProperty('line');
+  });
+
+  it('seeds the Kids & STEM sub-programs with their photographs and the labels of their owed facts', () => {
+    const kids = (
+      byId.get('programsPage') as unknown as {
+        kidsStem: Record<string, unknown> & {
+          subprograms: {
+            name: string;
+            image?: { hotspot?: unknown };
+            facts?: { label: string; value?: string }[];
+          }[];
+        };
+      }
+    ).kidsStem;
+    expect(kids).not.toHaveProperty('image');
+    expect(kids).not.toHaveProperty('ages');
+    expect(kids.subprograms.map((sub) => [sub.name, sub.facts?.map((fact) => fact.label)])).toEqual(
+      [
+        ['Àgbàlá Ọmọde', ['Ages']],
+        ['STEM Hub', ['Ages', 'What they build']],
+      ],
+    );
+    for (const sub of kids.subprograms) {
+      expect(sub.image?.hotspot, sub.name).toBeDefined();
+      // "4 to 10", "10 to 14", "Saturdays" and the robotics are invented: no value is seeded.
+      expect(sub.facts?.every((fact) => fact.value === undefined)).toBe(true);
+      expect(sub).not.toHaveProperty('ages');
+      expect(sub).not.toHaveProperty('detail');
+    }
+  });
+
+  it('seeds the year strip by program or by kind, with only the notes the register confirms', () => {
+    const rows = (
+      byId.get('programsPage') as unknown as {
+        yearStrip: {
+          _key: string;
+          when?: string;
+          kind?: string;
+          program?: { _ref: string };
+          note?: string;
+        }[];
+      }
+    ).yearStrip;
+    expect(
+      rows.map((row) => [row._key, row.when, row.kind ?? row.program?._ref, row.note]),
+    ).toEqual([
+      ['row-1', undefined, 'program-yoruba-lessons', 'Online, scheduled with the teacher'],
+      ['row-2', 'June', 'festival', 'Leimert Park'],
+      ['row-3', 'Nov or Dec', 'gala', undefined],
+      ['row-4', undefined, 'program-kids-stem', 'Àgbàlá Ọmọde runs at the festival'],
+      ['row-5', undefined, 'program-cultural-collective', 'Solar Hub, Green Goods'],
+    ]);
+    // An edition reference would go stale the day the edition ends (ADR 0031).
+    expect(rows.some((row) => 'event' in row)).toBe(false);
+    expect(JSON.stringify(rows)).not.toMatch(/Year-round|Saturdays|Monthly|Date pending/);
+  });
+
+  it('unsets retired fields at nested paths, item by item, only where they are stored', () => {
+    const stored = {
+      kidsStem: {
+        image: { asset: { _ref: 'image-x' } },
+        subprograms: [
+          { _key: 'sub-1', ages: 'x', detail: 'y' },
+          { _key: 'sub-2', name: 'kept' },
+        ],
+      },
+    };
+    expect(retiredFields('programsPage', stored)).toEqual([
+      'kidsStem.image',
+      'kidsStem.subprograms[_key=="sub-1"].ages',
+      'kidsStem.subprograms[_key=="sub-1"].detail',
+    ]);
+    const strip = {
+      yearStrip: [
+        { _key: 'row-1', program: { _ref: 'program-yoruba-lessons' } },
+        { _key: 'row-2', event: { _ref: 'event-odunde-2027' }, when: 'June' },
+      ],
+    };
+    expect(retiredFields('programsPage', strip)).toEqual(['yearStrip[_key=="row-2"].event']);
+    expect(
+      retiredFields('lessonsPage', { voices: [{ _key: 'v', _ref: 'testimonial-1' }] }),
+    ).toEqual(['voices']);
+    expect(retiredFields('programsPage', { kidsStem: { title: 'Kids & STEM' } })).toEqual([]);
   });
 
   it('unsets a retired field only where it is still stored', () => {

@@ -1,0 +1,123 @@
+---
+/**
+ * Questions and their answers (COMPONENT-MAP, Lists and rows; `11 Yoruba Language School.dc.html`,
+ * Questions parents ask): the tokens' `.oy-faq` rows as native disclosures sharing one `name`, so one
+ * stays open at a time and opening another closes it, without JavaScript, find in page opening the
+ * answer it lands in (`docs/research/phase-6-faq-accordion.md`). `multi` drops the group so several stay
+ * open; `defaultOpen` opens the first question. Each closed row keeps its 44px target and its drawn mark
+ * (the glyph set has no plus or minus): a horizontal bar, and the vertical one while closed. An
+ * unanswered question stays in the list and opens onto the registry's chip; no questions renders the
+ * Pending line. Browsers before Chrome 120, Firefox 130 and Safari 17.2 ignore the group and let
+ * several stay open.
+ */
+import type { PortableTextProps } from 'astro-portabletext/types';
+import Pending from '../../core/Pending/Pending.astro';
+import Prose from '../Prose/Prose.astro';
+
+export interface AccordionItemLike {
+  _key?: string | null;
+  question?: string | null;
+  answer?: PortableTextProps['value'] | null;
+}
+
+interface Props {
+  items?: (AccordionItemLike | null)[] | null;
+  /** Names the group, one per instance on a page: never the question text, which carries stega. */
+  id: string;
+  /** Several open at once. */
+  multi?: boolean;
+  /** The first question starts open. */
+  defaultOpen?: boolean;
+  /** The registry's wording for no questions, and for a question without its answer. */
+  pending?: string;
+  answerPending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the option that sets how it starts. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  items,
+  id,
+  multi = false,
+  defaultOpen = false,
+  pending = 'the questions',
+  answerPending = 'an answer',
+  edit,
+  class: className,
+} = Astro.props;
+const rows = (items ?? []).filter((item) => item?.question?.trim());
+const hasAnswer = (answer: AccordionItemLike['answer']) =>
+  Array.isArray(answer) && answer.length > 0;
+---
+
+{
+  rows.length === 0 ? (
+    <Pending variant="line" what={pending} class={className} />
+  ) : (
+    <div class:list={['oy-faq', className]} data-sanity={edit}>
+      {rows.map((item, index) => (
+        <details
+          class="oy-faq-item"
+          name={multi ? undefined : `${id}-questions`}
+          open={defaultOpen && index === 0}
+        >
+          <summary class="oy-faq-q">
+            <span class="oy-faq-text">{item?.question}</span>
+            <span class="oy-faq-mark" aria-hidden="true" />
+          </summary>
+          <div class="oy-faq-a">
+            {hasAnswer(item?.answer) ? (
+              <Prose value={item?.answer} />
+            ) : (
+              <Pending what={answerPending} />
+            )}
+          </div>
+        </details>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .oy-faq-q {
+    list-style: none;
+  }
+  .oy-faq-q::-webkit-details-marker {
+    display: none;
+  }
+  /* The mark's bars are borders in the text colour, so forced colours keep them visible. */
+  .oy-faq-mark {
+    position: relative;
+  }
+  .oy-faq-mark::before,
+  .oy-faq-mark::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-color: currentColor;
+    border-style: solid;
+    border-width: 0;
+  }
+  .oy-faq-mark::before {
+    width: 11px;
+    border-top-width: 2px;
+    transform: translate(-50%, -50%);
+  }
+  .oy-faq-mark::after {
+    height: 11px;
+    border-left-width: 2px;
+    transform: translate(-50%, -50%);
+  }
+  details[open] > .oy-faq-q .oy-faq-mark::after {
+    display: none;
+  }
+  .oy-faq-q:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .oy-faq-a :global(.oy-prose) {
+    max-width: none;
+  }
+</style>

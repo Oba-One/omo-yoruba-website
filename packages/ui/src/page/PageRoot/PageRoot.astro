@@ -4,16 +4,19 @@
  * the theme (`adire` by default, as on the site) and one data attribute per layout option the page
  * passes (`data-phead`, `data-treatment` and the rest), which the tokens' and the components' rules
  * read. The site puts the same attributes on `<body>` through the layout; `HomeRoot` is the
- * homepage's named form.
+ * homepage's named form. `scope` wraps the sections as the site marks a page's `main`
+ * (`data-scope="collective"`, the Collective's green).
  */
 interface Props {
   theme?: 'adire' | 'calm' | 'festival';
   /** Layout option names and values: `{ phead: 'slim' }` becomes `data-phead="slim"`. */
   options?: Record<string, string | undefined>;
+  /** The page's content scope, where the site sets it on `main`. */
+  scope?: 'collective';
   class?: string;
 }
 
-const { theme = 'adire', options = {}, class: className } = Astro.props;
+const { theme = 'adire', options = {}, scope, class: className } = Astro.props;
 const attributes = Object.fromEntries(
   Object.entries(options)
     .filter(([, value]) => value !== undefined)
@@ -22,5 +25,13 @@ const attributes = Object.fromEntries(
 ---
 
 <div class:list={['oy-home', className]} data-card="grain-dots" data-theme={theme} {...attributes}>
-  <slot />
+  {
+    scope ? (
+      <div data-scope={scope}>
+        <slot />
+      </div>
+    ) : (
+      <slot />
+    )
+  }
 </div>

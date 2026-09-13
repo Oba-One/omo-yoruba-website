@@ -1,4 +1,40 @@
+import AxeBuilder from '@axe-core/playwright';
+import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { expect, type Locator, type Page } from '@playwright/test';
+
+/**
+ * Whether this run reads the placeholder project CI uses, where every Sanity read answers null
+ * (`docs/runbook.md`). Seeded runs load the project from `packages/web/.env` inside the server, so the
+ * test process sees no such variable.
+ */
+export const PLACEHOLDER_PROJECT = process.env.PUBLIC_SANITY_PROJECT_ID === 'placeholder';
+
+/** Axe's WCAG 2.1 A and AA violations on the page as it stands: each rule and its first nodes. */
+export async function axeViolations(page: Page) {
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .analyze();
+  return results.violations.map((violation) => ({
+    id: violation.id,
+    nodes: violation.nodes.map((node) => node.target.join(' ')).slice(0, 5),
+  }));
+}
+
+/**
+ * An enquiry trigger's round trip: the click opens the Enquiry Modal on the trigger's own kind, Escape
+ * closes it, and focus returns to the trigger.
+ */
+export async function expectEnquiryRoundTrip(page: Page, trigger: Locator) {
+  const kind = (await trigger.getAttribute('data-enquiry')) as EnquiryKind;
+  const dialog = page.locator('dialog#enquiry');
+  await trigger.scrollIntoViewIfNeeded();
+  await trigger.click();
+  await expect(dialog).toHaveAttribute('open', '');
+  await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS[kind].title);
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toHaveAttribute('open', '');
+  await expect(trigger).toBeFocused();
+}
 
 /**
  * devalue's flat encoding for a plain object of primitives and nested objects: the root at
@@ -93,3 +129,29 @@ export function expectNoMockWhileOwed(
     if (owed.test(text)) expect(text, `${mock} while "${what}" is owed`).not.toMatch(mock);
   }
 }
+
+/**
+ * The gold rule (QUALITY section 2): one gold primary action per screen view. Answers each pair of
+ * visible gold actions in `main` close enough that one viewport shows both, as their labels; the nav's
+ * Donate is sticky and never counted. Empty means the page keeps the rule at this viewport.
+ */
+export const goldSharingAView = (page: Page) =>
+  page.evaluate(() => {
+    const height = window.innerHeight;
+    const gold = Array.from(document.querySelectorAll<HTMLElement>('main .oy-btn--primary'))
+      .filter((el) => el.checkVisibility())
+      .map((el) => {
+        const box = el.getBoundingClientRect();
+        return {
+          label: (el.textContent ?? '').replace(/\s+/g, ' ').trim(),
+          top: box.top + window.scrollY,
+          bottom: box.bottom + window.scrollY,
+        };
+      })
+      .sort((a, b) => a.top - b.top);
+    return gold
+      .slice(1)
+      .map((next, at) => [gold[at], next] as const)
+      .filter(([one, other]) => one && other.top - one.bottom < height)
+      .map(([one, other]) => `${one?.label} + ${other.label}`);
+  });

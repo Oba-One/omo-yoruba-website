@@ -10,6 +10,14 @@
   --terra-600: #b4552d; /* kickers, festival warmth, secondary accents */
   --terra-700: #8f3f1e; /* deep terracotta for festival gradients (from mockup) */
   --green-600: #2e7d5b; /* YCC/sustainability content ONLY */
+  /* The Collective's tints and text green, from 12 Yoruba Cultural Collective.dc.html (added in Phase 6).
+     Collective content only: its page's main and its card's link (ADR 0031). */
+  --green-50: #edf5f0; /* the strong option's grounds: the slim header and the alternate sections */
+  --green-100: #e4f0e9; /* the status pill's ground */
+  --green-150: #ddefe5; /* the member-led pill's ground */
+  --green-200: #c7dfd2; /* the strong header's bottom line */
+  --green-300: #a9cdbb; /* the status pill's line */
+  --green-700: #1f5c41; /* green text on those tints, the volunteer chip's: 6.6:1 on green-150, where green-600 reads 4.18 */
   --paper: #faf5ec; /* warm section background, alternates with white */
   --white: #ffffff;
   --ink: #22222a; /* body text */

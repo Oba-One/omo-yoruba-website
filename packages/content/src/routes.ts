@@ -37,6 +37,12 @@ export const ROUTE_SINGLETONS: Record<string, PublicRoute> = {
   newsPage: '/news',
 };
 
+/** The event pages' names, by the kind of edition they show: never with a year (ADR 0031). */
+export const EVENT_PAGE_NAMES = {
+  festival: 'Odunde Festival',
+  gala: 'End-of-Year Gala',
+} as const;
+
 /**
  * The page an edition opens, by its kind: the festival and the Gala have their own, a Collective
  * event opens the Collective's page, and any other kind has none. The one answer the news cards,
@@ -66,17 +72,20 @@ export function programRoute(page: string | null | undefined): PublicRoute {
 export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   siteSettings: PUBLIC_ROUTES,
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
-  event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/programs', '/news'],
+  // The year strip names the festival and the Gala by kind, so no edition reaches the Programs hub.
+  event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/news'],
   // The festival page draws the zones; the Gala's running order names a row's zone too.
   zone: ['/odunde', '/gala'],
   ticketTier: ['/gala'],
   sponsorLevel: ['/gala'],
   honoree: ['/gala'],
-  program: ['/', '/programs', '/impact'],
+  // The Collective's page shows the Collective program's photograph (wayfinder ticket 31, ADR 0031).
+  program: ['/', '/programs', '/programs/cultural-collective', '/impact'],
   initiative: ['/programs/cultural-collective'],
   person: ['/our-story', '/programs/yoruba-lessons'],
   timelineEntry: ['/our-story'],
-  testimonial: ['/', '/impact', '/programs/yoruba-lessons', '/programs/cultural-collective'],
+  // The slimmed Lessons page has no voices; a lessons testimonial fills the homepage's parent slot.
+  testimonial: ['/', '/impact', '/programs/cultural-collective'],
   newsPost: ['/news/[slug]', '/news', '/'],
   album: ['/gallery/[album]', '/gallery', '/odunde', '/gala'],
   photographer: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],

@@ -5,7 +5,8 @@
  * content, and the slot inside `.oy-wrap`. On the tint the
  * kicker deepens to terracotta 700 and muted text to its on-tint token so both keep AA. Pages
  * compose sections from this and `SectionHead`; the textures come from the tokens and the
- * pattern option on the page root dims them.
+ * pattern option on the page root dims them. `width="narrow"` holds the wrap at 900px, as the Lessons
+ * page sets its questions.
  */
 import PatternBand from '../../bands/PatternBand/PatternBand.astro';
 
@@ -19,6 +20,8 @@ interface Props {
   texture?: 'batik' | 'none';
   /** The id of the heading that labels the section. */
   labelledby?: string;
+  /** The content width, or a 900px wrap for a single column of reading. */
+  width?: 'content' | 'narrow';
   class?: string;
 }
 
@@ -27,6 +30,7 @@ const {
   ground = 'white',
   texture = 'none',
   labelledby,
+  width = 'content',
   class: className,
   ...rest
 } = Astro.props;
@@ -38,6 +42,7 @@ const {
     'oy-section',
     ground === 'alt' && 'oy-section--alt',
     ground === 'paper' && 'oy-section--paper',
+    width === 'narrow' && 'oy-section--narrow',
     texture !== 'none' && 'oy-section--textured',
     className,
   ]}
@@ -58,6 +63,9 @@ const {
   .oy-section--alt {
     --accent-kicker: var(--terra-700);
     --text-muted: var(--text-muted-on-tint);
+  }
+  .oy-section--narrow .oy-section-inner {
+    max-width: 900px;
   }
   .oy-section--textured {
     position: relative;

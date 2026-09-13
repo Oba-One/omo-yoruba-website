@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   cacheTagsFor,
+  EVENT_PAGE_NAMES,
   editionRoute,
   PUBLIC_ROUTES,
   programRoute,
@@ -25,6 +26,13 @@ describe('editionRoute and programRoute', () => {
     expect(programRoute('collective')).toBe('/programs/cultural-collective');
     expect(programRoute(null)).toBe('/programs');
     expect(programRoute('unknown')).toBe('/programs');
+  });
+
+  it("lets a program reach the Collective's page, which shows the Collective program's photograph", () => {
+    expect(TYPE_ROUTES.program).toContain('/programs/cultural-collective');
+    expect(tagsForRoute('/programs/cultural-collective')).toEqual(
+      expect.arrayContaining(['type:program', 'type:initiative', 'type:testimonial', 'type:event']),
+    );
   });
 
   it('answers only routes the map lists for the type', () => {
@@ -120,5 +128,11 @@ describe('tagsForRoute', () => {
       const type = tag.replace('type:', '');
       expect(cacheTagsFor(type)[0]).toBe(tag);
     }
+  });
+});
+
+describe('EVENT_PAGE_NAMES', () => {
+  it('names each event page without a year, as the year strip and the Studio write it', () => {
+    expect(EVENT_PAGE_NAMES).toEqual({ festival: 'Odunde Festival', gala: 'End-of-Year Gala' });
   });
 });

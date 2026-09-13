@@ -1,5 +1,6 @@
 import { defineField } from 'sanity';
 import { PAGE_LAYOUTS } from '../../layout-options';
+import { EVENT_PAGE_NAMES } from '../../routes';
 import { voice } from '../../validation/rules';
 import { facts, refs, text } from '../helpers';
 import { definePage } from './page';
@@ -169,22 +170,25 @@ export const galaPage = definePage({
   layout: PAGE_LAYOUTS.galaPage,
 });
 
+/**
+ * One half of Kids & STEM (ADR 0031): its own photograph and facts, since the two cards' facts differ
+ * ("Ages" on both, "What they build" on the STEM Hub).
+ */
 const subprogram = {
   type: 'object',
   name: 'subprogram',
   fields: [
     defineField({ name: 'name', title: 'Name', type: 'string', validation: voice.requiredHeading }),
-    defineField({ name: 'ages', title: 'Ages', type: 'string', validation: voice.text }),
     text('blurb', 'Blurb', 2),
-    defineField({
-      name: 'detail',
-      title: 'One detail line',
-      type: 'string',
-      validation: voice.text,
-    }),
+    defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
+    facts(
+      'facts',
+      'Facts',
+      'Each a label and its value ("Ages"). Empty values show Pending on the card.',
+    ),
     defineField({ name: 'action', title: 'Action', type: 'cta' }),
   ],
-  preview: { select: { title: 'name', subtitle: 'ages' } },
+  preview: { select: { title: 'name', media: 'image' } },
 };
 
 export const programsPage = definePage({
@@ -198,9 +202,7 @@ export const programsPage = definePage({
       type: 'object',
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
-        defineField({ name: 'ages', title: 'Ages', type: 'string', validation: voice.text }),
         text('blurb', 'Blurb'),
-        defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
         defineField({
           name: 'subprograms',
           title: 'Sub programs',
@@ -236,16 +238,29 @@ export const programsPage = definePage({
       name: 'yearStrip',
       title: 'When things run',
       type: 'array',
+      description: 'Five columns, one per program or event, in order.',
       of: [
         {
           type: 'object',
           name: 'yearStripRow',
+          // A row names a program or an event page's kind, never an edition, which would go stale the
+          // day it ends (ADR 0031).
+          validation: (rule) =>
+            rule.custom((row) => {
+              const value = row as { program?: unknown; kind?: string } | undefined;
+              if (!value) return true;
+              if (value.program && value.kind) return 'Choose a program or an event, not both.';
+              if (!value.program && !value.kind) {
+                return 'Choose the program or the event this row names.';
+              }
+              return true;
+            }),
           fields: [
             defineField({
               name: 'when',
               title: 'When',
               type: 'string',
-              description: '"June", "Nov or Dec", "Year-round".',
+              description: '"June", "Nov or Dec". Empty shows Pending.',
               validation: voice.text,
             }),
             defineField({
@@ -255,17 +270,36 @@ export const programsPage = definePage({
               to: [{ type: 'program' }],
             }),
             defineField({
-              name: 'event',
+              name: 'kind',
               title: 'Event',
-              type: 'reference',
-              to: [{ type: 'event' }],
+              type: 'string',
+              description: 'The event whose page the row names; its name shows without a year.',
+              options: {
+                list: [
+                  { title: EVENT_PAGE_NAMES.festival, value: 'festival' },
+                  { title: EVENT_PAGE_NAMES.gala, value: 'gala' },
+                ],
+                layout: 'radio',
+                direction: 'horizontal',
+              },
             }),
             defineField({ name: 'note', title: 'Note', type: 'string', validation: voice.text }),
           ],
-          preview: { select: { title: 'when', subtitle: 'note' } },
+          preview: {
+            select: { when: 'when', program: 'program.name', kind: 'kind', note: 'note' },
+            prepare: ({ when, program, kind, note }) => ({
+              title:
+                program ??
+                (kind === 'gala' || kind === 'festival'
+                  ? EVENT_PAGE_NAMES[kind as keyof typeof EVENT_PAGE_NAMES]
+                  : 'A row'),
+              subtitle: [when ?? 'when pending', note].filter(Boolean).join(' • '),
+            }),
+          },
         },
       ],
     }),
+    takePart,
   ],
   layout: PAGE_LAYOUTS.programsPage,
 });
@@ -277,6 +311,13 @@ export const lessonsPage = definePage({
     facts('glance', 'At a glance', 'Format, when, ages, cost.'),
     defineField({ name: 'teacher', title: 'Teacher', type: 'reference', to: [{ type: 'person' }] }),
     text('teacherIntro', 'Teacher intro', 2),
+    defineField({
+      name: 'learn',
+      title: 'What you learn',
+      type: 'blockContent',
+      description:
+        'What the lessons teach, in her words: the marks, the tones, how learners move up. Empty shows Pending.',
+    }),
     defineField({
       name: 'levels',
       title: 'Levels',
@@ -332,7 +373,7 @@ export const lessonsPage = definePage({
       type: 'array',
       of: [{ type: 'faqItem' }],
     }),
-    refs('voices', 'Voices', 'testimonial'),
+    takePart,
   ],
   layout: PAGE_LAYOUTS.lessonsPage,
 });
@@ -361,6 +402,7 @@ export const collectivePage = definePage({
       description: 'Off points the updates row at the footer newsletter.',
       initialValue: false,
     }),
+    takePart,
   ],
   layout: PAGE_LAYOUTS.collectivePage,
 });
@@ -528,8 +570,6 @@ export const newsPage = definePage({
   fields: [],
   layout: PAGE_LAYOUTS.newsPage,
 });
-
-export { WAY_INS } from '../../take-part';
 
 export const singletonTypes = [
   siteSettings,

@@ -40,3 +40,23 @@ export const Secondary: Story = { args: { kind: 'volunteer', variant: 'secondary
 export const WithNext: Story = {
   args: { kind: 'member', next: 'Dues are agreed with our membership lead' },
 };
+
+/** The Lessons page's card: the enrol spec's copy, the prototype's label, and the teacher's own address beside it. */
+export const WithEmail: Story = {
+  args: {
+    kind: 'enrol',
+    label: 'Write to the teacher',
+    email: '[ teacher@example.org ]',
+    emailPending: "the teacher's email",
+  },
+};
+
+/** The same card while the settings hold no address for the teacher: the registry's chip. */
+export const EmailPending: Story = {
+  args: {
+    kind: 'enrol',
+    label: 'Write to the teacher',
+    email: null,
+    emailPending: "the teacher's email",
+  },
+};

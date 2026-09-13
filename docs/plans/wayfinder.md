@@ -105,6 +105,16 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   [the event pages follow their prototypes under the repo rules](../adr/0028-event-pages-follow-their-prototypes-under-the-repo-rules.md).
   Page-section stories show owed content in the prototypes' bracketed placeholder form ("[ Price ]",
   "[ The opening of the day ]") beside Pending chips, never a mock name or price.
+- [Take-part rows grow to nine ways in, with the row's own chip](../adr/0029-nine-ways-in-and-the-row-chip.md),
+  [collective events list while dated and still to come](../adr/0030-collective-events-list-while-dated-and-to-come.md),
+  and [the program pages follow the slimmed prototypes](../adr/0031-program-pages-content-model.md): Lessons
+  without voices, sub-programs with their own photographs and facts, the year strip naming kinds, green
+  inside the Collective page's `main` (Phase 6 grill, owner's answers in `docs/tickets/phase-6/spec.md`).
+- [The FAQ accordion and the inline programs are native disclosures](../adr/0032-native-disclosures-for-the-accordion-and-inline-programs.md)
+  with no script (`docs/research/phase-6-faq-accordion.md`), and
+  [the program pages follow their prototypes under the repo rules](../adr/0033-program-pages-follow-their-prototypes-under-the-repo-rules.md):
+  placeholders instead of interim photographs, AA greens and kickers on the Collective's strong tint, a
+  handoff box white on an alternate ground (Phase 6).
 - [The homepage under the mobile performance budget](../tickets/wayfinder/issues/33-homepage-mobile-lighthouse-budget.md):
   right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
   0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).
@@ -137,6 +147,8 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 36 | Check the event pages in the Studio and on the preview, merge pull request 6 | Phase 6 branch |
 | 37 | The photo carousel's controls (ADR 0027's answers) | The Lightbox, Phase 8 |
 | 38 | The event pages' owed facts (Odunde 2027, Gala 2026, albums) | Launch |
+| 39 | Check the program pages in the Studio and on the preview, merge pull request 7 | Phase 7 branch |
+| 40 | The program pages' owed facts (the teacher, the Lessons answers, the initiatives, the Collective's argument and voice) | Launch |
 | 07 | Our Story timeline shown by default | Phase 7 |
 | 10 | Old site URLs for redirects | Phase 9 |
 | 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | Phase 9 |

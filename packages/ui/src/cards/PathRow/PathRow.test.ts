@@ -3,8 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PathRow.stories';
 
-const { Member, Partner, Volunteer, Give, Pending, TakePartRow, Quiet, TakePartRowPending } =
-  composeStories(stories);
+const {
+  Member,
+  Partner,
+  Volunteer,
+  Give,
+  Pending,
+  TakePartRow,
+  Quiet,
+  TakePartRowPending,
+  Enrol,
+  MemberRow,
+  Updates,
+  OwnChip,
+} = composeStories(stories);
 
 describe('PathRow', () => {
   it('renders the chip, the copy and the gold enquiry trigger for the member door', async () => {
@@ -68,5 +80,23 @@ describe('PathRow', () => {
     expect(text(row?.querySelector('h3 .oy-pend'))).toBe(chip);
     expect(row?.querySelector('a.oy-btn')).toBeNull();
     expect(text(row?.querySelector(':scope > .oy-pend'))).toBe(chip);
+  });
+
+  it("draws the program pages' ways in: enrol, member, updates, and a row's own chip", async () => {
+    const enrol = (await renderToBody(Enrol)).querySelector('.oy-path');
+    expect(enrol?.getAttribute('data-accent')).toBe('enrol');
+    expect(text(enrol?.querySelector('.oy-path-chip'))).toBe('Enrol');
+    expect(enrol?.querySelector('a.oy-btn--primary')?.getAttribute('data-enquiry')).toBe('enrol');
+    const member = (await renderToBody(MemberRow)).querySelector('.oy-path');
+    expect(member?.querySelector('a.oy-btn--secondary')?.getAttribute('data-enquiry')).toBe(
+      'member',
+    );
+    const updates = (await renderToBody(Updates)).querySelector('.oy-path');
+    const link = updates?.querySelector('a.oy-btn--quiet');
+    expect(link?.getAttribute('href')).toBe('#subscribe');
+    expect(link?.hasAttribute('data-enquiry')).toBe(false);
+    const own = (await renderToBody(OwnChip)).querySelector('.oy-path');
+    expect(own?.getAttribute('data-accent')).toBe('sponsor');
+    expect(text(own?.querySelector('.oy-path-chip'))).toBe('Partner');
   });
 });

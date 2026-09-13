@@ -33,6 +33,31 @@ export interface PresenceEntry {
 
 const FESTIVAL = 'kind == "festival"';
 const GALA = 'kind == "gala"';
+const COLLECTIVE = 'kind == "collective"';
+
+/** One row per field of a type, each fact naming itself where the page shows it. */
+const fieldRows = (
+  type: string,
+  where: string,
+  rows: readonly (readonly [field: string, what: string])[],
+): PendingEntry[] => rows.map(([field, what]) => ({ type, fields: [field], where, what }));
+
+/**
+ * The chip for the teacher's own address beside the enrol form. The registry row is a condition on
+ * her routing contact, so a page reads the wording from here rather than finding the row.
+ */
+export const TEACHER_EMAIL_PENDING = "the teacher's email";
+
+/** A page's take-part band: no rows yet, or a row missing its way in, title or button label. */
+const takePartRows = (type: string, where: string): PendingEntry[] => [
+  { type, fields: ['takePart[]'], where, what: 'the ways in' },
+  {
+    type,
+    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
+    where,
+    what: 'a way in, its title or its button label',
+  },
+];
 
 export const PENDING: readonly PendingEntry[] = [
   // Across the whole site
@@ -140,18 +165,7 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Odunde, what the day is',
     what: 'a photograph of festival day',
   },
-  {
-    type: 'festivalPage',
-    fields: ['takePart[]'],
-    where: 'Odunde, take part',
-    what: 'the ways in',
-  },
-  {
-    type: 'festivalPage',
-    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
-    where: 'Odunde, take part',
-    what: 'a way in, its title or its button label',
-  },
+  ...takePartRows('festivalPage', 'Odunde, take part'),
   {
     type: 'festivalPage',
     fields: ['planYourVisit[]'],
@@ -203,6 +217,25 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'the header photograph',
   },
   { type: 'galaPage', fields: ['header.title'], where: 'Gala, header', what: 'the page heading' },
+  // The program pages' slim headers draw no photograph, so only the heading is owed.
+  {
+    type: 'programsPage',
+    fields: ['header.title'],
+    where: 'Programs, header',
+    what: 'the page heading',
+  },
+  {
+    type: 'lessonsPage',
+    fields: ['header.title'],
+    where: 'Lessons, header',
+    what: 'the page heading',
+  },
+  {
+    type: 'collectivePage',
+    fields: ['header.title'],
+    where: 'Collective, header',
+    what: 'the page heading',
+  },
   {
     type: 'galaPage',
     fields: ['header.image'],
@@ -215,18 +248,7 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Gala, the evening',
     what: 'the evening, in your words',
   },
-  {
-    type: 'galaPage',
-    fields: ['takePart[]'],
-    where: 'Gala, take part',
-    what: 'the ways in',
-  },
-  {
-    type: 'galaPage',
-    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
-    where: 'Gala, take part',
-    what: 'a way in, its title or its button label',
-  },
+  ...takePartRows('galaPage', 'Gala, take part'),
   {
     type: 'event',
     fields: ['schedule[]'],
@@ -280,34 +302,74 @@ export const PENDING: readonly PendingEntry[] = [
   { type: 'program', fields: ['blurb'], where: 'Programs, cards', what: 'what the program is' },
   { type: 'program', fields: ['cadence'], where: 'Programs, cards', what: 'the cadence' },
   { type: 'program', fields: ['ages'], where: 'Programs, cards', what: 'the ages' },
+  // A sub-program's fact with its label and no value: the card shows the chip in the value's place.
   {
     type: 'programsPage',
-    fields: ['kidsStem.ages', 'kidsStem.subprograms[]'],
+    condition: 'count(kidsStem.subprograms[count(facts[!defined(value)]) > 0]) > 0',
     where: 'Programs, Kids & STEM',
     what: 'ages and what they build',
   },
+  // Everything about Cultural Exchange is owed; each fact names itself where the page shows it.
+  ...fieldRows('programsPage', 'Programs, Cultural Exchange', [
+    ['culturalExchange.blurb', 'what the exchange is'],
+    ['culturalExchange.eligibility', 'who it is for'],
+    ['culturalExchange.cadence', 'the cadence'],
+    ['culturalExchange.howToJoin', 'how to join'],
+    ['culturalExchange.image', 'a photograph of the exchange'],
+  ]),
+  // "Year-round", "Saturdays" and "Monthly" are invented; a row names its when once it is confirmed.
   {
     type: 'programsPage',
-    fields: [
-      'culturalExchange.blurb',
-      'culturalExchange.cadence',
-      'culturalExchange.eligibility',
-      'culturalExchange.howToJoin',
-    ],
-    where: 'Programs, Cultural Exchange',
-    what: 'everything about this program',
+    fields: ['yearStrip[]'],
+    where: 'Programs, when things run',
+    what: 'when each program runs',
   },
+  {
+    type: 'programsPage',
+    condition: 'count(yearStrip[!defined(when)]) > 0',
+    where: 'Programs, when things run',
+    what: 'when it runs',
+  },
+  ...takePartRows('programsPage', 'Programs, take part'),
+  {
+    type: 'lessonsPage',
+    fields: ['glance[]'],
+    where: 'Lessons, at a glance',
+    what: 'the facts at a glance',
+  },
+  // A glance fact the seed labels and leaves for the owner (the ages); format and cost are seeded.
   {
     type: 'lessonsPage',
     condition: 'count(glance[!defined(value)]) > 0',
     where: 'Lessons, at a glance',
-    what: 'format, ages and fee',
+    what: 'a glance fact',
   },
   {
     type: 'lessonsPage',
     fields: ['teacher'],
     where: 'Lessons, teacher',
-    what: 'the teacher, her bio and how she wants enquiries',
+    what: "the teacher's name and bio",
+  },
+  // Once she is linked, her card shows her short bio or asks for it; only the linked person is listed.
+  {
+    type: 'person',
+    fields: ['bioShort'],
+    filter: '_id in *[_id == "lessonsPage"].teacher._ref',
+    where: 'Lessons, teacher',
+    what: "the teacher's short bio",
+  },
+  // How she wants enquiries: the enrol form always, and her own address beside it once it is set.
+  {
+    type: 'siteSettings',
+    condition: 'count(contacts[role == "teacher" && defined(email)]) == 0',
+    where: 'Lessons, teacher',
+    what: TEACHER_EMAIL_PENDING,
+  },
+  {
+    type: 'lessonsPage',
+    fields: ['learn'],
+    where: 'Lessons, what you learn',
+    what: 'what the lessons teach, in her words',
   },
   {
     type: 'lessonsPage',
@@ -317,9 +379,22 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'lessonsPage',
+    condition: 'count(levels[!defined(blurb)]) > 0',
+    where: 'Lessons, levels',
+    what: 'what the level covers',
+  },
+  {
+    type: 'lessonsPage',
     fields: ['oneLesson[]'],
     where: 'Lessons, one lesson',
     what: 'the shape of a lesson',
+  },
+  // A step saved before its place in the lesson ("Before", "First half"): the row shows this chip there.
+  {
+    type: 'lessonsPage',
+    condition: 'count(oneLesson[!defined(step)]) > 0',
+    where: 'Lessons, one lesson',
+    what: 'the step',
   },
   {
     type: 'lessonsPage',
@@ -333,12 +408,7 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Lessons, questions',
     what: 'an answer',
   },
-  {
-    type: 'lessonsPage',
-    fields: ['voices[]'],
-    where: 'Lessons, voices',
-    what: 'two testimonials with permission to name',
-  },
+  ...takePartRows('lessonsPage', 'Lessons, take part'),
 
   // Cultural Collective
   {
@@ -353,18 +423,28 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Collective, one voice',
     what: 'the quote and who said it',
   },
+  ...takePartRows('collectivePage', 'Collective, take part'),
+  {
+    type: 'event',
+    fields: ['venue.name'],
+    filter: COLLECTIVE,
+    where: 'Collective, events',
+    what: 'the venue',
+  },
   {
     type: 'initiative',
     fields: ['blurb'],
     where: 'Collective, initiatives',
     what: 'what the initiative is',
   },
-  {
-    type: 'initiative',
-    fields: ['status', 'serves', 'since', 'next'],
-    where: 'Collective, initiatives',
-    what: 'status, reach and dates',
-  },
+  ...fieldRows('initiative', 'Collective, initiatives', [
+    ['status', 'the status'],
+    ['statusLine', 'the status line'],
+    ['serves', 'who it serves'],
+    ['since', 'when it started'],
+    ['next', 'what comes next'],
+    ['image', 'a photograph of the project'],
+  ]),
 
   // Get Involved and Donate
   {
@@ -478,7 +558,7 @@ export const PRESENCE: readonly PresenceEntry[] = [
   {
     type: 'testimonial',
     minimum: 1,
-    where: 'Homepage, Lessons, Impact',
+    where: 'Homepage, Impact, Collective',
     what: 'member voices with permission to name',
   },
   { type: 'person', minimum: 1, where: 'About, board and staff', what: 'names, roles and bios' },
@@ -513,6 +593,16 @@ export const PRESENCE: readonly PresenceEntry[] = [
     minimum: 9,
     where: 'Get Involved',
     what: 'the nine association names',
+  },
+  // Still to come as GROQ reads it (ADR 0030): dated, with an end ahead, or no end and a start within the
+  // last day.
+  // The site reads the Los Angeles day, so on the day of an event without an end the two can differ.
+  {
+    type: 'event',
+    minimum: 1,
+    filter: `${COLLECTIVE} && defined(start) && ((defined(end) && dateTime(end) > dateTime(now())) || (!defined(end) && dateTime(start) > dateTime(now()) - 60 * 60 * 24))`,
+    where: 'Collective, events',
+    what: 'the next Collective events',
   },
 ];
 
@@ -577,29 +667,65 @@ export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
 ];
 
 /**
+ * The Collective's one voice while no collective testimonial exists (`12 Yoruba Cultural
+ * Collective.dc.html`, spec Q15 of Phase 6): the prototype's placeholder form, under the registry's chip
+ * "the quote and who said it". The prototype's own quote and speaker are invented.
+ */
+export const COLLECTIVE_VOICE_SLOT: VoiceSlot = {
+  quote:
+    'Quote from a member of the Collective, two or three sentences on why culture and sustainability belong together.',
+  role: 'Member, Yoruba Cultural Collective',
+  context: 'collective',
+};
+
+/**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
- * `kind` picks the row for one kind of document (an event's `gala` or `festival`) where the
- * registry keeps a row per kind; without a matching row the first row for the field answers. An
- * array's name without `[]` answers the row for one of its items missing a value.
+ * `kind` picks the row for one kind of document (an event's `gala` or `festival`): its own row, else
+ * a row every kind shares, never a row the registry keeps for another kind. An array's name without
+ * `[]` answers the row for one of its items missing a value.
  */
 export function pendingWhat(type: string, field: string, kind?: string): string | undefined {
   const rows = PENDING.filter((entry) => entry.type === type && entry.fields?.includes(field));
-  const narrowed = kind
-    ? rows.find((entry) => entry.filter?.includes(`kind == "${kind}"`))
-    : undefined;
-  const found = (narrowed ?? rows[0])?.what;
+  const found = rowForKind(rows, kind)?.what;
   if (found) return found;
   // One item of an array missing its value ("a practical fact") is a condition row on the array.
-  return PENDING.find((entry) => entry.type === type && entry.condition?.includes(`${field}[`))
-    ?.what;
+  const conditions = PENDING.filter(
+    (entry) => entry.type === type && entry.condition?.includes(`${field}[`),
+  );
+  return rowForKind(conditions, kind)?.what;
+}
+
+/** The kinds a row's filter narrows it to (`kind == "festival"`); none for a row every kind shares. */
+function rowKinds(entry: { filter?: string }): string[] {
+  return [...(entry.filter ?? '').matchAll(/\bkind == "([^"]+)"/g)].map((match) => match[1] ?? '');
+}
+
+/**
+ * The row that answers for one kind: a row narrowed to that kind, else a row no kind narrows. A row
+ * narrowed to another kind never answers, since the Studio lists it for that kind's documents only.
+ * Without a kind the first row answers.
+ */
+function rowForKind<T extends { filter?: string }>(rows: readonly T[], kind: string | undefined) {
+  if (!kind) return rows[0];
+  return (
+    rows.find((row) => rowKinds(row).includes(kind)) ??
+    rows.find((row) => rowKinds(row).length === 0)
+  );
 }
 
 /**
  * The chip wording for a type the page expects more documents of (the zones, the tiers, the
- * partners), from the same presence rows the Studio lists, with the count the page expects.
+ * partners), from the same presence rows the Studio lists, with the count the page expects. `kind`
+ * picks the row for one kind of document as `pendingWhat` does (the Collective's events).
  */
-export function presenceWhat(type: string): { what: string; minimum: number } | undefined {
-  const entry = PRESENCE.find((row) => row.type === type);
+export function presenceWhat(
+  type: string,
+  kind?: string,
+): { what: string; minimum: number } | undefined {
+  const entry = rowForKind(
+    PRESENCE.filter((row) => row.type === type),
+    kind,
+  );
   return entry ? { what: entry.what, minimum: entry.minimum } : undefined;
 }
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  COLLECTIVE_VOICE_SLOT,
   PENDING,
   type PendingEntry,
   PRESENCE,
@@ -8,6 +9,7 @@ import {
   pendingWhat,
   presenceCountQuery,
   presenceWhat,
+  TEACHER_EMAIL_PENDING,
 } from './pending';
 import { schemaTypes } from './schema';
 
@@ -147,7 +149,28 @@ describe('presenceWhat', () => {
   it('answers the presence row wording and the count the page expects', () => {
     expect(presenceWhat('zone')).toEqual({ what: 'the unnamed zones', minimum: 4 });
     expect(presenceWhat('ticketTier')?.what).toBe('three prices and what each includes');
-    expect(presenceWhat('event')).toBeUndefined();
+    expect(presenceWhat('album')?.what).toBe('the photo albums');
+  });
+
+  it("finds a row by kind as pendingWhat does, never answering one kind with another kind's row", () => {
+    expect(presenceWhat('event', 'collective')).toEqual({
+      what: 'the next Collective events',
+      minimum: 1,
+    });
+    expect(presenceWhat('event', 'gala')).toBeUndefined();
+  });
+});
+
+describe('the Collective events', () => {
+  it("asks for a collective event's venue on its own row, and counts the events still to come", () => {
+    expect(pendingWhat('event', 'venue.name', 'collective')).toBe('the venue');
+    const row = PRESENCE.find((entry) => entry.filter?.includes('kind == "collective"'));
+    expect(row?.where).toBe('Collective, events');
+    // Still to come as the Studio can read it (ADR 0030): an end ahead, or no end and a start within a day.
+    // An event without a start never lists, so it never counts.
+    expect(row?.filter).toContain('defined(start) &&');
+    expect(row?.filter).toContain('dateTime(end) > dateTime(now())');
+    expect(row?.filter).toContain('dateTime(start) > dateTime(now()) - 60 * 60 * 24');
   });
 });
 
@@ -162,6 +185,9 @@ describe('pendingWhat and pendingTitle', () => {
     expect(pendingWhat('event', 'venue.name', 'gala')).toBe('the venue');
     expect(pendingWhat('event', 'venue.name', 'festival')).toBe('the venue');
     expect(pendingWhat('homepage', 'hero.image')).toBe('the hero photograph');
+    for (const type of ['programsPage', 'lessonsPage', 'collectivePage']) {
+      expect(pendingWhat(type, 'header.title'), type).toBe('the page heading');
+    }
     expect(pendingWhat('festivalPage', 'planYourVisit[]')).toBe('the eight practical facts');
     expect(pendingWhat('festivalPage', 'planYourVisit')).toBe('a practical fact');
     expect(pendingWhat('festivalPage', 'extraFacts')).toBe('a glance fact');
@@ -170,6 +196,125 @@ describe('pendingWhat and pendingTitle', () => {
     expect(
       pendingTitle({ type: 'siteSettings', fields: ['ein'], where: 'Everywhere', what: 'EIN' }),
     ).toBe('Everywhere: EIN');
+  });
+});
+
+describe('the inline programs on the Programs hub', () => {
+  it("names a sub-program's owed fact with the register's wording, and each of Cultural Exchange's facts by itself", () => {
+    expect(pendingWhat('programsPage', 'kidsStem.subprograms')).toBe('ages and what they build');
+    expect(pendingWhat('programsPage', 'culturalExchange.blurb')).toBe('what the exchange is');
+    expect(pendingWhat('programsPage', 'culturalExchange.eligibility')).toBe('who it is for');
+    expect(pendingWhat('programsPage', 'culturalExchange.cadence')).toBe('the cadence');
+    expect(pendingWhat('programsPage', 'culturalExchange.howToJoin')).toBe('how to join');
+    expect(pendingWhat('programsPage', 'culturalExchange.image')).toBe(
+      'a photograph of the exchange',
+    );
+    // The lumped row the register wrote is gone, so no chip reads "everything about this program".
+    expect(PENDING.some((row) => row.what === 'everything about this program')).toBe(false);
+  });
+
+  it('names a year strip row without its when, and a strip with no rows', () => {
+    expect(pendingWhat('programsPage', 'yearStrip')).toBe('when it runs');
+    expect(pendingWhat('programsPage', 'yearStrip[]')).toBe('when each program runs');
+  });
+});
+
+describe('the Lessons page', () => {
+  it('names a glance fact, the teacher and her email the way the page shows them, and no voices', () => {
+    expect(pendingWhat('lessonsPage', 'glance')).toBe('a glance fact');
+    expect(pendingWhat('lessonsPage', 'teacher')).toBe("the teacher's name and bio");
+    const email = PENDING.find(
+      (row) => row.type === 'siteSettings' && row.what === "the teacher's email",
+    );
+    expect(email?.condition).toContain('role == "teacher"');
+    // The slimmed page has no voices section (ADR 0031), so the Studio lists none.
+    expect(
+      PENDING.some((row) => row.type === 'lessonsPage' && row.fields?.includes('voices[]')),
+    ).toBe(false);
+    expect(PRESENCE.find((row) => row.type === 'testimonial')?.where).not.toContain('Lessons');
+  });
+});
+
+describe("the Lessons page's teaching sections", () => {
+  it('names the prose, the levels, the lesson and a step without its place', () => {
+    expect(pendingWhat('lessonsPage', 'learn')).toBe('what the lessons teach, in her words');
+    expect(pendingWhat('lessonsPage', 'levels[]')).toBe('what each level covers');
+    expect(pendingWhat('lessonsPage', 'oneLesson[]')).toBe('the shape of a lesson');
+    expect(pendingWhat('lessonsPage', 'oneLesson')).toBe('the step');
+    expect(pendingWhat('lessonsPage', 'levels')).toBe('what the level covers');
+  });
+});
+
+describe("the Collective's one voice", () => {
+  it('waits in a slot a collective testimonial fills, asking for the quote without inventing it', () => {
+    expect(COLLECTIVE_VOICE_SLOT.context).toBe('collective');
+    expect(COLLECTIVE_VOICE_SLOT.role).toBe('Member, Yoruba Cultural Collective');
+    expect(COLLECTIVE_VOICE_SLOT.quote).toMatch(/^Quote from a member of the Collective/);
+    expect(pendingWhat('collectivePage', 'voice')).toBe('the quote and who said it');
+  });
+});
+
+describe('the Lessons page, beyond its sections', () => {
+  it("asks for the glance when the page holds none, and for a linked teacher's short bio", () => {
+    expect(pendingWhat('lessonsPage', 'glance[]')).toBe('the facts at a glance');
+    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
+    const bio = PENDING.find((row) => row.type === 'person' && row.fields?.includes('bioShort'));
+    // Only the person the Lessons page links is listed, never every person without a bio.
+    expect(bio?.filter).toContain('lessonsPage');
+  });
+
+  it('keeps the teacher email chip in one constant the registry row uses', () => {
+    const row = PENDING.find(
+      (entry) => entry.type === 'siteSettings' && entry.condition?.includes('"teacher"'),
+    );
+    expect(row?.what).toBe(TEACHER_EMAIL_PENDING);
+  });
+});
+
+describe("the Collective's initiatives", () => {
+  it('names each owed fact of an initiative on its own', () => {
+    expect(pendingWhat('initiative', 'blurb')).toBe('what the initiative is');
+    expect(pendingWhat('initiative', 'status')).toBe('the status');
+    expect(pendingWhat('initiative', 'statusLine')).toBe('the status line');
+    expect(pendingWhat('initiative', 'serves')).toBe('who it serves');
+    expect(pendingWhat('initiative', 'since')).toBe('when it started');
+    expect(pendingWhat('initiative', 'next')).toBe('what comes next');
+    expect(pendingWhat('initiative', 'image')).toBe('a photograph of the project');
+    // What is not drawn is not owed.
+    expect(pendingWhat('initiative', 'proceedsReturn')).toBeUndefined();
+  });
+});
+
+describe('the take-part rows every page with a band registers', () => {
+  it('names an empty band and an unfinished row the same way on each page', () => {
+    for (const type of [
+      'festivalPage',
+      'galaPage',
+      'programsPage',
+      'lessonsPage',
+      'collectivePage',
+    ]) {
+      expect(pendingWhat(type, 'takePart[]'), type).toBe('the ways in');
+      expect(pendingWhat(type, 'takePart'), type).toBe('a way in, its title or its button label');
+    }
+  });
+});
+
+describe('pendingWhat for one kind', () => {
+  it("never answers a kind from a condition row narrowed to another kind's documents", () => {
+    // The festival and the Gala each keep a row for a schedule row missing its time; no row names "other".
+    expect(pendingWhat('event', 'schedule', 'festival')).toBe('the time');
+    expect(pendingWhat('event', 'schedule', 'gala')).toBe('the time');
+    expect(pendingWhat('event', 'schedule', 'other')).toBeUndefined();
+  });
+
+  it("never answers a kind from a field row narrowed to another kind's documents", () => {
+    // Only the festival's editions list the cost and the exact venue line in the Studio.
+    expect(pendingWhat('event', 'cost', 'festival')).toBe('the cost');
+    expect(pendingWhat('event', 'cost', 'gala')).toBeUndefined();
+    expect(pendingWhat('event', 'venue.line', 'gala')).toBeUndefined();
+    // A row no kind narrows answers for every kind.
+    expect(pendingWhat('ticketTier', 'price', 'gala')).toBe('the price');
   });
 });
 

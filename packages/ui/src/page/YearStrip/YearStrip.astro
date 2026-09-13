@@ -1,0 +1,55 @@
+---
+/**
+ * When things run on the Programs hub (`10 Programs.dc.html`, COMPONENT-MAP, Page structure): the
+ * tokens' `.oy-year` strip, one column per program or event across a year, each with the aṣọ òkè mark,
+ * its when as a terracotta label or the registry's chip while the Studio holds none, its name in the
+ * display face and a short note. Five columns wide for five rows (four for four), two under 1000px. No
+ * rows renders the registry's Pending line.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface YearStripRowLike {
+  _key?: string;
+  when?: string | null;
+  name?: string | null;
+  note?: string | null;
+}
+
+interface Props {
+  rows?: (YearStripRowLike | null)[] | null;
+  /** The registry's wording for a row without its when. */
+  whenPending?: string;
+  /** The registry's wording for a strip with no rows. */
+  pending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the strip. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  rows,
+  whenPending = 'when it runs',
+  pending = 'when each program runs',
+  edit,
+  class: className,
+} = Astro.props;
+const list = (rows ?? []).filter((row) => row !== null);
+const columns = list.length === 5 || list.length === 4 ? String(list.length) : undefined;
+---
+
+{
+  list.length === 0 ? (
+    <Pending variant="line" what={pending} class={className} />
+  ) : (
+    <div class:list={['oy-year', className]} data-cols={columns} data-sanity={edit}>
+      {list.map((row) => (
+        <div>
+          <div class="oy-year-mark" aria-hidden="true" />
+          <b>{row.when?.trim() ? row.when : <Pending what={whenPending} />}</b>
+          {row.name?.trim() && <strong>{row.name}</strong>}
+          {row.note?.trim() && <span>{row.note}</span>}
+        </div>
+      ))}
+    </div>
+  )
+}

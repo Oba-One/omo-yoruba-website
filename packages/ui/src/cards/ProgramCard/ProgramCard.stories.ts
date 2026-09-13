@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'astro/types';
 import { PROGRAMS } from '../../fixtures/homepage';
+import { PROGRAM_CARDS } from '../../fixtures/program-pages';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import ProgramCard from './ProgramCard.astro';
 
@@ -14,7 +15,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Photo or placeholder, name, blurb, one quiet action from the Studio. Four across, three, or pairs through the CardGrid (its stories show the three arrangements). The highlighted card moves first with the gold ring; the Collective link reads green.',
+          'Photo or placeholder, name, blurb, one quiet action from the Studio. Four across, three, or pairs through the CardGrid (its stories show the three arrangements). On the Programs hub the card leads with its cadence and ages, each the registry chip while the Studio holds none. The highlighted card moves first with the gold ring; the Collective link reads green.',
       },
     },
   },
@@ -42,4 +43,14 @@ export const Hover: Story = { parameters: { pseudo: { hover: '.oy-card' } } };
 /** In draft mode the photo carries its edit attribute. */
 export const WithEdit: Story = {
   args: { imageEdit: 'id=program-yoruba-lessons;type=program;path=image;base=%2Fadmin' },
+};
+
+/** On the Programs hub: the cadence and the ages over the name, the ages Pending as seeded. */
+export const When: Story = {
+  args: { program: PROGRAM_CARDS[0] as Args['program'], showWhen: true, mediaHeight: 160 },
+};
+
+/** Cultural Exchange on the hub: both facts Pending, and the link to its section on the page. */
+export const WhenPending: Story = {
+  args: { program: PROGRAM_CARDS[3] as Args['program'], showWhen: true, mediaHeight: 160 },
 };

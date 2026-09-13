@@ -7,7 +7,8 @@
  * close their take-part and partners sections (`08 Odunde Festival.dc.html`). The buttons are
  * Studio-shaped actions so a page can pass a link, an enquiry kind or the Give Dialog; the first is
  * outline by default, quiet or gold where the page asks, and the second is always the outline
- * without an arrow. On the box's tint a quiet button deepens to terracotta 700 for AA.
+ * without an arrow. On the box's tint a quiet button deepens to terracotta 700 for AA. On a section's
+ * alternate ground, the same tint, the box takes white.
  */
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import type { ActionLike } from '../../core/ActionButton/action';
@@ -67,6 +68,10 @@ const {
   .oy-handoff {
     margin-top: 20px;
     --accent-kicker: var(--terra-700);
+  }
+  /* On the alternate ground the box would vanish into its own tint, so it takes white there (ADR 0033). */
+  :global(.oy-section--alt) .oy-handoff {
+    background: var(--white);
   }
   .oy-handoff-actions {
     margin-left: auto;

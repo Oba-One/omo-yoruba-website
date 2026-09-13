@@ -1,0 +1,75 @@
+---
+/**
+ * A section's details behind a quiet toggle (`10 Programs.dc.html`: Kids & STEM and Cultural Exchange,
+ * the `inline` option): the `head` slot stays in view, and the default slot sits in a native disclosure
+ * that opens and closes without JavaScript, starting open or closed by `open`. The toggle reads "Hide
+ * details" or "Show details" on the head's first line at the right, as the prototype sets it beside
+ * the heading, and under 720px on its own line under the head; its name carries the section's name
+ * for a screen reader, since a page holds two.
+ */
+interface Props {
+  open?: boolean;
+  /** The section's name, completing the toggle's name: "Show details about Kids & STEM". */
+  label?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the option that sets how it starts. */
+  edit?: string;
+  class?: string;
+}
+
+const { open = true, label, edit, class: className } = Astro.props;
+---
+
+<div class:list={['oy-disclosure', className]} data-sanity={edit}>
+  <div class="oy-disclosure-head"><slot name="head" /></div>
+  <details class="oy-disclosure-details" open={open}>
+    <summary class="oy-btn oy-btn--quiet oy-disclosure-toggle">
+      <span class="oy-disclosure-hide">Hide details</span>
+      <span class="oy-disclosure-show">Show details</span>
+      {label && <span class="oy-visually-hidden">about {label}</span>}
+    </summary>
+    <div class="oy-disclosure-body"><slot /></div>
+  </details>
+</div>
+
+<style>
+  .oy-disclosure {
+    position: relative;
+  }
+  /* Room on the head's first line for the toggle, which sits there at the right. */
+  .oy-disclosure-head {
+    padding-right: 160px;
+  }
+  .oy-disclosure-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-height: 44px;
+    list-style: none;
+    cursor: pointer;
+  }
+  .oy-disclosure-toggle::-webkit-details-marker {
+    display: none;
+  }
+  /* The prototype's space between the prose and the cards under it. */
+  .oy-disclosure-body {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .oy-disclosure-details:not([open]) .oy-disclosure-hide,
+  .oy-disclosure-details[open] .oy-disclosure-show {
+    display: none;
+  }
+  @media (max-width: 720px) {
+    .oy-disclosure-head {
+      padding-right: 0;
+    }
+    /* Block-level, so the auto margin sets the toggle at the right as the prototype does. */
+    .oy-disclosure-toggle {
+      position: static;
+      display: flex;
+      width: max-content;
+      margin: -12px 0 18px auto;
+    }
+  }
+</style>

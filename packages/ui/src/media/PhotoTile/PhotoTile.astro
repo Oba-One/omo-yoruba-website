@@ -5,7 +5,8 @@
  * square corners, no zoom, framed by the Studio hotspot; the scrim deepens on hover through the
  * tokens. Without a photograph the tile is the placeholder with the àdìrẹ dot field naming the
  * missing photo. The `figure` shape is the framed photograph beside an event page's prose (`08
- * Odunde Festival.dc.html`): 360px tall with the card's 6px corners. The first half of a caption is
+ * Odunde Festival.dc.html`): 360px tall with the card's 6px corners, or the `height` a page's split draws
+ * (280px beside the Collective's argument, 340px beside an initiative). The first half of a caption is
  * marked as Yoruba only when it carries Yoruba letters ("Festival day • Leimert Park" has none).
  */
 import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
@@ -23,6 +24,8 @@ interface Props {
   edit?: string;
   /** `tile` fills its mosaic cell with square corners; `figure` is the framed 360px photograph. */
   shape?: 'tile' | 'figure';
+  /** The figure's height in pixels where a prototype draws it shorter than 360px. */
+  height?: number;
   class?: string;
 }
 
@@ -34,6 +37,7 @@ const {
   sizes = '(min-width: 1100px) 550px, (min-width: 860px) 50vw, 100vw',
   edit,
   shape = 'tile',
+  height,
   class: className,
   ...rest
 } = Astro.props;
@@ -49,6 +53,7 @@ const yoruba = /[\u00c0-\u024f\u1e00-\u1eff]|\p{Mn}/u.test(yo ?? '');
 <figure
   class:list={['v2-mo', 'oy-photo-tile', shape === 'figure' && 'oy-photo-tile--figure', className]}
   data-sanity={edit}
+  style={shape === 'figure' && height ? `--photo-tile-height: ${height}px` : undefined}
   {...rest}
 >
   {
@@ -115,7 +120,7 @@ const yoruba = /[\u00c0-\u024f\u1e00-\u1eff]|\p{Mn}/u.test(yo ?? '');
     color: var(--gold-300);
   }
   .oy-photo-tile--figure {
-    height: 360px;
+    height: var(--photo-tile-height, 360px);
     border-radius: 6px;
   }
   .oy-photo-tile--figure figcaption {

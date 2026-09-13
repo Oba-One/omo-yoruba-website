@@ -23,7 +23,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
   whatItIsImage{_type, alt, caption, hotspot, crop, asset},
   zonesIntro,
   planYourVisit[]{_key, label, value, note},
-  takePart[]{_key, way, title, line, label},
+  takePart[]{_key, way, chip, title, line, label},
   pastYearsIntro,
   partnersIntro,
   "editions": *[_type == "event" && kind == "festival"] | order(edition desc){
@@ -89,7 +89,7 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
   sponsorIntro,
   honoreesIntro,
   pastIntro,
-  takePart[]{_key, way, title, line, label},
+  takePart[]{_key, way, chip, title, line, label},
   "editions": *[_type == "event" && kind == "gala"] | order(edition desc){
     _id,
     kind,

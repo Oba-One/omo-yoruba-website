@@ -43,3 +43,11 @@ export const Compact: Story = {
 };
 
 export const Pending: Story = { args: { person: { role: 'This year' } } };
+
+/** A named person without a bio, where the page asks for one: the Lessons page's teacher. */
+export const BioPending: Story = {
+  args: {
+    person: { role: 'Teacher', name: '[ Teacher name ]' },
+    bioPending: "the teacher's short bio",
+  },
+};

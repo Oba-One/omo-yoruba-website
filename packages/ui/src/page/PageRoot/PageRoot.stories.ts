@@ -23,3 +23,6 @@ export const Default: Story = {};
 
 /** The warm Gala: the treatment option on the root. */
 export const Treatment: Story = { args: { options: { treatment: 'warm' } } };
+
+/** The Collective's green scope: the site sets it on the page's main, which keeps green off the nav and footer. */
+export const Scope: Story = { args: { options: { green: 'strong' }, scope: 'collective' } };

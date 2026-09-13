@@ -670,7 +670,11 @@
   background: #fbebcb;
   color: #6b4708;
 }
-.oy-path[data-accent="performer"] .oy-path-chip {
+/* Enrol and member wear the performer accent, updates the give accent, as 10 Programs and 11 Yoruba
+   Language School draw them (ADR 0029). */
+.oy-path[data-accent="performer"] .oy-path-chip,
+.oy-path[data-accent="enrol"] .oy-path-chip,
+.oy-path[data-accent="member"] .oy-path-chip {
   background: var(--indigo-100);
   color: var(--indigo-700);
 }
@@ -682,17 +686,89 @@
   background: #eae4f3;
   color: #4a3878;
 }
-.oy-path[data-accent="give"] .oy-path-chip {
+.oy-path[data-accent="give"] .oy-path-chip,
+.oy-path[data-accent="updates"] .oy-path-chip {
   background: #f1eee6;
   color: var(--ink);
 }
+/* ---- Yoruba Cultural Collective (12 Yoruba Cultural Collective.dc.html, its page style block). Green
+   lives inside the page's main, which carries data-scope="collective" (ADR 0031): the nav, the footer and
+   the dialogs sit outside it. Signal, the default, keeps green to the pills; strong tints the slim header
+   and the alternate grounds and turns the section swatch green and gold. ---- */
+[data-scope="collective"] .cc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green-700);
+  background: var(--green-100);
+  border: 1px solid var(--green-300);
+  border-radius: 999px;
+  padding: 7px 14px;
+}
+[data-scope="collective"] .cc-status i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-600);
+  display: block;
+}
+/* The prototype's member-led text in green-600 measures 4.18:1 on its tint; green-700 keeps AA at 12px. */
+[data-scope="collective"] .cc-memberled {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green-700);
+  background: var(--green-150);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+.oy-home[data-green="strong"] [data-scope="collective"] .oy-phead--slim {
+  background: var(--green-50);
+  border-bottom-color: var(--green-200);
+}
+.oy-home[data-green="strong"] [data-scope="collective"] .oy-section--alt {
+  background: var(--green-50);
+}
+.oy-home[data-green="strong"] [data-scope="collective"] .oy-sec-swatch {
+  background: linear-gradient(90deg, var(--green-600) 0 60%, var(--gold-500) 60%);
+}
+/* The kicker's terra-600 measures 4.42:1 on the strong tint, under AA at 12px; terra-700 keeps it. */
+.oy-home[data-green="strong"]
+  [data-scope="collective"]
+  :is(.oy-phead--slim, .oy-section--alt)
+  .oy-kicker {
+  color: var(--terra-700);
+}
+
+/* ---- Programs hub (10 Programs.dc.html): a card's cadence and ages over its name, set as kickers. ---- */
+.pg-when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--terra-600);
+}
+
 .oy-takepart[data-labels="kicker"] .oy-path[data-accent="vendor"] .oy-path-chip {
   color: var(--terra-600);
 }
 .oy-takepart[data-labels="kicker"] .oy-path[data-accent="sponsor"] .oy-path-chip {
   color: #8a5d0c;
 }
-.oy-takepart[data-labels="kicker"] .oy-path[data-accent="performer"] .oy-path-chip {
+.oy-takepart[data-labels="kicker"] .oy-path[data-accent="performer"] .oy-path-chip,
+.oy-takepart[data-labels="kicker"] .oy-path[data-accent="enrol"] .oy-path-chip,
+.oy-takepart[data-labels="kicker"] .oy-path[data-accent="member"] .oy-path-chip {
   color: var(--indigo-700);
 }
 .oy-takepart[data-labels="kicker"] .oy-path[data-accent="volunteer"] .oy-path-chip {
@@ -789,6 +865,21 @@
   background-size: 22px 22px;
   opacity: 0.08;
   mix-blend-mode: normal;
+}
+
+/* ---- Text a screen reader reads and the page does not draw: a section heading the prototype leaves
+   out, kept so the headings never skip a level (axe heading-order). ---- */
+.oy-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ---- Anchors clear the sticky nav ---- */
@@ -2460,7 +2551,9 @@
 .oy-tier-price.oy-pend,
 .oy-outcome-fig.oy-pend,
 .oy-sched-time.oy-pend,
-.oy-year strong.oy-pend {
+.oy-year strong.oy-pend,
+.oy-year span.oy-pend,
+.oy-lrow-date span.oy-pend {
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 700;
@@ -2471,6 +2564,17 @@
 /* A fact row sets its spans in ink (.oy-fact span); a chip there keeps its own colour. Added in
    Phase 5 for plan your visit. */
 .oy-fact span.oy-pend {
+  color: #7a4409;
+}
+/* The year strip sets its note spans muted (.oy-year span); a chip in a column's when keeps its own
+   colour. Added in Phase 6 for the programs' whens. */
+.oy-year span.oy-pend {
+  color: #7a4409;
+}
+/* A list row's date block sets its day span large in indigo (.oy-lrow-date span); a chip there keeps its
+   own box, type and colour. Added in Phase 6 for the Collective's events. */
+.oy-lrow-date span.oy-pend {
+  display: inline-flex;
   color: #7a4409;
 }
 /* A sponsor level sets its amount span as a muted block (.oy-lrow-tier span); a chip there keeps its

@@ -4459,6 +4459,28 @@
         },
         "optional": true
       },
+      "takePart": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
+            }
+          }
+        },
+        "optional": true
+      },
       "primaryAction": {
         "type": "objectAttribute",
         "value": {
@@ -4746,6 +4768,14 @@
         },
         "optional": true
       },
+      "learn": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "blockContent"
+        },
+        "optional": true
+      },
       "levels": {
         "type": "objectAttribute",
         "value": {
@@ -4863,7 +4893,7 @@
         },
         "optional": true
       },
-      "voices": {
+      "takePart": {
         "type": "objectAttribute",
         "value": {
           "type": "array",
@@ -4879,7 +4909,7 @@
             },
             "rest": {
               "type": "inline",
-              "name": "testimonial.reference"
+              "name": "takePartRow"
             }
           }
         },
@@ -5153,25 +5183,10 @@
               },
               "optional": true
             },
-            "ages": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            },
             "blurb": {
               "type": "objectAttribute",
               "value": {
                 "type": "string"
-              },
-              "optional": true
-            },
-            "image": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "inline",
-                "name": "oyImage"
               },
               "optional": true
             },
@@ -5189,13 +5204,6 @@
                       },
                       "optional": true
                     },
-                    "ages": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "string"
-                      },
-                      "optional": true
-                    },
                     "blurb": {
                       "type": "objectAttribute",
                       "value": {
@@ -5203,10 +5211,33 @@
                       },
                       "optional": true
                     },
-                    "detail": {
+                    "image": {
                       "type": "objectAttribute",
                       "value": {
-                        "type": "string"
+                        "type": "inline",
+                        "name": "oyImage"
+                      },
+                      "optional": true
+                    },
+                    "facts": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "array",
+                        "of": {
+                          "type": "object",
+                          "attributes": {
+                            "_key": {
+                              "type": "objectAttribute",
+                              "value": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "rest": {
+                            "type": "inline",
+                            "name": "fact"
+                          }
+                        }
                       },
                       "optional": true
                     },
@@ -5319,11 +5350,20 @@
                 },
                 "optional": true
               },
-              "event": {
+              "kind": {
                 "type": "objectAttribute",
                 "value": {
-                  "type": "inline",
-                  "name": "event.reference"
+                  "type": "union",
+                  "of": [
+                    {
+                      "type": "string",
+                      "value": "festival"
+                    },
+                    {
+                      "type": "string",
+                      "value": "gala"
+                    }
+                  ]
                 },
                 "optional": true
               },
@@ -5352,6 +5392,28 @@
                   }
                 }
               }
+            }
+          }
+        },
+        "optional": true
+      },
+      "takePart": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
             }
           }
         },
@@ -7244,8 +7306,27 @@
               {
                 "type": "string",
                 "value": "give"
+              },
+              {
+                "type": "string",
+                "value": "enrol"
+              },
+              {
+                "type": "string",
+                "value": "member"
+              },
+              {
+                "type": "string",
+                "value": "updates"
               }
             ]
+          },
+          "optional": true
+        },
+        "chip": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
           },
           "optional": true
         },

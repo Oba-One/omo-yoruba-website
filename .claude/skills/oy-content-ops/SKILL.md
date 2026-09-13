@@ -30,11 +30,22 @@ rather than duplicates. Ids never contain a period.
   (festival) and tickets URL (gala), plus `ticketTier`, `sponsorLevel` and `honoree` documents
   for a gala. The page singletons rarely change. Publish the release on the announce date.
   Checklist: `/oy-release`.
+- **Collective event**: an `event` with `kind` `collective`, its title, `start` (and `end` when it
+  has one), the one-line summary and `venue.name`; no edition year to think about, since a collective
+  event is a one-off (ADR 0030). The Collective page lists it from the moment it is published until it
+  ends, or with no end until its start day ends in Los Angeles, nearest first, with "Ask to join" opening
+  the contact form. An event without a start never lists, so enter it once the date is set. The venue's
+  chip shows until `venue.name` is filled; the Pending view counts the events still to come.
+- **Initiative**: Solar Hub and Green Goods are `initiative` documents the Collective page lists in the
+  order of `collectivePage.initiatives`. The status line is the pill in the Collective's own words, set
+  only from what the owner confirms ("[ How far the project has come ]"); `status`, `serves`, `since` and
+  `next` are the four facts, each its own chip while empty.
 - **Album**: upload photos, create `album` with cover, photos with `alt` and captions, the
   album-level `credit`, `creditConfirmed`, `consentNote`, and the `event` reference. Each photo's
   `_key` is its lightbox deep link.
 - **Person**: `person` with `group` and `order`; portrait optional (the no-portrait card is a
-  real design). The teacher is the `person` `lessonsPage.teacher` points at.
+  real design). The teacher is the `person` `lessonsPage.teacher` points at; her email on the Lessons
+  page is the `teacher` routing contact's.
 - **Routing contact**: `siteSettings.contacts[]`, one entry per role with name, email, phone and
   the response line the success copy uses ("within five working days").
 - **Clear pending**: open Pending in the Studio (rows come from `packages/content/src/pending.ts`),

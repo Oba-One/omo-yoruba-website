@@ -53,3 +53,8 @@ export const UntrustedLink: Story = {
 
 /** Nothing in the field: nothing renders. */
 export const Empty: Story = { args: { value: [] } };
+
+/** The wide measure, as the Programs hub sets Kids & STEM's prose across its section (74ch). */
+export const Wide: Story = {
+  args: { value: undefined, text: GALA_EVENING_INTRO, measure: 'wide' },
+};

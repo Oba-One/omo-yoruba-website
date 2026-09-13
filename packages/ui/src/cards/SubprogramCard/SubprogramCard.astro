@@ -1,0 +1,67 @@
+---
+/**
+ * One half of Kids & STEM on the Programs hub (`10 Programs.dc.html`, CONTEXT, Sub-program): the card
+ * base with the photograph at the prototype's 190px framed by its hotspot, or the placeholder naming
+ * it; the name, the blurb, the facts in one column with the registry's chip where the Studio holds
+ * no value, and one outline action. A sub-program without facts or an action draws neither.
+ */
+import FactList, { type FactLike } from '../../content/FactList/FactList.astro';
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+import ImagePlaceholder from '../../media/ImagePlaceholder/ImagePlaceholder.astro';
+import type { ImageInput } from '../../media/image';
+import Card from '../Card/Card.astro';
+
+export interface SubprogramLike {
+  _key?: string;
+  name?: string | null;
+  blurb?: string | null;
+  image?: ImageInput | null;
+  facts?: (FactLike | null)[] | null;
+  action?: ActionLike | null;
+}
+
+interface Props {
+  subprogram: SubprogramLike;
+  /** A `data-sanity` attribute for the photograph. */
+  imageEdit?: string;
+  class?: string;
+}
+
+const { subprogram, imageEdit, class: className } = Astro.props;
+const name = subprogram.name?.trim();
+const facts = (subprogram.facts ?? []).filter((fact) => fact?.label?.trim());
+const sizes = '(min-width: 1100px) 540px, (min-width: 600px) 50vw, 100vw';
+---
+
+<Card
+  image={subprogram.image}
+  imageEdit={imageEdit}
+  alt=""
+  mediaHeight={190}
+  sizes={sizes}
+  title={name || undefined}
+  bodyClass="oy-door"
+  class:list={['oy-subprogram', className]}
+>
+  {
+    !subprogram.image && (
+      <ImagePlaceholder
+        slot="media"
+        what={`a photo of ${name ?? 'this half of Kids & STEM'}`}
+        aspect="540 / 190"
+        class="oy-subprogram-placeholder"
+      />
+    )
+  }
+  {subprogram.blurb?.trim() && <p>{subprogram.blurb}</p>}
+  {facts.length > 0 && <FactList facts={facts} columns={1} />}
+  {subprogram.action && <ActionButton action={subprogram.action} variant="secondary" />}
+</Card>
+
+<style>
+  :global(.oy-card) > :global(.oy-subprogram-placeholder) {
+    height: 190px;
+    aspect-ratio: auto;
+  }
+</style>

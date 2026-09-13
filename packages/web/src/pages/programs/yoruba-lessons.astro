@@ -1,0 +1,161 @@
+---
+/**
+ * Yoruba Language Lessons (`11 Yoruba Language School.dc.html`, ROUTES sections 1, 4 and 5): composed
+ * from the one Lessons query through `loadQuery`, with the registry's Pending chips for every fact the
+ * Studio does not hold and the layout options read from the singleton with the schema defaults filled.
+ * One teacher, live online, times and fees agreed with her directly: never "School", no terms, no
+ * Saturdays, no venue. The page arranges library parts and owns its copy (the section kickers and
+ * headings the prototype carries) and its layout.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { lessonsPageQuery } from '@oy/content/queries';
+import PersonCard from '@oy/ui/cards/PersonCard/PersonCard.astro';
+import Accordion from '@oy/ui/content/Accordion/Accordion.astro';
+import EntryList from '@oy/ui/content/EntryList/EntryList.astro';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import EnquiryCard from '@oy/ui/forms/EnquiryCard/EnquiryCard.astro';
+import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
+import TakePartBand from '@oy/ui/page/TakePartBand/TakePartBand.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { cachePage } from '../../lib/cache';
+import { STUDIO_BASE_PATH } from '../../lib/paths';
+import { buildLessonsPage } from '../../lib/sanity/lessons-page';
+import { loadQuery } from '../../lib/sanity/load-query';
+
+const { data, preview, error } = await loadQuery(lessonsPageQuery, {}, { cookies: Astro.cookies });
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildLessonsPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/programs/yoruba-lessons', { draft: preview, failed: Boolean(error) });
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending={page.header.titlePending}
+      line={page.header.line}
+      actions={page.header.actions}
+    />
+    <GlanceStrip facts={page.glance} pending={page.glancePending} />
+
+    <Section id="teacher" labelledby="teacher-heading" data-sanity={page.edit.portraits}>
+      <SectionHead
+        kicker={{ yo: 'Olùkọ́ wa', en: 'Our teacher' }}
+        title="One teacher, and you start by writing to her"
+        intro={page.teacher.intro}
+        id="teacher-heading"
+      />
+      <Split shape="person">
+        <PersonCard
+          person={page.teacher.person}
+          variant={page.teacher.variant}
+          namePending={page.teacher.namePending}
+          bioPending={page.teacher.bioPending}
+          sizes="(min-width: 860px) 320px, 100vw"
+          edit={page.teacher.edit}
+        />
+        {
+          /* The header's gold "Write to the teacher" shares a screen view with this card at 1440, so the
+             card's trigger is the outline (one gold action per view; spec Q7). */
+        }
+        <EnquiryCard
+          slot="aside"
+          kind="enrol"
+          label="Write to the teacher"
+          variant="secondary"
+          email={page.teacher.email}
+          emailPending={page.teacher.emailPending}
+        />
+      </Split>
+    </Section>
+
+    <Section id="learn" ground="alt" labelledby="learn-heading">
+      <Split>
+        <SectionHead
+          kicker={{ yo: 'Ohun tí a ń kọ́', en: 'What we teach' }}
+          title="What you learn"
+          id="learn-heading"
+        />
+        {
+          page.learn.prose ? (
+            <Prose value={page.learn.prose} />
+          ) : (
+            <p>
+              <Pending what={page.learn.pending} />
+            </p>
+          )
+        }
+        <EntryList
+          slot="aside"
+          entries={page.learn.levels}
+          pending={page.learn.levelsPending}
+          linePending={page.learn.linePending}
+        />
+      </Split>
+    </Section>
+
+    {
+      page.lesson.shown && (
+        <Section id="lesson" labelledby="lesson-heading" data-sanity={page.edit.lesson}>
+          <SectionHead
+            kicker={{ yo: 'Ẹ̀kọ́ kan', en: 'One lesson' }}
+            title="What a lesson looks like"
+            intro="So a first-time parent knows what to expect."
+            id="lesson-heading"
+          />
+          <Schedule
+            items={page.lesson.steps}
+            mode="day"
+            pending={page.lesson.pending}
+            timePending={page.lesson.stepPending}
+          />
+        </Section>
+      )
+    }
+
+    <Section id="faq" ground="alt" width="narrow" labelledby="faq-heading">
+      <SectionHead title="Questions parents ask" intro={page.faq.lead} id="faq-heading" />
+      <Accordion
+        id="faq"
+        items={page.faq.items}
+        defaultOpen={page.faq.defaultOpen}
+        pending={page.faq.pending}
+        answerPending={page.faq.answerPending}
+        edit={page.edit.faq}
+      />
+    </Section>
+
+    <Section id="take-part" labelledby="take-part-heading">
+      <SectionHead
+        kicker={{ yo: 'Ẹ dara pọ̀ mọ́ wa', en: 'Join us' }}
+        title="Take part"
+        id="take-part-heading"
+      />
+      <TakePartBand
+        rows={page.takePart.rows}
+        labels={page.takePart.labels}
+        pending={page.takePart.pending}
+        rowPending={page.takePart.rowPending}
+      />
+      <Handoff
+        shape="box"
+        variant="quiet"
+        text="Back to the programs hub, or across to Kids & STEM."
+        action={{ label: 'All programs', kind: 'url', href: '/programs' }}
+      />
+    </Section>
+  </main>
+</SiteLayout>

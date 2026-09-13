@@ -5,7 +5,10 @@
  * Without permission to name, the caption shows initials only. Without a testimonial the card
  * shows the registry's Pending chip (ADR 0014), then the prototype's placeholder when the page
  * names the slot (the quote it wants in brackets, "Name pending" with the voice), so the voices
- * section keeps its three-column rhythm while the owner gathers quotes.
+ * section keeps its three-column rhythm while the owner gathers quotes. The `single` variant is
+ * the Collective's one voice (`12 Yoruba Cultural Collective.dc.html`): the tokens' large
+ * `.oy-quote` figure on the page, not a card, in the same three states. `pending` gives the
+ * page's own registry wording.
  */
 import { pendingWhat, type VoiceSlot } from '@oy/content/pending';
 import Divider from '../../core/Divider/Divider.astro';
@@ -22,42 +25,79 @@ export interface TestimonialLike {
 
 interface Props {
   testimonial?: TestimonialLike | null;
-  /** The slot this card waits in while there is no testimonial (`HOMEPAGE_VOICE_SLOTS`). */
+  /** The slot this quote waits in while there is no testimonial (`HOMEPAGE_VOICE_SLOTS`). */
   placeholder?: VoiceSlot | null;
+  /** `card` in a grid of voices; `single`, one large quote on the page. */
+  variant?: 'card' | 'single';
+  /** The registry's wording for the missing voice; the homepage's by default. */
+  pending?: string;
   class?: string;
 }
 
-const { testimonial, placeholder, class: className } = Astro.props;
-const pending = pendingWhat('homepage', 'voices[]');
+const {
+  testimonial,
+  placeholder,
+  variant = 'card',
+  pending = pendingWhat('homepage', 'voices[]'),
+  class: className,
+} = Astro.props;
 const name = testimonial?.name?.trim();
 const who = name ? (testimonial?.permissionToName ? name : initialsOf(name)) : undefined;
 const parts = [who, testimonial?.relation?.trim()].filter(Boolean);
+const waiting = testimonial ? undefined : 'true';
+/** The placeholder in brackets, each held to its word so a bracket never wraps onto a line alone. */
+const bracketed = (quote: string) => `[\u00a0${quote}\u00a0]`;
 ---
 
-<Card as="figure" class:list={['oy-quote-card', className]} data-pending={testimonial ? undefined : 'true'}>
-  <Divider kind="ayo" />
-  {
-    testimonial ? (
-      <>
-        {testimonial.quote && <blockquote class="oy-quote-text">{testimonial.quote}</blockquote>}
-        {parts.length > 0 && <figcaption class="oy-quote-who">{parts.join(' • ')}</figcaption>}
-      </>
-    ) : placeholder ? (
-      <>
-        <Pending what={pending} class="oy-quote-pending" />
-        <blockquote class="oy-quote-text">[ {placeholder.quote} ]</blockquote>
-        <figcaption class="oy-quote-who">Name pending • {placeholder.role}</figcaption>
-      </>
-    ) : (
-      <>
-        <blockquote class="oy-quote-text">
-          <Pending what={pending} />
-        </blockquote>
-        <figcaption class="oy-quote-who">Name pending</figcaption>
-      </>
-    )
-  }
-</Card>
+{
+  variant === 'single' ? (
+    <figure class:list={['oy-quote', 'oy-quote-single', className]} data-pending={waiting}>
+      <Divider kind="ayo" />
+      {testimonial ? (
+        <>
+          {testimonial.quote && <blockquote>{testimonial.quote}</blockquote>}
+          {parts.length > 0 && <figcaption>{parts.join(' • ')}</figcaption>}
+        </>
+      ) : placeholder ? (
+        <>
+          <Pending what={pending} class="oy-quote-pending" />
+          <blockquote>{bracketed(placeholder.quote)}</blockquote>
+          <figcaption>Name pending • {placeholder.role}</figcaption>
+        </>
+      ) : (
+        <>
+          <blockquote>
+            <Pending what={pending} />
+          </blockquote>
+          <figcaption>Name pending</figcaption>
+        </>
+      )}
+    </figure>
+  ) : (
+    <Card as="figure" class:list={['oy-quote-card', className]} data-pending={waiting}>
+      <Divider kind="ayo" />
+      {testimonial ? (
+        <>
+          {testimonial.quote && <blockquote class="oy-quote-text">{testimonial.quote}</blockquote>}
+          {parts.length > 0 && <figcaption class="oy-quote-who">{parts.join(' • ')}</figcaption>}
+        </>
+      ) : placeholder ? (
+        <>
+          <Pending what={pending} class="oy-quote-pending" />
+          <blockquote class="oy-quote-text">{bracketed(placeholder.quote)}</blockquote>
+          <figcaption class="oy-quote-who">Name pending • {placeholder.role}</figcaption>
+        </>
+      ) : (
+        <>
+          <blockquote class="oy-quote-text">
+            <Pending what={pending} />
+          </blockquote>
+          <figcaption class="oy-quote-who">Name pending</figcaption>
+        </>
+      )}
+    </Card>
+  )
+}
 
 <style>
   .oy-quote-card :global(.oy-card-body) {
@@ -65,6 +105,13 @@ const parts = [who, testimonial?.relation?.trim()].filter(Boolean);
   }
   .oy-quote-card :global(.oy-quote-pending) {
     align-self: flex-start;
+  }
+  /* The prototype widens the tokens' 720px to 760px for the Collective's quote. */
+  .oy-quote-single {
+    max-width: 760px;
+  }
+  .oy-quote-single :global(.oy-quote-pending) {
+    margin-bottom: 14px;
   }
   .oy-quote-text {
     margin: 0;

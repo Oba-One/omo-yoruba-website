@@ -1,9 +1,10 @@
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
-import { renderToBody } from '../../test/stories';
+import { renderToBody, text } from '../../test/stories';
 import * as stories from './CardGrid.stories';
 
-const { Three, Two, Four, ProgramsFour, ProgramsPairs, Pending } = composeStories(stories);
+const { Three, Two, Four, ProgramsFour, ProgramsPairs, Pending, WithNote } =
+  composeStories(stories);
 
 describe('CardGrid', () => {
   it('marks the column count and holds the cards', async () => {
@@ -24,5 +25,14 @@ describe('CardGrid', () => {
       (await renderToBody(ProgramsPairs)).querySelectorAll('[data-columns="2"] [data-program]'),
     ).toHaveLength(4);
     expect((await renderToBody(Pending)).querySelectorAll('.oy-card .oy-pend')).toHaveLength(3);
+  });
+
+  it('closes the grid with its note when the page gives one, and draws no empty note otherwise', async () => {
+    const body = await renderToBody(WithNote);
+    const note = body.querySelector('.oy-card-grid + p.oy-card-grid-note');
+    expect(text(note)).toBe(
+      'Each card says who it is for and when it runs, so you can find the right one at a glance.',
+    );
+    expect((await renderToBody(Four)).querySelector('.oy-card-grid-note')).toBeNull();
   });
 });

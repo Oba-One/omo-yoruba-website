@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './GlanceStrip.stories';
 
-const { Five, Four, WithCaption, Pending } = composeStories(stories);
+const { Five, Four, WithCaption, Pending, InColumn, Empty } = composeStories(stories);
 
 describe('GlanceStrip', () => {
   it('sets five facts with a label, the value or its chip, and the note', async () => {
@@ -35,5 +35,22 @@ describe('GlanceStrip', () => {
     );
     const pending = (await renderToBody(Pending)).querySelectorAll('.oy-glance .oy-pend');
     expect(pending).toHaveLength(5);
+  });
+
+  it('sits inside a column without its band or its wrap', async () => {
+    const body = await renderToBody(InColumn);
+    expect(body.querySelector('.oy-glance-band')).toBeNull();
+    expect(body.querySelector('.oy-wrap')).toBeNull();
+    const strip = body.querySelector('.oy-glance');
+    expect(strip?.classList.contains('oy-glance--inline')).toBe(true);
+    expect(strip?.hasAttribute('id')).toBe(false);
+    expect(strip?.getAttribute('data-cols')).toBe('4');
+    expect(strip?.querySelectorAll('.oy-pend')).toHaveLength(4);
+  });
+
+  it('keeps the band with the Pending line when there are no facts', async () => {
+    const band = (await renderToBody(Empty)).querySelector('.oy-glance-band');
+    expect(band?.querySelector('.oy-glance')).toBeNull();
+    expect(text(band?.querySelector('.oy-pend-line'))).toContain('the facts at a glance');
   });
 });

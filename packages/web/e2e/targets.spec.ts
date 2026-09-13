@@ -4,7 +4,7 @@ import { openEnquiry } from './helpers';
 // The elder test at 375: every control a finger can reach has a 44px box (QUALITY.md section 2).
 // Inline links in running text are the one exception WCAG allows.
 const small = () =>
-  Array.from(document.querySelectorAll<HTMLElement>('a, button, input, select, textarea'))
+  Array.from(document.querySelectorAll<HTMLElement>('a, button, input, select, textarea, summary'))
     .filter((el) => el.checkVisibility() && !el.closest('[aria-hidden="true"]'))
     .filter((el) => el.getAttribute('tabindex') !== '-1')
     .filter((el) => !(el.tagName === 'A' && el.closest('p')))
@@ -29,9 +29,18 @@ test('every visible control on the page and in the open modal is at least 44px',
   expect(await page.evaluate(small)).toEqual([]);
 });
 
-test('every visible control on the event pages is at least 44px', async ({ page, isMobile }) => {
+test('every visible control on the event and program pages is at least 44px', async ({
+  page,
+  isMobile,
+}) => {
   test.skip(!isMobile, 'measured at 375');
-  for (const route of ['/odunde', '/gala']) {
+  for (const route of [
+    '/odunde',
+    '/gala',
+    '/programs',
+    '/programs/yoruba-lessons',
+    '/programs/cultural-collective',
+  ]) {
     await page.goto(route);
     expect(await page.evaluate(small), route).toEqual([]);
   }

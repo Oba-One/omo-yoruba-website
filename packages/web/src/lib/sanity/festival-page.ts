@@ -6,24 +6,25 @@
  * schedule as the option shows it, the plan-your-visit facts, the take-part rows with the next
  * edition's vendor terms and the intro that counts them (ADR 0025), every photograph resolved to a CDN set
  * with its alt and framing, the head's title and description cleaned of stega, and the
- * `data-sanity` attributes for click-to-edit in draft mode.
+ * `data-sanity` attributes for click-to-edit in draft mode. The parts every page singleton shares come
+ * from `pageSkeleton`.
  */
-import { withLayoutDefaults } from '@oy/content/layout';
-import { pageEdition, pastEdition } from '@oy/content/lead-event';
+import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { festivalPageQuery } from '@oy/content/queries';
+import { EVENT_PAGE_NAMES } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import { editionHours, longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { figureSentence } from '@oy/ui/content/figure-sentence.ts';
 import type { ClientReturn } from '@sanity/client';
 import {
-  type BuildOptions,
-  cleanText,
-  editAttributes,
-  hasPhotos,
-  pastAlbumView,
-  resolveImage,
-} from './view';
+  GLANCE_MAX,
+  type GlanceFactView,
+  glanceFacts,
+  pageSkeleton,
+  pastYears,
+} from './page-skeleton';
+import { type BuildOptions, cleanText, resolveImage } from './view';
 
 export type FestivalPageData = NonNullable<ClientReturn<typeof festivalPageQuery, unknown>>;
 
@@ -35,10 +36,8 @@ export interface FestivalLayout extends Record<string, string> {
   labels: 'column' | 'none' | 'kicker';
 }
 
-const PAGE_TITLE = 'Odunde Festival';
+const PAGE_TITLE = EVENT_PAGE_NAMES.festival;
 const KIND = 'festival';
-/** The glance strip holds five facts at most. */
-const GLANCE_MAX = 5;
 
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';
 
@@ -52,12 +51,12 @@ function takePartIntro(count: number): string | undefined {
 
 export function buildFestivalPage(data: FestivalPageData | null, options: BuildOptions) {
   const { imageSet, now = new Date() } = options;
-  const edit = editAttributes(options, 'festivalPage');
-  const layout = withLayoutDefaults<FestivalLayout>('festivalPage', data?.layout);
+  const page = pageSkeleton<FestivalLayout>('festivalPage', data, options, PAGE_TITLE);
+  const { edit, layout } = page;
 
   const editions = (data?.editions ?? []).filter((event) => event !== null);
   const edition = pageEdition(editions, KIND, { now });
-  const past = pastEdition(editions, KIND, { now, hasPhotos });
+  const past = pastYears(editions, KIND, options, edit);
 
   const date = longDate(edition?.start);
   // The hours need both ends of the day: a missing end is the registry's "the hours" (its row checks
@@ -66,14 +65,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
   const hoursPending = edition?.end ? pending('start') : pending('end');
   const cost = cleanText(edition?.cost) ? edition?.cost : undefined;
 
-  const header = data?.header;
-  const actions = [data?.primaryAction, ...(data?.secondaryActions ?? [])]
-    .filter((action) => action !== null && action !== undefined)
-    .slice(0, 2);
-
-  const extraFacts = (data?.extraFacts ?? []).filter((fact) => fact !== null);
-  const takePart = (data?.takePart ?? []).filter((row) => row !== null);
-  const glance = [
+  const glance: GlanceFactView[] = [
     { label: 'Date', value: shortDate(edition?.start), pending: pending('start') },
     { label: 'Time', value: hours, pending: hoursPending },
     {
@@ -84,30 +76,18 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       notePending: pending('venue.line'),
     },
     { label: 'Cost', value: cost ?? undefined, pending: pending('cost') },
-    ...extraFacts.map((fact) => ({
-      label: fact.label ?? '',
-      value: fact.value ?? undefined,
-      note: fact.note ?? undefined,
-      pending: pendingWhat('festivalPage', 'extraFacts') ?? 'a glance fact',
-    })),
+    ...glanceFacts('festivalPage', 'extraFacts', data?.extraFacts),
   ].slice(0, GLANCE_MAX);
 
   return {
-    title: cleanText(data?.seo?.title) || cleanText(header?.title) || PAGE_TITLE,
-    description: cleanText(data?.seo?.description) || cleanText(header?.line),
+    title: page.title,
+    description: page.description,
     layout,
     root: { ...layout },
     edition,
     header: {
       variant: layout.phead,
-      titlePending: pendingWhat('festivalPage', 'header.title') ?? 'the page heading',
-      imagePending: pendingWhat('festivalPage', 'header.image') ?? 'the header photograph',
-      kicker: header?.kicker,
-      title: header?.title,
-      line: header?.line,
-      image: resolveImage(imageSet, header?.image, { width: 1440 }),
-      imageEdit: edit('header.image'),
-      actions,
+      ...page.header,
       facts: [
         date ? { text: date } : { pending: pending('start') },
         hours ? { text: hours } : { pending: hoursPending },
@@ -146,23 +126,20 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       pending: pendingWhat('festivalPage', 'planYourVisit[]') ?? 'the practical facts',
     },
     takePart: {
-      rows: takePart.map((row) => ({ ...row, edit: edit(`takePart[_key=="${row._key}"]`) })),
-      intro: takePartIntro(takePart.length),
+      ...page.takePart,
+      intro: takePartIntro(page.takePart.rows.length),
       lead: layout.takepart,
       labels: layout.labels,
       // Null while the next edition holds no terms, so the vendor row shows the registry's chip.
       vendorTerms: edition?.vendorTerms ?? null,
       vendorTermsPending: pending('vendorTerms.fees'),
-      pending: pendingWhat('festivalPage', 'takePart[]') ?? 'the ways in',
-      rowPending:
-        pendingWhat('festivalPage', 'takePart') ?? 'a way in, its title or its button label',
     },
     past: {
       intro: data?.pastYearsIntro ?? undefined,
       // The attendance of the edition the photographs come from, or its chip while it is owed.
-      attendance: figureSentence(past?.attendance),
-      attendancePending: past ? pending('attendance') : undefined,
-      ...pastAlbumView(imageSet, edit, past?.album),
+      attendance: figureSentence(past.edition?.attendance),
+      attendancePending: past.edition ? pending('attendance') : undefined,
+      ...past.view,
     },
     partners: {
       intro: data?.partnersIntro ?? undefined,
@@ -181,13 +158,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       caption: data?.whatItIsImage?.caption ?? undefined,
       edit: edit('whatItIsImage'),
     },
-    edit: {
-      phead: edit('layout.phead'),
-      zones: edit('layout.zones'),
-      schedule: edit('layout.schedule'),
-      takepart: edit('layout.takepart'),
-      labels: edit('layout.labels'),
-    },
+    edit: page.layoutEdit,
   };
 }
 

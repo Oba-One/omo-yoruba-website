@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './Prose.stories';
 
-const { Default, PlainText, EveryNode, UntrustedLink, Empty } = composeStories(stories);
+const { Default, PlainText, EveryNode, UntrustedLink, Empty, Wide } = composeStories(stories);
 
 describe('Prose', () => {
   it('renders the seed paragraphs inside the tokens prose column', async () => {
@@ -44,5 +44,13 @@ describe('Prose', () => {
   it('renders nothing for an empty field', async () => {
     const body = await renderToBody(Empty);
     expect(body.querySelector('.oy-prose')).toBeNull();
+  });
+
+  it('widens the column to the wide measure when asked, and keeps the tokens measure by default', async () => {
+    const wide = (await renderToBody(Wide)).querySelector('.oy-prose');
+    expect(wide?.getAttribute('data-measure')).toBe('wide');
+    expect(
+      (await renderToBody(Default)).querySelector('.oy-prose')?.hasAttribute('data-measure'),
+    ).toBe(false);
   });
 });

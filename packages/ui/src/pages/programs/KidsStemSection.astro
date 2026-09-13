@@ -1,0 +1,35 @@
+---
+/**
+ * Kids & STEM as the Programs hub composes it, for the `Pages/Programs/Inline` stories: the section, its
+ * disclosure, the prose and both halves from the fixtures. Written as markup because the stories'
+ * slot descriptors serialize component references ten levels deep, one short of this nesting.
+ */
+import SubprogramCard from '../../cards/SubprogramCard/SubprogramCard.astro';
+import Disclosure from '../../content/Disclosure/Disclosure.astro';
+import Prose from '../../content/Prose/Prose.astro';
+import { KIDS_STEM } from '../../fixtures/program-pages';
+import CardGrid from '../../page/CardGrid/CardGrid.astro';
+import Section from '../../page/Section/Section.astro';
+import SectionHead from '../../page/SectionHead/SectionHead.astro';
+
+interface Props {
+  open?: boolean;
+}
+
+const { open = true } = Astro.props;
+---
+
+<Section id="kids" ground="alt" labelledby="kids-heading">
+  <Disclosure open={open} label={KIDS_STEM.title}>
+    <SectionHead
+      slot="head"
+      kicker={{ yo: 'Àwọn ọmọ', en: 'The children' }}
+      title={KIDS_STEM.title}
+      id="kids-heading"
+    />
+    <Prose text={KIDS_STEM.blurb} measure="wide" />
+    <CardGrid columns={2}>
+      {KIDS_STEM.subprograms.map((subprogram) => <SubprogramCard subprogram={subprogram} />)}
+    </CardGrid>
+  </Disclosure>
+</Section>

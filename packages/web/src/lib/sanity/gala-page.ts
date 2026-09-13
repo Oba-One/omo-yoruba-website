@@ -8,24 +8,24 @@
  * this gala and the ones before it, the newest past gala's album with its credit, the take-part rows
  * with the intro that counts them (ADR 0025), every photograph resolved to a CDN set with its alt and framing,
  * the head's title and description cleaned of stega, and the `data-sanity` attributes for
- * click-to-edit in draft mode.
+ * click-to-edit in draft mode. The parts every page singleton shares come from `pageSkeleton`.
  */
-import { withLayoutDefaults } from '@oy/content/layout';
-import { pageEdition, pastEdition } from '@oy/content/lead-event';
+import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { galaPageQuery } from '@oy/content/queries';
+import { EVENT_PAGE_NAMES } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import { longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { sentence } from '@oy/ui/content/sentence.ts';
 import type { ClientReturn } from '@sanity/client';
 import {
-  type BuildOptions,
-  cleanText,
-  editAttributes,
-  hasPhotos,
-  pastAlbumView,
-  resolveImage,
-} from './view';
+  GLANCE_MAX,
+  type GlanceFactView,
+  glanceFacts,
+  pageSkeleton,
+  pastYears,
+} from './page-skeleton';
+import { type BuildOptions, cleanText, resolveImage } from './view';
 
 export type GalaPageData = NonNullable<ClientReturn<typeof galaPageQuery, unknown>>;
 type Tier = NonNullable<GalaPageData['editions']>[number]['tiers'][number];
@@ -41,10 +41,8 @@ export interface GalaLayout extends Record<string, string> {
   labels: 'column' | 'none' | 'kicker';
 }
 
-const PAGE_TITLE = 'End-of-Year Gala';
+const PAGE_TITLE = EVENT_PAGE_NAMES.gala;
 const KIND = 'gala';
-/** The glance strip holds five facts at most. */
-const GLANCE_MAX = 5;
 
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';
 
@@ -116,25 +114,19 @@ function takePartIntro(count: number): string | undefined {
 
 export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) {
   const { imageSet, now = new Date() } = options;
-  const edit = editAttributes(options, 'galaPage');
-  const layout = withLayoutDefaults<GalaLayout>('galaPage', data?.layout);
+  const page = pageSkeleton<GalaLayout>('galaPage', data, options, PAGE_TITLE);
+  const { edit, layout } = page;
 
   const editions = (data?.editions ?? []).filter((event) => event !== null);
   const edition = pageEdition(editions, KIND, { now });
-  const past = pastEdition(editions, KIND, { now, hasPhotos });
+  const past = pastYears(editions, KIND, options, edit);
 
   const date = longDate(edition?.start);
   const venue = edition?.venue?.name || undefined;
   const seats = seatsFrom(edition?.tiers);
   const tiersPending = presenceWhat('ticketTier')?.what ?? 'the ticket tiers';
 
-  const header = data?.header;
-  const actions = [data?.primaryAction, ...(data?.secondaryActions ?? [])]
-    .filter((action) => action !== null && action !== undefined)
-    .slice(0, 2);
-
-  const extraFacts = (data?.extraFacts ?? []).filter((fact) => fact !== null);
-  const glance = [
+  const glance: GlanceFactView[] = [
     {
       label: 'Date',
       value: shortDate(edition?.start),
@@ -150,31 +142,17 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
     },
     { label: 'Dress', value: edition?.dress || undefined, pending: pending('dress') },
     { label: 'Seats from', value: seats.value, pending: tiersPending, note: seats.note },
-    ...extraFacts.map((fact) => ({
-      label: fact.label ?? '',
-      value: fact.value ?? undefined,
-      note: fact.note ?? undefined,
-      pending: pendingWhat('galaPage', 'extraFacts') ?? 'a glance fact',
-    })),
+    ...glanceFacts('galaPage', 'extraFacts', data?.extraFacts),
   ].slice(0, GLANCE_MAX);
 
-  const takePart = (data?.takePart ?? []).filter((row) => row !== null);
-
   return {
-    title: cleanText(data?.seo?.title) || cleanText(header?.title) || PAGE_TITLE,
-    description: cleanText(data?.seo?.description) || cleanText(header?.line),
+    title: page.title,
+    description: page.description,
     layout,
     root: { ...layout },
     edition,
     header: {
-      titlePending: pendingWhat('galaPage', 'header.title') ?? 'the page heading',
-      imagePending: pendingWhat('galaPage', 'header.image') ?? 'the header photograph',
-      kicker: header?.kicker,
-      title: header?.title,
-      line: header?.line,
-      image: resolveImage(imageSet, header?.image, { width: 1440 }),
-      imageEdit: edit('header.image'),
-      actions,
+      ...page.header,
       facts: [
         date ? { text: date } : { pending: pending('start') },
         venue ? { text: venue } : { pending: pending('venue.name') },
@@ -231,24 +209,14 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
     past: {
       shown: layout.past !== 'hidden',
       intro: data?.pastIntro ?? undefined,
-      ...pastAlbumView(imageSet, edit, past?.album),
+      ...past.view,
     },
     takePart: {
-      rows: takePart.map((row) => ({ ...row, edit: edit(`takePart[_key=="${row._key}"]`) })),
-      intro: takePartIntro(takePart.length),
+      ...page.takePart,
+      intro: takePartIntro(page.takePart.rows.length),
       labels: layout.labels,
-      pending: pendingWhat('galaPage', 'takePart[]') ?? 'the ways in',
-      rowPending: pendingWhat('galaPage', 'takePart') ?? 'a way in, its title or its button label',
     },
-    edit: {
-      treatment: edit('layout.treatment'),
-      tiers: edit('layout.tiers'),
-      emphasis: edit('layout.emphasis'),
-      awards: edit('layout.awards'),
-      schedule: edit('layout.schedule'),
-      past: edit('layout.past'),
-      labels: edit('layout.labels'),
-    },
+    edit: page.layoutEdit,
   };
 }
 

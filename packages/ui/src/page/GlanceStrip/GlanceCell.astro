@@ -1,0 +1,27 @@
+---
+/** One cell of the glance strip: the label, the value or its chip, and the note or its chip. */
+import Pending from '../../core/Pending/Pending.astro';
+import type { GlanceFact } from './GlanceStrip.astro';
+
+interface Props {
+  fact: GlanceFact;
+}
+
+const { fact } = Astro.props;
+---
+
+<div>
+  <b>{fact.label}</b>
+  {fact.value?.trim() ? <span>{fact.value}</span> : <Pending what={fact.pending} />}
+  {
+    fact.note?.trim() ? (
+      <small>{fact.note}</small>
+    ) : (
+      fact.notePending && (
+        <small>
+          <Pending what={fact.notePending} />
+        </small>
+      )
+    )
+  }
+</div>

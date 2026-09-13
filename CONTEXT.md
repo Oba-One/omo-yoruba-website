@@ -60,32 +60,69 @@ _Avoid_: awardee, honouree (spelling)
 Yoruba Language Lessons. One teacher, live online, enrol by writing to her.
 _Avoid_: School, classes, Saturday school, term
 
+**Teacher**:
+The one person who teaches the Lessons. A reader reaches her through the enrol form or her
+routing contact; her name and portrait are hers to give.
+_Avoid_: teachers, head teacher, tutor, instructor
+
 **Collective**:
-The Yoruba Cultural Collective. Solar Hub and Green Goods are its two initiatives. Green
-colour lives only here.
+The Yoruba Cultural Collective. Solar Hub and Green Goods are its two initiatives. Green belongs
+to the Collective's content and to nothing else on the site.
 _Avoid_: YCC in copy, sustainability program
+
+**Initiative**:
+One of the Collective's member-led projects, Solar Hub or Green Goods, with its status line, who
+it serves, when it started and what comes next.
+_Avoid_: venture, program (a program is one of the four)
+
+**Status line**:
+An initiative's state in the Collective's own words, beside its plainer status: planned,
+piloting or running.
+_Avoid_: badge, tag, progress
+
+**Collective event**:
+A one-off gathering the Collective hosts, listed on its page while it is dated and still to
+come. Never an edition: it has no season and no year before or after it.
+_Avoid_: edition, meetup, class
 
 **Program**:
 One of four: Lessons, Collective, Kids & STEM, Cultural Exchange. Only Lessons and the
-Collective have their own page.
+Collective have their own page; Kids & STEM and Cultural Exchange are inline programs,
+described in full on the Programs hub.
 _Avoid_: programme in code and copy (US spelling), course
+
+**Sub-program**:
+One of the two halves of Kids & STEM: Àgbàlá Ọmọde, the children's program that also runs as
+the festival's children's yard of the same name, and the STEM Hub. Each has its own ages and
+what it offers.
+_Avoid_: track, class, subprogramme
+
+**Year strip**:
+The Programs hub's one-year view of when each program and event runs, each with a short
+note.
+_Avoid_: calendar, timeline (that is Our Story's), schedule
 
 ### Site parts
 
 **Take-part band**:
-The closing rows on nine pages (vendor, sponsor, performer, volunteer, table, give),
-reordered per page.
+The closing rows of a page: its take-part rows, in the page's order.
 _Avoid_: CTA section, footer CTA
 
 **Way in**:
-One of the six things a visitor can do from a take-part band: vendor, sponsor, performer, volunteer,
-table, give. Each has its accent and opens its enquiry kind or the Give Dialog.
+One of the nine things a visitor can do from a take-part band: vendor, sponsor, performer, volunteer,
+table, give, enrol, member, updates. Each has its accent and opens its enquiry kind, the Give Dialog, or
+for updates the newsletter form.
 _Avoid_: channel, CTA type, path
 
 **Take-part row**:
-One row of a take-part band as the page singleton keeps it: a way in with its title, line and button
-label, in the page's order.
+One row of a take-part band as the page keeps it: a way in with its title, line and button label, and
+the page's own name for the way in where it differs (the Collective calls its sponsor row Partner).
 _Avoid_: path row (the component that draws it), CTA row
+
+**Green scope**:
+The Collective page's content, where green may appear; the nav, the footer and the dialogs sit
+outside it.
+_Avoid_: green theme, collective mode
 
 **Door**:
 One of the four Get Involved entry points (member, volunteer, partner, give), kept once as a

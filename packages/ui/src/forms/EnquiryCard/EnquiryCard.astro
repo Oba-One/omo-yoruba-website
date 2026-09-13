@@ -4,10 +4,14 @@
  * kind's title and blurb from the spec, how many questions it asks, an optional line on what
  * happens next from the page, and the trigger. The trigger is a link to the same page with the
  * modal open (`?enquiry=<kind>#enquiry`) that the Enquiry Modal intercepts when JavaScript runs
- * (ADR 0019). One gold action per screen view: pages pass `variant="secondary"` for the rest.
+ * (ADR 0019). One gold action per screen view: pages pass `variant="secondary"` for the rest. A page
+ * that gives an address (the Lessons page's teacher) shows it beside the trigger as a `mailto:` link,
+ * or the registry's chip while the settings hold none.
  */
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
+import { safeHref } from '../../core/ActionButton/action';
 import Button, { type ButtonVariant } from '../../core/Button/Button.astro';
+import Pending from '../../core/Pending/Pending.astro';
 
 interface Props {
   kind: EnquiryKind;
@@ -20,12 +24,31 @@ interface Props {
   /** The trigger's label; the spec's submit label by default. */
   label?: string;
   variant?: ButtonVariant;
+  /**
+   * An address offered beside the trigger. `null` while the settings hold none shows `emailPending`;
+   * leaving it out draws no line.
+   */
+  email?: string | null;
+  /** The registry's wording for the missing address. */
+  emailPending?: string;
   class?: string;
 }
 
-const { kind, title, blurb, next, label, variant = 'primary', class: className } = Astro.props;
+const {
+  kind,
+  title,
+  blurb,
+  next,
+  label,
+  variant = 'primary',
+  email,
+  emailPending,
+  class: className,
+} = Astro.props;
 const spec = ENQUIRY_SPECS[kind];
 const questions = spec.fields.length;
+const address = email?.trim();
+const mailto = address ? safeHref(`mailto:${address}`) : undefined;
 ---
 
 <article class:list={['oy-card', 'oy-enquiry-card', className]} data-kind={kind}>
@@ -40,6 +63,13 @@ const questions = spec.fields.length;
       <Button href={`?enquiry=${kind}#enquiry`} variant={variant} data-enquiry={kind} arrow>
         {label ?? spec.submit}
       </Button>
+      {
+        email !== undefined && (
+          <p class="oy-enquiry-card-email">
+            Or email {mailto ? <a href={mailto}>{email}</a> : <Pending what={emailPending} />}
+          </p>
+        )
+      }
     </div>
   </div>
 </article>
@@ -53,5 +83,15 @@ const questions = spec.fields.length;
   .oy-enquiry-card-action {
     margin-top: auto;
     padding-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+  /* A sentence, so its link is an inline target in running text (the 44px sweep's exception). */
+  .oy-enquiry-card-email {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--text-muted);
   }
 </style>
