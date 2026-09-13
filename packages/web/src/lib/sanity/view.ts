@@ -1,11 +1,11 @@
 /**
  * What every page view builder shares: the options it takes, an image resolved to a CDN set that
  * carries its alt text (ADR 0022), head text cleaned of stega (the overlay would otherwise read a
- * title as editable), the `data-sanity` attribute factory that answers only in draft mode, and the
- * past album both event pages show (spec Q8).
+ * title as editable), and the `data-sanity` attribute factory that answers only in draft mode. The
+ * parts a page singleton's view repeats (the header, the take-part rows, past years) are in
+ * `page-skeleton.ts`.
  */
 import type { ImageSetBuilder } from '@oy/content/images';
-import { PENDING, presenceWhat } from '@oy/content/pending';
 import type { ResolvedImage } from '@oy/ui/media/image.ts';
 import { stegaClean } from '@sanity/client/stega';
 import { dataAttribute } from './data-attribute';
@@ -19,7 +19,7 @@ export interface BuildOptions {
   now?: Date;
 }
 
-type ImageLike = Parameters<ImageSetBuilder>[0] & { alt?: string | null };
+export type ImageLike = Parameters<ImageSetBuilder>[0] & { alt?: string | null };
 
 export function resolveImage(
   imageSet: ImageSetBuilder,
@@ -47,50 +47,3 @@ export function editAttributes(options: Pick<BuildOptions, 'draft' | 'studioUrl'
 }
 
 export type EditAttribute = ReturnType<typeof editAttributes>;
-
-interface AlbumLike {
-  _id: string;
-  creditConfirmed: boolean | null;
-  credit: string | null;
-  photos: ({ _key: string; alt: string | null; caption: string | null } & ImageLike)[] | null;
-}
-
-/** Whether an edition's album has photographs to show: the rule `pastEdition` picks by. */
-export const hasPhotos = (event: { album?: AlbumLike | null }) =>
-  (event.album?.photos?.length ?? 0) > 0;
-
-/** The album row is a condition ("creditConfirmed != true"), so it is found by its field. */
-const CREDIT_PENDING =
-  PENDING.find((row) => row.type === 'album' && row.condition?.includes('creditConfirmed'))?.what ??
-  'photographer credit to confirm';
-
-/**
- * A past edition's album as the carousel and the credit line take it: each photograph resolved at the
- * stage's width with its alt and caption, the registry's wording for no album, and the credit with its
- * confirmation and the edit attribute on the album.
- */
-export function pastAlbumView(
-  imageSet: ImageSetBuilder,
-  edit: EditAttribute,
-  album: AlbumLike | null | undefined,
-) {
-  return {
-    slides: (album?.photos ?? [])
-      .filter((photo) => photo !== null)
-      .map((photo) => ({
-        _key: photo._key,
-        image: resolveImage(imageSet, photo, { width: 1022 }),
-        alt: photo.alt ?? '',
-        caption: photo.caption,
-      })),
-    pending: presenceWhat('album')?.what ?? 'the photo albums',
-    album: album
-      ? {
-          credit: album.credit ?? undefined,
-          confirmed: album.creditConfirmed === true,
-          pending: CREDIT_PENDING,
-          edit: edit('photos', album._id, 'album'),
-        }
-      : undefined,
-  };
-}
