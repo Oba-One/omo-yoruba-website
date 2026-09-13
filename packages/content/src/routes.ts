@@ -37,6 +37,31 @@ export const ROUTE_SINGLETONS: Record<string, PublicRoute> = {
   newsPage: '/news',
 };
 
+/**
+ * The page an edition opens, by its kind: the festival and the Gala have their own, a Collective
+ * event opens the Collective's page, and any other kind has none. The one answer the news cards,
+ * the event band and the Presentation tool share.
+ */
+export function editionRoute(kind: string | null | undefined): PublicRoute | undefined {
+  switch (kind) {
+    case 'festival':
+      return ROUTE_SINGLETONS.festivalPage;
+    case 'gala':
+      return ROUTE_SINGLETONS.galaPage;
+    case 'collective':
+      return ROUTE_SINGLETONS.collectivePage;
+    default:
+      return undefined;
+  }
+}
+
+/** The page a program opens: its own page when it has one, else the Programs hub. */
+export function programRoute(page: string | null | undefined): PublicRoute {
+  if (page === 'lessons') return ROUTE_SINGLETONS.lessonsPage as PublicRoute;
+  if (page === 'collective') return ROUTE_SINGLETONS.collectivePage as PublicRoute;
+  return ROUTE_SINGLETONS.programsPage as PublicRoute;
+}
+
 /** Every document type and the routes that read it; an empty list means never shown. */
 export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   siteSettings: PUBLIC_ROUTES,

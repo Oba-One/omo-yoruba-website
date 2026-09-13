@@ -93,6 +93,10 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   owner's yes on 12 September 2026; `.github/workflows/lighthouse.yml` skips until the bypass secret
   exists (ticket 28); the config reads `LIGHTHOUSE_*`, since lhci treats `LHCI_*` as flags.
 
+- [One route map for editions and programs](../tickets/wayfinder/issues/34-phase-4-leftovers.md):
+  `editionRoute` and `programRoute` in `@oy/content/routes` serve the news cards, the event band and
+  the Presentation tool; the dead hero switch rules are gone (Phase 5).
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.
@@ -125,8 +129,7 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 
 Research and design tickets the phases work themselves: 15 (analytics bundle versus the JS
 budget), 20 (Sanity loader for live collections), 21 (cache and draft mode), 33 (the homepage's
-mobile Lighthouse budget, first in Phase 5), 34 (Phase 4 leftovers; the route mapping belongs in
-Phase 5). Ticket 19 (fonts) was resolved in Phase 1.
+mobile Lighthouse budget, first in Phase 5). Ticket 34 was resolved in Phase 5. Ticket 19 (fonts) was resolved in Phase 1.
 
 ## Not yet specified
 

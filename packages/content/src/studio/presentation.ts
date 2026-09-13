@@ -3,7 +3,14 @@ import {
   defineLocations,
   type PresentationPluginOptions,
 } from 'sanity/presentation';
-import { PUBLIC_ROUTES, type PublicRoute, ROUTE_SINGLETONS, TYPE_ROUTES } from '../routes';
+import {
+  editionRoute,
+  PUBLIC_ROUTES,
+  type PublicRoute,
+  programRoute,
+  ROUTE_SINGLETONS,
+  TYPE_ROUTES,
+} from '../routes';
 import { singletonTypes } from '../schema/singletons';
 
 /** The page title of each static route, from the singleton that owns it. */
@@ -71,16 +78,7 @@ export const presentationOptions: PresentationPluginOptions = {
       },
       event: defineLocations({
         select: { kind: 'kind' },
-        resolve: (doc) => ({
-          locations: leadWith(
-            'event',
-            doc?.kind === 'gala'
-              ? '/gala'
-              : doc?.kind === 'collective'
-                ? '/programs/cultural-collective'
-                : '/odunde',
-          ),
-        }),
+        resolve: (doc) => ({ locations: leadWith('event', editionRoute(doc?.kind)) }),
       }),
       sponsorLevel: defineLocations({
         select: { scope: 'scope' },
@@ -88,15 +86,20 @@ export const presentationOptions: PresentationPluginOptions = {
           locations: leadWith('sponsorLevel', doc?.scope === 'odunde' ? '/odunde' : '/gala'),
         }),
       }),
+      // A program leads with the page it opens: its own, or the Programs hub that describes it. The
+      // homepage stays listed for every program: it shows the first three by order, and a resolver
+      // that selects fields cannot see where the other programs sit (wayfinder ticket 34).
       program: defineLocations({
         select: { page: 'page' },
-        resolve: (doc) => ({
-          locations: [
-            ...(doc?.page === 'lessons' ? [location('/programs/yoruba-lessons')] : []),
-            ...(doc?.page === 'collective' ? [location('/programs/cultural-collective')] : []),
-            ...locationsFor('program'),
-          ],
-        }),
+        resolve: (doc) => {
+          const own = programRoute(doc?.page);
+          const all = locationsFor('program');
+          return {
+            locations: all.some((l) => l.href === own)
+              ? leadWith('program', own)
+              : [location(own), ...all],
+          };
+        },
       }),
       person: defineLocations({
         select: { group: 'group' },

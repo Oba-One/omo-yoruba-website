@@ -1,6 +1,41 @@
 import { describe, expect, it } from 'vitest';
-import { cacheTagsFor, PUBLIC_ROUTES, routesFor, TYPE_ROUTES, tagsForRoute } from './routes';
+import {
+  cacheTagsFor,
+  editionRoute,
+  PUBLIC_ROUTES,
+  programRoute,
+  routesFor,
+  TYPE_ROUTES,
+  tagsForRoute,
+} from './routes';
 import { documentTypes } from './schema';
+
+describe('editionRoute and programRoute', () => {
+  it('opens the page an edition of each kind has, and none for any other kind', () => {
+    expect(editionRoute('festival')).toBe('/odunde');
+    expect(editionRoute('gala')).toBe('/gala');
+    expect(editionRoute('collective')).toBe('/programs/cultural-collective');
+    expect(editionRoute('other')).toBeUndefined();
+    expect(editionRoute(null)).toBeUndefined();
+    expect(editionRoute(undefined)).toBeUndefined();
+  });
+
+  it('opens a program on its own page, or on the Programs hub without one', () => {
+    expect(programRoute('lessons')).toBe('/programs/yoruba-lessons');
+    expect(programRoute('collective')).toBe('/programs/cultural-collective');
+    expect(programRoute(null)).toBe('/programs');
+    expect(programRoute('unknown')).toBe('/programs');
+  });
+
+  it('answers only routes the map lists for the type', () => {
+    for (const kind of ['festival', 'gala', 'collective']) {
+      expect(TYPE_ROUTES.event).toContain(editionRoute(kind));
+    }
+    for (const page of ['lessons', 'collective', null]) {
+      expect(PUBLIC_ROUTES).toContain(programRoute(page));
+    }
+  });
+});
 
 describe('PUBLIC_ROUTES', () => {
   it('lists every public route of ROUTES-AND-INTERACTIONS section 1', () => {

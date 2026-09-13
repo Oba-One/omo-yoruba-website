@@ -12,7 +12,7 @@
  * that family's paragraphs at 15px.
  */
 import { pendingWhat } from '@oy/content/pending';
-import { ROUTE_SINGLETONS } from '@oy/content/routes';
+import { editionRoute } from '@oy/content/routes';
 import Button from '../../core/Button/Button.astro';
 import Kicker from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
@@ -40,26 +40,19 @@ interface Props {
   id?: string;
 }
 
-/** The band's own copy by kind (the prototype's kicker and button), and the page it opens. */
-const COPY: Record<
-  EventBandKind,
-  { kicker: { yo?: string; en: string }; button: string; href: string }
-> = {
-  gala: {
-    kicker: { en: 'Coming up next' },
-    button: 'Tickets & tables',
-    href: ROUTE_SINGLETONS.galaPage ?? '/gala',
-  },
+/** The band's own copy by kind (the prototype's kicker and button); the page it opens is the route map's. */
+const COPY: Record<EventBandKind, { kicker: { yo?: string; en: string }; button: string }> = {
+  gala: { kicker: { en: 'Coming up next' }, button: 'Tickets & tables' },
   festival: {
     kicker: { yo: 'Ọdúndé', en: 'The new year has arrived' },
     button: 'Vendors & sponsors',
-    href: ROUTE_SINGLETONS.festivalPage ?? '/odunde',
   },
 };
 
 const { event, kind: kindProp, edit, class: className, ...rest } = Astro.props;
 const kind: EventBandKind = kindProp ?? (event?.kind === 'festival' ? 'festival' : 'gala');
 const copy = COPY[kind];
+const href = editionRoute(kind);
 const datePending = pendingWhat('event', 'start', kind);
 const venuePending = pendingWhat('event', 'venue.name', kind);
 
@@ -109,7 +102,7 @@ const when = formatDate(event?.start);
                 )}
               </p>
             </div>
-            <Button href={copy.href} arrow>
+            <Button href={href} arrow>
               {copy.button}
             </Button>
           </>

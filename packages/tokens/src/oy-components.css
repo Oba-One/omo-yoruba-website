@@ -3,7 +3,8 @@
    Edits in the port: pattern SVG urls point at the --pattern-* tokens; the canvas-only helpers
    (.cx-cardlab, the .sc-host mount) are dropped; the retired AmountSelector (.oy-freq, .oy-freqtabs,
    .oy-amounts, .oy-amount) and MultiStepForm (.oy-steps, .oy-step) blocks are left out
-   (docs/design/COMPONENT-MAP.md, Retired). Everything else is verbatim. */
+   (docs/design/COMPONENT-MAP.md, Retired); the homepage hero's .v2-cta--* switch is left out (the
+   site renders one button). Everything else is verbatim. */
 
 /* ---- Card treatment (polish pass 2): sharper corners, paper grounds, indigo hairline,
    a woven aṣọ òkè edge on top, faint àdìrẹ dots in the ground. No shadows, no lift, no image zoom. ---- */
@@ -378,18 +379,8 @@
   align-items: center;
   flex-wrap: wrap;
 }
-.v2-cta--school,
-.v2-cta--collective {
-  display: none;
-}
-.oy-home[data-highlight="school"] .v2-cta--festival,
-.oy-home[data-highlight="collective"] .v2-cta--festival {
-  display: none;
-}
-.oy-home[data-highlight="school"] .v2-cta--school,
-.oy-home[data-highlight="collective"] .v2-cta--collective {
-  display: inline-flex;
-}
+/* The prototype's .v2-cta--* rules, which swapped three hero buttons by highlight, are not ported:
+   the site renders the one button the highlight picks (buildHomepage, ADR 0023). */
 
 /* ---- Footer ---- */
 .v2-footer {

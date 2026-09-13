@@ -14,7 +14,7 @@ import { withLayoutDefaults } from '@oy/content/layout';
 import { calendarKind, leadEvent, leadKindOf } from '@oy/content/lead-event';
 import { HOMEPAGE_VOICE_SLOTS, type VoiceSlot } from '@oy/content/pending';
 import type { homepageQuery } from '@oy/content/queries';
-import { ROUTE_SINGLETONS } from '@oy/content/routes';
+import { editionRoute, programRoute } from '@oy/content/routes';
 import { usableAction } from '@oy/ui/core/ActionButton/action.ts';
 import type { ResolvedImage } from '@oy/ui/media/image.ts';
 import type { ClientReturn } from '@sanity/client';
@@ -61,15 +61,10 @@ type NewsTag = { _type: string; kind?: string | null; page?: string | null } | n
 export function newsHref(tags: readonly NewsTag[] | null | undefined): string | undefined {
   for (const tag of tags ?? []) {
     if (tag?._type === 'event') {
-      if (tag.kind === 'festival') return ROUTE_SINGLETONS.festivalPage;
-      if (tag.kind === 'gala') return ROUTE_SINGLETONS.galaPage;
-      if (tag.kind === 'collective') return ROUTE_SINGLETONS.collectivePage;
+      const route = editionRoute(tag.kind);
+      if (route) return route;
     }
-    if (tag?._type === 'program') {
-      if (tag.page === 'lessons') return ROUTE_SINGLETONS.lessonsPage;
-      if (tag.page === 'collective') return ROUTE_SINGLETONS.collectivePage;
-      return ROUTE_SINGLETONS.programsPage;
-    }
+    if (tag?._type === 'program') return programRoute(tag.page);
   }
   return undefined;
 }

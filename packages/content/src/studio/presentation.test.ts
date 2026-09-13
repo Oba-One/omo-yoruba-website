@@ -66,6 +66,25 @@ describe('locations follow the route map', () => {
     const event = locations?.event as Resolver;
     expect(event.resolve({ kind: 'gala' }).locations?.[0]?.href).toBe('/gala');
     expect(event.resolve({ kind: 'festival' }).locations?.[0]?.href).toBe('/odunde');
-    expect(event.resolve(null).locations?.[0]?.href).toBe('/odunde');
+    expect(event.resolve({ kind: 'collective' }).locations?.[0]?.href).toBe(
+      '/programs/cultural-collective',
+    );
+    // An edition of another kind has no page of its own, as the news cards read it: the map's order.
+    const other = event.resolve({ kind: 'other' }).locations?.map((l) => l.href);
+    expect(other).toEqual(TYPE_ROUTES.event);
+    expect(event.resolve(null).locations?.map((l) => l.href)).toEqual(TYPE_ROUTES.event);
+  });
+
+  it('leads a program with its own page, or the map order without one', () => {
+    const locations = presentationOptions.resolve?.locations as Record<string, Resolver>;
+    const program = locations.program as Resolver;
+    const lessons = program.resolve({ page: 'lessons' }).locations?.map((l) => l.href);
+    expect(lessons?.[0]).toBe('/programs/yoruba-lessons');
+    const routes = TYPE_ROUTES.program ?? [];
+    expect(lessons).toEqual(expect.arrayContaining([...routes]));
+    expect(program.resolve({ page: null }).locations?.map((l) => l.href)).toEqual([
+      '/programs',
+      ...routes.filter((route) => route !== '/programs'),
+    ]);
   });
 });
