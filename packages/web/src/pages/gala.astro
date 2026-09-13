@@ -10,12 +10,21 @@
 import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
 import { createImageSet } from '@oy/content/images';
 import { galaPageQuery } from '@oy/content/queries';
+import PersonCard from '@oy/ui/cards/PersonCard/PersonCard.astro';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
 import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
+import SponsorLevels from '@oy/ui/content/SponsorLevels/SponsorLevels.astro';
 import TicketTiers from '@oy/ui/content/TicketTiers/TicketTiers.astro';
+import ActionButton from '@oy/ui/core/ActionButton/ActionButton.astro';
+import Button from '@oy/ui/core/Button/Button.astro';
 import Divider from '@oy/ui/core/Divider/Divider.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
+import CreditLine from '@oy/ui/media/CreditLine/CreditLine.astro';
+import PhotoCarousel from '@oy/ui/media/PhotoCarousel/PhotoCarousel.astro';
+import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
+import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
 import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
@@ -107,6 +116,90 @@ cachePage(Astro, '/gala', { draft: preview });
         edit={page.edit.tiers}
       />
     </Section>
+
+    <Section id="sponsor" labelledby="sponsor-heading">
+      <SectionHead
+        kicker={{ yo: 'Àtìlẹ́yìn', en: 'Support' }}
+        title="Sponsor the Gala"
+        intro={page.sponsor.intro}
+        id="sponsor-heading"
+      />
+      <SponsorLevels
+        levels={page.sponsor.levels}
+        pending={page.sponsor.pending}
+        amountPending={page.sponsor.amountPending}
+        recognitionPending={page.sponsor.recognitionPending}
+      />
+      <ButtonRow>
+        <ActionButton
+          action={{ label: 'Sponsor the Gala', kind: 'enquiry', enquiryKind: 'sponsor' }}
+          variant="primary"
+        />
+        <span class="oy-button-row-note">Four questions, and we send the deck with our impact numbers.</span>
+      </ButtonRow>
+      <Handoff
+        shape="box"
+        variant="quiet"
+        text="Want the numbers before you commit? The impact page has them, with a source line under each one."
+        action={{ label: 'See our impact', kind: 'url', href: '/impact' }}
+      />
+    </Section>
+
+    {
+      page.honorees.shown && (
+        <Section id="honorees" ground="alt" labelledby="honorees-heading" data-sanity={page.edit.awards}>
+          <SectionHead
+            title="Honorees and recognitions"
+            intro={page.honorees.intro}
+            id="honorees-heading"
+          />
+          {page.honorees.items.length > 0 ? (
+            <CardGrid columns={3}>
+              {page.honorees.items.map((person) => (
+                <PersonCard person={person} edit={person.edit} />
+              ))}
+            </CardGrid>
+          ) : (
+            <Pending variant="line" what={page.honorees.pending} />
+          )}
+        </Section>
+      )
+    }
+
+    {
+      page.past.shown && (
+        <Section id="past" labelledby="past-heading" data-sanity={page.edit.past}>
+          <SectionHead
+            kicker={{ yo: 'Ọdún tí ó kọjá', en: 'Years past' }}
+            title="Past galas"
+            intro={page.past.intro}
+            id="past-heading"
+          />
+          <PhotoCarousel
+            id="past-carousel"
+            labelledby="past-heading"
+            slides={page.past.slides}
+            pending={page.past.pending}
+            edit={page.past.album?.edit}
+          />
+          {page.past.album && (
+            <CreditLine
+              credit={page.past.album.credit}
+              confirmed={page.past.album.confirmed}
+              pending={page.past.album.pending}
+            />
+          )}
+          <ButtonRow>
+            <Button variant="secondary" href="/gallery" arrow>
+              All gala albums
+            </Button>
+            <Button variant="quiet" href="/odunde" arrow>
+              The other half of our year, Odunde
+            </Button>
+          </ButtonRow>
+        </Section>
+      )
+    }
 
     <Section id="take-part" ground="alt" labelledby="take-part-heading" data-sanity={page.edit.labels}>
       <SectionHead

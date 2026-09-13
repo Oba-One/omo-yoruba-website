@@ -5797,11 +5797,11 @@
                 "of": [
                   {
                     "type": "string",
-                    "value": "shown"
+                    "value": "hidden"
                   },
                   {
                     "type": "string",
-                    "value": "hidden"
+                    "value": "shown"
                   }
                 ]
               },

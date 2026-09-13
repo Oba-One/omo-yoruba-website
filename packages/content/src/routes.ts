@@ -69,7 +69,7 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/programs', '/news'],
   zone: ['/odunde'],
   ticketTier: ['/gala'],
-  sponsorLevel: ['/gala', '/odunde'],
+  sponsorLevel: ['/gala'],
   honoree: ['/gala'],
   program: ['/', '/programs', '/impact'],
   initiative: ['/programs/cultural-collective'],

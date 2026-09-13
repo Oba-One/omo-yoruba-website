@@ -1,6 +1,6 @@
 import { createImageSet } from '@oy/content/images';
 import { describe, expect, it } from 'vitest';
-import { buildGalaPage, type GalaPageData, seatsFrom } from './gala-page';
+import { buildGalaPage, type GalaPageData, honoreeCards, seatsFrom } from './gala-page';
 
 const imageSet = createImageSet({ projectId: 'abc123', dataset: 'development' });
 const image = (alt: string) => ({
@@ -95,7 +95,19 @@ const seeded = {
     },
     { _key: 'way-4', way: 'give', title: 'Cannot come this year?', line: null, label: 'Donate' },
   ],
-  editions: [edition('event-gala-2026', 2026), edition('event-gala-2025', 2025)],
+  editions: [
+    edition('event-gala-2026', 2026),
+    edition('event-gala-2025', 2025, {
+      album: {
+        _id: 'album-gala-2025',
+        title: 'End-of-Year Gala 2025',
+        slug: 'gala-2025',
+        creditConfirmed: false,
+        credit: 'Members and volunteers',
+        photos: [{ _key: 'photo-1', ...image('Three guests before dinner') }],
+      },
+    }),
+  ],
   sponsorLevels: [],
   honorees: [],
   layout: {
@@ -290,5 +302,88 @@ describe('buildGalaPage', () => {
     expect(draft.seats.layout).toBe('rows');
     expect(draft.seats.emphasis).toBe('tables');
     expect(draft.seats.tiers[0]?.edit).toContain('id=seat;type=ticketTier;path=name');
+  });
+
+  it('carries the sponsor levels with their wording and edit attributes', () => {
+    const view = buildGalaPage(seeded, options);
+    expect(view.sponsor).toMatchObject({
+      levels: [],
+      pending: 'level names and amounts',
+      amountPending: 'the amount',
+      recognitionPending: 'what the level recognizes',
+    });
+    const levels = {
+      ...seeded,
+      sponsorIntro: '[ intro ]',
+      sponsorLevels: [{ _id: 'level-1', name: '[ level ]', amount: null, recognition: null }],
+    } as unknown as GalaPageData;
+    const draft = buildGalaPage(levels, { ...options, draft: true });
+    expect(draft.sponsor.intro).toBe('[ intro ]');
+    expect(draft.sponsor.levels[0]?.edit).toContain('id=level-1;type=sponsorLevel;path=name');
+  });
+
+  it('hides the honorees unless the option shows them, and names what is owed', () => {
+    const view = buildGalaPage({ ...seeded, layout: {} } as unknown as GalaPageData, options);
+    expect(view.honorees.shown).toBe(false);
+    expect(buildGalaPage(seeded, options).honorees).toMatchObject({
+      shown: true,
+      items: [],
+      pending: 'whether awards exist, and who',
+    });
+  });
+
+  it("orders the honorees this year's first, then earlier ones with their year, and drops later ones", () => {
+    const editions = [
+      { _id: 'gala-2027', edition: 2027 },
+      { _id: 'gala-2026', edition: 2026 },
+      { _id: 'gala-2025', edition: 2025 },
+      { _id: 'gala-2024', edition: 2024 },
+    ];
+    const honoree = (id: string, eventId: string | null, extra: Record<string, unknown> = {}) => ({
+      _id: id,
+      name: `[ ${id} ]`,
+      award: null,
+      blurb: null,
+      image: null,
+      eventId,
+      ...extra,
+    });
+    const cards = honoreeCards(
+      [
+        honoree('older', 'gala-2024', { blurb: '[ why ]' }),
+        honoree('later', 'gala-2027'),
+        honoree('now', 'gala-2026', { award: '[ award ]', blurb: '[ why ]' }),
+        honoree('recent', 'gala-2025'),
+      ],
+      editions,
+      editions[1],
+    );
+    expect(cards.map((card) => [card._id, card.role, card.bio])).toEqual([
+      ['now', 'This year', '[ award ]. [ why ]'],
+      ['recent', 'Previously honored', '2025.'],
+      ['older', 'Previously honored', '2024. [ why ]'],
+    ]);
+    expect(honoreeCards(null, editions, undefined)).toEqual([]);
+  });
+
+  it('carries the newest past gala album and its credit, shown or hidden by the option', () => {
+    const view = buildGalaPage(seeded, options);
+    expect(view.past.shown).toBe(true);
+    expect(view.past.slides.map((slide) => slide.alt)).toEqual(['Three guests before dinner']);
+    expect(view.past.album).toMatchObject({
+      credit: 'Members and volunteers',
+      confirmed: false,
+      pending: 'photographer credit to confirm',
+    });
+    const hidden = buildGalaPage(
+      { ...seeded, layout: { past: 'hidden' } } as GalaPageData,
+      options,
+    );
+    expect(hidden.past.shown).toBe(false);
+    expect(buildGalaPage(null, options).past).toMatchObject({
+      slides: [],
+      album: undefined,
+      pending: 'the photo albums',
+    });
   });
 });

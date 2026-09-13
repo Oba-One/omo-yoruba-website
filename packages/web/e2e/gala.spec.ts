@@ -29,8 +29,19 @@ test.describe('the End-of-Year Gala page', () => {
         (el) => el.id || (el.classList.contains('oy-seam') ? 'seam' : el.tagName.toLowerCase()),
       ),
     );
-    expect(order.slice(0, 5)).toEqual(['top', 'glance', 'evening', 'seam', 'seats']);
-    expect(order.at(-1)).toBe('take-part');
+    const awards = await page.locator('body').getAttribute('data-awards');
+    const past = await page.locator('body').getAttribute('data-past');
+    expect(order).toEqual([
+      'top',
+      'glance',
+      'evening',
+      'seam',
+      'seats',
+      'sponsor',
+      ...(awards === 'shown' ? ['honorees'] : []),
+      ...(past === 'hidden' ? [] : ['past']),
+      'take-part',
+    ]);
     const body = page.locator('body');
     await expect(body).toHaveAttribute('data-treatment', /^(formal|warm)$/);
     await expect(body).toHaveAttribute('data-labels', /^(column|none|kicker)$/);
@@ -100,6 +111,49 @@ test.describe('the End-of-Year Gala page', () => {
       await expect(dialog).not.toHaveAttribute('open', '');
       await expect(table).toBeFocused();
     }
+  });
+
+  test('sponsor levels or their Pending line, one gold Sponsor the Gala, and the impact handoff', async ({
+    page,
+  }) => {
+    await page.goto('/gala');
+    const sponsor = page.locator('#sponsor');
+    await expect(sponsor.locator('h2')).toHaveText('Sponsor the Gala');
+    if ((await sponsor.locator('li.oy-lrow--tier').count()) === 0) {
+      await expect(sponsor.locator('.oy-pend-line')).toContainText('level names and amounts');
+    }
+    const gold = sponsor.locator('.oy-btn--primary');
+    await expect(gold).toHaveCount(1);
+    await expect(gold).toHaveAttribute('data-enquiry', 'sponsor');
+    await expect(sponsor.locator('.oy-handoff a.oy-btn--quiet')).toHaveAttribute('href', '/impact');
+  });
+
+  test('honorees only when the option shows them; past galas as the option says', async ({
+    page,
+  }) => {
+    await page.goto('/gala');
+    const body = page.locator('body');
+    const honorees = page.locator('#honorees');
+    if ((await body.getAttribute('data-awards')) === 'shown') {
+      await expect(honorees.locator('h2')).toHaveText('Honorees and recognitions');
+      const cards = await honorees.locator('article.oy-person').count();
+      if (cards === 0) await expect(honorees.locator('.oy-pend-line')).toBeVisible();
+    } else {
+      await expect(honorees).toHaveCount(0);
+    }
+    const past = page.locator('#past');
+    if ((await body.getAttribute('data-past')) === 'hidden') {
+      await expect(past).toHaveCount(0);
+      return;
+    }
+    await expect(past.locator('h2')).toHaveText('Past galas');
+    await expect(past.getByRole('link', { name: 'All gala albums' })).toHaveAttribute(
+      'href',
+      '/gallery',
+    );
+    await expect(
+      past.getByRole('link', { name: /The other half of our year, Odunde/ }),
+    ).toHaveAttribute('href', '/odunde');
   });
 
   test('closes with the take-part rows, one gold action, the give row quiet', async ({ page }) => {

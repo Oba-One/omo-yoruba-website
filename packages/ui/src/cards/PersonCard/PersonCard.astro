@@ -1,0 +1,77 @@
+---
+/**
+ * A person (COMPONENT-MAP, Cards; the Gala's honorees in `09 End-of-Year Gala.dc.html`): the tokens'
+ * `.oy-person` card with the role as a small kicker, the name and a short bio. With a portrait the
+ * photograph sits above, framed by its hotspot; without one the card draws the woven tick in place of
+ * a face, a design of its own rather than a placeholder. `compact` tightens the type. A missing name
+ * shows the registry's chip. The border deepens and the name warms on hover, nothing lifts.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
+
+export interface PersonLike {
+  _id?: string | null;
+  name?: string | null;
+  role?: string | null;
+  bio?: string | null;
+  image?: ImageInput | null;
+}
+
+interface Props {
+  person: PersonLike;
+  /** `portrait` falls back to the woven tick when there is no photograph. */
+  variant?: 'portrait' | 'nophoto' | 'compact';
+  namePending?: string;
+  sizes?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the person. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  person,
+  variant = 'portrait',
+  namePending = 'the name',
+  sizes = '(min-width: 1100px) 340px, (min-width: 860px) 30vw, 100vw',
+  edit,
+  class: className,
+} = Astro.props;
+const img = variant === 'nophoto' ? undefined : imgAttributes(person.image, sizes);
+const position = positionOf(person.image);
+---
+
+<article
+  class:list={[
+    'oy-person',
+    !img && 'oy-person--nophoto',
+    variant === 'compact' && 'oy-person--compact',
+    className,
+  ]}
+  data-sanity={edit}
+>
+  {
+    img && (
+      <div class="oy-person-media">
+        <img
+          {...img}
+          alt={altOf(person.image, person.name ?? '')}
+          loading="lazy"
+          decoding="async"
+          style={position ? `object-position: ${position}` : undefined}
+        />
+      </div>
+    )
+  }
+  <div class="oy-person-body">
+    {person.role?.trim() && <p class="oy-person-role">{person.role}</p>}
+    <h3 class="oy-person-name">{person.name?.trim() || <Pending what={namePending} />}</h3>
+    {person.bio?.trim() && <p class="oy-person-bio">{person.bio}</p>}
+  </div>
+</article>
+
+<style>
+  .oy-person-role,
+  .oy-person-name {
+    margin: 0;
+  }
+</style>

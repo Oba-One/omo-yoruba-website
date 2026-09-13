@@ -1,8 +1,10 @@
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
+import * as awards from './Awards.stories';
 import * as emphasis from './Emphasis.stories';
 import * as labels from './Labels.stories';
+import * as past from './Past.stories';
 import * as schedule from './Schedule.stories';
 import * as tiers from './Tiers.stories';
 import * as treatment from './Treatment.stories';
@@ -12,6 +14,8 @@ const Schedule = composeStories(schedule);
 const Labels = composeStories(labels);
 const Tiers = composeStories(tiers);
 const Emphasis = composeStories(emphasis);
+const Awards = composeStories(awards);
+const Past = composeStories(past);
 
 describe('the Gala page-section stories', () => {
   it('treatment: the option on the root over the photo header, the glance, the evening and the seam', async () => {
@@ -77,5 +81,43 @@ describe('the Gala page-section stories', () => {
         ?.getAttribute('data-variant');
     expect(await first(Emphasis.Seats)).toBe('buyNow');
     expect(await first(Emphasis.Tables)).toBe('enquiry');
+  });
+
+  it('awards: honorees absent when hidden, between sponsors and past galas when shown', async () => {
+    const hidden = (await renderToBody(Awards.Hidden)).querySelector('.oy-home');
+    expect(hidden?.getAttribute('data-awards')).toBe('hidden');
+    expect(hidden?.querySelector('#honorees')).toBeNull();
+    const order = (root: Element | null | undefined) =>
+      [...(root?.querySelectorAll(':scope > section') ?? [])].map((section) => section.id);
+    expect(order(hidden)).toEqual(['sponsor', 'past']);
+    const shown = (await renderToBody(Awards.Shown)).querySelector('.oy-home');
+    expect(order(shown)).toEqual(['sponsor', 'honorees', 'past']);
+    expect(shown?.querySelectorAll('#honorees article.oy-person')).toHaveLength(2);
+    expect(text(shown?.querySelector('#honorees .oy-person-role'))).toBe('This year');
+  });
+
+  it('sponsor: the levels, one gold action with its line, and the impact handoff', async () => {
+    const root = (await renderToBody(Awards.Hidden)).querySelector('.oy-home');
+    const section = root?.querySelector('#sponsor');
+    expect(section?.querySelectorAll('ul.oy-list > li.oy-lrow--tier')).toHaveLength(2);
+    const gold = section?.querySelectorAll('.oy-btn--primary');
+    expect(gold).toHaveLength(1);
+    expect(gold?.[0]?.getAttribute('data-enquiry')).toBe('sponsor');
+    expect(section?.querySelector('.oy-handoff a.oy-btn--quiet')?.getAttribute('href')).toBe(
+      '/impact',
+    );
+  });
+
+  it('past: the carousel with its credit and links, or nothing', async () => {
+    const shown = (await renderToBody(Past.Shown)).querySelector('.oy-home');
+    expect(shown?.getAttribute('data-past')).toBe('shown');
+    const section = shown?.querySelector('#past');
+    expect(section?.querySelectorAll('oy-photo-carousel [role="tabpanel"]')).toHaveLength(6);
+    expect(text(section?.querySelector('.oy-credit-line'))).toContain('Members and volunteers');
+    expect(section?.querySelector('a.oy-btn[href="/gallery"]')).not.toBeNull();
+    expect(section?.querySelector('a.oy-btn--quiet[href="/odunde"]')).not.toBeNull();
+    const hidden = (await renderToBody(Past.Hidden)).querySelector('.oy-home');
+    expect(hidden?.querySelector('#past')).toBeNull();
+    expect(text(hidden?.querySelector('#take-part h2'))).toBe('Take part');
   });
 });

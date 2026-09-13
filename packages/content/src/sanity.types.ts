@@ -876,7 +876,7 @@ export type GalaPage = {
     treatment?: "formal" | "warm";
     tiers?: "columns" | "rows";
     emphasis?: "seats" | "tables";
-    awards?: "shown" | "hidden";
+    awards?: "hidden" | "shown";
     schedule?: "shown" | "hidden";
     past?: "shown" | "hidden";
     labels?: "column" | "none" | "kicker";

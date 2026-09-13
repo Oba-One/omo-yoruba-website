@@ -5,7 +5,7 @@ import { expect, type Page, test } from '@playwright/test';
 // inline custom element that upgrades the server-rendered first photograph. CI builds with a
 // placeholder project and no photographs, so every spec skips when fewer than two render.
 
-const ROUTES = ['/odunde'];
+const ROUTES = ['/odunde', '/gala'];
 const NO_PHOTOGRAPHS = 'fewer than two photographs in the Studio (the CI placeholder project)';
 
 async function carouselOn(page: Page, route: string) {

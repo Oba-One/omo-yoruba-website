@@ -359,3 +359,43 @@ export const TIER_PLACEHOLDERS = [
 
 /** Eventbrite's own address, standing in for an edition's event link (none is held yet). */
 export const EVENTBRITE_STAND_IN = 'https://www.eventbrite.com';
+
+/** The sponsor intro as the seed writes it. */
+export const GALA_SPONSOR_INTRO =
+  'One enquiry covers this evening, Odunde, or both: just tick which.';
+
+/** Sponsor levels in the bracketed placeholder form: the dataset holds none, the prototype's are invented. */
+export const SPONSOR_LEVEL_PLACEHOLDERS = [
+  {
+    _id: 'level-1',
+    name: '[ The first level ]',
+    amount: '[ Amount ]',
+    recognition: ['[ What the level recognizes ]', '[ And what else ]'],
+  },
+  {
+    _id: 'level-2',
+    name: '[ The second level ]',
+    amount: '[ Amount ]',
+    recognition: ['[ What the level recognizes ]'],
+  },
+];
+
+/** The honorees intro as the seed writes it. */
+export const GALA_HONOREES_INTRO =
+  'Who we are honoring this year, and who has been honored before.';
+
+/** Honorees in the bracketed placeholder form: the dataset holds none, the prototype's are invented. */
+export const HONOREE_PLACEHOLDERS = [
+  {
+    _id: 'honoree-1',
+    role: 'This year',
+    name: "[ This year's honoree ]",
+    bio: '[ One line on why ]',
+  },
+  {
+    _id: 'honoree-2',
+    role: 'Previously honored',
+    name: '[ An earlier honoree ]',
+    bio: '[ The year. One line on why ]',
+  },
+];

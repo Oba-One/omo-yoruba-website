@@ -229,6 +229,18 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Gala, seats and tables',
     what: 'what the ticket includes',
   },
+  {
+    type: 'sponsorLevel',
+    fields: ['amount'],
+    where: 'Sponsorship',
+    what: 'the amount',
+  },
+  {
+    type: 'sponsorLevel',
+    fields: ['recognition[]'],
+    where: 'Sponsorship',
+    what: 'what the level recognizes',
+  },
 
   // Programs and lessons
   { type: 'program', fields: ['blurb'], where: 'Programs, cards', what: 'what the program is' },

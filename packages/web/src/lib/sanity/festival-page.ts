@@ -10,13 +10,20 @@
  */
 import { withLayoutDefaults } from '@oy/content/layout';
 import { pageEdition, pastEdition } from '@oy/content/lead-event';
-import { PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
+import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { festivalPageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import { editionHours, longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { figureSentence } from '@oy/ui/content/figure-sentence.ts';
 import type { ClientReturn } from '@sanity/client';
-import { type BuildOptions, cleanText, editAttributes, resolveImage } from './view';
+import {
+  type BuildOptions,
+  cleanText,
+  editAttributes,
+  hasPhotos,
+  pastAlbumView,
+  resolveImage,
+} from './view';
 
 export type FestivalPageData = NonNullable<ClientReturn<typeof festivalPageQuery, unknown>>;
 
@@ -34,10 +41,6 @@ const KIND = 'festival';
 const GLANCE_MAX = 5;
 
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';
-/** The album row is a condition ("creditConfirmed != true"), so it is found by its field. */
-const CREDIT_PENDING =
-  PENDING.find((row) => row.type === 'album' && row.condition?.includes('creditConfirmed'))?.what ??
-  'photographer credit to confirm';
 
 /** The take-part intro, counting the rows the band draws ("Four ways in."). */
 function takePartIntro(count: number): string | undefined {
@@ -54,11 +57,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
 
   const editions = (data?.editions ?? []).filter((event) => event !== null);
   const edition = pageEdition(editions, KIND, { now });
-  const past = pastEdition(editions, KIND, {
-    now,
-    hasPhotos: (event) => (event.album?.photos?.length ?? 0) > 0,
-  });
-  const album = past?.album ?? undefined;
+  const past = pastEdition(editions, KIND, { now, hasPhotos });
 
   const date = longDate(edition?.start);
   const hours = editionHours(edition?.start, edition?.end);
@@ -157,23 +156,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       // The attendance of the edition the photographs come from, or its chip while it is owed.
       attendance: figureSentence(past?.attendance),
       attendancePending: past ? pending('attendance') : undefined,
-      slides: (album?.photos ?? [])
-        .filter((photo) => photo !== null)
-        .map((photo) => ({
-          _key: photo._key,
-          image: resolveImage(imageSet, photo, { width: 1022 }),
-          alt: photo.alt ?? '',
-          caption: photo.caption,
-        })),
-      pending: presenceWhat('album')?.what ?? 'the photo albums',
-      album: album
-        ? {
-            credit: album.credit ?? undefined,
-            confirmed: album.creditConfirmed === true,
-            pending: CREDIT_PENDING,
-            edit: edit('photos', album._id, 'album'),
-          }
-        : undefined,
+      ...pastAlbumView(imageSet, edit, past?.album),
     },
     partners: {
       intro: data?.partnersIntro ?? undefined,

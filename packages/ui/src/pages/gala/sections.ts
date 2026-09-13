@@ -4,23 +4,39 @@
  * part comes from the fixtures; the site composes the same parts in packages/web from
  * `buildGalaPage`. The section kickers and headings are the page's copy, as on the site.
  */
+
+import PersonCard from '../../cards/PersonCard/PersonCard.astro';
 import { countWord } from '../../content/count-word';
 import Prose from '../../content/Prose/Prose.astro';
 import Schedule from '../../content/Schedule/Schedule.astro';
+import SponsorLevels from '../../content/SponsorLevels/SponsorLevels.astro';
 import TicketTiers from '../../content/TicketTiers/TicketTiers.astro';
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import Button from '../../core/Button/Button.astro';
 import Divider from '../../core/Divider/Divider.astro';
 import {
+  GALA_ALBUM_CREDIT,
   GALA_EVENING_INTRO,
   GALA_GLANCE,
   GALA_GLANCE_CAPTION,
   GALA_HEADER,
+  GALA_HONOREES_INTRO,
   GALA_META,
+  GALA_PAST_SLIDES,
   GALA_RUNNING_ORDER_PLACEHOLDERS,
+  GALA_SPONSOR_INTRO,
   GALA_TAKE_PART,
   GALA_TIERS_INTRO,
+  HONOREE_PLACEHOLDERS,
+  SPONSOR_LEVEL_PLACEHOLDERS,
   TIER_PLACEHOLDERS,
 } from '../../fixtures/event-pages';
+import CreditLine from '../../media/CreditLine/CreditLine.astro';
+import PhotoCarousel from '../../media/PhotoCarousel/PhotoCarousel.astro';
+import ButtonRow from '../../page/ButtonRow/ButtonRow.astro';
+import CardGrid from '../../page/CardGrid/CardGrid.astro';
 import GlanceStrip from '../../page/GlanceStrip/GlanceStrip.astro';
+import Handoff from '../../page/Handoff/Handoff.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
 import Section from '../../page/Section/Section.astro';
 import SectionHead from '../../page/SectionHead/SectionHead.astro';
@@ -133,6 +149,121 @@ export const takePart = (labels: TakePartLabels): SlotValue => ({
           rows: GALA_TAKE_PART,
           labels,
           rowPending: 'a way in, its title or its button label',
+        },
+      },
+    ],
+  },
+});
+
+/** Sponsor the Gala: placeholder levels, the one gold action with its line, the impact handoff. */
+export const sponsor: SlotValue = {
+  component: Section,
+  props: { id: 'sponsor', labelledby: 'sponsor-heading' },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          kicker: { yo: 'Àtìlẹ́yìn', en: 'Support' },
+          title: 'Sponsor the Gala',
+          intro: GALA_SPONSOR_INTRO,
+          id: 'sponsor-heading',
+        },
+      },
+      { component: SponsorLevels, props: { levels: SPONSOR_LEVEL_PLACEHOLDERS } },
+      {
+        component: ButtonRow,
+        slots: {
+          default: [
+            {
+              component: ActionButton,
+              props: {
+                action: { label: 'Sponsor the Gala', kind: 'enquiry', enquiryKind: 'sponsor' },
+                variant: 'primary',
+              },
+            },
+            '<span class="oy-button-row-note">Four questions, and we send the deck with our impact numbers.</span>',
+          ],
+        },
+      },
+      {
+        component: Handoff,
+        props: {
+          shape: 'box',
+          variant: 'quiet',
+          text: 'Want the numbers before you commit? The impact page has them, with a source line under each one.',
+          action: { label: 'See our impact', kind: 'url', href: '/impact' },
+        },
+      },
+    ],
+  },
+};
+
+/** Honorees on the tint, as the `awards` option shows them: placeholder cards without portraits. */
+export const honorees: SlotValue = {
+  component: Section,
+  props: { id: 'honorees', ground: 'alt', labelledby: 'honorees-heading' },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          title: 'Honorees and recognitions',
+          intro: GALA_HONOREES_INTRO,
+          id: 'honorees-heading',
+        },
+      },
+      {
+        component: CardGrid,
+        props: { columns: 3 },
+        slots: {
+          default: HONOREE_PLACEHOLDERS.map((person) => ({
+            component: PersonCard,
+            props: { person, variant: 'nophoto' },
+          })),
+        },
+      },
+    ],
+  },
+};
+
+/**
+ * Past galas as the `past` option shows them: the Gala 2025 album in the carousel with its credit and
+ * the two links. `id` keeps the carousel's ids unique when a docs page renders several stories.
+ */
+export const pastGalas = (id: string): SlotValue => ({
+  component: Section,
+  props: { id: 'past', labelledby: `${id}-heading` },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          kicker: { yo: 'Ọdún tí ó kọjá', en: 'Years past' },
+          title: 'Past galas',
+          id: `${id}-heading`,
+        },
+      },
+      {
+        component: PhotoCarousel,
+        props: { id, labelledby: `${id}-heading`, slides: GALA_PAST_SLIDES },
+      },
+      { component: CreditLine, props: GALA_ALBUM_CREDIT },
+      {
+        component: ButtonRow,
+        slots: {
+          default: [
+            {
+              component: Button,
+              props: { variant: 'secondary', href: '/gallery', arrow: true },
+              slots: { default: 'All gala albums' },
+            },
+            {
+              component: Button,
+              props: { variant: 'quiet', href: '/odunde', arrow: true },
+              slots: { default: 'The other half of our year, Odunde' },
+            },
+          ],
         },
       },
     ],

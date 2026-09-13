@@ -1,0 +1,55 @@
+---
+/**
+ * The sponsor levels (`09 End-of-Year Gala.dc.html`, Sponsor the Gala): the levels in the Studio's
+ * order as sponsor tier list rows in the tokens' `.oy-list`. No level renders the registry's Pending
+ * line. The page follows the list with its one gold action.
+ */
+import ListRow, { type TierRowLike } from '../../cards/ListRow/ListRow.astro';
+import Pending from '../../core/Pending/Pending.astro';
+
+interface Props {
+  levels?: ((TierRowLike & { edit?: string }) | null)[] | null;
+  /** The registry's wording for no levels, and for a level's missing amount and recognition. */
+  pending?: string;
+  amountPending?: string;
+  recognitionPending?: string;
+  class?: string;
+}
+
+const {
+  levels,
+  pending = 'level names and amounts',
+  amountPending,
+  recognitionPending,
+  class: className,
+} = Astro.props;
+const list = (levels ?? []).filter((level) => level !== null);
+---
+
+{
+  list.length === 0 ? (
+    <div class:list={['oy-levels-owed', className]}>
+      <Pending variant="line" what={pending} />
+    </div>
+  ) : (
+    <ul class:list={['oy-list', className]} role="list">
+      {list.map((level) => (
+        <ListRow
+          kind="tier"
+          row={level}
+          amountPending={amountPending}
+          recognitionPending={recognitionPending}
+          edit={level.edit}
+        />
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .oy-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>
