@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
-import { pendingWhat } from '@oy/content/pending';
+import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import { expect, type Page, test } from '@playwright/test';
 import { expectNoMockWhileOwed, goldSharingAView, settle } from './helpers';
 
@@ -63,6 +63,9 @@ test.describe('the Yoruba Cultural Collective page', () => {
       Array.from(document.querySelectorAll('main > *')).map((el) => el.id),
     );
     expect(order.slice(0, 2)).toEqual(['top', 'why']);
+    const events = await page.locator('body').getAttribute('data-events');
+    expect(order.includes('events')).toBe(events !== 'hidden');
+    if (events !== 'hidden') expect(order[2]).toBe('events');
     expect(order.slice(-2)).toEqual(['voice', 'take-part']);
     await expect(page.locator('header#top.oy-phead--slim')).toHaveCount(1);
     expect(await page.locator('body').getAttribute('data-green')).toMatch(/^(signal|strong)$/);
@@ -123,6 +126,44 @@ test.describe('the Yoruba Cultural Collective page', () => {
       [
         /about thirty members|farm from the market|without asking permission/i,
         pendingWhat('collectivePage', 'argument'),
+      ],
+    ]);
+  });
+
+  test('lists the Collective events still to come, or names what is owed, each row asking to join', async ({
+    page,
+  }) => {
+    await page.goto('/programs/cultural-collective');
+    const section = page.locator('#events');
+    if ((await page.locator('body').getAttribute('data-events')) === 'hidden') {
+      await expect(section).toHaveCount(0);
+      await expect(page.locator('header#top a[href="#events"]')).toHaveCount(0);
+      return;
+    }
+    await expect(section.locator('h2')).toHaveText('Collective events');
+    const rows = section.locator('li.oy-lrow--event');
+    if ((await rows.count()) === 0) {
+      await expect(section.locator('.oy-pend-line')).toContainText(
+        presenceWhat('event', 'collective')?.what ?? '',
+      );
+    }
+    const dialog = page.locator('dialog#enquiry');
+    for (const trigger of await rows.locator('a[data-enquiry="contact"]').all()) {
+      await trigger.scrollIntoViewIfNeeded();
+      await trigger.click();
+      await expect(dialog).toHaveAttribute('open', '');
+      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS.contact.title);
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toHaveAttribute('open', '');
+      await expect(trigger).toBeFocused();
+    }
+    const text = await section.innerText();
+    // The prototype's lead and rows are invented (spec Q15, the register).
+    expect(text).not.toMatch(/Everyone is welcome/);
+    expectNoMockWhileOwed(text, [
+      [
+        /solar site walk|Black soap and shea|planning 2027|Vision Theatre annex|Twelve places/i,
+        presenceWhat('event', 'collective')?.what,
       ],
     ]);
   });

@@ -6,11 +6,13 @@
  * "Partner with the Collective" and "See what is on", why culture and sustainability sit together (the
  * argument or its chip) beside the Collective program's photograph, each initiative in its own section
  * in the page's order (its status line, blurb, four facts and photograph, each owed one under its own
- * chip, laid out and its status pill shown by the `initiatives` and `status` options), the one voice as
- * it stands or its slot under the registry's chip, the take-part rows with the lead that counts them,
- * and the `data-sanity` attributes for click-to-edit in draft mode.
+ * chip, laid out and its status pill shown by the `initiatives` and `status` options), the Collective's
+ * events still to come by ADR 0030 (shown or hidden with the header's "See what is on" by `events`), the
+ * one voice as it stands or its slot under the registry's chip, the take-part rows with the lead that
+ * counts them, and the `data-sanity` attributes for click-to-edit in draft mode.
  */
-import { COLLECTIVE_VOICE_SLOT, pendingWhat } from '@oy/content/pending';
+import { collectiveEvents } from '@oy/content/lead-event';
+import { COLLECTIVE_VOICE_SLOT, pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { collectivePageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
@@ -50,6 +52,12 @@ function sectionId(name: string | undefined, index: number): string {
   return id || `initiative-${index + 1}`;
 }
 
+/** The anchor the header's "See what is on" opens: the events section, gone under `events` hidden. */
+const EVENTS_ANCHOR = '#events';
+
+/** The quiet action on every event row, as the prototype words it: it opens the contact form. */
+const ASK_TO_JOIN = { label: 'Ask to join', kind: 'enquiry', enquiryKind: 'contact' } as const;
+
 /** The take-part lead as spec Q15 keeps it, counting the rows the band draws. */
 function takePartIntro(count: number): string | undefined {
   if (count === 0) return undefined;
@@ -65,13 +73,17 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
   const initiatives = (data?.initiatives ?? []).filter(
     (initiative) => initiative !== null && Boolean(cleanText(initiative.name)),
   );
+  const eventsShown = layout.events !== 'hidden';
+  const actions = page.header.actions.filter(
+    (action) => eventsShown || cleanText(action.href) !== EVENTS_ANCHOR,
+  );
 
   return {
     title: page.title,
     description: page.description,
     layout,
     root: { ...layout },
-    header: { variant: 'slim' as const, ...page.header },
+    header: { variant: 'slim' as const, ...page.header, actions },
     why: {
       argument: data?.argument && data.argument.length > 0 ? data.argument : undefined,
       pending: pending('argument'),
@@ -129,6 +141,20 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
           imageEdit: edit('image', initiative._id, 'initiative'),
         };
       }),
+    },
+    events: {
+      shown: eventsShown,
+      items: collectiveEvents(data?.events ?? [], { now: options.now }).map((event) => ({
+        _id: event._id,
+        title: event.title,
+        summary: event.summary,
+        start: event.start,
+        venue: event.venue,
+        edit: edit('title', event._id, 'event'),
+      })),
+      pending: presenceWhat('event', 'collective')?.what ?? 'the next Collective events',
+      venuePending: pendingWhat('event', 'venue.name', 'collective') ?? 'the venue',
+      action: ASK_TO_JOIN,
     },
     voice: {
       testimonial: voice

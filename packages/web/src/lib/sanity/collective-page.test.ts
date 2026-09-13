@@ -73,6 +73,7 @@ const seeded = {
     },
   ],
   voice: null,
+  events: [],
   takePart: [
     {
       _key: 'way-1',
@@ -239,6 +240,69 @@ describe('buildCollectivePage', () => {
       '[ When ]',
       '[ Next ]',
     ]);
+  });
+
+  describe('the Collective events', () => {
+    // Test values only: the Studio holds no collective event yet. Saturday 17 October 2026, 10am in Los
+    // Angeles, no end; a workshop with an end on 3 October; one entered without a date.
+    const walk = {
+      _id: 'event-walk',
+      kind: 'collective',
+      title: '[ A site walk ]',
+      start: '2026-10-17T17:00:00Z',
+      end: null,
+      summary: '[ One line ]',
+      venue: { name: '[ Venue ]' },
+    };
+    const workshop = {
+      _id: 'event-workshop',
+      kind: 'collective',
+      title: '[ A workshop ]',
+      start: '2026-10-03T20:00:00Z',
+      end: '2026-10-03T23:00:00Z',
+      summary: null,
+      venue: null,
+    };
+    const undated = { ...walk, _id: 'event-undated', start: null };
+    const withEvents = { ...seeded, events: [walk, workshop, undated] } as CollectivePageData;
+    const at = (iso: string) => ({ ...options, now: new Date(iso) });
+
+    it('lists the dated events still to come, nearest first, with the row wordings and the action', () => {
+      const view = buildCollectivePage(withEvents, at('2026-09-13T12:00:00Z')).events;
+      expect(view.shown).toBe(true);
+      expect(view.items.map((event) => event._id)).toEqual(['event-workshop', 'event-walk']);
+      expect(view.items[1]).toMatchObject({
+        title: '[ A site walk ]',
+        summary: '[ One line ]',
+        start: '2026-10-17T17:00:00Z',
+        venue: { name: '[ Venue ]' },
+      });
+      expect(view).toMatchObject({
+        pending: 'the next Collective events',
+        venuePending: 'the venue',
+        action: { label: 'Ask to join', kind: 'enquiry', enquiryKind: 'contact' },
+      });
+    });
+
+    it('keeps an event through its day and drops it after, never listing an undated one', () => {
+      // The walk's own evening in Los Angeles: still listed, the workshop already over.
+      const during = buildCollectivePage(withEvents, at('2026-10-18T05:00:00Z')).events;
+      expect(during.items.map((event) => event._id)).toEqual(['event-walk']);
+      // The next day in Los Angeles: nothing to come, so the page shows the Pending line.
+      const after = buildCollectivePage(withEvents, at('2026-10-18T07:00:00Z')).events;
+      expect(after.items).toEqual([]);
+    });
+
+    it("hides the section and the header's See what is on under events hidden", () => {
+      const hidden = buildCollectivePage(
+        { ...withEvents, layout: { events: 'hidden' } } as CollectivePageData,
+        options,
+      );
+      expect(hidden.events.shown).toBe(false);
+      expect(hidden.header.actions.map((action) => action.label)).toEqual([
+        'Partner with the Collective',
+      ]);
+    });
   });
 
   it('waits for the one voice in its slot, under the chip "the quote and who said it"', () => {

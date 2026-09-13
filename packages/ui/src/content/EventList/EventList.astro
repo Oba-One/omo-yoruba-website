@@ -1,0 +1,51 @@
+---
+/**
+ * A list of event rows in the tokens' `.oy-list` (COMPONENT-MAP, Lists and rows): the Collective's
+ * events still to come (`12 Yoruba Cultural Collective.dc.html`, Collective events), each with its date
+ * block, title, summary, weekday and time with the venue or its chip, and the same quiet action. The page
+ * picks and orders the events (ADR 0030). No event renders the registry's Pending line.
+ */
+import ListRow, { type EventRowLike } from '../../cards/ListRow/ListRow.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+import Pending from '../../core/Pending/Pending.astro';
+
+interface Props {
+  events?: ((EventRowLike & { edit?: string }) | null)[] | null;
+  /** The quiet action on every row. */
+  action?: ActionLike | null;
+  /** The registry's wording for no events. */
+  pending?: string;
+  /** The registry's wording for an event missing its venue. */
+  venuePending?: string;
+  class?: string;
+}
+
+const { events, action, pending = 'the events', venuePending, class: className } = Astro.props;
+const list = (events ?? []).filter((event) => event !== null);
+---
+
+{
+  list.length === 0 ? (
+    <Pending variant="line" what={pending} class={className} />
+  ) : (
+    <ul class:list={['oy-list', className]} role="list">
+      {list.map((event) => (
+        <ListRow
+          kind="event"
+          row={event}
+          action={action}
+          venuePending={venuePending}
+          edit={event.edit}
+        />
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .oy-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

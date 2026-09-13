@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './ListRow.stories';
 
-const { SponsorTier, Pending, Entry, EntryPending } = composeStories(stories);
+const { SponsorTier, Pending, Entry, EntryPending, Event, EventPending } = composeStories(stories);
 
 describe('ListRow', () => {
   it('draws the sponsor tier: name as a heading, the amount and the ticked recognition', async () => {
@@ -33,5 +33,25 @@ describe('ListRow', () => {
     expect(text(owed?.querySelector('.oy-lrow-body p .oy-pend'))).toBe(
       'Pending: what the level covers',
     );
+  });
+
+  it('draws an event: the date block, the title, the summary, when and where, and its quiet action', async () => {
+    const row = (await renderToBody(Event)).querySelector('li.oy-lrow.oy-lrow--event');
+    expect(text(row?.querySelector('.oy-lrow-date b'))).toBe('Oct');
+    expect(text(row?.querySelector('.oy-lrow-date span'))).toBe('17');
+    expect(text(row?.querySelector('.oy-lrow-body h3'))).toBe('[ A Collective event ]');
+    expect(text(row?.querySelector('.oy-lrow-body p'))).toBe('[ One line on what happens ]');
+    expect(text(row?.querySelector('.oy-lrow-where'))).toBe('Saturday, 10am • [ Venue ]');
+    const action = row?.querySelector('a.oy-btn.oy-btn--quiet');
+    expect(action?.getAttribute('data-enquiry')).toBe('contact');
+    expect(text(action)).toContain('Ask to join');
+  });
+
+  it("names an event's owed venue and a missing date in their places", async () => {
+    const row = (await renderToBody(EventPending)).querySelector('li.oy-lrow--event');
+    expect(text(row?.querySelector('.oy-lrow-date .oy-pend'))).toBe('Pending: the date');
+    expect(row?.querySelector('.oy-lrow-body p')).toBeNull();
+    expect(text(row?.querySelector('.oy-lrow-where'))).toBe('Pending: the venue');
+    expect(row?.querySelector('a[data-enquiry="contact"]')).toBeInstanceOf(HTMLElement);
   });
 });

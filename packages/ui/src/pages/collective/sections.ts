@@ -8,14 +8,19 @@
 
 import { COLLECTIVE_VOICE_SLOT } from '@oy/content/pending';
 import PullQuote from '../../cards/PullQuote/PullQuote.astro';
+import EventList from '../../content/EventList/EventList.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import { PHOTOS } from '../../fixtures/photos';
 import {
   ARGUMENT_PENDING,
+  ASK_TO_JOIN,
+  COLLECTIVE_EVENT_PLACEHOLDERS,
+  COLLECTIVE_EVENTS_PENDING,
   COLLECTIVE_HEADER,
   COLLECTIVE_TAKE_PART,
   COLLECTIVE_TAKE_PART_INTRO,
   COLLECTIVE_VOICE_PENDING,
+  EVENT_VENUE_PENDING,
   INITIATIVE_FACTS_PENDING,
   INITIATIVE_FACTS_PLACEHOLDER,
   INITIATIVE_PLACEHOLDER,
@@ -35,6 +40,46 @@ export const header: SlotValue = {
   component: PageHeader,
   props: { variant: 'slim', ...COLLECTIVE_HEADER },
 };
+
+/** The header under `events` hidden: "See what is on" goes with the section it opens. */
+export const headerWithoutEvents: SlotValue = {
+  component: PageHeader,
+  props: {
+    variant: 'slim',
+    ...COLLECTIVE_HEADER,
+    actions: COLLECTIVE_HEADER.actions.filter((action) => action.href !== '#events'),
+  },
+};
+
+/**
+ * Collective events: the rows still to come in the bracketed placeholder form, or, with none (as the
+ * development dataset stands), the heading over the registry's Pending line.
+ */
+export const events = (placeholders: boolean): SlotValue => ({
+  component: Section,
+  props: { id: 'events', ground: 'alt', labelledby: 'events-heading' },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          kicker: { yo: 'Ohun tí ń bọ̀', en: 'Coming up' },
+          title: 'Collective events',
+          id: 'events-heading',
+        },
+      },
+      {
+        component: EventList,
+        props: {
+          events: placeholders ? COLLECTIVE_EVENT_PLACEHOLDERS : [],
+          action: ASK_TO_JOIN,
+          pending: COLLECTIVE_EVENTS_PENDING,
+          venuePending: EVENT_VENUE_PENDING,
+        },
+      },
+    ],
+  },
+});
 
 /** Why culture and sustainability sit together: the argument's chip beside the Collective program's photograph. */
 export const why: SlotValue = {

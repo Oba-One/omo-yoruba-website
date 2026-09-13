@@ -33,6 +33,7 @@ export interface PresenceEntry {
 
 const FESTIVAL = 'kind == "festival"';
 const GALA = 'kind == "gala"';
+const COLLECTIVE = 'kind == "collective"';
 
 /** A page's take-part band: no rows yet, or a row missing its way in, title or button label. */
 const takePartRows = (type: string, where: string): PendingEntry[] => [
@@ -420,6 +421,13 @@ export const PENDING: readonly PendingEntry[] = [
   },
   ...takePartRows('collectivePage', 'Collective, take part'),
   {
+    type: 'event',
+    fields: ['venue.name'],
+    filter: COLLECTIVE,
+    where: 'Collective, events',
+    what: 'the venue',
+  },
+  {
     type: 'initiative',
     fields: ['blurb'],
     where: 'Collective, initiatives',
@@ -589,6 +597,15 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Get Involved',
     what: 'the nine association names',
   },
+  // Still to come as GROQ reads it (ADR 0030): an end ahead, or no end and a start within the last day.
+  // The site reads the Los Angeles day, so on the day of an event without an end the two can differ.
+  {
+    type: 'event',
+    minimum: 1,
+    filter: `${COLLECTIVE} && ((defined(end) && dateTime(end) > dateTime(now())) || (!defined(end) && dateTime(start) > dateTime(now()) - 60 * 60 * 24))`,
+    where: 'Collective, events',
+    what: 'the next Collective events',
+  },
 ];
 
 function fieldCondition(field: string): string {
@@ -681,7 +698,7 @@ export function pendingWhat(type: string, field: string, kind?: string): string 
 }
 
 /** The kinds a row's filter narrows it to (`kind == "festival"`); none for a row every kind shares. */
-function rowKinds(entry: PendingEntry): string[] {
+function rowKinds(entry: { filter?: string }): string[] {
   return [...(entry.filter ?? '').matchAll(/\bkind == "([^"]+)"/g)].map((match) => match[1] ?? '');
 }
 
@@ -690,7 +707,7 @@ function rowKinds(entry: PendingEntry): string[] {
  * narrowed to another kind never answers, since the Studio lists it for that kind's documents only.
  * Without a kind the first row answers.
  */
-function rowForKind(rows: readonly PendingEntry[], kind: string | undefined) {
+function rowForKind<T extends { filter?: string }>(rows: readonly T[], kind: string | undefined) {
   if (!kind) return rows[0];
   return (
     rows.find((row) => rowKinds(row).includes(kind)) ??
@@ -700,10 +717,17 @@ function rowForKind(rows: readonly PendingEntry[], kind: string | undefined) {
 
 /**
  * The chip wording for a type the page expects more documents of (the zones, the tiers, the
- * partners), from the same presence rows the Studio lists, with the count the page expects.
+ * partners), from the same presence rows the Studio lists, with the count the page expects. `kind`
+ * picks the row for one kind of document as `pendingWhat` does (the Collective's events).
  */
-export function presenceWhat(type: string): { what: string; minimum: number } | undefined {
-  const entry = PRESENCE.find((row) => row.type === type);
+export function presenceWhat(
+  type: string,
+  kind?: string,
+): { what: string; minimum: number } | undefined {
+  const entry = rowForKind(
+    PRESENCE.filter((row) => row.type === type),
+    kind,
+  );
   return entry ? { what: entry.what, minimum: entry.minimum } : undefined;
 }
 

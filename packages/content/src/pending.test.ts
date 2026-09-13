@@ -148,7 +148,26 @@ describe('presenceWhat', () => {
   it('answers the presence row wording and the count the page expects', () => {
     expect(presenceWhat('zone')).toEqual({ what: 'the unnamed zones', minimum: 4 });
     expect(presenceWhat('ticketTier')?.what).toBe('three prices and what each includes');
-    expect(presenceWhat('event')).toBeUndefined();
+    expect(presenceWhat('album')?.what).toBe('the photo albums');
+  });
+
+  it("finds a row by kind as pendingWhat does, never answering one kind with another kind's row", () => {
+    expect(presenceWhat('event', 'collective')).toEqual({
+      what: 'the next Collective events',
+      minimum: 1,
+    });
+    expect(presenceWhat('event', 'gala')).toBeUndefined();
+  });
+});
+
+describe('the Collective events', () => {
+  it("asks for a collective event's venue on its own row, and counts the events still to come", () => {
+    expect(pendingWhat('event', 'venue.name', 'collective')).toBe('the venue');
+    const row = PRESENCE.find((entry) => entry.filter?.includes('kind == "collective"'));
+    expect(row?.where).toBe('Collective, events');
+    // Still to come as the Studio can read it (ADR 0030): an end ahead, or no end and a start within a day.
+    expect(row?.filter).toContain('dateTime(end) > dateTime(now())');
+    expect(row?.filter).toContain('dateTime(start) > dateTime(now()) - 60 * 60 * 24');
   });
 });
 

@@ -1,7 +1,8 @@
 /**
  * Which editions the site shows. The event pages show the next edition of their kind and past years
  * from the newest past one (`pageEdition`, `pastEdition`, ADR 0024); both read "still to come" the
- * way the homepage band does.
+ * way the homepage band does. The Collective's page lists its dated events still to come by the same
+ * reading, with no season for an undated one (`collectiveEvents`, ADR 0030).
  *
  * Which edition leads the homepage's event band (ROUTES sections 1 and 5): the `season` option
  * with its automatic default by date. An explicit `leadEvent` reference wins while it is still
@@ -86,6 +87,12 @@ function dateOf(value: string | null | undefined): Date | undefined {
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
+/** When a dated event is over: its end, else the end of the Los Angeles day it starts. */
+function endsAt(event: LeadCandidate): Date | undefined {
+  const start = dateOf(event.start);
+  return dateOf(event.end) ?? (start ? endOfDay(start) : undefined);
+}
+
 /**
  * Still to come: a dated edition until its end, or until the end of its start day when it has no end
  * (the Gala's registry never asks for one); an undated one until its kind's season ends in its year.
@@ -93,8 +100,7 @@ function dateOf(value: string | null | undefined): Date | undefined {
 function upcoming(event: LeadCandidate, now: Date): boolean {
   const kind = event.kind;
   if (!isLeadKind(kind)) return false;
-  const start = dateOf(event.start);
-  const ends = dateOf(event.end) ?? (start ? endOfDay(start) : undefined);
+  const ends = endsAt(event);
   if (ends) return ends.getTime() >= now.getTime();
   const edition = event.edition ?? 0;
   const { year, month } = inLosAngeles(now);
@@ -187,4 +193,19 @@ export function leadEvent<T extends LeadCandidate>(
   if (dated) return dated;
   const kind = calendarKind(now);
   return leadOfKind(ahead, kind) ?? leadOfKind(ahead, kind === 'gala' ? 'festival' : 'gala');
+}
+
+/**
+ * The Collective's events (ADR 0030): every collective event with a start that is still to come (until
+ * its end, or with no end until its start day ends in Los Angeles), nearest first. A one-off has no
+ * season, so an event without a start never lists.
+ */
+export function collectiveEvents<T extends LeadCandidate>(
+  events: readonly T[],
+  { now = new Date() }: { now?: Date } = {},
+): T[] {
+  return events
+    .filter((event) => event.kind === 'collective' && dateOf(event.start))
+    .filter((event) => (endsAt(event)?.getTime() ?? 0) >= now.getTime())
+    .sort((a, b) => (dateOf(a.start)?.getTime() ?? 0) - (dateOf(b.start)?.getTime() ?? 0));
 }

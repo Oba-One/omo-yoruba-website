@@ -1,10 +1,12 @@
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
+import * as eventsStories from './Events.stories';
 import * as green from './Green.stories';
 import * as initiatives from './Initiatives.stories';
 import * as status from './Status.stories';
 
+const Events = composeStories(eventsStories);
 const Green = composeStories(green);
 const Initiatives = composeStories(initiatives);
 const Status = composeStories(status);
@@ -88,5 +90,21 @@ describe('the Collective page-section stories', () => {
     expect(hidden?.getAttribute('data-status')).toBe('hidden');
     expect(hidden?.querySelectorAll('.cc-status, .cc-init-pills .oy-pend')).toHaveLength(0);
     expect(hidden?.querySelectorAll('.cc-memberled')).toHaveLength(2);
+  });
+
+  it('events: the rows to come after why, the Pending line with none, or neither with See what is on gone', async () => {
+    const shown = (await renderToBody(Events.Shown)).querySelector('[data-scope="collective"]');
+    const ids = [...(shown?.children ?? [])].map((child) => child.id);
+    expect(ids.slice(0, 3)).toEqual(['top', 'why', 'events']);
+    expect(text(shown?.querySelector('#events h2'))).toBe('Collective events');
+    expect(shown?.querySelectorAll('#events li.oy-lrow--event')).toHaveLength(2);
+    expect(shown?.querySelector('#top a[href="#events"]')).toBeInstanceOf(HTMLElement);
+    const pending = (await renderToBody(Events.Pending)).querySelector('#events');
+    expect(text(pending?.querySelector('.oy-pend-line'))).toContain('the next Collective events');
+    const hidden = (await renderToBody(Events.Hidden)).querySelector('.oy-home');
+    expect(hidden?.getAttribute('data-events')).toBe('hidden');
+    expect(hidden?.querySelector('#events')).toBeNull();
+    expect(hidden?.querySelector('#top a[href="#events"]')).toBeNull();
+    expect(hidden?.querySelectorAll('#top .oy-phead-cta .oy-btn')).toHaveLength(1);
   });
 });

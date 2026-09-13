@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { dayMonthYear, editionHours, longDate, shortDate } from './edition-dates';
+import {
+  dayMonthYear,
+  editionHours,
+  longDate,
+  monthDay,
+  shortDate,
+  weekdayTime,
+} from './edition-dates';
 
 // 12 June 2027, 11am to 7pm in Los Angeles (UTC-7 in June).
 const start = '2027-06-12T18:00:00.000Z';
@@ -34,5 +41,17 @@ describe('edition dates', () => {
     expect(shortDate('')).toBeUndefined();
     expect(longDate('not a date')).toBeUndefined();
     expect(editionHours(null, end)).toBeUndefined();
+  });
+
+  it("writes a list row's date block and its weekday and time, as the Collective's events do", () => {
+    // Test values only. 10am on Saturday 17 October 2026 in Los Angeles (UTC-7).
+    expect(monthDay('2026-10-17T17:00:00.000Z')).toEqual({ month: 'Oct', day: '17' });
+    expect(monthDay('2026-09-20T17:00:00.000Z')).toEqual({ month: 'Sep', day: '20' });
+    // Late evening in Los Angeles is already the next day in UTC.
+    expect(monthDay('2026-12-06T04:30:00.000Z')).toEqual({ month: 'Dec', day: '5' });
+    expect(weekdayTime('2026-10-17T17:00:00.000Z')).toBe('Saturday, 10am');
+    expect(weekdayTime('2026-10-03T20:30:00.000Z')).toBe('Saturday, 1:30pm');
+    expect(monthDay(null)).toBeUndefined();
+    expect(weekdayTime('not a date')).toBeUndefined();
   });
 });

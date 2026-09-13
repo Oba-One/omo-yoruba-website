@@ -1,8 +1,9 @@
 /**
  * An edition's date and hours in words, in Los Angeles time, as the event prototypes write them:
  * "Saturday 12 June 2027" in a header line, "Sat 12 June 2027" in a glance strip, "11am to 7pm" for
- * the hours, "1 April 2027" for a calendar date such as the vendor deadline. A missing or unreadable
- * value answers undefined, and the component shows the registry's Pending chip instead.
+ * the hours, "1 April 2027" for a calendar date such as the vendor deadline, and a list row's date block
+ * ("Oct" over "17") with its "Saturday, 10am". A missing or unreadable value answers undefined, and the
+ * component shows the registry's Pending chip instead.
  */
 const ZONE = 'America/Los_Angeles';
 
@@ -43,6 +44,32 @@ function clock(date: Date): string {
     parts.find((part) => part.type === type)?.value ?? '';
   const minute = get('minute');
   return `${get('hour')}${minute === '00' ? '' : `:${minute}`}${get('dayPeriod').toLowerCase()}`;
+}
+
+/** A list row's date block: `{ month: 'Oct', day: '17' }`. */
+export function monthDay(
+  value: string | null | undefined,
+): { month: string; day: string } | undefined {
+  const date = dateOf(value);
+  if (!date) return undefined;
+  const parts = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: ZONE,
+  }).formatToParts(date);
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  return { month: get('month'), day: get('day') };
+}
+
+/** "Saturday, 10am": the weekday and the start time under a list row's heading. */
+export function weekdayTime(value: string | null | undefined): string | undefined {
+  const date = dateOf(value);
+  if (!date) return undefined;
+  const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: ZONE }).format(
+    date,
+  );
+  return `${weekday}, ${clock(date)}`;
 }
 
 /** "11am to 7pm", or "From 11am" without an end. */

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { calendarKind, leadEvent, leadKindOf, pageEdition, pastEdition } from './lead-event';
+import {
+  calendarKind,
+  collectiveEvents,
+  leadEvent,
+  leadKindOf,
+  pageEdition,
+  pastEdition,
+} from './lead-event';
 
 const odunde2026 = { _id: 'odunde-2026', kind: 'festival', edition: 2026 };
 const odunde2027 = { _id: 'odunde-2027', kind: 'festival', edition: 2027 };
@@ -164,5 +171,41 @@ describe('pastEdition', () => {
     });
     const b = withAlbum({ _id: 'b', kind: 'festival', edition: 2025 });
     expect(pastEdition([a, b], 'festival', { now: september })?._id).toBe('b');
+  });
+});
+
+describe('collectiveEvents', () => {
+  // Test values only: the Studio holds no collective event yet. A morning in October 2026 (PDT, UTC-7).
+  const walk = { _id: 'walk', kind: 'collective', start: '2026-10-17T17:00:00Z' };
+  const workshop = {
+    _id: 'workshop',
+    kind: 'collective',
+    start: '2026-10-03T20:00:00Z',
+    end: '2026-10-03T23:00:00Z',
+  };
+  const undated = { _id: 'undated', kind: 'collective', start: null };
+  const gala = { _id: 'gala', kind: 'gala', start: '2026-10-10T02:00:00Z' };
+
+  it('lists every dated collective event still to come, nearest first, never another kind', () => {
+    const now = new Date('2026-09-13T12:00:00Z');
+    expect(collectiveEvents([walk, undated, gala, workshop], { now })).toEqual([workshop, walk]);
+  });
+
+  it('never lists an event without a start', () => {
+    expect(collectiveEvents([undated], { now: new Date('2026-01-01T00:00:00Z') })).toEqual([]);
+  });
+
+  it('keeps an event with an end until it ends', () => {
+    expect(collectiveEvents([workshop], { now: new Date('2026-10-03T22:59:00Z') })).toEqual([
+      workshop,
+    ]);
+    expect(collectiveEvents([workshop], { now: new Date('2026-10-03T23:00:01Z') })).toEqual([]);
+  });
+
+  it('keeps an event without an end until its start day ends in Los Angeles', () => {
+    // After the walk has begun, the same Los Angeles day: still listed.
+    expect(collectiveEvents([walk], { now: new Date('2026-10-18T06:59:00Z') })).toEqual([walk]);
+    // Los Angeles midnight (07:00 UTC in October): gone.
+    expect(collectiveEvents([walk], { now: new Date('2026-10-18T07:00:00Z') })).toEqual([]);
   });
 });

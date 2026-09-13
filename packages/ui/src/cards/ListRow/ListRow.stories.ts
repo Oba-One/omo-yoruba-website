@@ -14,7 +14,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "A row of a list. The sponsor tier form: the level's name and amount, then what it recognizes as a ticked list, each Pending while owed. The entry form: a title and its line, alone (the Lessons levels) or with a date block and a quiet action. The rows here are placeholders: the Studio holds none yet.",
+          "A row of a list. The sponsor tier form: the level's name and amount, then what it recognizes as a ticked list, each Pending while owed. The entry form: a title and its line, alone (the Lessons levels). The event form (the Collective's events): the month and day, the title, the summary, the weekday and time with the venue or its chip, and a quiet action. The rows here are placeholders: the Studio holds none yet.",
       },
     },
   },
@@ -42,5 +42,34 @@ export const EntryPending: Story = {
     kind: 'entry',
     row: { _key: 'level-1', title: '[ The first level ]' },
     linePending: 'what the level covers',
+  },
+};
+
+const ASK_TO_JOIN = { label: 'Ask to join', kind: 'enquiry', enquiryKind: 'contact' } as const;
+
+/** The event form as the Collective's events draw it, in Los Angeles time. */
+export const Event: Story = {
+  args: {
+    kind: 'event',
+    row: {
+      _id: 'event-1',
+      title: '[ A Collective event ]',
+      summary: '[ One line on what happens ]',
+      start: '2026-10-17T17:00:00.000Z',
+      venue: { name: '[ Venue ]' },
+    },
+    venuePending: 'the venue',
+    action: ASK_TO_JOIN,
+  },
+};
+
+/** An event still owed its venue, and a row without a date: the chips in their places. */
+export const EventPending: Story = {
+  args: {
+    kind: 'event',
+    row: { _id: 'event-2', title: '[ A Collective event ]' },
+    venuePending: 'the venue',
+    datePending: 'the date',
+    action: ASK_TO_JOIN,
   },
 };

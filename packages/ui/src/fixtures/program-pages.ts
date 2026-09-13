@@ -266,3 +266,35 @@ export const INITIATIVE_FACTS_PLACEHOLDER = INITIATIVE_FACTS_PENDING.map((fact) 
   ...fact,
   value: `[ ${fact.label} ]`,
 }));
+
+/** The quiet action on a Collective event's row, as the prototype words it. */
+export const ASK_TO_JOIN = {
+  label: 'Ask to join',
+  kind: 'enquiry',
+  enquiryKind: 'contact',
+} as const;
+
+/** The registry's wordings for the Collective's events. */
+export const COLLECTIVE_EVENTS_PENDING = 'the next Collective events';
+export const EVENT_VENUE_PENDING = 'the venue';
+
+/**
+ * Collective events in the bracketed placeholder form, to show the rows the Studio's events will take:
+ * the register invents every title, date and venue the prototype lists. Test dates only.
+ */
+export const COLLECTIVE_EVENT_PLACEHOLDERS = [
+  {
+    _id: 'event-placeholder-1',
+    title: '[ A Collective event ]',
+    summary: '[ One line on what happens ]',
+    start: '2026-10-17T17:00:00.000Z',
+    venue: { name: '[ Venue ]' },
+  },
+  {
+    _id: 'event-placeholder-2',
+    title: '[ Another Collective event ]',
+    summary: '[ One line on what happens ]',
+    start: '2026-11-14T18:00:00.000Z',
+    venue: null,
+  },
+];

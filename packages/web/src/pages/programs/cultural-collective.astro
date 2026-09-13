@@ -12,6 +12,7 @@ import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/clien
 import { createImageSet } from '@oy/content/images';
 import { collectivePageQuery } from '@oy/content/queries';
 import PullQuote from '@oy/ui/cards/PullQuote/PullQuote.astro';
+import EventList from '@oy/ui/content/EventList/EventList.astro';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
@@ -78,6 +79,24 @@ cachePage(Astro, '/programs/cultural-collective', { draft: preview, failed: Bool
         />
       </Split>
     </Section>
+
+    {
+      page.events.shown && (
+        <Section id="events" ground="alt" labelledby="events-heading" data-sanity={page.edit.events}>
+          <SectionHead
+            kicker={{ yo: 'Ohun tí ń bọ̀', en: 'Coming up' }}
+            title="Collective events"
+            id="events-heading"
+          />
+          <EventList
+            events={page.events.items}
+            action={page.events.action}
+            pending={page.events.pending}
+            venuePending={page.events.venuePending}
+          />
+        </Section>
+      )
+    }
 
     {
       page.initiatives.items.map((item) => (

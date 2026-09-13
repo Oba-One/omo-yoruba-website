@@ -5,8 +5,13 @@
  * what it recognizes as the ticked list beside it, each with the registry's chip while the Studio owes
  * it. The entry form, `kind="entry"`: a title as the heading and its line, alone in one column as the
  * Lessons levels draw it (`11 Yoruba Language School.dc.html`), with the registry's chip for a missing
- * line. The row warms on hover, nothing lifts.
+ * line. The event form, `kind="event"` (`12 Yoruba Cultural Collective.dc.html`, Collective events): the
+ * month and day in the date block, the title, the summary, the weekday and start time with the venue or
+ * its chip, all in Los Angeles time, and a quiet action. The row warms on hover, nothing lifts.
  */
+import { monthDay, weekdayTime } from '../../content/edition-dates';
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
 
 export interface TierRowLike {
@@ -20,6 +25,14 @@ export interface EntryRowLike {
   _key?: string | null;
   title?: string | null;
   line?: string | null;
+}
+
+export interface EventRowLike {
+  _id?: string | null;
+  title?: string | null;
+  summary?: string | null;
+  start?: string | null;
+  venue?: { name?: string | null } | null;
 }
 
 type Props =
@@ -42,14 +55,50 @@ type Props =
       linePending?: string;
       edit?: string;
       class?: string;
+    }
+  | {
+      kind: 'event';
+      row: EventRowLike;
+      /** The registry's wording for a missing date, title and venue. */
+      datePending?: string;
+      titlePending?: string;
+      venuePending?: string;
+      /** The quiet action at the row's end ("Ask to join"). */
+      action?: ActionLike | null;
+      edit?: string;
+      class?: string;
     };
 
 const props = Astro.props;
 const { edit, class: className } = props;
+const date = props.kind === 'event' ? monthDay(props.row.start) : undefined;
+const when = props.kind === 'event' ? weekdayTime(props.row.start) : undefined;
 ---
 
 {
-  props.kind === 'entry' ? (
+  props.kind === 'event' ? (
+    <li class:list={['oy-lrow', 'oy-lrow--event', className]} data-sanity={edit}>
+      <div class="oy-lrow-date">
+        {date ? (
+          <>
+            <b>{date.month}</b>
+            <span>{date.day}</span>
+          </>
+        ) : (
+          <Pending what={props.datePending ?? 'the date'} />
+        )}
+      </div>
+      <div class="oy-lrow-body">
+        <h3>{props.row.title?.trim() || <Pending what={props.titlePending ?? 'the title'} />}</h3>
+        {props.row.summary?.trim() && <p>{props.row.summary}</p>}
+        <div class="oy-lrow-where">
+          {when && `${when} • `}
+          {props.row.venue?.name?.trim() || <Pending what={props.venuePending ?? 'the venue'} />}
+        </div>
+      </div>
+      {props.action && <ActionButton action={props.action} variant="quiet" />}
+    </li>
+  ) : props.kind === 'entry' ? (
     <li class:list={['oy-lrow', 'oy-lrow--entry', 'oy-lrow--plain', className]} data-sanity={edit}>
       <div class="oy-lrow-body">
         <h3>{props.row.title?.trim() || <Pending what={props.titlePending ?? 'the title'} />}</h3>

@@ -2558,7 +2558,8 @@
 .oy-outcome-fig.oy-pend,
 .oy-sched-time.oy-pend,
 .oy-year strong.oy-pend,
-.oy-year span.oy-pend {
+.oy-year span.oy-pend,
+.oy-lrow-date span.oy-pend {
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 700;
@@ -2574,6 +2575,11 @@
 /* The year strip sets its note spans muted (.oy-year span); a chip in a column's when keeps its own
    colour. Added in Phase 6 for the programs' whens. */
 .oy-year span.oy-pend {
+  color: #7a4409;
+}
+/* A list row's date block sets its day span large in indigo (.oy-lrow-date span); a chip there keeps its
+   own type and colour. Added in Phase 6 for the Collective's events. */
+.oy-lrow-date span.oy-pend {
   color: #7a4409;
 }
 /* A sponsor level sets its amount span as a muted block (.oy-lrow-tier span); a chip there keeps its
