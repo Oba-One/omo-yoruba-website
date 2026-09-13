@@ -6,11 +6,13 @@
  * "Teacher" and the chip for her name before she is linked; her name, role, short bio and portrait
  * after, the portrait by the `portraits` option) with her routing contact's email or its chip, what
  * you learn (the prose and the levels, or their chips), the steps of a lesson as the `lesson` option
- * shows them, the take-part rows, and the `data-sanity` attributes for click-to-edit in draft mode. The
+ * shows them, the questions parents ask with the lead that counts them, closed or the first open by
+ * `faq`, the take-part rows, and the `data-sanity` attributes for click-to-edit in draft mode. The
  * page is Yoruba Language Lessons: never "School", no terms, no Saturdays, no venue.
  */
 import { PENDING, pendingWhat } from '@oy/content/pending';
 import type { lessonsPageQuery } from '@oy/content/queries';
+import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
 import { glanceFacts, pageSkeleton } from './page-skeleton';
 import { type BuildOptions, cleanText, resolveImage } from './view';
@@ -26,6 +28,11 @@ export interface LessonsLayout extends Record<string, string> {
 const PAGE_TITLE = 'Yoruba Language Lessons';
 
 const pending = (field: string) => pendingWhat('lessonsPage', field) ?? 'this part of the page';
+
+/** The questions' lead, counting them as the prototype's "The five we hear most often." does. */
+function faqLead(count: number): string | undefined {
+  return count === 0 ? undefined : `The ${countWord(count).toLowerCase()} we hear most often.`;
+}
 
 /** One teacher is a confirmed fact, so her card says "Teacher" before the Studio names her. */
 const TEACHER_ROLE = 'Teacher';
@@ -91,6 +98,19 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
         })),
       pending: pending('oneLesson[]'),
       stepPending: pending('oneLesson'),
+    },
+    faq: {
+      items: (data?.faq ?? [])
+        .filter((item) => item !== null)
+        .map((item) => ({
+          _key: item._key,
+          question: item.question,
+          answer: item.answer && item.answer.length > 0 ? item.answer : undefined,
+        })),
+      defaultOpen: layout.faq === 'open',
+      lead: faqLead((data?.faq ?? []).filter((item) => item?.question?.trim()).length),
+      pending: pending('faq[]'),
+      answerPending: pending('faq'),
     },
     takePart: { ...page.takePart, labels: 'column' as const },
     edit: page.layoutEdit,

@@ -143,6 +143,31 @@ export const TEACHER_PENDING = {
   emailPending: "the teacher's email",
 };
 
+/** The registry's wording for a question the Studio has not answered. */
+export const ANSWER_PENDING = 'an answer';
+
+/** The five questions parents ask, as the seed writes them: every answer owed (the register invents all). */
+export const LESSONS_FAQ = [
+  'How much does it cost?',
+  'When are the lessons?',
+  'Can a parent sit in?',
+  'What does a child need?',
+  'What if my child already understands some Yoruba?',
+].map((question, index) => ({ _key: `faq-${index + 1}`, question, answer: null }));
+
+/** A Portable Text answer in the bracketed placeholder form, to show an answered question's layout. */
+export const PLACEHOLDER_ANSWER = [
+  {
+    _type: 'block',
+    _key: 'answer-1',
+    style: 'normal',
+    markDefs: [],
+    children: [
+      { _type: 'span', _key: 'answer-1-span', text: '[ The answer, in her words ]', marks: [] },
+    ],
+  },
+];
+
 /** The Lessons page's take-part rows as the seed writes them; the give row has no line. */
 export const LESSONS_TAKE_PART = [
   {

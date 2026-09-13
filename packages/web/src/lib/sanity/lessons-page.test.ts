@@ -40,6 +40,17 @@ const seeded = {
   learn: null,
   levels: null,
   oneLesson: null,
+  faq: [
+    { _key: 'faq-1', question: 'How much does it cost?', answer: null },
+    { _key: 'faq-2', question: 'When are the lessons?', answer: null },
+    { _key: 'faq-3', question: 'Can a parent sit in?', answer: null },
+    { _key: 'faq-4', question: 'What does a child need?', answer: null },
+    {
+      _key: 'faq-5',
+      question: 'What if my child already understands some Yoruba?',
+      answer: null,
+    },
+  ],
   takePart: [
     {
       _key: 'way-1',
@@ -189,6 +200,34 @@ describe('buildLessonsPage', () => {
       options,
     );
     expect(hidden.lesson.shown).toBe(false);
+  });
+
+  it('carries the questions, closed or the first open by the option, and the lead that counts them', () => {
+    const faq = buildLessonsPage(seeded, options).faq;
+    expect(faq).toMatchObject({
+      defaultOpen: false,
+      lead: 'The five we hear most often.',
+      pending: 'the questions parents ask',
+      answerPending: 'an answer',
+    });
+    expect(faq.items.map((item) => [item.question, item.answer])).toEqual([
+      ['How much does it cost?', undefined],
+      ['When are the lessons?', undefined],
+      ['Can a parent sit in?', undefined],
+      ['What does a child need?', undefined],
+      ['What if my child already understands some Yoruba?', undefined],
+    ]);
+    const open = buildLessonsPage(
+      { ...seeded, layout: { faq: 'open' } } as LessonsPageData,
+      options,
+    );
+    expect(open.faq.defaultOpen).toBe(true);
+    expect(buildLessonsPage(null, options).faq).toMatchObject({ items: [], lead: undefined });
+    const one = buildLessonsPage(
+      { ...seeded, faq: seeded.faq?.slice(0, 1) } as LessonsPageData,
+      options,
+    );
+    expect(one.faq.lead).toBe('The one we hear most often.');
   });
 
   it('carries the take-part rows without a lead, and edit attributes in draft mode only', () => {

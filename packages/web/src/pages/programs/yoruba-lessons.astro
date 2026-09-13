@@ -11,6 +11,7 @@ import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/clien
 import { createImageSet } from '@oy/content/images';
 import { lessonsPageQuery } from '@oy/content/queries';
 import PersonCard from '@oy/ui/cards/PersonCard/PersonCard.astro';
+import Accordion from '@oy/ui/content/Accordion/Accordion.astro';
 import EntryList from '@oy/ui/content/EntryList/EntryList.astro';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
 import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
@@ -123,6 +124,18 @@ cachePage(Astro, '/programs/yoruba-lessons', { draft: preview, failed: Boolean(e
         </Section>
       )
     }
+
+    <Section id="faq" ground="alt" labelledby="faq-heading">
+      <SectionHead title="Questions parents ask" intro={page.faq.lead} id="faq-heading" />
+      <Accordion
+        id="faq"
+        items={page.faq.items}
+        defaultOpen={page.faq.defaultOpen}
+        pending={page.faq.pending}
+        answerPending={page.faq.answerPending}
+        edit={page.edit.faq}
+      />
+    </Section>
 
     <Section id="take-part" labelledby="take-part-heading">
       <SectionHead

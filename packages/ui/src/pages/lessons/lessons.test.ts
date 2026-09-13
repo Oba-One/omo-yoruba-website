@@ -1,11 +1,13 @@
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
+import * as faqStories from './Faq.stories';
 import * as lesson from './Lesson.stories';
 import * as portraits from './Portraits.stories';
 
 const Portraits = composeStories(portraits);
 const Lesson = composeStories(lesson);
+const Faq = composeStories(faqStories);
 
 describe('the Lessons page-section stories', () => {
   it('portraits: the teacher owed, then shown with her portrait or the woven tick', async () => {
@@ -47,5 +49,18 @@ describe('the Lessons page-section stories', () => {
     const hidden = (await renderToBody(Lesson.Hidden)).querySelector('.oy-home');
     expect(hidden?.querySelector('#lesson')).toBeNull();
     expect(hidden?.querySelector('#learn')).not.toBeNull();
+  });
+
+  it('faq: the five questions all closed, or the first open, each opening onto its chip', async () => {
+    const closed = (await renderToBody(Faq.Closed)).querySelector('.oy-home');
+    expect(closed?.getAttribute('data-faq')).toBe('closed');
+    const items = [...(closed?.querySelectorAll('#faq details.oy-faq-item') ?? [])];
+    expect(items).toHaveLength(5);
+    expect(items.some((item) => item.hasAttribute('open'))).toBe(false);
+    expect(text(closed?.querySelector('#faq .oy-sec-intro'))).toBe('The five we hear most often.');
+    const open = (await renderToBody(Faq.Open)).querySelector('.oy-home');
+    const first = open?.querySelector('#faq details.oy-faq-item');
+    expect(first?.hasAttribute('open')).toBe(true);
+    expect(text(first?.querySelector('.oy-faq-a .oy-pend'))).toBe('Pending: an answer');
   });
 });

@@ -6,11 +6,14 @@
  */
 
 import PersonCard from '../../cards/PersonCard/PersonCard.astro';
+import Accordion from '../../content/Accordion/Accordion.astro';
 import EntryList from '../../content/EntryList/EntryList.astro';
 import Schedule from '../../content/Schedule/Schedule.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import { PHOTOS } from '../../fixtures/photos';
 import {
+  ANSWER_PENDING,
+  LESSONS_FAQ,
   LESSONS_GLANCE,
   LESSONS_HEADER,
   LESSONS_TAKE_PART,
@@ -150,6 +153,34 @@ export const lesson = (placeholders: boolean): SlotValue => ({
                 detail: '[ One line on what happens ]',
               }))
             : [],
+        },
+      },
+    ],
+  },
+});
+
+/** Questions parents ask as the `faq` option starts them: all closed, or the first open. */
+export const faq = (option: 'closed' | 'open'): SlotValue => ({
+  component: Section,
+  props: { id: 'faq', ground: 'alt', labelledby: 'faq-heading' },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          title: 'Questions parents ask',
+          intro: 'The five we hear most often.',
+          id: 'faq-heading',
+        },
+      },
+      {
+        component: Accordion,
+        props: {
+          id: `faq-${option}`,
+          items: LESSONS_FAQ,
+          defaultOpen: option === 'open',
+          pending: 'the questions parents ask',
+          answerPending: ANSWER_PENDING,
         },
       },
     ],

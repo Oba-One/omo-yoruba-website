@@ -22,6 +22,7 @@ test.describe('the Yoruba Language Lessons page', () => {
     expect(order.slice(0, 4)).toEqual(['top', 'glance', 'teacher', 'learn']);
     const lesson = await page.locator('body').getAttribute('data-lesson');
     expect(order.includes('lesson')).toBe(lesson !== 'hidden');
+    expect(order.slice(-2)).toEqual(['faq', 'take-part']);
     expect(order.at(-1)).toBe('take-part');
     await expect(page.locator('header#top.oy-phead--slim')).toHaveCount(1);
     expect(await page.locator('body').getAttribute('data-portraits')).toMatch(/^(shown|hidden)$/);
@@ -104,6 +105,49 @@ test.describe('the Yoruba Language Lessons page', () => {
         ],
       ]);
     }
+  });
+
+  test('asks its questions one open at a time, as the option starts them, with Enter and Space', async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto('/programs/yoruba-lessons');
+    const section = page.locator('#faq');
+    await expect(section.locator('h2')).toHaveText('Questions parents ask');
+    const items = section.locator('details.oy-faq-item');
+    const count = await items.count();
+    if (count === 0) {
+      await expect(section.locator('.oy-pend-line')).toBeVisible();
+      return;
+    }
+    const option = await page.locator('body').getAttribute('data-faq');
+    await expect(items.first()).toHaveJSProperty('open', option === 'open');
+    for (const item of (await items.all()).slice(1))
+      await expect(item).toHaveJSProperty('open', false);
+    // Closed rows keep the 44px target (the elder test).
+    if (isMobile) {
+      for (const summary of await section.locator('summary').all()) {
+        expect((await summary.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
+      }
+    }
+    if (count < 2) return;
+    const [first, second] = [items.nth(0), items.nth(1)];
+    await first.locator('summary').focus();
+    if (option !== 'open') await page.keyboard.press('Enter');
+    await expect(first).toHaveJSProperty('open', true);
+    await expect(first.locator('.oy-faq-a')).toBeVisible();
+    await second.locator('summary').focus();
+    await page.keyboard.press(' ');
+    await expect(second).toHaveJSProperty('open', true);
+    await expect(first).toHaveJSProperty('open', false);
+    await expect(first.locator('.oy-faq-a')).toBeHidden();
+    // An unanswered question opens onto its chip, never an invented answer.
+    expectNoMockWhileOwed(await section.innerText(), [
+      [
+        /settled after the first lesson|no family is turned away|notebook, a pencil|ten minutes with them/i,
+        pendingWhat('lessonsPage', 'faq'),
+      ],
+    ]);
   });
 
   test('opens the enrol form from the header and from the card, focus returning each time', async ({
