@@ -16,9 +16,14 @@ import {
   COLLECTIVE_TAKE_PART,
   COLLECTIVE_TAKE_PART_INTRO,
   COLLECTIVE_VOICE_PENDING,
+  INITIATIVE_FACTS_PENDING,
+  INITIATIVE_FACTS_PLACEHOLDER,
+  INITIATIVE_PLACEHOLDER,
+  INITIATIVES,
 } from '../../fixtures/program-pages';
 import PhotoTile from '../../media/PhotoTile/PhotoTile.astro';
 import Handoff from '../../page/Handoff/Handoff.astro';
+import Initiative from '../../page/Initiative/Initiative.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
 import Section from '../../page/Section/Section.astro';
 import SectionHead from '../../page/SectionHead/SectionHead.astro';
@@ -62,6 +67,38 @@ export const why: SlotValue = {
     },
   },
 };
+
+/**
+ * Solar Hub and Green Goods as the `initiatives` and `status` options draw them, on alternating grounds.
+ * `placeholders` fills the first in the bracketed form to show the layout the Studio's facts will take.
+ */
+export const initiatives = (
+  layout: 'side' | 'stacked',
+  status: boolean,
+  placeholders = false,
+): SlotValue[] =>
+  INITIATIVES.map((initiative, index) => {
+    const id = initiative._id.replace(/^initiative-/, '');
+    const filled = placeholders && index === 0;
+    return {
+      component: Section,
+      props: { id, ground: index % 2 === 1 ? 'alt' : 'white', labelledby: `${id}-heading` },
+      slots: {
+        default: {
+          component: Initiative,
+          props: {
+            initiative: filled ? INITIATIVE_PLACEHOLDER : initiative,
+            facts: filled ? INITIATIVE_FACTS_PLACEHOLDER : INITIATIVE_FACTS_PENDING,
+            layout,
+            status,
+            statusPending: 'the status line',
+            blurbPending: 'what the initiative is',
+            id: `${id}-heading`,
+          },
+        },
+      },
+    };
+  });
 
 /** The one voice waiting in its slot: the chip, then the prototype's placeholder form. */
 export const voice: SlotValue = {

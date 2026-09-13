@@ -3714,7 +3714,7 @@ export type LessonsPageQueryResult = {
 
 // Source: src/queries/program-pages.ts
 // Variable: collectivePageQuery
-// Query: *[_type == "collectivePage" && _id == "collectivePage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  argument,  "photo": *[_type == "program" && page == "collective"] | order(order asc)[0]{    _id,    name,    image{_type, alt, caption, hotspot, crop, asset}  },  "voice": voice->{_id, quote, name, relation, permissionToName},  takePart[]{_key, way, chip, title, line, label},  layout{initiatives, green, status, events},  seo{title, description}}
+// Query: *[_type == "collectivePage" && _id == "collectivePage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  argument,  "photo": *[_type == "program" && page == "collective"] | order(order asc)[0]{    _id,    name,    image{_type, alt, caption, hotspot, crop, asset}  },  "initiatives": initiatives[]->{    _id,    name,    memberLed,    status,    statusLine,    blurb,    image{_type, alt, caption, hotspot, crop, asset},    serves,    since,    next  },  "voice": voice->{_id, quote, name, relation, permissionToName},  takePart[]{_key, way, chip, title, line, label},  layout{initiatives, green, status, events},  seo{title, description}}
 export type CollectivePageQueryResult = {
   header: {
     kicker: {
@@ -3752,6 +3752,25 @@ export type CollectivePageQueryResult = {
       asset: SanityImageAssetReference | null;
     } | null;
   } | null;
+  initiatives: Array<{
+    _id: string;
+    name: string | null;
+    memberLed: boolean | null;
+    status: "piloting" | "planned" | "running" | null;
+    statusLine: string | null;
+    blurb: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+    serves: string | null;
+    since: string | null;
+    next: string | null;
+  }> | null;
   voice: {
     _id: string;
     quote: string | null;
@@ -3855,7 +3874,7 @@ declare global {
     "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"leadEvent\": leadEvent->{_id, kind, title, edition, start, end, \"venueName\": venue.name, summary},\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source, asOf},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  newsIntro,\n  \"news\": *[_type == \"newsPost\"] | order(date desc)[0...3]{\n    _id, title, \"slug\": slug.current, date, kicker{yo, en}, summary,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"tags\": tags[]->{_type, kind, page}\n  },\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_type == \"programsPage\" && _id == \"programsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  takePart[]{_key, way, chip, title, line, label},\n  kidsStem{\n    title,\n    blurb,\n    subprograms[]{\n      _key, name, blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      facts[]{_key, label, value, note},\n      action{label, kind, enquiryKind, href, newTab}\n    }\n  },\n  culturalExchange{\n    title, blurb, cadence, eligibility, howToJoin,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  yearStrip[]{_key, when, kind, note, \"program\": program->name},\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  layout{cards, inline, yearstrip},\n  seo{title, description}\n}": ProgramsPageQueryResult;
     "*[_type == \"lessonsPage\" && _id == \"lessonsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  glance[]{_key, label, value, note},\n  \"teacher\": teacher->{\n    _id, name, role, bioShort,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  teacherIntro,\n  learn,\n  levels[]{_key, name, blurb},\n  oneLesson[]{_key, step, title, detail},\n  faq[]{_key, question, answer},\n  takePart[]{_key, way, chip, title, line, label},\n  \"teacherEmail\": *[_id == \"siteSettings\"][0].contacts[role == \"teacher\"][0].email,\n  layout{lesson, portraits, faq},\n  seo{title, description}\n}": LessonsPageQueryResult;
-    "*[_type == \"collectivePage\" && _id == \"collectivePage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  argument,\n  \"photo\": *[_type == \"program\" && page == \"collective\"] | order(order asc)[0]{\n    _id,\n    name,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"voice\": voice->{_id, quote, name, relation, permissionToName},\n  takePart[]{_key, way, chip, title, line, label},\n  layout{initiatives, green, status, events},\n  seo{title, description}\n}": CollectivePageQueryResult;
+    "*[_type == \"collectivePage\" && _id == \"collectivePage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  argument,\n  \"photo\": *[_type == \"program\" && page == \"collective\"] | order(order asc)[0]{\n    _id,\n    name,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"initiatives\": initiatives[]->{\n    _id,\n    name,\n    memberLed,\n    status,\n    statusLine,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    serves,\n    since,\n    next\n  },\n  \"voice\": voice->{_id, quote, name, relation, permissionToName},\n  takePart[]{_key, way, chip, title, line, label},\n  layout{initiatives, green, status, events},\n  seo{title, description}\n}": CollectivePageQueryResult;
     "*[_id == \"siteSettings\"][0]{\n  orgName,\n  wordmarkLine2,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  footerBlurb,\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;
     "*[_type == \"subscriber\" && email == $email][0]._id": SubscriberByEmailQueryResult;

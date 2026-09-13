@@ -46,6 +46,32 @@ const seeded = {
       },
     },
   },
+  initiatives: [
+    {
+      _id: 'initiative-solar-hub',
+      name: 'Solar Hub',
+      memberLed: true,
+      status: null,
+      statusLine: null,
+      blurb: null,
+      image: null,
+      serves: null,
+      since: null,
+      next: null,
+    },
+    {
+      _id: 'initiative-green-goods',
+      name: 'Green Goods',
+      memberLed: true,
+      status: null,
+      statusLine: null,
+      blurb: null,
+      image: null,
+      serves: null,
+      since: null,
+      next: null,
+    },
+  ],
   voice: null,
   takePart: [
     {
@@ -143,6 +169,78 @@ describe('buildCollectivePage', () => {
     expect(written.why.argument).toHaveLength(1);
   });
 
+  it('sets each initiative in its own section in order, every owed fact under its own chip', () => {
+    const view = buildCollectivePage(seeded, options).initiatives;
+    expect(view.layout).toBe('side');
+    expect(view.status).toBe(true);
+    expect(view.items.map((item) => [item.id, item.headingId, item.ground])).toEqual([
+      ['solar-hub', 'solar-hub-heading', 'white'],
+      ['green-goods', 'green-goods-heading', 'alt'],
+    ]);
+    const [solar] = view.items;
+    expect(solar?.initiative).toEqual({
+      name: 'Solar Hub',
+      memberLed: true,
+      statusLine: undefined,
+      blurb: undefined,
+      image: undefined,
+    });
+    expect(solar?.facts).toEqual([
+      { label: 'Status', value: undefined, pending: 'the status' },
+      { label: 'Serves', value: undefined, pending: 'who it serves' },
+      { label: 'Since', value: undefined, pending: 'when it started' },
+      { label: 'Next', value: undefined, pending: 'what comes next' },
+    ]);
+    expect(solar).toMatchObject({
+      statusPending: 'the status line',
+      blurbPending: 'what the initiative is',
+    });
+  });
+
+  it("carries an initiative's facts once written, the status in words, and both options", () => {
+    const written = buildCollectivePage(
+      {
+        ...seeded,
+        initiatives: [
+          {
+            ...seeded.initiatives?.[0],
+            status: 'piloting',
+            statusLine: '[ Status line ]',
+            blurb: '[ What it is ]',
+            serves: '[ Who ]',
+            since: '[ When ]',
+            next: '[ Next ]',
+            image: {
+              _type: 'oyImage',
+              alt: '[ A photograph of the project ]',
+              caption: null,
+              hotspot: null,
+              crop: null,
+              asset: { _ref: 'image-0a1b2c3d-1100x728-jpg', _type: 'reference' },
+            },
+          },
+          null,
+        ],
+        layout: { initiatives: 'stacked', status: 'hidden' },
+      } as unknown as CollectivePageData,
+      options,
+    ).initiatives;
+    expect(written.layout).toBe('stacked');
+    expect(written.status).toBe(false);
+    expect(written.items).toHaveLength(1);
+    expect(written.items[0]?.initiative).toMatchObject({
+      statusLine: '[ Status line ]',
+      blurb: '[ What it is ]',
+    });
+    expect(written.items[0]?.initiative.image?.alt).toBe('[ A photograph of the project ]');
+    expect(written.items[0]?.facts.map((fact) => fact.value)).toEqual([
+      'Piloting',
+      '[ Who ]',
+      '[ When ]',
+      '[ Next ]',
+    ]);
+  });
+
   it('waits for the one voice in its slot, under the chip "the quote and who said it"', () => {
     expect(buildCollectivePage(seeded, options).voice).toEqual({
       testimonial: undefined,
@@ -185,6 +283,10 @@ describe('buildCollectivePage', () => {
     expect(draft.why.edit).toContain('path=argument');
     expect(draft.why.photoEdit).toContain('id=program-cultural-collective;type=program');
     expect(draft.voice.edit).toContain('path=voice');
+    expect(draft.initiatives.items[0]?.imageEdit).toContain(
+      'id=initiative-solar-hub;type=initiative;path=image',
+    );
+    expect(draft.edit.initiatives).toContain('path=layout.initiatives');
     const linked = buildCollectivePage({ ...seeded, voice } as CollectivePageData, {
       ...options,
       draft: true,

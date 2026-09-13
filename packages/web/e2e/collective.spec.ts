@@ -127,6 +127,41 @@ test.describe('the Yoruba Cultural Collective page', () => {
     ]);
   });
 
+  test('sets each initiative in its own section, every owed fact under its chip and none invented', async ({
+    page,
+  }) => {
+    await page.goto('/programs/cultural-collective');
+    const body = page.locator('body');
+    const layout = (await body.getAttribute('data-initiatives')) ?? 'side';
+    const statusShown = (await body.getAttribute('data-status')) !== 'hidden';
+    const initiatives = page.locator('main > section > .cc-init');
+    for (const initiative of await initiatives.all()) {
+      await expect(initiative).toHaveAttribute('data-layout', layout);
+      await expect(initiative.locator('h2')).toHaveCount(1);
+      const status = initiative.locator('.cc-init-pills').locator('.cc-status, .oy-pend');
+      await expect(status).toHaveCount(statusShown ? 1 : 0);
+      await expect(initiative.locator('.oy-glance--inline b')).toHaveText([
+        'Status',
+        'Serves',
+        'Since',
+        'Next',
+      ]);
+      await expect(initiative.locator('figure')).toHaveCount(1);
+    }
+    const text = (await initiatives.allInnerTexts()).join('\n');
+    expectNoMockWhileOwed(text, [
+      [/Piloting since 2024|Planned for 2027/i, pendingWhat('initiative', 'statusLine')],
+      [/^(Piloting|Planned)$/m, pendingWhat('initiative', 'status')],
+      [/Two community buildings|Vendors and members/i, pendingWhat('initiative', 'serves')],
+      [/Design began 2026|^2024$/im, pendingWhat('initiative', 'since')],
+      [/A third site in 2027|First goods at Odunde 2027/i, pendingWhat('initiative', 'next')],
+      [
+        /Rooftop solar|battery storage|black soap|shea butter|cloth bags|Two sites are live/i,
+        pendingWhat('initiative', 'blurb'),
+      ],
+    ]);
+  });
+
   test('gives the one voice as the large quote, or waits for it under its chip', async ({
     page,
   }) => {

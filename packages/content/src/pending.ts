@@ -425,12 +425,21 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Collective, initiatives',
     what: 'what the initiative is',
   },
-  {
+  ...(
+    [
+      ['status', 'the status'],
+      ['statusLine', 'the status line'],
+      ['serves', 'who it serves'],
+      ['since', 'when it started'],
+      ['next', 'what comes next'],
+      ['image', 'a photograph of the project'],
+    ] as const
+  ).map(([field, what]) => ({
     type: 'initiative',
-    fields: ['status', 'serves', 'since', 'next'],
+    fields: [field],
     where: 'Collective, initiatives',
-    what: 'status, reach and dates',
-  },
+    what,
+  })),
 
   // Get Involved and Donate
   {

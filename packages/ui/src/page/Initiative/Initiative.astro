@@ -1,0 +1,125 @@
+---
+/**
+ * One of the Collective's initiatives, Solar Hub or Green Goods (`12 Yoruba Cultural Collective.dc.html`,
+ * CONTEXT, Initiative; spec Q10 of Phase 6): the status pill with its dot from the status line, or the
+ * registry's chip while the line is owed (neither when the page's `status` option hides it), the
+ * member-led pill, the heading, the blurb or its chip, the four facts in the column without the glance
+ * band, and the photograph or a placeholder naming the project. `side` sets the copy beside the
+ * photograph and `stacked` above it; under 900px both stack. The section carries the Collective scope,
+ * so its greens hold wherever it is drawn. `proceedsReturn` is not drawn.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+import type { ImageInput } from '../../media/image';
+import PhotoTile from '../../media/PhotoTile/PhotoTile.astro';
+import GlanceStrip, { type GlanceFact } from '../GlanceStrip/GlanceStrip.astro';
+
+export interface InitiativeLike {
+  name?: string | null;
+  memberLed?: boolean | null;
+  statusLine?: string | null;
+  blurb?: string | null;
+  image?: ImageInput | null;
+}
+
+interface Props {
+  initiative: InitiativeLike;
+  /** Status, serves, since and next, each with the registry's wording for its chip. */
+  facts: GlanceFact[];
+  /** The page's `initiatives` option. */
+  layout?: 'side' | 'stacked';
+  /** The status pill, off under the page's `status` option. */
+  status?: boolean;
+  /** The registry's wording while the status line is owed. */
+  statusPending?: string;
+  /** The registry's wording while the blurb is owed. */
+  blurbPending?: string;
+  /** The id of the heading, for `aria-labelledby` on the section. */
+  id?: string;
+  /** A `data-sanity` attribute for the photograph. */
+  imageEdit?: string;
+  class?: string;
+}
+
+const {
+  initiative,
+  facts,
+  layout = 'side',
+  status = true,
+  statusPending = 'the status line',
+  blurbPending = 'what the initiative is',
+  id,
+  imageEdit,
+  class: className,
+} = Astro.props;
+const name = initiative.name?.trim();
+const statusLine = initiative.statusLine?.trim();
+const blurb = initiative.blurb?.trim();
+const pills = status || Boolean(initiative.memberLed);
+---
+
+<div class:list={['cc-init', className]} data-scope="collective" data-layout={layout}>
+  <div class="cc-init-copy">
+    {
+      pills && (
+        <div class="cc-init-pills">
+          {status &&
+            (statusLine ? (
+              <span class="cc-status">
+                <i aria-hidden="true" />
+                {statusLine}
+              </span>
+            ) : (
+              <Pending what={statusPending} />
+            ))}
+          {initiative.memberLed && <span class="cc-memberled">Member-led project</span>}
+        </div>
+      )
+    }
+    <h2 id={id}>{name}</h2>
+    <p class="oy-sec-lead">{blurb ? blurb : <Pending what={blurbPending} />}</p>
+    <GlanceStrip facts={facts} band={false} />
+  </div>
+  <PhotoTile
+    shape="figure"
+    image={initiative.image}
+    what={`a photo of ${name ?? 'the project'}`}
+    sizes={layout === 'stacked'
+      ? '(min-width: 1100px) 1100px, 100vw'
+      : '(min-width: 1100px) 540px, (min-width: 900px) 50vw, 100vw'}
+    edit={imageEdit}
+    class="cc-init-photo"
+  />
+</div>
+
+<style>
+  .cc-init {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+  .cc-init[data-layout='stacked'] {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .cc-init-pills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  .cc-init-pills + h2 {
+    margin-top: 14px;
+  }
+  .cc-init .oy-sec-lead {
+    max-width: 52ch;
+  }
+  /* The prototype frames an initiative's photograph at 340px. */
+  .cc-init :global(.cc-init-photo) {
+    height: 340px;
+  }
+  @media (max-width: 900px) {
+    .cc-init {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

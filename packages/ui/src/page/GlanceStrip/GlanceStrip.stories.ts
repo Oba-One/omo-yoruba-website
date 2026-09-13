@@ -48,3 +48,17 @@ export const Pending: Story = {
     ],
   },
 };
+
+/** Inside a column, without the band: an initiative's four facts on the Collective page. */
+export const InColumn: Story = {
+  args: {
+    band: false,
+    facts: [
+      { label: 'Status', pending: 'the status' },
+      { label: 'Serves', pending: 'who it serves' },
+      { label: 'Since', pending: 'when it started' },
+      { label: 'Next', pending: 'what comes next' },
+    ],
+  },
+  parameters: { layout: 'padded' },
+};

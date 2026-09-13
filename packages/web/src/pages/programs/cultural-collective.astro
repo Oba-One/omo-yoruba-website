@@ -16,6 +16,7 @@ import Prose from '@oy/ui/content/Prose/Prose.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
 import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
+import Initiative from '@oy/ui/page/Initiative/Initiative.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
 import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
@@ -77,6 +78,28 @@ cachePage(Astro, '/programs/cultural-collective', { draft: preview, failed: Bool
         />
       </Split>
     </Section>
+
+    {
+      page.initiatives.items.map((item) => (
+        <Section
+          id={item.id}
+          ground={item.ground}
+          labelledby={item.headingId}
+          data-sanity={page.edit.initiatives}
+        >
+          <Initiative
+            initiative={item.initiative}
+            facts={item.facts}
+            layout={page.initiatives.layout}
+            status={page.initiatives.status}
+            statusPending={item.statusPending}
+            blurbPending={item.blurbPending}
+            id={item.headingId}
+            imageEdit={item.imageEdit}
+          />
+        </Section>
+      ))
+    }
 
     <Section id="voice" data-sanity={page.voice.edit}>
       <PullQuote

@@ -4,9 +4,10 @@
  * strip): the hard facts of the next edition in a row of four or five cells on white, each a
  * terracotta label, the value in the display face and an optional note, with the registry's chip
  * wherever the Studio holds no value. Five show at most; under 900px the cells fall into two
- * columns (the tokens' `.oy-glance`). An optional line under the strip speaks to the reader.
+ * columns (the tokens' `.oy-glance`). An optional line under the strip speaks to the reader. Without
+ * its band the strip sits inside a column (an initiative's four facts on the Collective page).
  */
-import Pending from '../../core/Pending/Pending.astro';
+import GlanceCell from './GlanceCell.astro';
 
 export interface GlanceFact {
   label: string;
@@ -22,41 +23,43 @@ interface Props {
   facts: GlanceFact[];
   /** A line under the strip. */
   caption?: string | null;
+  /** The white band and the page wrap around the strip; off inside a column. */
+  band?: boolean;
   /** A `data-sanity` attribute for the strip. */
   edit?: string;
   id?: string;
   class?: string;
 }
 
-const { facts, caption, edit, id = 'glance', class: className } = Astro.props;
+const { facts, caption, band = true, edit, id = 'glance', class: className } = Astro.props;
 const shown = facts.slice(0, 5);
 const columns = shown.length === 5 ? undefined : String(shown.length);
 ---
 
-<div class:list={['oy-glance-band', className]} id={id} data-sanity={edit}>
-  <div class="oy-wrap">
-    <div class="oy-glance" data-cols={columns}>
-      {
-        shown.map((fact) => (
-          <div>
-            <b>{fact.label}</b>
-            {fact.value?.trim() ? <span>{fact.value}</span> : <Pending what={fact.pending} />}
-            {fact.note?.trim() ? (
-              <small>{fact.note}</small>
-            ) : (
-              fact.notePending && (
-                <small>
-                  <Pending what={fact.notePending} />
-                </small>
-              )
-            )}
-          </div>
-        ))
-      }
+{
+  band ? (
+    <div class:list={['oy-glance-band', className]} id={id} data-sanity={edit}>
+      <div class="oy-wrap">
+        <div class="oy-glance" data-cols={columns}>
+          {shown.map((fact) => (
+            <GlanceCell fact={fact} />
+          ))}
+        </div>
+        {caption && <p class="oy-glance-caption">{caption}</p>}
+      </div>
     </div>
-    {caption && <p class="oy-glance-caption">{caption}</p>}
-  </div>
-</div>
+  ) : (
+    <div
+      class:list={['oy-glance', 'oy-glance--inline', className]}
+      data-cols={columns}
+      data-sanity={edit}
+    >
+      {shown.map((fact) => (
+        <GlanceCell fact={fact} />
+      ))}
+    </div>
+  )
+}
 
 <style>
   .oy-glance-band {
@@ -66,8 +69,11 @@ const columns = shown.length === 5 ? undefined : String(shown.length);
   .oy-glance :global(.oy-pend) {
     margin-top: 10px;
   }
-  .oy-glance small :global(.oy-pend) {
+  .oy-glance :global(small .oy-pend) {
     margin-top: 0;
+  }
+  .oy-glance--inline {
+    margin-top: 20px;
   }
   .oy-glance-caption {
     margin: 14px 0 0;

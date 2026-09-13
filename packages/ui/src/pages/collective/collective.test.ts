@@ -2,8 +2,12 @@ import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as green from './Green.stories';
+import * as initiatives from './Initiatives.stories';
+import * as status from './Status.stories';
 
 const Green = composeStories(green);
+const Initiatives = composeStories(initiatives);
+const Status = composeStories(status);
 
 describe('the Collective page-section stories', () => {
   it('green: the sections inside the collective scope, signal or strong on the root', async () => {
@@ -53,5 +57,36 @@ describe('the Collective page-section stories', () => {
     expect(subscribe?.getAttribute('href')).toBe('#subscribe');
     expect(band?.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
     expect(band?.querySelector('.oy-handoff a')?.getAttribute('href')).toBe('/impact');
+  });
+
+  it('initiatives: Solar Hub then Green Goods on alternating grounds, beside or above their photographs', async () => {
+    const side = (await renderToBody(Initiatives.Side)).querySelector('.oy-home');
+    expect(side?.getAttribute('data-initiatives')).toBe('side');
+    const sections = [...(side?.querySelectorAll('section') ?? [])].slice(0, 2);
+    expect(sections.map((section) => section.id)).toEqual(['solar-hub', 'green-goods']);
+    expect(sections[1]?.classList.contains('oy-section--alt')).toBe(true);
+    expect(sections.map((section) => text(section.querySelector('h2')))).toEqual([
+      'Solar Hub',
+      'Green Goods',
+    ]);
+    expect(sections[0]?.querySelector('.cc-init')?.getAttribute('data-layout')).toBe('side');
+    // Green Goods as the seed leaves it: every fact under its own chip.
+    expect(sections[1]?.querySelectorAll('.oy-glance--inline .oy-pend')).toHaveLength(4);
+    const stacked = (await renderToBody(Initiatives.Stacked)).querySelector(
+      '#green-goods .cc-init',
+    );
+    expect(stacked?.getAttribute('data-layout')).toBe('stacked');
+  });
+
+  it('status: the pill or its chip above each name, or neither when hidden', async () => {
+    const shown = (await renderToBody(Status.Shown)).querySelector('.oy-home');
+    expect(text(shown?.querySelector('#solar-hub .cc-status'))).toBe('[ Status line ]');
+    expect(text(shown?.querySelector('#green-goods .cc-init-pills .oy-pend'))).toBe(
+      'Pending: the status line',
+    );
+    const hidden = (await renderToBody(Status.Hidden)).querySelector('.oy-home');
+    expect(hidden?.getAttribute('data-status')).toBe('hidden');
+    expect(hidden?.querySelectorAll('.cc-status, .cc-init-pills .oy-pend')).toHaveLength(0);
+    expect(hidden?.querySelectorAll('.cc-memberled')).toHaveLength(2);
   });
 });

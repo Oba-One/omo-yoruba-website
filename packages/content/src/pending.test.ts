@@ -232,6 +232,20 @@ describe("the Collective's one voice", () => {
   });
 });
 
+describe("the Collective's initiatives", () => {
+  it('names each owed fact of an initiative on its own', () => {
+    expect(pendingWhat('initiative', 'blurb')).toBe('what the initiative is');
+    expect(pendingWhat('initiative', 'status')).toBe('the status');
+    expect(pendingWhat('initiative', 'statusLine')).toBe('the status line');
+    expect(pendingWhat('initiative', 'serves')).toBe('who it serves');
+    expect(pendingWhat('initiative', 'since')).toBe('when it started');
+    expect(pendingWhat('initiative', 'next')).toBe('what comes next');
+    expect(pendingWhat('initiative', 'image')).toBe('a photograph of the project');
+    // What is not drawn is not owed.
+    expect(pendingWhat('initiative', 'proceedsReturn')).toBeUndefined();
+  });
+});
+
 describe('the take-part rows every page with a band registers', () => {
   it('names an empty band and an unfinished row the same way on each page', () => {
     for (const type of [

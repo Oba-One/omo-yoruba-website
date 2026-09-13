@@ -72,8 +72,8 @@ export const lessonsPageQuery = defineQuery(`*[_type == "lessonsPage" && _id == 
 /**
  * The Collective's page in one read (ROUTES section 1): the `collectivePage` singleton with its header,
  * actions, argument and take-part rows, the Collective program's photograph beside the argument (one
- * image for the homepage card, the Programs card and this page, wayfinder ticket 31), and the one voice
- * it references. Images project the asset reference (ADR 0022). Layout values come back as stored; the
+ * image for the homepage card, the Programs card and this page, wayfinder ticket 31), the initiatives in
+ * the page's order, and the one voice it references. Images project the asset reference (ADR 0022). Layout values come back as stored; the
  * page fills the schema defaults (`withLayoutDefaults`).
  */
 export const collectivePageQuery =
@@ -86,6 +86,18 @@ export const collectivePageQuery =
     _id,
     name,
     image{_type, alt, caption, hotspot, crop, asset}
+  },
+  "initiatives": initiatives[]->{
+    _id,
+    name,
+    memberLed,
+    status,
+    statusLine,
+    blurb,
+    image{_type, alt, caption, hotspot, crop, asset},
+    serves,
+    since,
+    next
   },
   "voice": voice->{_id, quote, name, relation, permissionToName},
   takePart[]{_key, way, chip, title, line, label},

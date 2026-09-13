@@ -235,3 +235,34 @@ export const COLLECTIVE_VOICE_PENDING = 'the quote and who said it';
 /** The take-part lead as spec Q15 keeps it, for the seeded three rows. */
 export const COLLECTIVE_TAKE_PART_INTRO =
   'The projects above are led by members. Three ways to join them.';
+
+/** The four facts of an initiative with the registry's wording for each, every value owed. */
+export const INITIATIVE_FACTS_PENDING = [
+  { label: 'Status', pending: 'the status' },
+  { label: 'Serves', pending: 'who it serves' },
+  { label: 'Since', pending: 'when it started' },
+  { label: 'Next', pending: 'what comes next' },
+];
+
+/**
+ * The Collective's two initiatives as the seed writes them: the name and member-led, nothing else,
+ * since the register invents every status, date, reach and product.
+ */
+export const INITIATIVES = [
+  { _id: 'initiative-solar-hub', name: 'Solar Hub', memberLed: true },
+  { _id: 'initiative-green-goods', name: 'Green Goods', memberLed: true },
+];
+
+/** An initiative in the bracketed placeholder form, to show the layout the Studio's facts will take. */
+export const INITIATIVE_PLACEHOLDER = {
+  name: 'Solar Hub',
+  memberLed: true,
+  statusLine: '[ Status line ]',
+  blurb: '[ What the project is, in two sentences ]',
+  image: { ...PHOTOS.guestsSmiling, alt: '[ A photograph of the project ]' },
+};
+
+export const INITIATIVE_FACTS_PLACEHOLDER = INITIATIVE_FACTS_PENDING.map((fact) => ({
+  ...fact,
+  value: `[ ${fact.label} ]`,
+}));
