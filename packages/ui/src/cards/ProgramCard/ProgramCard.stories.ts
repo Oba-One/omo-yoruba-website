@@ -47,10 +47,10 @@ export const WithEdit: Story = {
 
 /** On the Programs hub: the cadence and the ages over the name, the ages Pending as seeded. */
 export const When: Story = {
-  args: { program: PROGRAM_CARDS[0] as Args['program'], when: true, mediaHeight: 160 },
+  args: { program: PROGRAM_CARDS[0] as Args['program'], showWhen: true, mediaHeight: 160 },
 };
 
 /** Cultural Exchange on the hub: both facts Pending, and the link to its section on the page. */
 export const WhenPending: Story = {
-  args: { program: PROGRAM_CARDS[3] as Args['program'], when: true, mediaHeight: 160 },
+  args: { program: PROGRAM_CARDS[3] as Args['program'], showWhen: true, mediaHeight: 160 },
 };

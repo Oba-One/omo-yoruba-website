@@ -5,8 +5,15 @@
  * Pending states in the registry's own wording. No cadence, age, fee, level, lesson step, teacher,
  * quote, status or date the register marks as invented.
  */
+import { pendingWhat, presenceWhat, TEACHER_EMAIL_PENDING } from '@oy/content/pending';
 import { PROGRAMS } from './homepage';
 import { PHOTOS } from './photos';
+
+/** The registry's own wording for a field, so a story never drifts from the chip the site shows. */
+const owed = (type: string, field: string, kind?: string) => pendingWhat(type, field, kind) ?? '';
+
+/** The registry's wording for a glance fact the Lessons page owes. */
+const GLANCE_FACT_PENDING = owed('lessonsPage', 'glance');
 
 /**
  * The four programs as the Programs hub shows them: the seeded cadence of the Lessons and no ages yet
@@ -32,7 +39,7 @@ export const PROGRAMS_HEADER = {
 };
 
 /** The registry's wording for a sub-program's fact the Studio holds no value for. */
-export const SUBPROGRAM_FACT_PENDING = 'ages and what they build';
+export const SUBPROGRAM_FACT_PENDING = owed('programsPage', 'kidsStem.subprograms');
 
 /**
  * Kids & STEM as the seed writes it: the prose, and both halves with the prototype's photographs and
@@ -68,17 +75,17 @@ export const KIDS_STEM = {
 /** Cultural Exchange as the seed leaves it: its name only, every fact and the photograph owed. */
 export const CULTURAL_EXCHANGE = {
   title: 'Cultural Exchange',
-  blurbPending: 'what the exchange is',
+  blurbPending: owed('programsPage', 'culturalExchange.blurb'),
   facts: [
-    { label: 'Who it is for', pending: 'who it is for' },
-    { label: 'Cadence', pending: 'the cadence' },
-    { label: 'How to join', pending: 'how to join' },
+    { label: 'Who it is for', pending: owed('programsPage', 'culturalExchange.eligibility') },
+    { label: 'Cadence', pending: owed('programsPage', 'culturalExchange.cadence') },
+    { label: 'How to join', pending: owed('programsPage', 'culturalExchange.howToJoin') },
   ],
-  imagePending: 'a photograph of the exchange',
+  imagePending: owed('programsPage', 'culturalExchange.image'),
 };
 
 /** The registry's wording for a year strip row without its when. */
-export const YEAR_WHEN_PENDING = 'when it runs';
+export const YEAR_WHEN_PENDING = owed('programsPage', 'yearStrip');
 
 /**
  * The year strip as the seed writes it: the two event rows with their confirmed months, the three
@@ -127,10 +134,10 @@ export const LESSONS_HEADER = {
 
 /** The glance as the seed writes it: format, when and cost confirmed, the ages owed. */
 export const LESSONS_GLANCE = [
-  { label: 'Format', value: 'Online, live', note: 'Video call', pending: 'a glance fact' },
-  { label: 'When', value: 'Set with the teacher', pending: 'a glance fact' },
-  { label: 'Ages', pending: 'a glance fact' },
-  { label: 'Cost', value: 'Agreed with her', pending: 'a glance fact' },
+  { label: 'Format', value: 'Online, live', note: 'Video call', pending: GLANCE_FACT_PENDING },
+  { label: 'When', value: 'Set with the teacher', pending: GLANCE_FACT_PENDING },
+  { label: 'Ages', pending: GLANCE_FACT_PENDING },
+  { label: 'Cost', value: 'Agreed with her', pending: GLANCE_FACT_PENDING },
 ];
 
 export const TEACHER_INTRO =
@@ -139,12 +146,12 @@ export const TEACHER_INTRO =
 /** The teacher before the Studio links her: one teacher is confirmed, her name is owed. */
 export const TEACHER_PENDING = {
   person: { role: 'Teacher' },
-  namePending: "the teacher's name and bio",
-  emailPending: "the teacher's email",
+  namePending: owed('lessonsPage', 'teacher'),
+  emailPending: TEACHER_EMAIL_PENDING,
 };
 
 /** The registry's wording for a question the Studio has not answered. */
-export const ANSWER_PENDING = 'an answer';
+export const ANSWER_PENDING = owed('lessonsPage', 'faq');
 
 /** The five questions parents ask, as the seed writes them: every answer owed (the register invents all). */
 export const LESSONS_FAQ = [
@@ -227,10 +234,10 @@ export const COLLECTIVE_HEADER = {
 };
 
 /** The registry's wording for the Collective's argument, which the register invents. */
-export const ARGUMENT_PENDING = 'why culture and sustainability sit together, in your words';
+export const ARGUMENT_PENDING = owed('collectivePage', 'argument');
 
 /** The registry's wording for the Collective's one voice. */
-export const COLLECTIVE_VOICE_PENDING = 'the quote and who said it';
+export const COLLECTIVE_VOICE_PENDING = owed('collectivePage', 'voice');
 
 /** The take-part lead as spec Q15 keeps it, for the seeded three rows. */
 export const COLLECTIVE_TAKE_PART_INTRO =
@@ -238,10 +245,10 @@ export const COLLECTIVE_TAKE_PART_INTRO =
 
 /** The four facts of an initiative with the registry's wording for each, every value owed. */
 export const INITIATIVE_FACTS_PENDING = [
-  { label: 'Status', pending: 'the status' },
-  { label: 'Serves', pending: 'who it serves' },
-  { label: 'Since', pending: 'when it started' },
-  { label: 'Next', pending: 'what comes next' },
+  { label: 'Status', pending: owed('initiative', 'status') },
+  { label: 'Serves', pending: owed('initiative', 'serves') },
+  { label: 'Since', pending: owed('initiative', 'since') },
+  { label: 'Next', pending: owed('initiative', 'next') },
 ];
 
 /**
@@ -253,13 +260,16 @@ export const INITIATIVES = [
   { _id: 'initiative-green-goods', name: 'Green Goods', memberLed: true },
 ];
 
-/** An initiative in the bracketed placeholder form, to show the layout the Studio's facts will take. */
+/**
+ * An initiative in the bracketed placeholder form, to show the layout the Studio's facts will take. No
+ * photograph: an interim one would say what the project does (spec Q10).
+ */
 export const INITIATIVE_PLACEHOLDER = {
   name: 'Solar Hub',
   memberLed: true,
   statusLine: '[ Status line ]',
   blurb: '[ What the project is, in two sentences ]',
-  image: { ...PHOTOS.guestsSmiling, alt: '[ A photograph of the project ]' },
+  image: null,
 };
 
 export const INITIATIVE_FACTS_PLACEHOLDER = INITIATIVE_FACTS_PENDING.map((fact) => ({
@@ -275,26 +285,31 @@ export const ASK_TO_JOIN = {
 } as const;
 
 /** The registry's wordings for the Collective's events. */
-export const COLLECTIVE_EVENTS_PENDING = 'the next Collective events';
-export const EVENT_VENUE_PENDING = 'the venue';
+export const COLLECTIVE_EVENTS_PENDING = presenceWhat('event', 'collective')?.what ?? '';
+export const EVENT_VENUE_PENDING = owed('event', 'venue.name', 'collective');
 
 /**
  * Collective events in the bracketed placeholder form, to show the rows the Studio's events will take:
- * the register invents every title, date and venue the prototype lists. Test dates only.
+ * the register invents every title, date and venue the prototype lists, so the dates are placeholders
+ * too, in the words the page would write them.
  */
 export const COLLECTIVE_EVENT_PLACEHOLDERS = [
   {
     _id: 'event-placeholder-1',
     title: '[ A Collective event ]',
     summary: '[ One line on what happens ]',
-    start: '2026-10-17T17:00:00.000Z',
+    month: '[ Month ]',
+    day: '[ 00 ]',
+    when: '[ Weekday, time ]',
     venue: { name: '[ Venue ]' },
   },
   {
     _id: 'event-placeholder-2',
     title: '[ Another Collective event ]',
     summary: '[ One line on what happens ]',
-    start: '2026-11-14T18:00:00.000Z',
+    month: '[ Month ]',
+    day: '[ 00 ]',
+    when: '[ Weekday, time ]',
     venue: null,
   },
 ];

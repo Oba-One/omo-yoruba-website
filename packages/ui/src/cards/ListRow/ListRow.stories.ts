@@ -47,7 +47,7 @@ export const EntryPending: Story = {
 
 const ASK_TO_JOIN = { label: 'Ask to join', kind: 'enquiry', enquiryKind: 'contact' } as const;
 
-/** The event form as the Collective's events draw it, in Los Angeles time. */
+/** The event form as the Collective's events draw it, in the bracketed placeholder form: no event is dated yet. */
 export const Event: Story = {
   args: {
     kind: 'event',
@@ -55,7 +55,9 @@ export const Event: Story = {
       _id: 'event-1',
       title: '[ A Collective event ]',
       summary: '[ One line on what happens ]',
-      start: '2026-10-17T17:00:00.000Z',
+      month: '[ Month ]',
+      day: '[ 00 ]',
+      when: '[ Weekday, time ]',
       venue: { name: '[ Venue ]' },
     },
     venuePending: 'the venue',

@@ -12,6 +12,7 @@
 import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { festivalPageQuery } from '@oy/content/queries';
+import { EVENT_PAGE_NAMES } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import { editionHours, longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { figureSentence } from '@oy/ui/content/figure-sentence.ts';
@@ -35,7 +36,7 @@ export interface FestivalLayout extends Record<string, string> {
   labels: 'column' | 'none' | 'kicker';
 }
 
-const PAGE_TITLE = 'Odunde Festival';
+const PAGE_TITLE = EVENT_PAGE_NAMES.festival;
 const KIND = 'festival';
 
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';

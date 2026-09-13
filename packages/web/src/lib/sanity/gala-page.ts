@@ -13,6 +13,7 @@
 import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { galaPageQuery } from '@oy/content/queries';
+import { EVENT_PAGE_NAMES } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import { longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { sentence } from '@oy/ui/content/sentence.ts';
@@ -40,7 +41,7 @@ export interface GalaLayout extends Record<string, string> {
   labels: 'column' | 'none' | 'kicker';
 }
 
-const PAGE_TITLE = 'End-of-Year Gala';
+const PAGE_TITLE = EVENT_PAGE_NAMES.gala;
 const KIND = 'gala';
 
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';

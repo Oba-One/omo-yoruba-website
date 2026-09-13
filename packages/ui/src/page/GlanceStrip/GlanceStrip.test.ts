@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './GlanceStrip.stories';
 
-const { Five, Four, WithCaption, Pending, InColumn } = composeStories(stories);
+const { Five, Four, WithCaption, Pending, InColumn, Empty } = composeStories(stories);
 
 describe('GlanceStrip', () => {
   it('sets five facts with a label, the value or its chip, and the note', async () => {
@@ -46,5 +46,11 @@ describe('GlanceStrip', () => {
     expect(strip?.hasAttribute('id')).toBe(false);
     expect(strip?.getAttribute('data-cols')).toBe('4');
     expect(strip?.querySelectorAll('.oy-pend')).toHaveLength(4);
+  });
+
+  it('keeps the band with the Pending line when there are no facts', async () => {
+    const band = (await renderToBody(Empty)).querySelector('.oy-glance-band');
+    expect(band?.querySelector('.oy-glance')).toBeNull();
+    expect(text(band?.querySelector('.oy-pend-line'))).toContain('the facts at a glance');
   });
 });

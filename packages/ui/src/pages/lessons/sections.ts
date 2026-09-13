@@ -39,7 +39,8 @@ export const glance: SlotValue = { component: GlanceStrip, props: { facts: LESSO
 
 /**
  * The teacher beside her form, as the `portraits` option draws her card. The linked teacher is a
- * placeholder in brackets on a crowd photograph from the register, so no one reads as named.
+ * placeholder in brackets over the lesson's whiteboard, a photograph with no one in it, so no one reads
+ * as her.
  */
 export const teacher = (portraits: 'shown' | 'hidden', linked = false): SlotValue => ({
   component: Section,
@@ -67,7 +68,10 @@ export const teacher = (portraits: 'shown' | 'hidden', linked = false): SlotValu
                     role: 'Teacher',
                     name: '[ Teacher name ]',
                     bio: '[ A short bio in her words ]',
-                    image: portraits === 'shown' ? PHOTOS.learningYoruba : undefined,
+                    image:
+                      portraits === 'shown'
+                        ? { ...PHOTOS.teachingSession, alt: '[ Portrait ]' }
+                        : undefined,
                   },
                   variant: portraits === 'shown' ? 'portrait' : 'nophoto',
                 }

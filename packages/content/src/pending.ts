@@ -35,6 +35,19 @@ const FESTIVAL = 'kind == "festival"';
 const GALA = 'kind == "gala"';
 const COLLECTIVE = 'kind == "collective"';
 
+/** One row per field of a type, each fact naming itself where the page shows it. */
+const fieldRows = (
+  type: string,
+  where: string,
+  rows: readonly (readonly [field: string, what: string])[],
+): PendingEntry[] => rows.map(([field, what]) => ({ type, fields: [field], where, what }));
+
+/**
+ * The chip for the teacher's own address beside the enrol form. The registry row is a condition on
+ * her routing contact, so a page reads the wording from here rather than finding the row.
+ */
+export const TEACHER_EMAIL_PENDING = "the teacher's email";
+
 /** A page's take-part band: no rows yet, or a row missing its way in, title or button label. */
 const takePartRows = (type: string, where: string): PendingEntry[] => [
   { type, fields: ['takePart[]'], where, what: 'the ways in' },
@@ -297,36 +310,13 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'ages and what they build',
   },
   // Everything about Cultural Exchange is owed; each fact names itself where the page shows it.
-  {
-    type: 'programsPage',
-    fields: ['culturalExchange.blurb'],
-    where: 'Programs, Cultural Exchange',
-    what: 'what the exchange is',
-  },
-  {
-    type: 'programsPage',
-    fields: ['culturalExchange.eligibility'],
-    where: 'Programs, Cultural Exchange',
-    what: 'who it is for',
-  },
-  {
-    type: 'programsPage',
-    fields: ['culturalExchange.cadence'],
-    where: 'Programs, Cultural Exchange',
-    what: 'the cadence',
-  },
-  {
-    type: 'programsPage',
-    fields: ['culturalExchange.howToJoin'],
-    where: 'Programs, Cultural Exchange',
-    what: 'how to join',
-  },
-  {
-    type: 'programsPage',
-    fields: ['culturalExchange.image'],
-    where: 'Programs, Cultural Exchange',
-    what: 'a photograph of the exchange',
-  },
+  ...fieldRows('programsPage', 'Programs, Cultural Exchange', [
+    ['culturalExchange.blurb', 'what the exchange is'],
+    ['culturalExchange.eligibility', 'who it is for'],
+    ['culturalExchange.cadence', 'the cadence'],
+    ['culturalExchange.howToJoin', 'how to join'],
+    ['culturalExchange.image', 'a photograph of the exchange'],
+  ]),
   // "Year-round", "Saturdays" and "Monthly" are invented; a row names its when once it is confirmed.
   {
     type: 'programsPage',
@@ -341,6 +331,12 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'when it runs',
   },
   ...takePartRows('programsPage', 'Programs, take part'),
+  {
+    type: 'lessonsPage',
+    fields: ['glance[]'],
+    where: 'Lessons, at a glance',
+    what: 'the facts at a glance',
+  },
   // A glance fact the seed labels and leaves for the owner (the ages); format and cost are seeded.
   {
     type: 'lessonsPage',
@@ -354,12 +350,20 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Lessons, teacher',
     what: "the teacher's name and bio",
   },
+  // Once she is linked, her card shows her short bio or asks for it; only the linked person is listed.
+  {
+    type: 'person',
+    fields: ['bioShort'],
+    filter: '_id in *[_id == "lessonsPage"].teacher._ref',
+    where: 'Lessons, teacher',
+    what: "the teacher's short bio",
+  },
   // How she wants enquiries: the enrol form always, and her own address beside it once it is set.
   {
     type: 'siteSettings',
     condition: 'count(contacts[role == "teacher" && defined(email)]) == 0',
     where: 'Lessons, teacher',
-    what: "the teacher's email",
+    what: TEACHER_EMAIL_PENDING,
   },
   {
     type: 'lessonsPage',
@@ -433,21 +437,14 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Collective, initiatives',
     what: 'what the initiative is',
   },
-  ...(
-    [
-      ['status', 'the status'],
-      ['statusLine', 'the status line'],
-      ['serves', 'who it serves'],
-      ['since', 'when it started'],
-      ['next', 'what comes next'],
-      ['image', 'a photograph of the project'],
-    ] as const
-  ).map(([field, what]) => ({
-    type: 'initiative',
-    fields: [field],
-    where: 'Collective, initiatives',
-    what,
-  })),
+  ...fieldRows('initiative', 'Collective, initiatives', [
+    ['status', 'the status'],
+    ['statusLine', 'the status line'],
+    ['serves', 'who it serves'],
+    ['since', 'when it started'],
+    ['next', 'what comes next'],
+    ['image', 'a photograph of the project'],
+  ]),
 
   // Get Involved and Donate
   {
@@ -597,12 +594,13 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Get Involved',
     what: 'the nine association names',
   },
-  // Still to come as GROQ reads it (ADR 0030): an end ahead, or no end and a start within the last day.
+  // Still to come as GROQ reads it (ADR 0030): dated, with an end ahead, or no end and a start within the
+  // last day.
   // The site reads the Los Angeles day, so on the day of an event without an end the two can differ.
   {
     type: 'event',
     minimum: 1,
-    filter: `${COLLECTIVE} && ((defined(end) && dateTime(end) > dateTime(now())) || (!defined(end) && dateTime(start) > dateTime(now()) - 60 * 60 * 24))`,
+    filter: `${COLLECTIVE} && defined(start) && ((defined(end) && dateTime(end) > dateTime(now())) || (!defined(end) && dateTime(start) > dateTime(now()) - 60 * 60 * 24))`,
     where: 'Collective, events',
     what: 'the next Collective events',
   },

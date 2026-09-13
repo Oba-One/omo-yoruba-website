@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './SubprogramCard.stories';
 
-const { Default, TwoFacts, Filled, NoPhoto, Bare } = composeStories(stories);
+const { Default, TwoFacts, Filled, NoPhoto, Bare, Pending } = composeStories(stories);
 
 describe('SubprogramCard', () => {
   it('draws the photograph, the name, the blurb, the facts with their chips and the outline action', async () => {
@@ -43,5 +43,14 @@ describe('SubprogramCard', () => {
     expect(bare?.querySelector('dl')).toBeNull();
     expect(bare?.querySelector('.oy-pend-line')).toBeNull();
     expect(bare?.querySelector('a.oy-btn')).toBeNull();
+  });
+
+  it('names the photograph and every fact it owes', async () => {
+    const card = (await renderToBody(Pending)).querySelector('article.oy-card');
+    expect(card?.querySelector('img')).toBeNull();
+    expect(text(card?.querySelector('.oy-subprogram-placeholder'))).toContain(
+      'a photo of STEM Hub',
+    );
+    expect(card?.querySelectorAll('.oy-fact .oy-pend')).toHaveLength(2);
   });
 });

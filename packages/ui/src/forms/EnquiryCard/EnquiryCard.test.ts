@@ -35,9 +35,9 @@ describe('EnquiryCard', () => {
   it("offers the page's own address beside the trigger, or the registry's chip while it is owed", async () => {
     const body = await renderToBody(WithEmail);
     expect(text(body.querySelector('a.oy-btn'))).toContain('Write to the teacher');
-    const line = body.querySelector('.oy-enquiry-card-action .oy-enquiry-card-email');
-    expect(text(line)).toBe('Or email teacher@example.org');
-    expect(line?.querySelector('a')?.getAttribute('href')).toBe('mailto:teacher@example.org');
+    const line = body.querySelector('.oy-enquiry-card-action p.oy-enquiry-card-email');
+    expect(text(line)).toBe('Or email [ teacher@example.org ]');
+    expect(line?.querySelector('a')?.getAttribute('href')).toBe('mailto:[ teacher@example.org ]');
     const pending = (await renderToBody(EmailPending)).querySelector('.oy-enquiry-card-email');
     expect(text(pending)).toBe("Or email Pending: the teacher's email");
     expect(pending?.querySelector('a')).toBeNull();

@@ -46,6 +46,11 @@ export const NoPhoto: Story = {
   args: { subprogram: { ...agbala, image: null } as Args['subprogram'] },
 };
 
+/** The most the card can owe: no photograph and every fact's value, each named where it goes. */
+export const Pending: Story = {
+  args: { subprogram: { ...stem, image: null } as Args['subprogram'] },
+};
+
 /** No facts and no action: the card keeps its photograph, name and blurb, and no empty list. */
 export const Bare: Story = {
   args: { subprogram: { ...agbala, facts: [], action: null } as Args['subprogram'] },

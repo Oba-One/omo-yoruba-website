@@ -22,6 +22,8 @@ interface Props {
   /** `portrait` falls back to the woven tick when there is no photograph. */
   variant?: 'portrait' | 'nophoto' | 'compact';
   namePending?: string;
+  /** The registry's wording for a missing bio; without it a missing bio draws nothing. */
+  bioPending?: string;
   sizes?: string;
   /** A `data-sanity` attribute, so click-to-edit reaches the person. */
   edit?: string;
@@ -32,6 +34,7 @@ const {
   person,
   variant = 'portrait',
   namePending = 'the name',
+  bioPending,
   sizes = '(min-width: 1100px) 340px, (min-width: 860px) 30vw, 100vw',
   edit,
   class: className,
@@ -65,7 +68,17 @@ const position = positionOf(person.image);
   <div class="oy-person-body">
     {person.role?.trim() && <p class="oy-person-role">{person.role}</p>}
     <h3 class="oy-person-name">{person.name?.trim() || <Pending what={namePending} />}</h3>
-    {person.bio?.trim() && <p class="oy-person-bio">{person.bio}</p>}
+    {
+      person.bio?.trim() ? (
+        <p class="oy-person-bio">{person.bio}</p>
+      ) : (
+        bioPending && (
+          <p class="oy-person-bio">
+            <Pending what={bioPending} />
+          </p>
+        )
+      )
+    }
   </div>
 </article>
 

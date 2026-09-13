@@ -22,6 +22,26 @@ export type WayIn = (typeof WAY_INS)[number];
  */
 export const NEWSLETTER_ANCHOR = '#subscribe';
 
+/** The chip each way in wears, as the prototypes name them; a row's own chip replaces it. */
+export const WAY_CHIPS: Readonly<Record<WayIn, string>> = {
+  vendor: 'Vendors',
+  sponsor: 'Sponsors',
+  performer: 'Performers',
+  volunteer: 'Volunteers',
+  table: 'Tables',
+  give: 'Give',
+  enrol: 'Enrol',
+  member: 'Membership',
+  updates: 'Updates',
+};
+
+/** The ways in whose button is quiet: they ask nothing of a form. */
+const QUIET_WAYS: readonly WayIn[] = ['give', 'updates'];
+
+/** Whether a way in's button is quiet rather than an outline or the band's gold. */
+export const isQuietWay = (way: WayIn | undefined): boolean =>
+  way !== undefined && QUIET_WAYS.includes(way);
+
 /** Whether a stored value is one of the ways in. */
 export const isWayIn = (value: unknown): value is WayIn =>
   typeof value === 'string' && (WAY_INS as readonly string[]).includes(value);

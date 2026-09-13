@@ -1,8 +1,14 @@
-import AxeBuilder from '@axe-core/playwright';
-import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
-import { pendingWhat } from '@oy/content/pending';
+import { ENQUIRY_SPECS } from '@oy/content/enquiry-kinds';
+import { pendingWhat, TEACHER_EMAIL_PENDING } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
-import { expectNoMockWhileOwed, goldSharingAView, settle } from './helpers';
+import {
+  axeViolations,
+  expectEnquiryRoundTrip,
+  expectNoMockWhileOwed,
+  goldSharingAView,
+  PLACEHOLDER_PROJECT,
+  settle,
+} from './helpers';
 
 // Yoruba Language Lessons in the prototype's order (ROUTES section 4), each block present whether the
 // Studio holds its content or renders Pending: CI runs with a placeholder project, where every read
@@ -38,8 +44,15 @@ test.describe('the Yoruba Language Lessons page', () => {
     expect(main).not.toMatch(/\bSchool\b/);
     expect(main).not.toMatch(/Saturday|\bterm\b|12 Sep/i);
     const glance = page.locator('#glance .oy-glance > div');
-    const cells = await glance.count();
-    expect(cells === 0 || cells === 4).toBe(true);
+    if (PLACEHOLDER_PROJECT) {
+      // No facts: the band keeps its place with the registry's line.
+      await expect(glance).toHaveCount(0);
+      await expect(page.locator('#glance .oy-pend-line')).toContainText(
+        pendingWhat('lessonsPage', 'glance[]') ?? '',
+      );
+    } else {
+      await expect(glance).toHaveCount(4);
+    }
     expectNoMockWhileOwed(main, [
       [/\$180|\$75/, pendingWhat('lessonsPage', 'glance')],
       [/5 to adult/i, pendingWhat('lessonsPage', 'glance')],
@@ -48,7 +61,7 @@ test.describe('the Yoruba Language Lessons page', () => {
         pendingWhat('lessonsPage', 'teacher'),
       ],
       [/eleven years|Ibadan/i, pendingWhat('lessonsPage', 'teacher')],
-      [/lessons@omoyoruba/i, "the teacher's email"],
+      [/lessons@omoyoruba/i, TEACHER_EMAIL_PENDING],
     ]);
   });
 
@@ -69,7 +82,8 @@ test.describe('the Yoruba Language Lessons page', () => {
     await expect(email).toContainText('Or email');
     const link = email.locator('a');
     if ((await link.count()) === 1) await expect(link).toHaveAttribute('href', /^mailto:/);
-    else await expect(email).toContainText(/pending: the teacher's email/i);
+    else
+      await expect(email).toContainText(`Pending: ${TEACHER_EMAIL_PENDING}`, { ignoreCase: true });
   });
 
   test('teaches what the Studio holds, or names what is owed: the prose, the levels and the lesson', async ({
@@ -107,7 +121,7 @@ test.describe('the Yoruba Language Lessons page', () => {
     }
   });
 
-  test('asks its questions one open at a time, as the option starts them, with Enter and Space', async ({
+  test('asks its questions one open at a time with Enter and Space, or names them owed', async ({
     page,
     isMobile,
   }) => {
@@ -141,6 +155,9 @@ test.describe('the Yoruba Language Lessons page', () => {
     await expect(second).toHaveJSProperty('open', true);
     await expect(first).toHaveJSProperty('open', false);
     await expect(first.locator('.oy-faq-a')).toBeHidden();
+    // Enter closes the open question again, leaving none open.
+    await page.keyboard.press('Enter');
+    await expect(second).toHaveJSProperty('open', false);
     // An unanswered question opens onto its chip, never an invented answer.
     expectNoMockWhileOwed(await section.innerText(), [
       [
@@ -154,19 +171,15 @@ test.describe('the Yoruba Language Lessons page', () => {
     page,
   }) => {
     await page.goto('/programs/yoruba-lessons');
-    const dialog = page.locator('dialog#enquiry');
+    // The card's trigger is always there; the header's comes from the Studio, so not in the placeholder project.
+    const header = page.locator('header#top a[data-enquiry="enrol"]');
+    await expect(header).toHaveCount(PLACEHOLDER_PROJECT ? 0 : 1);
     for (const trigger of [
-      page.locator('header#top a[data-enquiry="enrol"]'),
+      header,
       page.locator('#teacher .oy-enquiry-card a[data-enquiry="enrol"]'),
     ]) {
       if ((await trigger.count()) === 0) continue;
-      await trigger.scrollIntoViewIfNeeded();
-      await trigger.click();
-      await expect(dialog).toHaveAttribute('open', '');
-      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS.enrol.title);
-      await page.keyboard.press('Escape');
-      await expect(dialog).not.toHaveAttribute('open', '');
-      await expect(trigger).toBeFocused();
+      await expectEnquiryRoundTrip(page, trigger);
     }
   });
 
@@ -186,15 +199,8 @@ test.describe('the Yoruba Language Lessons page', () => {
       await expect(section.locator('.oy-takepart .oy-pend-line')).toBeVisible();
     } else {
       await expect(section.locator('.oy-btn--primary')).toHaveCount(1);
-      const dialog = page.locator('dialog#enquiry');
       for (const trigger of await section.locator('.oy-takepart a[data-enquiry]').all()) {
-        const kind = (await trigger.getAttribute('data-enquiry')) as EnquiryKind;
-        await trigger.scrollIntoViewIfNeeded();
-        await trigger.click();
-        await expect(dialog).toHaveAttribute('open', '');
-        await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS[kind].title);
-        await page.keyboard.press('Escape');
-        await expect(trigger).toBeFocused();
+        await expectEnquiryRoundTrip(page, trigger);
       }
       expectNoMockWhileOwed(await section.innerText(), [
         [/a few hours a month|second adult|\$75 a year/i, pendingWhat('lessonsPage', 'takePart[]')],
@@ -206,14 +212,6 @@ test.describe('the Yoruba Language Lessons page', () => {
   test('is clean for axe with the page settled', async ({ page }) => {
     await page.goto('/programs/yoruba-lessons');
     await settle(page);
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-      .analyze();
-    expect(
-      results.violations.map((violation) => ({
-        id: violation.id,
-        nodes: violation.nodes.map((node) => node.target.join(' ')).slice(0, 5),
-      })),
-    ).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
   });
 });

@@ -12,7 +12,7 @@
  * vendor form says they are on the festival page.
  * No rows renders the registry's Pending line.
  */
-import { isWayIn, type WayIn, wayAction } from '@oy/content/take-part';
+import { isQuietWay, isWayIn, WAY_CHIPS, wayAction } from '@oy/content/take-part';
 import PathRow from '../../cards/PathRow/PathRow.astro';
 import PathRows from '../../content/PathRows/PathRows.astro';
 import { type VendorTermsLike, vendorTermsText } from '../../content/vendor-terms';
@@ -53,22 +53,6 @@ interface Props {
   class?: string;
 }
 
-/** The chips as the prototypes name each way in; a row's own chip replaces its way in's. */
-const CHIPS: Record<WayIn, string> = {
-  vendor: 'Vendors',
-  sponsor: 'Sponsors',
-  performer: 'Performers',
-  volunteer: 'Volunteers',
-  table: 'Tables',
-  give: 'Give',
-  enrol: 'Enrol',
-  member: 'Membership',
-  updates: 'Updates',
-};
-
-/** The ways in whose button is quiet: they ask nothing of a form. */
-const QUIET: readonly WayIn[] = ['give', 'updates'];
-
 const {
   rows,
   labels = 'column',
@@ -90,7 +74,7 @@ const views = ordered.map((row) => {
   const way = isWayIn(row.way) ? row.way : undefined;
   return { row, way, action: way ? wayAction(way, row.label) : undefined };
 });
-const goldAt = views.findIndex((view) => view.action && !(view.way && QUIET.includes(view.way)));
+const goldAt = views.findIndex((view) => view.action && !isQuietWay(view.way));
 
 const { text: terms, missing: termsMissing } = vendorTermsText(vendorTerms);
 ---
@@ -105,12 +89,12 @@ const { text: terms, missing: termsMissing } = vendorTermsText(vendorTerms);
       {views.map(({ row, way, action }, at) => {
         const props = {
           way,
-          chip: way ? row.chip?.trim() || CHIPS[way] : undefined,
+          chip: way ? row.chip?.trim() || WAY_CHIPS[way] : undefined,
           title: row.title,
           line: row.line,
           action,
           pending: rowPending,
-          variant: way && QUIET.includes(way) ? 'quiet' : at === goldAt ? 'primary' : 'secondary',
+          variant: isQuietWay(way) ? 'quiet' : at === goldAt ? 'primary' : 'secondary',
           edit: row.edit,
         } as const;
         return way === 'vendor' && vendorTerms !== undefined ? (

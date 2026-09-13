@@ -102,6 +102,12 @@ describe('buildLessonsPage', () => {
     expect(buildLessonsPage(null, options).title).toBe('Yoruba Language Lessons');
   });
 
+  it('keeps the glance band with its Pending line while the page holds no facts', () => {
+    const view = buildLessonsPage(null, options);
+    expect(view.glance).toEqual([]);
+    expect(view.glancePending).toBe('the facts at a glance');
+  });
+
   it("draws the glance's four facts, the owed one with its chip", () => {
     expect(buildLessonsPage(seeded, options).glance).toEqual([
       { label: 'Format', value: 'Online, live', note: 'Video call', pending: 'a glance fact' },
@@ -120,6 +126,7 @@ describe('buildLessonsPage', () => {
       namePending: "the teacher's name and bio",
       email: null,
       emailPending: "the teacher's email",
+      bioPending: undefined,
     });
   });
 
@@ -132,6 +139,7 @@ describe('buildLessonsPage', () => {
       bio: '[ A short bio ]',
     });
     expect(view.person.image?.alt).toBe('[ Portrait ]');
+    expect(view.bioPending).toBe("the teacher's short bio");
     expect(view.variant).toBe('portrait');
     expect(view.email).toBe('teacher@example.org');
     const hidden = buildLessonsPage(

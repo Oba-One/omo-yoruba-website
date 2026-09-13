@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   cacheTagsFor,
+  EVENT_PAGE_NAMES,
   editionRoute,
   PUBLIC_ROUTES,
   programRoute,
@@ -127,5 +128,11 @@ describe('tagsForRoute', () => {
       const type = tag.replace('type:', '');
       expect(cacheTagsFor(type)[0]).toBe(tag);
     }
+  });
+});
+
+describe('EVENT_PAGE_NAMES', () => {
+  it('names each event page without a year, as the year strip and the Studio write it', () => {
+    expect(EVENT_PAGE_NAMES).toEqual({ festival: 'Odunde Festival', gala: 'End-of-Year Gala' });
   });
 });

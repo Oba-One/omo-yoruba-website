@@ -10,9 +10,9 @@ describe('EventList', () => {
     const list = (await renderToBody(Default)).querySelector('ul.oy-list[role="list"]');
     const rows = list?.querySelectorAll('li.oy-lrow--event');
     expect(rows).toHaveLength(2);
-    expect(text(rows?.[0]?.querySelector('.oy-lrow-date'))).toBe('Oct17');
+    expect(text(rows?.[0]?.querySelector('.oy-lrow-date'))).toBe('[ Month ][ 00 ]');
     expect(text(rows?.[1]?.querySelector('.oy-lrow-where'))).toBe(
-      'Saturday, 10am • Pending: the venue',
+      '[ Weekday, time ] • Pending: the venue',
     );
     expect(list?.querySelectorAll('a[data-enquiry="contact"]')).toHaveLength(2);
   });

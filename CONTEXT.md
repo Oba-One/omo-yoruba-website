@@ -66,18 +66,18 @@ routing contact; her name and portrait are hers to give.
 _Avoid_: teachers, head teacher, tutor, instructor
 
 **Collective**:
-The Yoruba Cultural Collective. Solar Hub and Green Goods are its two initiatives. Green
-colour lives only in its page and on its card's link.
+The Yoruba Cultural Collective. Solar Hub and Green Goods are its two initiatives. Green belongs
+to the Collective's content and to nothing else on the site.
 _Avoid_: YCC in copy, sustainability program
 
 **Initiative**:
-One of the Collective's member-led projects, Solar Hub or Green Goods, shown with its status
-line and what it serves.
+One of the Collective's member-led projects, Solar Hub or Green Goods, with its status line, who
+it serves, when it started and what comes next.
 _Avoid_: venture, program (a program is one of the four)
 
 **Status line**:
-An initiative's state in the Collective's own words, shown as a pill above its name; the
-status value (planned, piloting, running) sits among its facts.
+An initiative's state in the Collective's own words, beside its plainer status: planned,
+piloting or running.
 _Avoid_: badge, tag, progress
 
 **Collective event**:
@@ -92,13 +92,14 @@ described in full on the Programs hub.
 _Avoid_: programme in code and copy (US spelling), course
 
 **Sub-program**:
-One of the two halves of Kids & STEM, Àgbàlá Ọmọde and the STEM Hub, each with its own
-photograph and facts.
+One of the two halves of Kids & STEM: Àgbàlá Ọmọde, the children's program that also runs as
+the festival's children's yard of the same name, and the STEM Hub. Each has its own ages and
+what it offers.
 _Avoid_: track, class, subprogramme
 
 **Year strip**:
-The Programs hub's row of five columns saying when each program and event runs across a
-year, each with a short note.
+The Programs hub's one-year view of when each program and event runs, each with a short
+note.
 _Avoid_: calendar, timeline (that is Our Story's), schedule
 
 ### Site parts
@@ -114,8 +115,8 @@ for updates the newsletter form.
 _Avoid_: channel, CTA type, path
 
 **Take-part row**:
-One row of a take-part band as the page singleton keeps it: a way in with its title, line and button
-label, and the chip it wears on that page when not its way in's own ("Partner" for a sponsor row).
+One row of a take-part band as the page keeps it: a way in with its title, line and button label, and
+the page's own name for the way in where it differs (the Collective calls its sponsor row Partner).
 _Avoid_: path row (the component that draws it), CTA row
 
 **Green scope**:

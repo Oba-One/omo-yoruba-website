@@ -9,6 +9,7 @@ import {
   pendingWhat,
   presenceCountQuery,
   presenceWhat,
+  TEACHER_EMAIL_PENDING,
 } from './pending';
 import { schemaTypes } from './schema';
 
@@ -166,6 +167,8 @@ describe('the Collective events', () => {
     const row = PRESENCE.find((entry) => entry.filter?.includes('kind == "collective"'));
     expect(row?.where).toBe('Collective, events');
     // Still to come as the Studio can read it (ADR 0030): an end ahead, or no end and a start within a day.
+    // An event without a start never lists, so it never counts.
+    expect(row?.filter).toContain('defined(start) &&');
     expect(row?.filter).toContain('dateTime(end) > dateTime(now())');
     expect(row?.filter).toContain('dateTime(start) > dateTime(now()) - 60 * 60 * 24');
   });
@@ -248,6 +251,23 @@ describe("the Collective's one voice", () => {
     expect(COLLECTIVE_VOICE_SLOT.role).toBe('Member, Yoruba Cultural Collective');
     expect(COLLECTIVE_VOICE_SLOT.quote).toMatch(/^Quote from a member of the Collective/);
     expect(pendingWhat('collectivePage', 'voice')).toBe('the quote and who said it');
+  });
+});
+
+describe('the Lessons page, beyond its sections', () => {
+  it("asks for the glance when the page holds none, and for a linked teacher's short bio", () => {
+    expect(pendingWhat('lessonsPage', 'glance[]')).toBe('the facts at a glance');
+    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
+    const bio = PENDING.find((row) => row.type === 'person' && row.fields?.includes('bioShort'));
+    // Only the person the Lessons page links is listed, never every person without a bio.
+    expect(bio?.filter).toContain('lessonsPage');
+  });
+
+  it('keeps the teacher email chip in one constant the registry row uses', () => {
+    const row = PENDING.find(
+      (entry) => entry.type === 'siteSettings' && entry.condition?.includes('"teacher"'),
+    );
+    expect(row?.what).toBe(TEACHER_EMAIL_PENDING);
   });
 });
 

@@ -7,9 +7,9 @@
  * Lessons levels draw it (`11 Yoruba Language School.dc.html`), with the registry's chip for a missing
  * line. The event form, `kind="event"` (`12 Yoruba Cultural Collective.dc.html`, Collective events): the
  * month and day in the date block, the title, the summary, the weekday and start time with the venue or
- * its chip, all in Los Angeles time, and a quiet action. The row warms on hover, nothing lifts.
+ * its chip, and a quiet action; the page words the date in Los Angeles time (`content/edition-dates`).
+ * The row warms on hover, nothing lifts.
  */
-import { monthDay, weekdayTime } from '../../content/edition-dates';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import type { ActionLike } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
@@ -27,11 +27,17 @@ export interface EntryRowLike {
   line?: string | null;
 }
 
+/** An event row as the page words it: the date block and the weekday and time already in words. */
 export interface EventRowLike {
   _id?: string | null;
   title?: string | null;
   summary?: string | null;
-  start?: string | null;
+  /** "Oct", over the day. */
+  month?: string | null;
+  /** "17". */
+  day?: string | null;
+  /** "Saturday, 10am". */
+  when?: string | null;
   venue?: { name?: string | null } | null;
 }
 
@@ -71,18 +77,19 @@ type Props =
 
 const props = Astro.props;
 const { edit, class: className } = props;
-const date = props.kind === 'event' ? monthDay(props.row.start) : undefined;
-const when = props.kind === 'event' ? weekdayTime(props.row.start) : undefined;
+const event = props.kind === 'event' ? props.row : undefined;
+const dated = Boolean(event?.month?.trim() && event?.day?.trim());
+const when = event?.when?.trim();
 ---
 
 {
   props.kind === 'event' ? (
     <li class:list={['oy-lrow', 'oy-lrow--event', className]} data-sanity={edit}>
       <div class="oy-lrow-date">
-        {date ? (
+        {dated ? (
           <>
-            <b>{date.month}</b>
-            <span>{date.day}</span>
+            <b>{props.row.month}</b>
+            <span>{props.row.day}</span>
           </>
         ) : (
           <Pending what={props.datePending ?? 'the date'} />

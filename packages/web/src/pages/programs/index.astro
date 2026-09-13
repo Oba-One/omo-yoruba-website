@@ -61,7 +61,7 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
           page.cards.items.map((card) => (
             <ProgramCard
               program={card.program}
-              when
+              showWhen
               mediaHeight={page.cards.mediaHeight}
               imageEdit={card.imageEdit}
             />
@@ -73,11 +73,11 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
     {
       page.kids.shown && (
         <Section id="kids" ground="alt" labelledby="kids-heading">
-          <Disclosure open={page.kids.open} label={page.kids.title ?? 'Kids & STEM'} edit={page.edit.inline}>
+          <Disclosure open={page.kids.open} label={page.kids.title} edit={page.edit.inline}>
             <SectionHead
               slot="head"
               kicker={{ yo: 'Àwọn ọmọ', en: 'The children' }}
-              title={page.kids.title ?? 'Kids & STEM'}
+              title={page.kids.title}
               id="kids-heading"
             />
             {page.kids.blurb && <Prose text={page.kids.blurb} measure="wide" />}
@@ -98,13 +98,13 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
         <Section id="exchange" labelledby="exchange-heading">
           <Disclosure
             open={page.exchange.open}
-            label={page.exchange.title ?? 'Cultural Exchange'}
+            label={page.exchange.title}
             edit={page.edit.inline}
           >
             <SectionHead
               slot="head"
               kicker={{ yo: 'Ìpàdé àṣà', en: 'Meeting of cultures' }}
-              title={page.exchange.title ?? 'Cultural Exchange'}
+              title={page.exchange.title}
               id="exchange-heading"
             />
             <Split>

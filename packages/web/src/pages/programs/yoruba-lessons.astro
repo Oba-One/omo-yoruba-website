@@ -49,7 +49,7 @@ cachePage(Astro, '/programs/yoruba-lessons', { draft: preview, failed: Boolean(e
       line={page.header.line}
       actions={page.header.actions}
     />
-    <GlanceStrip facts={page.glance} />
+    <GlanceStrip facts={page.glance} pending={page.glancePending} />
 
     <Section id="teacher" labelledby="teacher-heading" data-sanity={page.edit.portraits}>
       <SectionHead
@@ -63,6 +63,7 @@ cachePage(Astro, '/programs/yoruba-lessons', { draft: preview, failed: Boolean(e
           person={page.teacher.person}
           variant={page.teacher.variant}
           namePending={page.teacher.namePending}
+          bioPending={page.teacher.bioPending}
           sizes="(min-width: 860px) 320px, 100vw"
           edit={page.teacher.edit}
         />

@@ -1,5 +1,6 @@
 import { defineField } from 'sanity';
 import { PAGE_LAYOUTS } from '../../layout-options';
+import { EVENT_PAGE_NAMES } from '../../routes';
 import { voice } from '../../validation/rules';
 import { facts, refs, text } from '../helpers';
 import { definePage } from './page';
@@ -248,9 +249,11 @@ export const programsPage = definePage({
             rule.custom((row) => {
               const value = row as { program?: unknown; kind?: string } | undefined;
               if (!value) return true;
-              return Boolean(value.program) !== Boolean(value.kind)
-                ? true
-                : 'Choose a program or an event, not both.';
+              if (value.program && value.kind) return 'Choose a program or an event, not both.';
+              if (!value.program && !value.kind) {
+                return 'Choose the program or the event this row names.';
+              }
+              return true;
             }),
           fields: [
             defineField({
@@ -273,8 +276,8 @@ export const programsPage = definePage({
               description: 'The event whose page the row names; its name shows without a year.',
               options: {
                 list: [
-                  { title: 'Odunde Festival', value: 'festival' },
-                  { title: 'End-of-Year Gala', value: 'gala' },
+                  { title: EVENT_PAGE_NAMES.festival, value: 'festival' },
+                  { title: EVENT_PAGE_NAMES.gala, value: 'gala' },
                 ],
                 layout: 'radio',
                 direction: 'horizontal',
@@ -287,7 +290,9 @@ export const programsPage = definePage({
             prepare: ({ when, program, kind, note }) => ({
               title:
                 program ??
-                (kind === 'gala' ? 'End-of-Year Gala' : kind ? 'Odunde Festival' : 'A row'),
+                (kind === 'gala' || kind === 'festival'
+                  ? EVENT_PAGE_NAMES[kind as keyof typeof EVENT_PAGE_NAMES]
+                  : 'A row'),
               subtitle: [when ?? 'when pending', note].filter(Boolean).join(' • '),
             }),
           },

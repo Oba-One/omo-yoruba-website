@@ -37,6 +37,12 @@ export const ROUTE_SINGLETONS: Record<string, PublicRoute> = {
   newsPage: '/news',
 };
 
+/** The event pages' names, by the kind of edition they show: never with a year (ADR 0031). */
+export const EVENT_PAGE_NAMES = {
+  festival: 'Odunde Festival',
+  gala: 'End-of-Year Gala',
+} as const;
+
 /**
  * The page an edition opens, by its kind: the festival and the Gala have their own, a Collective
  * event opens the Collective's page, and any other kind has none. The one answer the news cards,

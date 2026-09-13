@@ -17,7 +17,7 @@
   --green-150: #ddefe5; /* the member-led pill's ground */
   --green-200: #c7dfd2; /* the strong header's bottom line */
   --green-300: #a9cdbb; /* the status pill's line */
-  --green-700: #1c5c41; /* green text on those tints: 6.7:1 on green-150, where green-600 reads 4.18 */
+  --green-700: #1f5c41; /* green text on those tints, the volunteer chip's: 6.6:1 on green-150, where green-600 reads 4.18 */
   --paper: #faf5ec; /* warm section background, alternates with white */
   --white: #ffffff;
   --ink: #22222a; /* body text */

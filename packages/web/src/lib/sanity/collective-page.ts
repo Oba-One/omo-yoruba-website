@@ -15,6 +15,7 @@ import { collectiveEvents } from '@oy/content/lead-event';
 import { COLLECTIVE_VOICE_SLOT, pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { collectivePageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
+import { monthDay, weekdayTime } from '@oy/ui/content/edition-dates.ts';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton } from './page-skeleton';
 import { type BuildOptions, cleanText, resolveImage } from './view';
@@ -144,11 +145,14 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
     },
     events: {
       shown: eventsShown,
+      // Every listed event has a start, so its date block and weekday are always in words.
       items: collectiveEvents(data?.events ?? [], { now: options.now }).map((event) => ({
         _id: event._id,
         title: event.title,
         summary: event.summary,
-        start: event.start,
+        month: monthDay(event.start)?.month,
+        day: monthDay(event.start)?.day,
+        when: weekdayTime(event.start),
         venue: event.venue,
         edit: edit('title', event._id, 'event'),
       })),

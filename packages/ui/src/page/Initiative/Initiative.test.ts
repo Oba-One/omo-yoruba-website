@@ -3,11 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './Initiative.stories';
 
-const { Default, Filled, Stacked, StatusHidden } = composeStories(stories);
+const { Default, Pending, Stacked, StatusHidden } = composeStories(stories);
 
 describe('Initiative', () => {
   it('waits for every owed fact under its own chip, inside the Collective scope', async () => {
-    const root = (await renderToBody(Default)).querySelector('.cc-init');
+    const root = (await renderToBody(Pending)).querySelector('.cc-init');
     expect(root?.getAttribute('data-scope')).toBe('collective');
     expect(root?.getAttribute('data-layout')).toBe('side');
     const pills = root?.querySelector('.cc-init-pills');
@@ -32,8 +32,8 @@ describe('Initiative', () => {
     expect(text(root?.querySelector('figure'))).toContain('a photo of Solar Hub');
   });
 
-  it('draws the status line in its pill with the dot, the blurb, the facts and the photograph', async () => {
-    const root = (await renderToBody(Filled)).querySelector('.cc-init');
+  it('draws the status line in its pill with the dot, the blurb and the facts', async () => {
+    const root = (await renderToBody(Default)).querySelector('.cc-init');
     const status = root?.querySelector('.cc-init-pills .cc-status');
     expect(text(status)).toBe('[ Status line ]');
     expect(status?.querySelector('i')?.getAttribute('aria-hidden')).toBe('true');
@@ -41,9 +41,8 @@ describe('Initiative', () => {
       '[ What the project is, in two sentences ]',
     );
     expect(root?.querySelectorAll('.oy-glance--inline .oy-pend')).toHaveLength(0);
-    expect(root?.querySelector('figure img')?.getAttribute('alt')).toBe(
-      '[ A photograph of the project ]',
-    );
+    // No interim photograph stands in for the project (spec Q10).
+    expect(root?.querySelector('figure img')).toBeNull();
   });
 
   it('stacks the copy above the photograph under the stacked option', async () => {

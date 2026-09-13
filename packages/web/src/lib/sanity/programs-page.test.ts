@@ -356,4 +356,10 @@ describe('buildProgramsPage', () => {
     expect(draft.edit.inline).toContain('path=layout.inline');
     expect(draft.year.edit).toContain('path=yearStrip');
   });
+
+  it("heads the inline programs with the programs' own names while the Studio holds no title", () => {
+    const view = buildProgramsPage(null, options);
+    expect(view.kids.title).toBe('Kids & STEM');
+    expect(view.exchange.title).toBe('Cultural Exchange');
+  });
 });

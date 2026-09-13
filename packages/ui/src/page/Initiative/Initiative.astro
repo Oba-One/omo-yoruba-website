@@ -37,6 +37,8 @@ interface Props {
   id?: string;
   /** A `data-sanity` attribute for the photograph. */
   imageEdit?: string;
+  /** A `data-sanity` attribute for the pills, so click-to-edit reaches the `status` option. */
+  statusEdit?: string;
   class?: string;
 }
 
@@ -49,6 +51,7 @@ const {
   blurbPending = 'what the initiative is',
   id,
   imageEdit,
+  statusEdit,
   class: className,
 } = Astro.props;
 const name = initiative.name?.trim();
@@ -61,7 +64,7 @@ const pills = status || Boolean(initiative.memberLed);
   <div class="cc-init-copy">
     {
       pills && (
-        <div class="cc-init-pills">
+        <div class="cc-init-pills" data-sanity={statusEdit}>
           {status &&
             (statusLine ? (
               <span class="cc-status">

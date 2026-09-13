@@ -5,8 +5,10 @@
  * terracotta label, the value in the display face and an optional note, with the registry's chip
  * wherever the Studio holds no value. Five show at most; under 900px the cells fall into two
  * columns (the tokens' `.oy-glance`). An optional line under the strip speaks to the reader. Without
- * its band the strip sits inside a column (an initiative's four facts on the Collective page).
+ * its band the strip sits inside a column (an initiative's four facts on the Collective page). A strip
+ * with no facts shows the registry's Pending line in the band when the page passes its wording.
  */
+import Pending from '../../core/Pending/Pending.astro';
 import GlanceCell from './GlanceCell.astro';
 
 export interface GlanceFact {
@@ -25,13 +27,15 @@ interface Props {
   caption?: string | null;
   /** The white band and the page wrap around the strip; off inside a column. */
   band?: boolean;
+  /** The registry's wording for a strip with no facts. */
+  pending?: string;
   /** A `data-sanity` attribute for the strip. */
   edit?: string;
   id?: string;
   class?: string;
 }
 
-const { facts, caption, band = true, edit, id = 'glance', class: className } = Astro.props;
+const { facts, caption, band = true, pending, edit, id = 'glance', class: className } = Astro.props;
 const shown = facts.slice(0, 5);
 const columns = shown.length === 5 ? undefined : String(shown.length);
 ---
@@ -40,11 +44,15 @@ const columns = shown.length === 5 ? undefined : String(shown.length);
   band ? (
     <div class:list={['oy-glance-band', className]} id={id} data-sanity={edit}>
       <div class="oy-wrap">
-        <div class="oy-glance" data-cols={columns}>
-          {shown.map((fact) => (
-            <GlanceCell fact={fact} />
-          ))}
-        </div>
+        {shown.length === 0 && pending ? (
+          <Pending variant="line" what={pending} />
+        ) : (
+          <div class="oy-glance" data-cols={columns}>
+            {shown.map((fact) => (
+              <GlanceCell fact={fact} />
+            ))}
+          </div>
+        )}
         {caption && <p class="oy-glance-caption">{caption}</p>}
       </div>
     </div>

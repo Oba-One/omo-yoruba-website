@@ -37,9 +37,9 @@ rather than duplicates. Ids never contain a period.
   the contact form. An event without a start never lists, so enter it once the date is set. The venue's
   chip shows until `venue.name` is filled; the Pending view counts the events still to come.
 - **Initiative**: Solar Hub and Green Goods are `initiative` documents the Collective page lists in the
-  order of `collectivePage.initiatives`. The status line is the pill in the Collective's own words
-  ("Piloting since 2024" only once it is true); `status`, `serves`, `since` and `next` are the four
-  facts, each its own chip while empty.
+  order of `collectivePage.initiatives`. The status line is the pill in the Collective's own words, set
+  only from what the owner confirms ("[ How far the project has come ]"); `status`, `serves`, `since` and
+  `next` are the four facts, each its own chip while empty.
 - **Album**: upload photos, create `album` with cover, photos with `alt` and captions, the
   album-level `credit`, `creditConfirmed`, `consentNote`, and the `event` reference. Each photo's
   `_key` is its lightbox deep link.

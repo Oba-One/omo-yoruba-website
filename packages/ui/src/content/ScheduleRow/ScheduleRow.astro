@@ -22,7 +22,7 @@ interface Props {
   item: ScheduleItemLike;
   /** `day` sets the day as a label instead of a time. */
   mode?: 'time' | 'day';
-  /** The registry's wording for a row without its time. */
+  /** The registry's wording for a row without its time, or its day in a day-led row. */
   timePending?: string;
   class?: string;
 }
@@ -30,7 +30,7 @@ interface Props {
 const {
   item,
   mode = item.time ? 'time' : item.day ? 'day' : 'time',
-  timePending = 'the time',
+  timePending = mode === 'day' ? 'the day' : 'the time',
   class: className,
 } = Astro.props;
 const when = mode === 'day' ? item.day : item.time;
@@ -39,7 +39,7 @@ const zone = item.zone?.yo || item.zone?.en;
 ---
 
 <li class:list={['oy-sched-row', className]}>
-  <span class="oy-sched-time">{when?.trim() ? when : <Pending what={mode === 'day' ? 'the day' : timePending} />}</span>
+  <span class="oy-sched-time">{when?.trim() ? when : <Pending what={timePending} />}</span>
   <div class="oy-sched-what">
     {title && <b>{title}</b>}
     {item.detail && <p>{item.detail}</p>}

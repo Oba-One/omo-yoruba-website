@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './ScheduleRow.stories';
 
-const { TimeLed, DayLed, WithoutZone } = composeStories(stories);
+const { TimeLed, DayLed, DayLedWording, WithoutZone } = composeStories(stories);
 
 describe('ScheduleRow', () => {
   it('leads with the time or its chip, then what happens and the zone tag', async () => {
@@ -19,6 +19,8 @@ describe('ScheduleRow', () => {
   it('leads with the day for a day-led row and drops the tag without a zone', async () => {
     const day = (await renderToBody(DayLed)).querySelector('li.oy-sched-row');
     expect(text(day?.querySelector('.oy-sched-time'))).toBe('Pending: the day');
+    const step = (await renderToBody(DayLedWording)).querySelector('li.oy-sched-row');
+    expect(text(step?.querySelector('.oy-sched-time'))).toBe('Pending: the step');
     const bare = (await renderToBody(WithoutZone)).querySelector('li.oy-sched-row');
     expect(bare?.querySelector('.oy-sched-tag')).toBeNull();
   });

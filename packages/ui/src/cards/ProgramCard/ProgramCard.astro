@@ -5,7 +5,7 @@
  * highlighted card (`data-highlight` on the page root, the `highlight` option) moves first and
  * takes the gold ring, the prototype's page rule ported below; the Collective's link reads
  * green, the one place green lives outside its page. A missing blurb shows the registry's chip;
- * without an action the card has no link. With `when` (the Programs hub, `10 Programs.dc.html`) the
+ * without an action the card has no link. With `showWhen` (the Programs hub, `10 Programs.dc.html`) the
  * card leads with the program's cadence and ages above its name, each the registry's chip while the
  * Studio holds none.
  */
@@ -30,8 +30,8 @@ export interface ProgramLike {
 
 interface Props {
   program: ProgramLike;
-  /** The cadence and ages over the name, as the Programs hub draws its cards. */
-  when?: boolean;
+  /** Draws the cadence and ages over the name, as the Programs hub does. */
+  showWhen?: boolean;
   /** The photograph's height: 170 on the homepage, 160 or 200 on the Programs hub. */
   mediaHeight?: number;
   /** A `data-sanity` attribute for the photo. */
@@ -45,7 +45,7 @@ const HIGHLIGHT_CLASS: Record<string, string> = {
   collective: 'v2-prog--collective',
 };
 
-const { program, when = false, mediaHeight = 170, imageEdit, class: className } = Astro.props;
+const { program, showWhen = false, mediaHeight = 170, imageEdit, class: className } = Astro.props;
 const name = program.name?.trim();
 const action: ActionLike | undefined = program.action?.label ? program.action : undefined;
 const blurbPending = pendingWhat('program', 'blurb');
@@ -54,7 +54,7 @@ const ages = program.ages?.trim();
 ---
 
 <Card
-  title={when ? undefined : name || undefined}
+  title={showWhen ? undefined : name || undefined}
   image={program.image}
   imageEdit={imageEdit}
   alt=""
@@ -74,7 +74,7 @@ const ages = program.ages?.trim();
     )
   }
   {
-    when && (
+    showWhen && (
       <>
         <div class="pg-when">
           {cadence ? <span>{program.cadence}</span> : <Pending what={pendingWhat('program', 'cadence')} />}

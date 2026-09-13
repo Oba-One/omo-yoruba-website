@@ -670,7 +670,11 @@
   background: #fbebcb;
   color: #6b4708;
 }
-.oy-path[data-accent="performer"] .oy-path-chip {
+/* Enrol and member wear the performer accent, updates the give accent, as 10 Programs and 11 Yoruba
+   Language School draw them (ADR 0029). */
+.oy-path[data-accent="performer"] .oy-path-chip,
+.oy-path[data-accent="enrol"] .oy-path-chip,
+.oy-path[data-accent="member"] .oy-path-chip {
   background: var(--indigo-100);
   color: var(--indigo-700);
 }
@@ -682,7 +686,8 @@
   background: #eae4f3;
   color: #4a3878;
 }
-.oy-path[data-accent="give"] .oy-path-chip {
+.oy-path[data-accent="give"] .oy-path-chip,
+.oy-path[data-accent="updates"] .oy-path-chip {
   background: #f1eee6;
   color: var(--ink);
 }
@@ -755,17 +760,6 @@
   color: var(--terra-600);
 }
 
-/* The program pages' ways in (ADR 0029): enrol and member wear the performer accent and updates the
-   give accent, as 10 Programs and 11 Yoruba Language School draw them. */
-.oy-path[data-accent="enrol"] .oy-path-chip,
-.oy-path[data-accent="member"] .oy-path-chip {
-  background: var(--indigo-100);
-  color: var(--indigo-700);
-}
-.oy-path[data-accent="updates"] .oy-path-chip {
-  background: #f1eee6;
-  color: var(--ink);
-}
 .oy-takepart[data-labels="kicker"] .oy-path[data-accent="vendor"] .oy-path-chip {
   color: var(--terra-600);
 }
@@ -2578,8 +2572,9 @@
   color: #7a4409;
 }
 /* A list row's date block sets its day span large in indigo (.oy-lrow-date span); a chip there keeps its
-   own type and colour. Added in Phase 6 for the Collective's events. */
+   own box, type and colour. Added in Phase 6 for the Collective's events. */
 .oy-lrow-date span.oy-pend {
+  display: inline-flex;
   color: #7a4409;
 }
 /* A sponsor level sets its amount span as a muted block (.oy-lrow-tier span); a chip there keeps its

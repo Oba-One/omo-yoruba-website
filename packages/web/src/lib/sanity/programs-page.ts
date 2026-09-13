@@ -12,6 +12,7 @@
  */
 import { pendingWhat } from '@oy/content/pending';
 import type { programsPageQuery } from '@oy/content/queries';
+import { EVENT_PAGE_NAMES } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton } from './page-skeleton';
@@ -28,18 +29,16 @@ export interface ProgramsLayout extends Record<string, string> {
 const PAGE_TITLE = 'Our programs';
 
 /** The sections the two inline programs keep on this page, by the program's slug. */
-export const INLINE_SECTIONS: Readonly<Record<string, string>> = {
+const INLINE_SECTIONS: Readonly<Record<string, string>> = {
   'kids-stem': 'kids',
   'cultural-exchange': 'exchange',
 };
 
 const COLUMNS: Record<ProgramsLayout['cards'], 2 | 3 | 4> = { four: 4, three: 3, pairs: 2 };
 
-/** An event row's name: its page's own, without an edition's year (ADR 0031). */
-const EVENT_NAMES: Readonly<Record<string, string>> = {
-  festival: 'Odunde Festival',
-  gala: 'End-of-Year Gala',
-};
+/** The inline programs' section headings while the Studio holds no title: the programs' own names. */
+const KIDS_STEM = 'Kids & STEM';
+const CULTURAL_EXCHANGE = 'Cultural Exchange';
 
 /** The take-part intro, counting the rows the band draws. */
 function takePartIntro(count: number): string | undefined {
@@ -56,7 +55,7 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
   const programs = (data?.programs ?? []).filter((program) => program !== null);
   const shown = layout.cards === 'three' ? programs.slice(0, 3) : programs;
   // A program the cards leave out takes its inline section with it (the prototype hides #exchange).
-  const left = new Set(
+  const leftOut = new Set(
     programs.filter((program) => !shown.includes(program)).map((program) => program.slug),
   );
   const open = layout.inline === 'expanded';
@@ -92,9 +91,9 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
       }),
     },
     kids: {
-      shown: !left.has('kids-stem'),
+      shown: !leftOut.has('kids-stem'),
       open,
-      title: cleanText(kidsStem?.title) ? (kidsStem?.title ?? undefined) : undefined,
+      title: cleanText(kidsStem?.title) ? (kidsStem?.title ?? KIDS_STEM) : KIDS_STEM,
       blurb: kidsStem?.blurb ?? undefined,
       subprograms: (kidsStem?.subprograms ?? [])
         .filter((sub) => sub !== null)
@@ -116,9 +115,11 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
         })),
     },
     exchange: {
-      shown: !left.has('cultural-exchange'),
+      shown: !leftOut.has('cultural-exchange'),
       open,
-      title: cleanText(exchange?.title) ? (exchange?.title ?? undefined) : undefined,
+      title: cleanText(exchange?.title)
+        ? (exchange?.title ?? CULTURAL_EXCHANGE)
+        : CULTURAL_EXCHANGE,
       blurb: cleanText(exchange?.blurb) ? (exchange?.blurb ?? undefined) : undefined,
       blurbPending: pending('culturalExchange.blurb'),
       // The prototype's facts the schema carries; its "Between" has no field (spec Q4).
@@ -150,7 +151,11 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
         .map((row) => ({
           _key: row._key,
           when: row.when,
-          name: row.program ?? (row.kind ? EVENT_NAMES[row.kind] : undefined),
+          name:
+            row.program ??
+            (row.kind === 'festival' || row.kind === 'gala'
+              ? EVENT_PAGE_NAMES[row.kind]
+              : undefined),
           note: row.note,
         })),
       whenPending: pending('yearStrip'),

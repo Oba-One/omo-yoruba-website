@@ -49,6 +49,9 @@ export const Pending: Story = {
   },
 };
 
+/** No facts in the Studio: the band keeps its place with the registry's Pending line. */
+export const Empty: Story = { args: { facts: [], pending: 'the facts at a glance' } };
+
 /** Inside a column, without the band: an initiative's four facts on the Collective page. */
 export const InColumn: Story = {
   args: {

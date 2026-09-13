@@ -271,10 +271,13 @@ describe('buildCollectivePage', () => {
       const view = buildCollectivePage(withEvents, at('2026-09-13T12:00:00Z')).events;
       expect(view.shown).toBe(true);
       expect(view.items.map((event) => event._id)).toEqual(['event-workshop', 'event-walk']);
+      // The date in words, in Los Angeles time: 10am on Saturday 17 October.
       expect(view.items[1]).toMatchObject({
         title: '[ A site walk ]',
         summary: '[ One line ]',
-        start: '2026-10-17T17:00:00Z',
+        month: 'Oct',
+        day: '17',
+        when: 'Saturday, 10am',
         venue: { name: '[ Venue ]' },
       });
       expect(view).toMatchObject({
@@ -351,6 +354,7 @@ describe('buildCollectivePage', () => {
       'id=initiative-solar-hub;type=initiative;path=image',
     );
     expect(draft.edit.initiatives).toContain('path=layout.initiatives');
+    expect(draft.edit.status).toContain('path=layout.status');
     const linked = buildCollectivePage({ ...seeded, voice } as CollectivePageData, {
       ...options,
       draft: true,

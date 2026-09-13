@@ -46,7 +46,7 @@ export const WithEmail: Story = {
   args: {
     kind: 'enrol',
     label: 'Write to the teacher',
-    email: 'teacher@example.org',
+    email: '[ teacher@example.org ]',
     emailPending: "the teacher's email",
   },
 };

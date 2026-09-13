@@ -2,6 +2,11 @@ import { wayAction } from '@oy/content/take-part';
 import type { ComponentProps } from 'astro/types';
 import { FESTIVAL_TAKE_PART, GALA_TAKE_PART } from '../../fixtures/event-pages';
 import { DOORS, OTHER_DOORS } from '../../fixtures/homepage';
+import {
+  COLLECTIVE_TAKE_PART,
+  LESSONS_TAKE_PART,
+  PROGRAMS_TAKE_PART,
+} from '../../fixtures/program-pages';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import PathRow from './PathRow.astro';
 
@@ -80,6 +85,63 @@ export const TakePartRowPending: Story = {
     line: 'Four questions, and we send the deck with our impact numbers.',
     pending: 'a way in, its title or its button label',
     primary: false,
+  },
+};
+
+const [enrol] = PROGRAMS_TAKE_PART;
+const member = LESSONS_TAKE_PART[1];
+const [partner, , updates] = COLLECTIVE_TAKE_PART;
+
+/** The Programs hub's enrol row as the seed writes it: the performer accent, the enrol form. */
+export const Enrol: Story = {
+  args: {
+    door: undefined,
+    way: 'enrol',
+    chip: 'Enrol',
+    title: enrol?.title,
+    line: enrol?.line,
+    action: wayAction('enrol', enrol?.label),
+    primary: true,
+  },
+};
+
+/** The Lessons page's member row: the performer accent, the member form, an outline. */
+export const MemberRow: Story = {
+  args: {
+    door: undefined,
+    way: 'member',
+    chip: 'Membership',
+    title: member?.title,
+    line: member?.line,
+    action: wayAction('member', member?.label),
+    primary: false,
+  },
+};
+
+/** The Collective's updates row: the give accent, a quiet link to the newsletter form. */
+export const Updates: Story = {
+  args: {
+    door: undefined,
+    way: 'updates',
+    chip: 'Updates',
+    title: updates?.title,
+    line: updates?.line,
+    action: wayAction('updates', updates?.label),
+    primary: false,
+    variant: 'quiet',
+  },
+};
+
+/** A row that wears its own chip: the Collective's sponsor row reads "Partner". */
+export const OwnChip: Story = {
+  args: {
+    door: undefined,
+    way: 'sponsor',
+    chip: partner?.chip,
+    title: partner?.title,
+    line: partner?.line,
+    action: wayAction('sponsor', partner?.label),
+    primary: true,
   },
 };
 

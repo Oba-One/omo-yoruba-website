@@ -82,4 +82,11 @@ const rows = (facts ?? []).filter((fact) => fact?.label?.trim());
     line-height: 1.55;
     color: var(--ink);
   }
+  /* A link on its own is no sentence: padding takes it to the 44px target, and the negative margin keeps
+     the row's height (the elder test). */
+  .oy-fact dd a {
+    display: inline-block;
+    padding: 10px 0;
+    margin: -10px 0;
+  }
 </style>

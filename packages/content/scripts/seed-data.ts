@@ -917,7 +917,8 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
 /** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`. */
 function storedPaths(value: unknown, steps: readonly string[], prefix: string): string[] {
   const [step, ...rest] = steps;
-  if (step === undefined) return value === undefined ? [] : [prefix];
+  // A retired path names a field, never a whole array item.
+  if (step === undefined) return [];
   if (!isPlainObject(value)) return [];
   if (step.endsWith('[]')) {
     const name = step.slice(0, -2);

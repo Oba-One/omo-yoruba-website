@@ -10,7 +10,7 @@
  * `faq`, the take-part rows, and the `data-sanity` attributes for click-to-edit in draft mode. The
  * page is Yoruba Language Lessons: never "School", no terms, no Saturdays, no venue.
  */
-import { PENDING, pendingWhat } from '@oy/content/pending';
+import { pendingWhat, TEACHER_EMAIL_PENDING } from '@oy/content/pending';
 import type { lessonsPageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
@@ -37,11 +37,6 @@ function faqLead(count: number): string | undefined {
 /** One teacher is a confirmed fact, so her card says "Teacher" before the Studio names her. */
 const TEACHER_ROLE = 'Teacher';
 
-/** The settings row is a condition on the teacher's routing contact, so it is found by that. */
-const EMAIL_PENDING =
-  PENDING.find((row) => row.type === 'siteSettings' && row.condition?.includes('"teacher"'))
-    ?.what ?? "the teacher's email";
-
 export function buildLessonsPage(data: LessonsPageData | null, options: BuildOptions) {
   const page = pageSkeleton<LessonsLayout>('lessonsPage', data, options, PAGE_TITLE);
   const { edit, layout } = page;
@@ -59,6 +54,7 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
     root: { ...layout },
     header: { variant: 'slim' as const, ...page.header },
     glance: glanceFacts('lessonsPage', 'glance', data?.glance),
+    glancePending: pending('glance[]'),
     teacher: {
       intro: data?.teacherIntro ?? undefined,
       person: {
@@ -71,10 +67,12 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
       // Without a portrait, or with portraits hidden, the card draws the woven tick.
       variant: portrait ? ('portrait' as const) : ('nophoto' as const),
       namePending: pendingWhat('lessonsPage', 'teacher') ?? "the teacher's name",
+      // Before she is linked her name's chip asks for the bio too; after, the bio asks for itself.
+      bioPending: teacher ? pendingWhat('person', 'bioShort') : undefined,
       edit: teacher ? edit('name', teacher._id, 'person') : edit('teacher'),
       // Null while the settings hold no address, so the card shows the registry's chip.
       email: cleanText(data?.teacherEmail) ?? null,
-      emailPending: EMAIL_PENDING,
+      emailPending: TEACHER_EMAIL_PENDING,
     },
     learn: {
       prose: data?.learn && data.learn.length > 0 ? data.learn : undefined,

@@ -48,3 +48,6 @@ every retired field was empty or unrendered in `development`).
   route map.
 - CONTENT-MODEL section 3's `lessonsPage.voices[]` and `programsPage.yearStrip[]` "event" read as
   amended here.
+- An initiative's section carries the collective scope itself as well as sitting inside the page's: it is
+  Collective content wherever it is drawn, and a component story keeps its greens without a wrapper the
+  story framework would strip (Phase 6 code review).

@@ -33,5 +33,8 @@ export const TimeLed: Story = {};
 /** Day-led: the day as a terracotta label. */
 export const DayLed: Story = { args: { mode: 'day' } };
 
+/** A day-led row with the page's own wording: a lesson's step without its place. */
+export const DayLedWording: Story = { args: { mode: 'day', timePending: 'the step' } };
+
 /** Without a zone, as the Gala's running order sets its rows. */
 export const WithoutZone: Story = { args: { item: { ...first, zone: null } } };

@@ -1,8 +1,13 @@
-import AxeBuilder from '@axe-core/playwright';
-import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import { expect, type Page, test } from '@playwright/test';
-import { expectNoMockWhileOwed, goldSharingAView, settle } from './helpers';
+import {
+  axeViolations,
+  expectEnquiryRoundTrip,
+  expectNoMockWhileOwed,
+  goldSharingAView,
+  PLACEHOLDER_PROJECT,
+  settle,
+} from './helpers';
 
 // The Yoruba Cultural Collective in the prototype's order (ROUTES section 4), each block present whether
 // the Studio holds its content or renders Pending: CI runs with a placeholder project, where every read
@@ -40,16 +45,6 @@ const greenOutsideMain = (page: Page, colours: string[]) =>
       .filter((el) => !el.closest('main') && painted(el))
       .map((el) => `${el.tagName.toLowerCase()}.${el.className}`);
   }, colours);
-
-const axeViolations = async (page: Page) => {
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-    .analyze();
-  return results.violations.map((violation) => ({
-    id: violation.id,
-    nodes: violation.nodes.map((node) => node.target.join(' ')).slice(0, 5),
-  }));
-};
 
 test.describe('the Yoruba Cultural Collective page', () => {
   test('carries its blocks in order inside the collective scope, one h1, nothing open', async ({
@@ -89,24 +84,26 @@ test.describe('the Yoruba Cultural Collective page', () => {
     expect(await greenOutsideMain(page, greens)).toEqual([]);
   });
 
-  test("opens the sponsor form from the header's gold action and points the second at the events", async ({
+  test("heads the page with the Studio's heading and actions, the first gold, or the heading's chip", async ({
     page,
   }) => {
     await page.goto('/programs/cultural-collective');
-    const actions = page.locator('header#top .oy-phead-cta .oy-btn');
-    const count = await actions.count();
-    if (count === 0) return;
-    if (count > 1) await expect(actions.nth(1)).toHaveAttribute('href', '#events');
-    const partner = page.locator('header#top a.oy-btn--primary[data-enquiry="sponsor"]');
-    if ((await partner.count()) === 1) {
-      await partner.click();
-      const dialog = page.locator('dialog#enquiry');
-      await expect(dialog).toHaveAttribute('open', '');
-      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS.sponsor.title);
-      await page.keyboard.press('Escape');
-      await expect(dialog).not.toHaveAttribute('open', '');
-      await expect(partner).toBeFocused();
+    const header = page.locator('header#top');
+    const actions = header.locator('.oy-phead-cta .oy-btn');
+    if (PLACEHOLDER_PROJECT) {
+      await expect(header.locator('h1')).toContainText(
+        pendingWhat('collectivePage', 'header.title') ?? '',
+      );
+      await expect(actions).toHaveCount(0);
+      return;
     }
+    // As the seed writes it: "Partner with the Collective" in gold, "See what is on" to the events.
+    await expect(header.locator('h1')).toHaveText('Yoruba Cultural Collective');
+    await expect(actions.first()).toHaveClass(/oy-btn--primary/);
+    const partner = actions.first();
+    if (await partner.getAttribute('data-enquiry')) await expectEnquiryRoundTrip(page, partner);
+    const events = (await page.locator('body').getAttribute('data-events')) !== 'hidden';
+    await expect(header.locator('a[href="#events"]')).toHaveCount(events ? 1 : 0);
   });
 
   test('sets why culture and sustainability sit together beside the photograph, or their chips', async ({
@@ -147,15 +144,9 @@ test.describe('the Yoruba Cultural Collective page', () => {
         presenceWhat('event', 'collective')?.what ?? '',
       );
     }
-    const dialog = page.locator('dialog#enquiry');
+    // No collective event is dated in either dataset yet, so this loop runs once one is.
     for (const trigger of await rows.locator('a[data-enquiry="contact"]').all()) {
-      await trigger.scrollIntoViewIfNeeded();
-      await trigger.click();
-      await expect(dialog).toHaveAttribute('open', '');
-      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS.contact.title);
-      await page.keyboard.press('Escape');
-      await expect(dialog).not.toHaveAttribute('open', '');
-      await expect(trigger).toBeFocused();
+      await expectEnquiryRoundTrip(page, trigger);
     }
     const text = await section.innerText();
     // The prototype's lead and rows are invented (spec Q15, the register).
@@ -168,25 +159,39 @@ test.describe('the Yoruba Cultural Collective page', () => {
     ]);
   });
 
-  test('sets each initiative in its own section, every owed fact under its chip and none invented', async ({
+  test('sets each initiative in its own section, each fact its value or its own chip, none invented', async ({
     page,
   }) => {
     await page.goto('/programs/cultural-collective');
     const body = page.locator('body');
     const layout = (await body.getAttribute('data-initiatives')) ?? 'side';
     const statusShown = (await body.getAttribute('data-status')) !== 'hidden';
-    const initiatives = page.locator('main > section > .cc-init');
+    const initiatives = page.locator('main > section .cc-init');
+    // The seed writes Solar Hub and Green Goods; the placeholder project holds none.
+    if (PLACEHOLDER_PROJECT) await expect(initiatives).toHaveCount(0);
+    else expect(await initiatives.count()).toBeGreaterThan(0);
+    const facts = [
+      ['Status', 'status'],
+      ['Serves', 'serves'],
+      ['Since', 'since'],
+      ['Next', 'next'],
+    ] as const;
     for (const initiative of await initiatives.all()) {
       await expect(initiative).toHaveAttribute('data-layout', layout);
       await expect(initiative.locator('h2')).toHaveCount(1);
       const status = initiative.locator('.cc-init-pills').locator('.cc-status, .oy-pend');
       await expect(status).toHaveCount(statusShown ? 1 : 0);
-      await expect(initiative.locator('.oy-glance--inline b')).toHaveText([
-        'Status',
-        'Serves',
-        'Since',
-        'Next',
-      ]);
+      const cells = initiative.locator('.oy-glance--inline > div');
+      await expect(cells.locator('b')).toHaveText(facts.map(([label]) => label));
+      // Each fact is its value or the chip the registry words for that fact.
+      for (const [at, [, field]] of facts.entries()) {
+        const chip = cells.nth(at).locator('.oy-pend');
+        if ((await chip.count()) > 0) {
+          await expect(chip).toContainText(pendingWhat('initiative', field) ?? '');
+        } else {
+          await expect(cells.nth(at).locator('span')).not.toBeEmpty();
+        }
+      }
       await expect(initiative.locator('figure')).toHaveCount(1);
     }
     const text = (await initiatives.allInnerTexts()).join('\n');
@@ -240,15 +245,8 @@ test.describe('the Yoruba Cultural Collective page', () => {
       await expect(section.locator('.oy-takepart .oy-pend-line')).toBeVisible();
     } else {
       await expect(section.locator('.oy-btn--primary')).toHaveCount(1);
-      const dialog = page.locator('dialog#enquiry');
       for (const trigger of await section.locator('.oy-takepart a[data-enquiry]').all()) {
-        const kind = (await trigger.getAttribute('data-enquiry')) as EnquiryKind;
-        await trigger.scrollIntoViewIfNeeded();
-        await trigger.click();
-        await expect(dialog).toHaveAttribute('open', '');
-        await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS[kind].title);
-        await page.keyboard.press('Escape');
-        await expect(trigger).toBeFocused();
+        await expectEnquiryRoundTrip(page, trigger);
       }
       const updates = section.locator('.oy-takepart a[href="#subscribe"]');
       if ((await updates.count()) === 1) {

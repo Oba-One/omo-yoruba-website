@@ -37,11 +37,11 @@ describe('ListRow', () => {
 
   it('draws an event: the date block, the title, the summary, when and where, and its quiet action', async () => {
     const row = (await renderToBody(Event)).querySelector('li.oy-lrow.oy-lrow--event');
-    expect(text(row?.querySelector('.oy-lrow-date b'))).toBe('Oct');
-    expect(text(row?.querySelector('.oy-lrow-date span'))).toBe('17');
+    expect(text(row?.querySelector('.oy-lrow-date b'))).toBe('[ Month ]');
+    expect(text(row?.querySelector('.oy-lrow-date span'))).toBe('[ 00 ]');
     expect(text(row?.querySelector('.oy-lrow-body h3'))).toBe('[ A Collective event ]');
     expect(text(row?.querySelector('.oy-lrow-body p'))).toBe('[ One line on what happens ]');
-    expect(text(row?.querySelector('.oy-lrow-where'))).toBe('Saturday, 10am • [ Venue ]');
+    expect(text(row?.querySelector('.oy-lrow-where'))).toBe('[ Weekday, time ] • [ Venue ]');
     const action = row?.querySelector('a.oy-btn.oy-btn--quiet');
     expect(action?.getAttribute('data-enquiry')).toBe('contact');
     expect(text(action)).toContain('Ask to join');

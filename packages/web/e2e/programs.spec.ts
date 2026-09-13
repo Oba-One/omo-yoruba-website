@@ -1,8 +1,13 @@
-import AxeBuilder from '@axe-core/playwright';
-import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
-import { expectNoMockWhileOwed, goldSharingAView, settle } from './helpers';
+import {
+  axeViolations,
+  expectEnquiryRoundTrip,
+  expectNoMockWhileOwed,
+  goldSharingAView,
+  PLACEHOLDER_PROJECT,
+  settle,
+} from './helpers';
 
 // The Programs hub in the prototype's order (ROUTES section 4), each block present whether the Studio
 // holds its content or renders Pending: CI runs with a placeholder project, where every read answers
@@ -138,6 +143,20 @@ test.describe('the Programs page', () => {
     }
     const kids = page.locator('#kids');
     if ((await kids.count()) === 1) {
+      await kids.locator('.oy-disclosure > details').evaluate((el) => {
+        (el as HTMLDetailsElement).open = true;
+      });
+      // Each sub-program fact is its value or the chip the registry words for it.
+      for (const value of await kids.locator('.oy-fact dd').all()) {
+        const chip = value.locator('.oy-pend');
+        if ((await chip.count()) > 0) {
+          await expect(chip).toContainText(
+            pendingWhat('programsPage', 'kidsStem.subprograms') ?? '',
+          );
+        } else {
+          await expect(value).not.toBeEmpty();
+        }
+      }
       expectNoMockWhileOwed(await kids.innerText(), [
         [
           /4 to 10|10 to 14|Saturdays|robotics|solar kits|coding club/i,
@@ -160,12 +179,21 @@ test.describe('the Programs page', () => {
     }
     await expect(section.locator('h2')).toHaveText('When things run');
     const cells = section.locator('.oy-year > div');
-    if ((await cells.count()) === 0) {
-      await expect(section.locator('.oy-pend-line')).toBeVisible();
+    if (PLACEHOLDER_PROJECT) {
+      await expect(cells).toHaveCount(0);
+      await expect(section.locator('.oy-pend-line')).toContainText(
+        pendingWhat('programsPage', 'yearStrip[]') ?? '',
+      );
     } else {
+      // The seed's five rows: the Lessons, Odunde, the Gala, Kids & STEM and the Collective.
+      await expect(cells).toHaveCount(5);
       for (const cell of await cells.all()) {
-        const when = await cell.locator('b').innerText();
-        expect(when.trim().length).toBeGreaterThan(0);
+        const chip = cell.locator('b .oy-pend, b.oy-pend');
+        if ((await chip.count()) > 0) {
+          await expect(chip).toContainText(pendingWhat('programsPage', 'yearStrip') ?? '');
+        } else {
+          await expect(cell.locator('b')).not.toBeEmpty();
+        }
         await expect(cell.locator('strong')).toHaveCount(1);
       }
       // An event row is named by its page, never by an edition's year.
@@ -204,18 +232,16 @@ test.describe('the Programs page', () => {
   }) => {
     await page.goto('/programs');
     const section = page.locator('#take-part');
-    const dialog = page.locator('dialog#enquiry');
-    for (const trigger of await section.locator('.oy-takepart a[data-enquiry]').all()) {
-      const kind = (await trigger.getAttribute('data-enquiry')) as EnquiryKind;
-      await trigger.scrollIntoViewIfNeeded();
-      await trigger.click();
-      await expect(dialog).toHaveAttribute('open', '');
-      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS[kind].title);
-      await page.keyboard.press('Escape');
-      await expect(dialog).not.toHaveAttribute('open', '');
-      await expect(trigger).toBeFocused();
-    }
+    const triggers = await section.locator('.oy-takepart a[data-enquiry]').all();
     const give = section.locator('.oy-takepart a[data-give]');
+    if (triggers.length === 0 && (await give.count()) === 0) {
+      // The placeholder project holds no rows: the band names what it waits for, and nothing opens.
+      await expect(section.locator('.oy-takepart .oy-pend-line')).toContainText(
+        pendingWhat('programsPage', 'takePart[]') ?? '',
+      );
+      return;
+    }
+    for (const trigger of triggers) await expectEnquiryRoundTrip(page, trigger);
     if ((await give.count()) === 1) {
       await give.scrollIntoViewIfNeeded();
       await give.click();
@@ -235,14 +261,6 @@ test.describe('the Programs page', () => {
   test('is clean for axe with the page settled', async ({ page }) => {
     await page.goto('/programs');
     await settle(page);
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-      .analyze();
-    expect(
-      results.violations.map((violation) => ({
-        id: violation.id,
-        nodes: violation.nodes.map((node) => node.target.join(' ')).slice(0, 5),
-      })),
-    ).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
   });
 });

@@ -32,6 +32,12 @@ prototype says so:
 - **Headings in order.** The Programs cards section carries a visually hidden h2, "The programs", since
   the prototype jumps from the h1 to the cards' h3.
 
+Two prototype choices were kept where a reading of `oy-voice` or AGENTS.md could object. The status and
+member-led pills set their words in capitals, as the prototype does: they are chips in the take-part
+path chips' sense, the one place besides kickers AGENTS.md allows uppercase. And the quiet links "On this
+page" and "All programs" keep the prototypes' wording without a verb: they are handoffs that name where
+they go, as "See our impact" does, and a verb would only add "Go to".
+
 Two prototype renderings were not taken as intent. The Collective prototype's runtime draws its sections
 outside `.oy-home`, so the `adire` theme never reaches them: its alternate grounds read as paper and its
 take-part rows take darker borders. `10 Programs.dc.html` and `11 Yoruba Language School.dc.html` apply

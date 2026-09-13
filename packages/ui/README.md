@@ -78,6 +78,10 @@ assert on markup, not CSS.
   wrapper styling for stories lives in `.storybook/preview.css` classes. A slot may also be a
   configured component, `{ component, props, slots }` (`SlotValue` in `src/storybook.ts`), which
   is how the Give Dialog stories stand in for the Zeffy island.
+- A configured slot tree deeper than about ten levels serialises as `[object Object]`. Page-section
+  stories that nest that deep compose the section in a small `.astro` file beside the stories instead
+  (`src/pages/programs/KidsStemSection.astro`, `ExchangeSection.astro`): story-only compositions, not
+  library components, so they sit outside the `<group>/<Name>/` layout.
 - A play function that needs a trigger creates it in the DOM (`EnquiryModal.stories.ts`), since
   a slot string cannot carry `data-*` attributes. Stories that need a viewport lock it with
   `globals.viewport` (the in-app browser is narrower than 880px).

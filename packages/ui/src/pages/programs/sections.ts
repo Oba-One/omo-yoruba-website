@@ -52,7 +52,7 @@ export const cards = (option: CardsOption): SlotValue => {
           slots: {
             default: programs.map((program) => ({
               component: ProgramCard,
-              props: { program, when: true, mediaHeight: option === 'three' ? 200 : 160 },
+              props: { program, showWhen: true, mediaHeight: option === 'three' ? 200 : 160 },
             })),
           },
         },

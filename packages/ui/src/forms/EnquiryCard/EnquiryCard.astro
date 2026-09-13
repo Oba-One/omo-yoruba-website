@@ -65,9 +65,9 @@ const mailto = address ? safeHref(`mailto:${address}`) : undefined;
       </Button>
       {
         email !== undefined && (
-          <span class="oy-enquiry-card-email">
+          <p class="oy-enquiry-card-email">
             Or email {mailto ? <a href={mailto}>{email}</a> : <Pending what={emailPending} />}
-          </span>
+          </p>
         )
       }
     </div>
@@ -88,7 +88,9 @@ const mailto = address ? safeHref(`mailto:${address}`) : undefined;
     align-items: center;
     gap: 14px;
   }
+  /* A sentence, so its link is an inline target in running text (the 44px sweep's exception). */
   .oy-enquiry-card-email {
+    margin: 0;
     font-size: 14.5px;
     color: var(--text-muted);
   }

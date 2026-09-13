@@ -18,8 +18,9 @@ is on".
       exemption its date block needs; stories and tests
 - [x] `packages/web`: the builder carries the events, the option and the header's anchor; tested with
       events before, during and after their day
-- [x] `Pages/Collective/Events` stories (shown, hidden); Playwright: the Pending line with no events, "Ask
-      to join" opening the contact form with focus returning
+- [x] `Pages/Collective/Events` stories (shown, hidden); Playwright: the Pending line with no events
+- [ ] Playwright: "Ask to join" opening the contact form with focus returning, which runs once a dated
+      collective event exists in the dataset (none does; the trigger's markup is unit-tested)
 
 ## Comments
 

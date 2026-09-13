@@ -34,13 +34,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
-/** As the seed leaves Solar Hub: its name and member-led, every fact owed. */
-export const Default: Story = {};
-
-/** The bracketed placeholder form, with a photograph, to show the layout the Studio's facts will take. */
-export const Filled: Story = {
+/** The bracketed placeholder form, to show the layout the Studio's facts will take; no photograph yet. */
+export const Default: Story = {
   args: { initiative: INITIATIVE_PLACEHOLDER, facts: INITIATIVE_FACTS_PLACEHOLDER },
 };
+
+/** As the seed leaves Solar Hub: its name and member-led, every fact owed. */
+export const Pending: Story = {};
 
 /** The `initiatives` option's stacked form: the copy above the photograph. */
 export const Stacked: Story = {
