@@ -13,6 +13,7 @@
  */
 import { pendingWhat } from '@oy/content/pending';
 import { editionRoute } from '@oy/content/routes';
+import { longDate } from '../../content/edition-dates';
 import Button from '../../core/Button/Button.astro';
 import Kicker from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
@@ -56,21 +57,7 @@ const href = editionRoute(kind);
 const datePending = pendingWhat('event', 'start', kind);
 const venuePending = pendingWhat('event', 'venue.name', kind);
 
-function formatDate(value: string | null | undefined): string | undefined {
-  if (!value) return undefined;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return undefined;
-  return new Intl.DateTimeFormat('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'America/Los_Angeles',
-  })
-    .format(date)
-    .replace(/,/g, '');
-}
-const when = formatDate(event?.start);
+const when = longDate(event?.start);
 ---
 
 <div

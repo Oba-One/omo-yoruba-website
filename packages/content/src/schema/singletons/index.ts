@@ -132,6 +132,13 @@ export const festivalPage = definePage({
       type: 'blockContent',
       description: 'Includes the Lunar New Year, Diwali and Nowruz framing.',
     }),
+    defineField({
+      name: 'whatItIsImage',
+      title: 'Photograph beside What Odunde is',
+      type: 'oyImage',
+      description:
+        'A festival-day photograph; its caption shows over it ("Festival day • Leimert Park"). Empty shows Pending.',
+    }),
     text('zonesIntro', 'Zones intro', 2),
     facts('planYourVisit', 'Plan your visit', 'Eight practical facts. Empty values show Pending.'),
     takePartOrder,

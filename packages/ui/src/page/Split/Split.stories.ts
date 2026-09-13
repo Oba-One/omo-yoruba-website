@@ -1,0 +1,22 @@
+import type { ComponentProps } from 'astro/types';
+import type { Meta, StoryArgs, StoryObj } from '../../storybook';
+import Split from './Split.astro';
+
+type Args = StoryArgs<ComponentProps<typeof Split>>;
+
+const meta = {
+  title: 'Page/Split',
+  component: Split,
+  args: {
+    slots: {
+      default: '<p>The copy column: a heading, the prose and its links.</p>',
+      aside: '<p>The aside: a photograph or a running order.</p>',
+    },
+  },
+  parameters: { layout: 'padded' },
+} satisfies Meta<Args>;
+
+export default meta;
+type Story = StoryObj<Args>;
+
+export const Default: Story = {};

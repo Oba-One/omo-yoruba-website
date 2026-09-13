@@ -64,10 +64,17 @@ export const PENDING: readonly PendingEntry[] = [
   // Odunde Festival
   {
     type: 'event',
-    fields: ['start', 'end'],
+    fields: ['start'],
     filter: FESTIVAL,
     where: 'Odunde, at a glance',
-    what: 'the date and hours',
+    what: 'the date',
+  },
+  {
+    type: 'event',
+    fields: ['end'],
+    filter: FESTIVAL,
+    where: 'Odunde, at a glance',
+    what: 'the hours',
   },
   {
     type: 'event',
@@ -75,6 +82,13 @@ export const PENDING: readonly PendingEntry[] = [
     filter: FESTIVAL,
     where: 'Odunde, at a glance',
     what: 'the cost',
+  },
+  {
+    type: 'event',
+    fields: ['venue.name'],
+    filter: FESTIVAL,
+    where: 'Odunde, at a glance',
+    what: 'the venue',
   },
   {
     type: 'event',
@@ -105,6 +119,24 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'the attendance figure',
   },
   { type: 'zone', fields: ['line'], where: 'Odunde, zones', what: 'the zone description' },
+  {
+    type: 'festivalPage',
+    condition: 'count(extraFacts[!defined(value)]) > 0',
+    where: 'Odunde, at a glance',
+    what: 'a glance fact',
+  },
+  {
+    type: 'festivalPage',
+    fields: ['whatItIs'],
+    where: 'Odunde, what the day is',
+    what: 'what Odunde is, in your words',
+  },
+  {
+    type: 'festivalPage',
+    fields: ['whatItIsImage'],
+    where: 'Odunde, what the day is',
+    what: 'a photograph of festival day',
+  },
   {
     type: 'festivalPage',
     fields: ['planYourVisit[]'],
@@ -140,6 +172,12 @@ export const PENDING: readonly PendingEntry[] = [
     filter: GALA,
     where: 'Gala, at a glance',
     what: 'the dress code',
+  },
+  {
+    type: 'galaPage',
+    condition: 'count(extraFacts[!defined(value)]) > 0',
+    where: 'Gala, at a glance',
+    what: 'a glance fact',
   },
   {
     type: 'event',
@@ -440,14 +478,28 @@ export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
 /**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
  * `kind` picks the row for one kind of document (an event's `gala` or `festival`) where the
- * registry keeps a row per kind; without a matching row the first row for the field answers.
+ * registry keeps a row per kind; without a matching row the first row for the field answers. An
+ * array's name without `[]` answers the row for one of its items missing a value.
  */
 export function pendingWhat(type: string, field: string, kind?: string): string | undefined {
   const rows = PENDING.filter((entry) => entry.type === type && entry.fields?.includes(field));
   const narrowed = kind
     ? rows.find((entry) => entry.filter?.includes(`kind == "${kind}"`))
     : undefined;
-  return (narrowed ?? rows[0])?.what;
+  const found = (narrowed ?? rows[0])?.what;
+  if (found) return found;
+  // One item of an array missing its value ("a practical fact") is a condition row on the array.
+  return PENDING.find((entry) => entry.type === type && entry.condition?.includes(`${field}[`))
+    ?.what;
+}
+
+/**
+ * The chip wording for a type the page expects more documents of (the zones, the tiers, the
+ * partners), from the same presence rows the Studio lists, with the count the page expects.
+ */
+export function presenceWhat(type: string): { what: string; minimum: number } | undefined {
+  const entry = PRESENCE.find((row) => row.type === type);
+  return entry ? { what: entry.what, minimum: entry.minimum } : undefined;
 }
 
 /** The GROQ count of a presence entry; run it with the `drafts` perspective so a draft counts once. */

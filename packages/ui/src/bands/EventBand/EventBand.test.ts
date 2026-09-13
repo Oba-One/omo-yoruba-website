@@ -26,7 +26,7 @@ describe('EventBand', () => {
     expect(band?.getAttribute('data-kind')).toBe('festival');
     expect(text(band?.querySelector('.oy-kicker'))).toBe('Ọdúndé•The new year has arrived');
     expect(text(band?.querySelector('.oy-band-line'))).toContain('Leimert Park');
-    expect(text(band?.querySelector('.oy-band-line .oy-pend'))).toBe('Pending: the date and hours');
+    expect(text(band?.querySelector('.oy-band-line .oy-pend'))).toBe('Pending: the date');
     expect(band?.querySelector('a.oy-btn')?.getAttribute('href')).toBe('/odunde');
     // After the date's chip the summary starts its own line; no generic band class on the root.
     expect(band?.querySelector('.oy-band-summary--apart')?.textContent).toBe(

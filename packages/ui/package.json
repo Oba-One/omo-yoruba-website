@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@oy/content": "workspace:*",
-    "@oy/tokens": "workspace:*"
+    "@oy/tokens": "workspace:*",
+    "astro-portabletext": "1.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",

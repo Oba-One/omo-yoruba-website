@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { PAGE_LAYOUTS } from './layout-options';
 import { STEGA_LOGIC_KEYS, stegaFilter } from './stega';
 
 type Props = Parameters<typeof stegaFilter>[0];
@@ -18,6 +19,17 @@ const call = (sourcePath: (string | number)[], fallback = true) => {
 };
 
 describe('stegaFilter', () => {
+  it('keeps every layout option of the homepage and the event pages clean, and a row way in', () => {
+    for (const spec of [
+      ...PAGE_LAYOUTS.homepage,
+      ...PAGE_LAYOUTS.festivalPage,
+      ...PAGE_LAYOUTS.galaPage,
+    ]) {
+      expect(STEGA_LOGIC_KEYS.has(spec.name), spec.name).toBe(true);
+    }
+    expect(STEGA_LOGIC_KEYS.has('way')).toBe(true);
+  });
+
   it('keeps the discriminators and the layout values clean', () => {
     for (const key of [
       'kind',

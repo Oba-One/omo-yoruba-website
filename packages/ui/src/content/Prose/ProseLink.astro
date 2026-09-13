@@ -1,0 +1,17 @@
+---
+/**
+ * The `link` annotation of body copy. The schema's `rule.uri` runs only in the Studio, so a value
+ * written through the API or the seed is checked again here: a link only for http, https, mailto
+ * and tel, or a path, fragment or query on this site; anything else keeps its text and loses the
+ * link (docs/research/phase-5-portable-text-renderer.md, Links).
+ */
+import type { MarkProps } from 'astro-portabletext/types';
+
+type Props = MarkProps<{ href?: string }>;
+
+const { node } = Astro.props;
+const raw = typeof node.markDef.href === 'string' ? node.markDef.href.trim() : '';
+const href = /^(https?:|mailto:|tel:)/i.test(raw) || /^(\/(?!\/)|#|\?)/.test(raw) ? raw : undefined;
+---
+
+{href ? <a class="oy-prose-link" href={href}><slot /></a> : <slot />}

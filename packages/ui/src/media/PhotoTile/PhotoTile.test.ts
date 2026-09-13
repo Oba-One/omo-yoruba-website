@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PhotoTile.stories';
 
-const { Default, Framed, EnglishOnly, NoCaption, Pending } = composeStories(stories);
+const { Default, Framed, EnglishOnly, NoCaption, Pending, Figure } = composeStories(stories);
 
 describe('PhotoTile', () => {
   it('renders the photo lazily with the Yoruba-first caption and the gold dot', async () => {
@@ -35,5 +35,13 @@ describe('PhotoTile', () => {
     expect(tile?.querySelector('img')).toBeNull();
     const placeholder = tile?.querySelector('.oy-ph--adire');
     expect(placeholder?.getAttribute('aria-label')).toBe('Placeholder for a festival photograph');
+  });
+
+  it('frames the event page figure and marks no Yoruba where the caption has none', async () => {
+    const figure = (await renderToBody(Figure)).querySelector('figure.v2-mo');
+    expect(figure?.classList.contains('oy-photo-tile--figure')).toBe(true);
+    expect(figure?.querySelector('img')?.getAttribute('style')).toBe('object-position: 45% 50%');
+    expect(figure?.querySelector('figcaption [lang]')).toBeNull();
+    expect(text(figure?.querySelector('figcaption'))).toBe('Festival day • Leimert Park');
   });
 });

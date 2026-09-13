@@ -1,4 +1,8 @@
 /**
+ * Which editions the site shows. The event pages show the next edition of their kind and past years
+ * from the newest past one (`pageEdition`, `pastEdition`, ADR 0024); both read "still to come" the
+ * way the homepage band does.
+ *
  * Which edition leads the homepage's event band (ROUTES sections 1 and 5): the `season` option
  * with its automatic default by date. An explicit `leadEvent` reference wins while it is still
  * to come. `gala` or
@@ -81,6 +85,54 @@ export function calendarKind(now: Date): LeadKind {
 /** The frame an edition takes: the festival's or the Gala's (the default for anything else). */
 export function leadKindOf(event: LeadCandidate | null | undefined): LeadKind {
   return event?.kind === 'festival' ? 'festival' : 'gala';
+}
+
+/** The kind's season in a year, for editions without a date: the festival in June, the Gala in November. */
+const SEASON_START: Record<LeadKind, number> = { festival: 5, gala: 10 };
+
+/** When an edition happens, for ordering: its start, else the first day of its kind's season. */
+function whenOf(event: LeadCandidate & { kind?: string | null }): number {
+  const start = dateOf(event.start);
+  if (start) return start.getTime();
+  const kind: LeadKind = event.kind === 'gala' ? 'gala' : 'festival';
+  return Date.UTC(event.edition ?? 0, SEASON_START[kind], 1);
+}
+
+export interface EditionOptions<T> {
+  now?: Date;
+  /** Past years need photographs: the edition counts only when this answers true. */
+  hasPhotos?: (event: T) => boolean;
+}
+
+/**
+ * The next edition an event page shows (ADR 0024): the nearest edition of the page's kind still
+ * to come, by the season rule's reading of "still to come" (a dated edition until it ends, an
+ * undated one by the calendar), ordered by date or, undated, by the kind's season in its year.
+ * Undefined when none is entered, and the page shows its Pending chips for the next one.
+ */
+export function pageEdition<T extends LeadCandidate>(
+  events: readonly T[],
+  kind: LeadKind,
+  { now = new Date() }: EditionOptions<T> = {},
+): T | undefined {
+  return events
+    .filter((event) => event.kind === kind && upcoming(event, now))
+    .sort((a, b) => whenOf(a) - whenOf(b))[0];
+}
+
+/**
+ * The edition past years show: the newest edition of the kind that is over and has photographs
+ * (an album, unless `hasPhotos` says otherwise). Newest by date where it has one, else by the
+ * kind's season in its year.
+ */
+export function pastEdition<T extends LeadCandidate & { album?: unknown }>(
+  events: readonly T[],
+  kind: LeadKind,
+  { now = new Date(), hasPhotos = (event) => Boolean(event.album) }: EditionOptions<T> = {},
+): T | undefined {
+  return events
+    .filter((event) => event.kind === kind && !upcoming(event, now) && hasPhotos(event))
+    .sort((a, b) => whenOf(b) - whenOf(a))[0];
 }
 
 export function leadEvent<T extends LeadCandidate>(

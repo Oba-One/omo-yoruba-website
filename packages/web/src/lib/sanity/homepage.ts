@@ -9,17 +9,16 @@
  * and description cleaned of stega, and the `data-sanity` attributes for click-to-edit, only in
  * draft mode.
  */
-import type { ImageSetBuilder } from '@oy/content/images';
 import { withLayoutDefaults } from '@oy/content/layout';
 import { calendarKind, leadEvent, leadKindOf } from '@oy/content/lead-event';
 import { HOMEPAGE_VOICE_SLOTS, type VoiceSlot } from '@oy/content/pending';
 import type { homepageQuery } from '@oy/content/queries';
 import { editionRoute, programRoute } from '@oy/content/routes';
 import { usableAction } from '@oy/ui/core/ActionButton/action.ts';
-import type { ResolvedImage } from '@oy/ui/media/image.ts';
 import type { ClientReturn } from '@sanity/client';
-import { stegaClean } from '@sanity/client/stega';
-import { dataAttribute } from './data-attribute';
+import { type BuildOptions, cleanText, editAttributes, resolveImage } from './view';
+
+export type { BuildOptions };
 
 export type HomepageData = NonNullable<ClientReturn<typeof homepageQuery, unknown>>;
 
@@ -31,15 +30,6 @@ export interface HomepageLayout extends Record<string, string> {
   newsletter: 'footer' | 'band';
   pattern: 'rich' | 'subtle';
   motion: 'on' | 'off';
-}
-
-export interface BuildOptions {
-  imageSet: ImageSetBuilder;
-  /** Draft mode: the `data-sanity` attributes are rendered. */
-  draft: boolean;
-  /** The Studio's base path for the edit attributes. */
-  studioUrl: string;
-  now?: Date;
 }
 
 const ORG_NAME = 'Omo Yorùbá of Southern California';
@@ -69,21 +59,9 @@ export function newsHref(tags: readonly NewsTag[] | null | undefined): string | 
   return undefined;
 }
 
-type ImageLike = Parameters<ImageSetBuilder>[0] & { alt?: string | null };
-
-function resolve(
-  imageSet: ImageSetBuilder,
-  image: ImageLike | null | undefined,
-  options: Parameters<ImageSetBuilder>[1],
-): ResolvedImage | undefined {
-  const set = imageSet(image, options);
-  return set ? { ...set, alt: image?.alt ?? '' } : undefined;
-}
-
 export function buildHomepage(data: HomepageData | null, options: BuildOptions) {
-  const { imageSet, draft, studioUrl, now = new Date() } = options;
-  const edit = (path: string, id = 'homepage', type = 'homepage') =>
-    draft ? dataAttribute({ id, type, path, baseUrl: studioUrl }) : undefined;
+  const { imageSet, now = new Date() } = options;
+  const edit = editAttributes(options, 'homepage');
 
   const layout = withLayoutDefaults<HomepageLayout>('homepage', data?.layout);
   const hero = data?.hero;
@@ -112,8 +90,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
     : undefined;
 
   // Nothing in the head may carry stega (the overlay would read the title as editable text).
-  const clean = (value: string | null | undefined) =>
-    value ? stegaClean(value).trim() || undefined : undefined;
+  const clean = cleanText;
 
   return {
     title: clean(data?.seo?.title) || clean(hero?.title) || ORG_NAME,
@@ -129,7 +106,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       gallery: layout.gallery,
     },
     hero: {
-      image: resolve(imageSet, hero?.image, { width: 1440 }),
+      image: resolveImage(imageSet, hero?.image, { width: 1440 }),
       imageEdit: edit('hero.image'),
       edit: edit('layout.motion'),
       kicker: hero?.kicker,
@@ -153,7 +130,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
     programs: allPrograms.slice(0, 3).map((program) => ({
       program: {
         ...program,
-        image: resolve(imageSet, program.image, { width: 360 }),
+        image: resolveImage(imageSet, program.image, { width: 360 }),
       },
       imageEdit: edit('image', program._id, 'program'),
     })),
@@ -167,7 +144,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
       .map((post) => ({ post, href: newsHref(post.tags) })),
     tiles: (data?.yearInLife ?? []).map((tile) => ({
-      image: resolve(imageSet, tile, { width: 640 }),
+      image: resolveImage(imageSet, tile, { width: 640 }),
       alt: tile.alt ?? '',
       caption: tile.caption,
       edit: edit(`yearInLife[_key=="${tile._key}"]`),
@@ -180,7 +157,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
         .map((door) => ({
           door: {
             ...door,
-            image: resolve(imageSet, door.image, { width: 540 }),
+            image: resolveImage(imageSet, door.image, { width: 540 }),
           },
           imageEdit: edit('image', door._id, 'door'),
         })),

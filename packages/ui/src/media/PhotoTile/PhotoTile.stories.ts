@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'astro/types';
+import { WHAT_IT_IS_FIGURE } from '../../fixtures/event-pages';
 import { TILES } from '../../fixtures/homepage';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import PhotoTile from './PhotoTile.astro';
@@ -42,4 +43,14 @@ export const Hover: Story = { parameters: { pseudo: { hover: '.v2-mo' } } };
 /** No photograph: the dot field placeholder naming what is missing. */
 export const Pending: Story = {
   args: { image: undefined, alt: undefined, what: 'a festival photograph' },
+};
+
+/** The framed figure beside an event page's prose: 360px tall, 6px corners, a place caption with no Yoruba half. */
+export const Figure: Story = {
+  args: {
+    shape: 'figure',
+    image: WHAT_IT_IS_FIGURE.image,
+    caption: WHAT_IT_IS_FIGURE.caption,
+  },
+  decorators: [wrap('sb-oy-medium')],
 };

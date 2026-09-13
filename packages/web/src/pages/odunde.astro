@@ -1,0 +1,89 @@
+---
+/**
+ * The Odunde Festival page (`08 Odunde Festival.dc.html`, ROUTES sections 1, 4 and 5): composed from
+ * the one festival query through `loadQuery`, showing the next festival edition (ADR 0024) with the
+ * registry's Pending chips for every fact the Studio does not hold, and the five layout options read
+ * from the singleton with the schema defaults filled. The page arranges library parts and owns its
+ * copy (the section kickers and headings the prototype carries, "Odunde" unmarked in display text,
+ * ADR 0009) and its layout.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { pendingWhat } from '@oy/content/pending';
+import { festivalPageQuery } from '@oy/content/queries';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Button from '@oy/ui/core/Button/Button.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
+import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
+import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { cachePage } from '../lib/cache';
+import { STUDIO_BASE_PATH } from '../lib/paths';
+import { buildFestivalPage } from '../lib/sanity/festival-page';
+import { loadQuery } from '../lib/sanity/load-query';
+
+const { data, preview } = await loadQuery(festivalPageQuery, {}, { cookies: Astro.cookies });
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildFestivalPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/odunde', { draft: preview });
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending="the page heading"
+      line={page.header.line}
+      image={page.header.image}
+      imagePending="the header photograph"
+      imageEdit={page.header.imageEdit}
+      actions={page.header.actions}
+      facts={page.header.facts}
+      dots
+      edit={page.edit.phead}
+    />
+    <GlanceStrip facts={page.glance} />
+
+    <Section id="about-festival" labelledby="about-festival-heading">
+      <Split>
+        <SectionHead
+          kicker={{ yo: 'Ìtàn ọjọ́ náà', en: 'What the day is' }}
+          title="What Odunde is"
+          id="about-festival-heading"
+        />
+        {
+          page.whatItIs ? (
+            <Prose value={page.whatItIs} />
+          ) : (
+            <p>
+              <Pending what={pendingWhat('festivalPage', 'whatItIs')} />
+            </p>
+          )
+        }
+        <ButtonRow>
+          <Button variant="quiet" href="/impact" arrow>What the festival produces</Button>
+          <Button variant="quiet" href="/gala" arrow>The other half of our year, the Gala</Button>
+        </ButtonRow>
+        <PhotoTile
+          slot="aside"
+          shape="figure"
+          image={page.figure.image}
+          caption={page.figure.caption}
+          what={pendingWhat('festivalPage', 'whatItIsImage')}
+          sizes="(min-width: 1100px) 480px, (min-width: 900px) 45vw, 100vw"
+          edit={page.figure.edit}
+        />
+      </Split>
+    </Section>
+  </main>
+</SiteLayout>

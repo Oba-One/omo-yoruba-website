@@ -5937,6 +5937,14 @@
         },
         "optional": true
       },
+      "whatItIsImage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "oyImage"
+        },
+        "optional": true
+      },
       "zonesIntro": {
         "type": "objectAttribute",
         "value": {

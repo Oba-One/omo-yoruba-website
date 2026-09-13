@@ -893,6 +893,7 @@ export type FestivalPage = {
     _key: string;
   } & Fact>;
   whatItIs?: BlockContent;
+  whatItIsImage?: OyImage;
   zonesIntro?: string;
   planYourVisit?: Array<{
     _key: string;
@@ -1240,6 +1241,777 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields | EnquiryVendorFields | EnquiryEnrolFields | EnquiryVolunteerFields | EnquiryMemberFields | EnquiryTableFields | EnquiryPerformerFields | EnquirySponsorFields | LintReport | SanityFileAssetReference | GovernanceDoc | GivingLevel | HometownAssociation | Door | SanityImageAssetReference | PhotographerReference | OyImage | Cta | Stat | ProgramReference | Outcome | SourcedFigure | Partner | EventReference | PersonReference | NewsPost | BlockContent | Bilingual | Slug | TimelineEntry | Initiative | Honoree | SponsorLevel | TicketTier | NewsPage | Seo | PageHeader | GalleryPage | DoorReference | GivingLevelReference | DonatePage | TimelineEntryReference | StoryPage | StatReference | OutcomeReference | TestimonialReference | ImpactPage | GetInvolvedPage | InitiativeReference | CollectivePage | Testimonial | LessonsPage | Person | ProgramsPage | Program | GalaPage | FestivalPage | Homepage | AlbumReference | Event | Album | SiteSettings | PullQuote | ContactRole | FaqItem | ZoneReference | ScheduleItem | Zone | Fact | Photographer | SanityImageCrop | SanityImageHotspot | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
+
+// Source: src/queries/event-pages.ts
+// Variable: festivalPageQuery
+// Query: *[_id == "festivalPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  extraFacts[]{_key, label, value, note},  whatItIs,  whatItIsImage{_type, alt, caption, hotspot, crop, asset},  zonesIntro,  planYourVisit[]{_key, label, value, note},  pastYearsIntro,  partnersIntro,  "editions": *[_type == "event" && kind == "festival"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    venue{name, address, line},    cost,    summary,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    vendorTerms{fees, closeDate, decisionDate, permitNote},    attendance{value, label, source, asOf},    "album": album->{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "zones": *[_type == "zone" && active != false] | order(order asc){    _id,    name{yo, en},    line,    image{_type, alt, caption, hotspot, crop, asset}  },  "partners": *[_type == "partner" && "odunde" in scope] | order(name asc){    _id,    name,    url,    kind,    logo{_type, alt, caption, hotspot, crop, asset}  },  layout{phead, zones, schedule, takepart, labels},  seo{title, description}}
+export type FestivalPageQueryResult = {
+  header: null;
+  primaryAction: null;
+  secondaryActions: null;
+  extraFacts: null;
+  whatItIs: null;
+  whatItIsImage: null;
+  zonesIntro: null;
+  planYourVisit: null;
+  pastYearsIntro: null;
+  partnersIntro: null;
+  editions: Array<{
+    _id: string;
+    kind: "festival";
+    title: string | null;
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    venue: {
+      name: string | null;
+      address: string | null;
+      line: string | null;
+    } | null;
+    cost: string | null;
+    summary: string | null;
+    schedule: Array<{
+      _key: string;
+      time: string | null;
+      day: string | null;
+      title: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+      detail: string | null;
+      zone: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    }> | null;
+    vendorTerms: {
+      fees: string | null;
+      closeDate: string | null;
+      decisionDate: string | null;
+      permitNote: string | null;
+    } | null;
+    attendance: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+      asOf: string | null;
+    } | null;
+    album: {
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+      photos: Array<{
+        _key: string;
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      }> | null;
+    } | null;
+  }>;
+  zones: Array<{
+    _id: string;
+    name: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  partners: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+    kind: "funder" | "partner" | "sponsor" | null;
+    logo: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  layout: null;
+  seo: null;
+} | {
+  header: null;
+  primaryAction: null;
+  secondaryActions: null;
+  extraFacts: null;
+  whatItIs: null;
+  whatItIsImage: null;
+  zonesIntro: null;
+  planYourVisit: null;
+  pastYearsIntro: null;
+  partnersIntro: null;
+  editions: Array<{
+    _id: string;
+    kind: "festival";
+    title: string | null;
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    venue: {
+      name: string | null;
+      address: string | null;
+      line: string | null;
+    } | null;
+    cost: string | null;
+    summary: string | null;
+    schedule: Array<{
+      _key: string;
+      time: string | null;
+      day: string | null;
+      title: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+      detail: string | null;
+      zone: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    }> | null;
+    vendorTerms: {
+      fees: string | null;
+      closeDate: string | null;
+      decisionDate: string | null;
+      permitNote: string | null;
+    } | null;
+    attendance: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+      asOf: string | null;
+    } | null;
+    album: {
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+      photos: Array<{
+        _key: string;
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      }> | null;
+    } | null;
+  }>;
+  zones: Array<{
+    _id: string;
+    name: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  partners: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+    kind: "funder" | "partner" | "sponsor" | null;
+    logo: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  layout: {
+    phead: null;
+    zones: null;
+    schedule: null;
+    takepart: null;
+    labels: null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  } | null;
+  primaryAction: null;
+  secondaryActions: null;
+  extraFacts: null;
+  whatItIs: null;
+  whatItIsImage: null;
+  zonesIntro: null;
+  planYourVisit: null;
+  pastYearsIntro: null;
+  partnersIntro: null;
+  editions: Array<{
+    _id: string;
+    kind: "festival";
+    title: string | null;
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    venue: {
+      name: string | null;
+      address: string | null;
+      line: string | null;
+    } | null;
+    cost: string | null;
+    summary: string | null;
+    schedule: Array<{
+      _key: string;
+      time: string | null;
+      day: string | null;
+      title: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+      detail: string | null;
+      zone: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    }> | null;
+    vendorTerms: {
+      fees: string | null;
+      closeDate: string | null;
+      decisionDate: string | null;
+      permitNote: string | null;
+    } | null;
+    attendance: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+      asOf: string | null;
+    } | null;
+    album: {
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+      photos: Array<{
+        _key: string;
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      }> | null;
+    } | null;
+  }>;
+  zones: Array<{
+    _id: string;
+    name: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  partners: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+    kind: "funder" | "partner" | "sponsor" | null;
+    logo: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  layout: {
+    phead: null;
+    zones: null;
+    schedule: null;
+    takepart: null;
+    labels: null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
+  extraFacts: null;
+  whatItIs: null;
+  whatItIsImage: null;
+  zonesIntro: null;
+  planYourVisit: null;
+  pastYearsIntro: null;
+  partnersIntro: null;
+  editions: Array<{
+    _id: string;
+    kind: "festival";
+    title: string | null;
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    venue: {
+      name: string | null;
+      address: string | null;
+      line: string | null;
+    } | null;
+    cost: string | null;
+    summary: string | null;
+    schedule: Array<{
+      _key: string;
+      time: string | null;
+      day: string | null;
+      title: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+      detail: string | null;
+      zone: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    }> | null;
+    vendorTerms: {
+      fees: string | null;
+      closeDate: string | null;
+      decisionDate: string | null;
+      permitNote: string | null;
+    } | null;
+    attendance: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+      asOf: string | null;
+    } | null;
+    album: {
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+      photos: Array<{
+        _key: string;
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      }> | null;
+    } | null;
+  }>;
+  zones: Array<{
+    _id: string;
+    name: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  partners: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+    kind: "funder" | "partner" | "sponsor" | null;
+    logo: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  layout: {
+    phead: null;
+    zones: null;
+    schedule: null;
+    takepart: null;
+    labels: null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
+  extraFacts: Array<{
+    _key: string;
+    label: string | null;
+    value: string | null;
+    note: string | null;
+  }> | null;
+  whatItIs: null;
+  whatItIsImage: null;
+  zonesIntro: null;
+  planYourVisit: null;
+  pastYearsIntro: null;
+  partnersIntro: null;
+  editions: Array<{
+    _id: string;
+    kind: "festival";
+    title: string | null;
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    venue: {
+      name: string | null;
+      address: string | null;
+      line: string | null;
+    } | null;
+    cost: string | null;
+    summary: string | null;
+    schedule: Array<{
+      _key: string;
+      time: string | null;
+      day: string | null;
+      title: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+      detail: string | null;
+      zone: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    }> | null;
+    vendorTerms: {
+      fees: string | null;
+      closeDate: string | null;
+      decisionDate: string | null;
+      permitNote: string | null;
+    } | null;
+    attendance: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+      asOf: string | null;
+    } | null;
+    album: {
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+      photos: Array<{
+        _key: string;
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      }> | null;
+    } | null;
+  }>;
+  zones: Array<{
+    _id: string;
+    name: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  partners: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+    kind: "funder" | "partner" | "sponsor" | null;
+    logo: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  layout: {
+    phead: null;
+    zones: null;
+    schedule: "hidden" | "shown" | null;
+    takepart: null;
+    labels: "column" | "kicker" | "none" | null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
+  extraFacts: Array<{
+    _key: string;
+    label: string | null;
+    value: string | null;
+    note: string | null;
+  }> | null;
+  whatItIs: BlockContent | null;
+  whatItIsImage: {
+    _type: "oyImage";
+    alt: string | null;
+    caption: string | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    asset: SanityImageAssetReference | null;
+  } | null;
+  zonesIntro: string | null;
+  planYourVisit: Array<{
+    _key: string;
+    label: string | null;
+    value: string | null;
+    note: string | null;
+  }> | null;
+  pastYearsIntro: string | null;
+  partnersIntro: string | null;
+  editions: Array<{
+    _id: string;
+    kind: "festival";
+    title: string | null;
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    venue: {
+      name: string | null;
+      address: string | null;
+      line: string | null;
+    } | null;
+    cost: string | null;
+    summary: string | null;
+    schedule: Array<{
+      _key: string;
+      time: string | null;
+      day: string | null;
+      title: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+      detail: string | null;
+      zone: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    }> | null;
+    vendorTerms: {
+      fees: string | null;
+      closeDate: string | null;
+      decisionDate: string | null;
+      permitNote: string | null;
+    } | null;
+    attendance: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+      asOf: string | null;
+    } | null;
+    album: {
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+      photos: Array<{
+        _key: string;
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      }> | null;
+    } | null;
+  }>;
+  zones: Array<{
+    _id: string;
+    name: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  partners: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+    kind: "funder" | "partner" | "sponsor" | null;
+    logo: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  layout: {
+    phead: "photo" | "slim" | null;
+    zones: "five" | "grid" | "list" | "mosaic" | null;
+    schedule: "collapsed" | "hidden" | "shown" | null;
+    takepart: "sponsor" | "vendor" | null;
+    labels: "column" | "kicker" | "none" | null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | null;
 
 // Source: src/queries/homepage.ts
 // Variable: homepageQuery
@@ -1873,6 +2645,7 @@ export type SubscriberByEmailQueryResult = string | null;
 // Query TypeMap
 declare global {
   interface SanityQueries {
+    "*[_id == \"festivalPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  whatItIs,\n  whatItIsImage{_type, alt, caption, hotspot, crop, asset},\n  zonesIntro,\n  planYourVisit[]{_key, label, value, note},\n  pastYearsIntro,\n  partnersIntro,\n  \"editions\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    venue{name, address, line},\n    cost,\n    summary,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    vendorTerms{fees, closeDate, decisionDate, permitNote},\n    attendance{value, label, source, asOf},\n    \"album\": album->{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"zones\": *[_type == \"zone\" && active != false] | order(order asc){\n    _id,\n    name{yo, en},\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"partners\": *[_type == \"partner\" && \"odunde\" in scope] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  layout{phead, zones, schedule, takepart, labels},\n  seo{title, description}\n}": FestivalPageQueryResult;
     "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"leadEvent\": leadEvent->{_id, kind, title, edition, start, end, \"venueName\": venue.name, summary},\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source, asOf},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  newsIntro,\n  \"news\": *[_type == \"newsPost\"] | order(date desc)[0...3]{\n    _id, title, \"slug\": slug.current, date, kicker{yo, en}, summary,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"tags\": tags[]->{_type, kind, page}\n  },\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_id == \"siteSettings\"][0]{\n  orgName,\n  wordmarkLine2,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  footerBlurb,\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  eventbriteUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;

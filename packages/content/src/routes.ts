@@ -78,7 +78,7 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   testimonial: ['/', '/impact', '/programs/yoruba-lessons', '/programs/cultural-collective'],
   newsPost: ['/news/[slug]', '/news', '/'],
   album: ['/gallery/[album]', '/gallery', '/odunde', '/gala'],
-  photographer: ['/gallery', '/gallery/[album]'],
+  photographer: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],
   partner: ['/odunde', '/impact'],
   outcome: ['/impact'],
   stat: ['/', '/impact'],

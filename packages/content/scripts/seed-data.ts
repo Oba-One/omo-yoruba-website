@@ -481,6 +481,13 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         image: image(assets, 'odunde-2026-procession-with-drummer.jpg'),
       },
       extraFacts: withKeys('fact', [fact('Family', 'All ages', "Children's compound on site")]),
+      // The prototype's figure beside the prose, with its framing and its place caption.
+      whatItIsImage: image(
+        assets,
+        'odunde-2026-kid-playing-with-masquerade-performer.jpg',
+        'Festival day • Leimert Park',
+        [45, 50],
+      ),
       whatItIs: blocks(
         'Odunde marks the Yoruba new year. It is held in June at Leimert Park, and it is open to the whole neighborhood, not only to Yoruba families. The park is laid out as a village for the day, with four zones and a program that runs from the opening procession to the last drum.',
         'If you have never been: this sits alongside Lunar New Year, Diwali, and Nowruz. Communities that pause the world for a day to celebrate who they are, in public, with their neighbors, and with anyone who wants to come and eat.',

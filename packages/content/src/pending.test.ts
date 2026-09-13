@@ -7,6 +7,7 @@ import {
   pendingTitle,
   pendingWhat,
   presenceCountQuery,
+  presenceWhat,
 } from './pending';
 import { schemaTypes } from './schema';
 
@@ -142,16 +143,29 @@ describe('pendingFilter', () => {
   });
 });
 
+describe('presenceWhat', () => {
+  it('answers the presence row wording and the count the page expects', () => {
+    expect(presenceWhat('zone')).toEqual({ what: 'the two unnamed zones', minimum: 4 });
+    expect(presenceWhat('ticketTier')?.what).toBe('three prices and what each includes');
+    expect(presenceWhat('event')).toBeUndefined();
+  });
+});
+
 describe('pendingWhat and pendingTitle', () => {
   it('returns the chip wording for a field and the row title for the Studio', () => {
     expect(pendingWhat('siteSettings', 'ein')).toBe('EIN');
     expect(pendingWhat('siteSettings', 'nothing')).toBeUndefined();
     expect(pendingWhat('event', 'start', 'gala')).toBe('the date');
-    expect(pendingWhat('event', 'start', 'festival')).toBe('the date and hours');
-    expect(pendingWhat('event', 'start')).toBe('the date and hours');
+    expect(pendingWhat('event', 'start', 'festival')).toBe('the date');
+    expect(pendingWhat('event', 'end', 'festival')).toBe('the hours');
+    expect(pendingWhat('event', 'start')).toBe('the date');
     expect(pendingWhat('event', 'venue.name', 'gala')).toBe('the venue');
     expect(pendingWhat('event', 'venue.name', 'festival')).toBe('the venue');
     expect(pendingWhat('homepage', 'hero.image')).toBe('the hero photograph');
+    expect(pendingWhat('festivalPage', 'planYourVisit[]')).toBe('the eight practical facts');
+    expect(pendingWhat('festivalPage', 'planYourVisit')).toBe('a practical fact');
+    expect(pendingWhat('festivalPage', 'extraFacts')).toBe('a glance fact');
+    expect(pendingWhat('galaPage', 'extraFacts')).toBe('a glance fact');
     expect(
       pendingTitle({ type: 'siteSettings', fields: ['ein'], where: 'Everywhere', what: 'EIN' }),
     ).toBe('Everywhere: EIN');

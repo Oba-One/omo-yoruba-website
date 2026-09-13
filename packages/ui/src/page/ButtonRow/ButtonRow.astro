@@ -1,0 +1,28 @@
+---
+/**
+ * A row of buttons under a block's copy: the quiet links under "What Odunde is", the album link
+ * under past years, the gold action and its line under the sponsor levels. Wraps on narrow screens;
+ * the buttons keep their own variants, and one gold per view is the page's rule.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<div class:list={['oy-button-row', className]} {...rest}><slot /></div>
+
+<style>
+  .oy-button-row {
+    margin-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 16px;
+  }
+  .oy-button-row :global(.oy-button-row-note) {
+    font-size: 14.5px;
+    color: var(--text-muted);
+  }
+</style>
