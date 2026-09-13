@@ -19,13 +19,14 @@ const call = (sourcePath: (string | number)[], fallback = true) => {
 };
 
 describe('stegaFilter', () => {
-  it('keeps every layout option of the homepage, the event pages and the Programs hub clean, and a row way in', () => {
+  it('keeps every layout option of the homepage, the event pages and the program pages clean, and a row way in', () => {
     for (const spec of [
       ...PAGE_LAYOUTS.homepage,
       ...PAGE_LAYOUTS.festivalPage,
       ...PAGE_LAYOUTS.galaPage,
       ...PAGE_LAYOUTS.programsPage,
       ...PAGE_LAYOUTS.lessonsPage,
+      ...PAGE_LAYOUTS.collectivePage,
     ]) {
       expect(STEGA_LOGIC_KEYS.has(spec.name), spec.name).toBe(true);
     }

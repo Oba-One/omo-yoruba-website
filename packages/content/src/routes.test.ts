@@ -27,6 +27,13 @@ describe('editionRoute and programRoute', () => {
     expect(programRoute('unknown')).toBe('/programs');
   });
 
+  it("lets a program reach the Collective's page, which shows the Collective program's photograph", () => {
+    expect(TYPE_ROUTES.program).toContain('/programs/cultural-collective');
+    expect(tagsForRoute('/programs/cultural-collective')).toEqual(
+      expect.arrayContaining(['type:program', 'type:initiative', 'type:testimonial', 'type:event']),
+    );
+  });
+
   it('answers only routes the map lists for the type', () => {
     for (const kind of ['festival', 'gala', 'collective']) {
       expect(TYPE_ROUTES.event).toContain(editionRoute(kind));

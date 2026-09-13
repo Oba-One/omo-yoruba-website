@@ -1,0 +1,111 @@
+---
+/**
+ * The Yoruba Cultural Collective (`12 Yoruba Cultural Collective.dc.html`, ROUTES sections 1, 4 and 5):
+ * composed from the one Collective query through `loadQuery`, with the registry's Pending chips for
+ * every fact the Studio does not hold and the layout options read from the singleton with the schema
+ * defaults filled. Green stays inside this page's content: `main` carries the collective scope, which
+ * the tokens' rules read, so the nav, the footer and the dialogs keep the site's colours (spec Q12).
+ * The page arranges library parts and owns its copy (the section kickers and headings the prototype
+ * carries) and its layout.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { collectivePageQuery } from '@oy/content/queries';
+import PullQuote from '@oy/ui/cards/PullQuote/PullQuote.astro';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
+import TakePartBand from '@oy/ui/page/TakePartBand/TakePartBand.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { cachePage } from '../../lib/cache';
+import { STUDIO_BASE_PATH } from '../../lib/paths';
+import { buildCollectivePage } from '../../lib/sanity/collective-page';
+import { loadQuery } from '../../lib/sanity/load-query';
+
+const { data, preview, error } = await loadQuery(
+  collectivePageQuery,
+  {},
+  { cookies: Astro.cookies },
+);
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildCollectivePage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/programs/cultural-collective', { draft: preview, failed: Boolean(error) });
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main" data-scope="collective" data-sanity={page.edit.green}>
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending={page.header.titlePending}
+      line={page.header.line}
+      actions={page.header.actions}
+    />
+
+    <Section id="why" labelledby="why-heading">
+      <Split>
+        <SectionHead
+          kicker={{ yo: 'Ìdí rẹ̀', en: 'Why' }}
+          title="Why culture and sustainability sit together"
+          id="why-heading"
+        />
+        {
+          page.why.argument ? (
+            <Prose value={page.why.argument} />
+          ) : (
+            <p data-sanity={page.why.edit}>
+              <Pending what={page.why.pending} />
+            </p>
+          )
+        }
+        <PhotoTile
+          slot="aside"
+          shape="figure"
+          image={page.why.photo}
+          what={page.why.photoWhat}
+          sizes="(min-width: 1100px) 520px, (min-width: 860px) 45vw, 100vw"
+          edit={page.why.photoEdit}
+        />
+      </Split>
+    </Section>
+
+    <Section id="voice" data-sanity={page.voice.edit}>
+      <PullQuote
+        variant="single"
+        testimonial={page.voice.testimonial}
+        placeholder={page.voice.placeholder}
+        pending={page.voice.pending}
+      />
+    </Section>
+
+    <Section id="take-part" ground="alt" labelledby="take-part-heading">
+      <SectionHead
+        kicker={{ yo: 'Ẹ bá wa kọ́', en: 'Build with us' }}
+        title="Build with the Collective"
+        intro={page.takePart.intro}
+        id="take-part-heading"
+      />
+      <TakePartBand
+        rows={page.takePart.rows}
+        labels={page.takePart.labels}
+        pending={page.takePart.pending}
+        rowPending={page.takePart.rowPending}
+      />
+      <Handoff
+        shape="box"
+        variant="quiet"
+        text="See what the Collective has built so far."
+        action={{ label: 'See our impact', kind: 'url', href: '/impact' }}
+      />
+    </Section>
+  </main>
+</SiteLayout>

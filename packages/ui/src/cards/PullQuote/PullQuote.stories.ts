@@ -1,4 +1,4 @@
-import { HOMEPAGE_VOICE_SLOTS } from '@oy/content/pending';
+import { COLLECTIVE_VOICE_SLOT, HOMEPAGE_VOICE_SLOTS } from '@oy/content/pending';
 import type { ComponentProps } from 'astro/types';
 import { type Meta, onDark, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import PullQuote from './PullQuote.astro';
@@ -23,7 +23,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The ayo dot row, the quote, the name and relation. Initials only when the person has not agreed to be named. Without a testimonial the card waits in the prototype placeholder form for its slot (the quote it wants in brackets, Name pending with the voice), or as a Pending card with the registry wording when the page names no slot.',
+          "The ayo dot row, the quote, the name and relation. Initials only when the person has not agreed to be named. Without a testimonial the card waits in the prototype placeholder form for its slot (the quote it wants in brackets, Name pending with the voice), or as a Pending card with the registry wording when the page names no slot. The `single` variant is the Collective's one large quote, not a card, with the page's own registry wording.",
       },
     },
   },
@@ -48,3 +48,21 @@ export const Waiting: Story = {
 export const Pending: Story = { args: { testimonial: undefined } };
 
 export const OnDark: Story = { ...onDark };
+
+/** The Collective's one voice: the large quote on the page, not a card. */
+export const Single: Story = {
+  args: {
+    variant: 'single',
+    testimonial: { ...sample, relation: 'Member, Yoruba Cultural Collective' },
+  },
+};
+
+/** The Collective's voice as the Studio stands: the page's own chip over its placeholder. */
+export const SingleWaiting: Story = {
+  args: {
+    variant: 'single',
+    testimonial: undefined,
+    placeholder: COLLECTIVE_VOICE_SLOT,
+    pending: 'the quote and who said it',
+  },
+};

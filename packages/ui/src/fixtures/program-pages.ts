@@ -214,3 +214,24 @@ export const COLLECTIVE_TAKE_PART = [
     label: 'Subscribe',
   },
 ];
+
+/** The Collective's header as the seed writes it; "See what is on" goes to the events section. */
+export const COLLECTIVE_HEADER = {
+  kicker: { yo: 'Ẹgbẹ́ àṣà', en: 'The cultural collective' },
+  title: 'Yoruba Cultural Collective',
+  line: 'Culture put to work. A circle of members who meet, host events through the year, and run two member-led projects, the Solar Hub and Green Goods.',
+  actions: [
+    { label: 'Partner with the Collective', kind: 'enquiry', enquiryKind: 'sponsor' },
+    { label: 'See what is on', kind: 'anchor', href: '#events' },
+  ],
+};
+
+/** The registry's wording for the Collective's argument, which the register invents. */
+export const ARGUMENT_PENDING = 'why culture and sustainability sit together, in your words';
+
+/** The registry's wording for the Collective's one voice. */
+export const COLLECTIVE_VOICE_PENDING = 'the quote and who said it';
+
+/** The take-part lead as spec Q15 keeps it, for the seeded three rows. */
+export const COLLECTIVE_TAKE_PART_INTRO =
+  'The projects above are led by members. Three ways to join them.';

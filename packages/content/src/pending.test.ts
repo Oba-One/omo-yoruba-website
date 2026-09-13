@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  COLLECTIVE_VOICE_SLOT,
   PENDING,
   type PendingEntry,
   PRESENCE,
@@ -219,6 +220,15 @@ describe("the Lessons page's teaching sections", () => {
     expect(pendingWhat('lessonsPage', 'oneLesson[]')).toBe('the shape of a lesson');
     expect(pendingWhat('lessonsPage', 'oneLesson')).toBe('the step');
     expect(pendingWhat('lessonsPage', 'levels')).toBe('what the level covers');
+  });
+});
+
+describe("the Collective's one voice", () => {
+  it('waits in a slot a collective testimonial fills, asking for the quote without inventing it', () => {
+    expect(COLLECTIVE_VOICE_SLOT.context).toBe('collective');
+    expect(COLLECTIVE_VOICE_SLOT.role).toBe('Member, Yoruba Cultural Collective');
+    expect(COLLECTIVE_VOICE_SLOT.quote).toMatch(/^Quote from a member of the Collective/);
+    expect(pendingWhat('collectivePage', 'voice')).toBe('the quote and who said it');
   });
 });
 

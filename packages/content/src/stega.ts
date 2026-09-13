@@ -46,6 +46,9 @@ export const STEGA_LOGIC_KEYS: ReadonlySet<string> = new Set([
   'lesson',
   'portraits',
   'faq',
+  'initiatives',
+  'green',
+  'events',
   'email',
   'way',
 ]);

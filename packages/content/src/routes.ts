@@ -73,7 +73,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   ticketTier: ['/gala'],
   sponsorLevel: ['/gala'],
   honoree: ['/gala'],
-  program: ['/', '/programs', '/impact'],
+  // The Collective's page shows the Collective program's photograph (wayfinder ticket 31, ADR 0031).
+  program: ['/', '/programs', '/programs/cultural-collective', '/impact'],
   initiative: ['/programs/cultural-collective'],
   person: ['/our-story', '/programs/yoruba-lessons'],
   timelineEntry: ['/our-story'],

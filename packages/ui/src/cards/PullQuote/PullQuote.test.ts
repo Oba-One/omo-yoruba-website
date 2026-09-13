@@ -4,7 +4,7 @@ import { renderToBody, text } from '../../test/stories';
 import { initialsOf } from './initials';
 import * as stories from './PullQuote.stories';
 
-const { Default, Initials, Waiting, Pending } = composeStories(stories);
+const { Default, Initials, Waiting, Pending, Single, SingleWaiting } = composeStories(stories);
 
 describe('PullQuote', () => {
   it('renders the ayo row, the quote and the caption on a figure card', async () => {
@@ -40,5 +40,27 @@ describe('PullQuote', () => {
     expect(figure?.getAttribute('data-pending')).toBe('true');
     expect(text(figure?.querySelector('blockquote .oy-pend'))).toBe('Pending: member voices');
     expect(text(figure?.querySelector('figcaption'))).toBe('Name pending');
+  });
+
+  it('draws the single large quote as a figure of its own, not a card', async () => {
+    const figure = (await renderToBody(Single)).querySelector('figure.oy-quote');
+    expect(figure?.classList.contains('oy-card')).toBe(false);
+    expect(figure?.querySelector(':scope > .oy-divider-ayo')).not.toBeNull();
+    expect(text(figure?.querySelector('blockquote'))).toContain('Two or three sentences');
+    expect(text(figure?.querySelector('figcaption'))).toBe(
+      'A. B. • Member, Yoruba Cultural Collective',
+    );
+  });
+
+  it("waits in its slot under the page's own chip", async () => {
+    const figure = (await renderToBody(SingleWaiting)).querySelector('figure.oy-quote');
+    expect(figure?.getAttribute('data-pending')).toBe('true');
+    expect(text(figure?.querySelector('.oy-pend'))).toBe('Pending: the quote and who said it');
+    expect(text(figure?.querySelector('blockquote'))).toMatch(
+      /^\[ Quote from a member of the Collective/,
+    );
+    expect(text(figure?.querySelector('figcaption'))).toBe(
+      'Name pending • Member, Yoruba Cultural Collective',
+    );
   });
 });

@@ -643,6 +643,18 @@ export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
 ];
 
 /**
+ * The Collective's one voice while no collective testimonial exists (`12 Yoruba Cultural
+ * Collective.dc.html`, spec Q15 of Phase 6): the prototype's placeholder form, under the registry's chip
+ * "the quote and who said it". The prototype's own quote and speaker are invented.
+ */
+export const COLLECTIVE_VOICE_SLOT: VoiceSlot = {
+  quote:
+    'Quote from a member of the Collective, two or three sentences on why culture and sustainability belong together.',
+  role: 'Member, Yoruba Cultural Collective',
+  context: 'collective',
+};
+
+/**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
  * `kind` picks the row for one kind of document (an event's `gala` or `festival`): its own row, else
  * a row every kind shares, never a row the registry keeps for another kind. An array's name without
