@@ -24,8 +24,9 @@ Functions. The only package where GROQ lives. Built in Phase 2 from
   homepage read; `event-pages.ts`: `festivalPageQuery` and `galaPageQuery`, each page in one read with
   every edition of its kind; `program-pages.ts`: `programsPageQuery`, `lessonsPageQuery` and
   `collectivePageQuery`; `trust-pages.ts`: `getInvolvedPageQuery`, `impactPageQuery`, `storyPageQuery`
-  and `donatePageQuery`; each page read filtered by `_type` as well as `_id` so TypeGen types the
-  singleton alone), typed by TypeGen through `SanityQueries`.
+  and `donatePageQuery`; `gallery.ts`: `galleryPageQuery` and `albumPageQuery`, the album by `$slug`; each
+  page read filtered by `_type` as well as `_id` so TypeGen types the singleton alone), typed by TypeGen
+  through `SanityQueries`.
 - `src/layout.ts` (`layoutDefaults`, `withLayoutDefaults`), `src/lead-event.ts` (the season
   rule, since Phase 5 `pageEdition` and `pastEdition`, ADR 0024, and since Phase 6 `collectiveEvents`,
   ADR 0030), `src/images.ts`
@@ -36,7 +37,8 @@ Functions. The only package where GROQ lives. Built in Phase 2 from
   the seed and the site (ADR 0025, ADR 0029).
 - `src/doors.ts` (`@oy/content/doors`): the five door keys with the chip and accent each wears (ADR 0034);
   `src/giving.ts` (`@oy/content/giving`): the other ways to give and which settings fact each carries
-  (`otherWaySetting`, ADR 0035). Plain modules with no Sanity import, read by the schema, the seed and the
+  (`otherWaySetting`, ADR 0035); `src/albums.ts` (`@oy/content/albums`): an album's year, its tile line and the
+  gallery's order (ADR 0039). Plain modules with no Sanity import, read by the schema, the seed and the
   site.
 - `src/validation/`: the voice rules as Sanity validation (em dash error, marks warning, sentence
   case warning), reusing `@oy/lint`.
@@ -118,5 +120,15 @@ Decided with the owner on 11 September 2026; each has its ADR.
   the associations' presence row; the route map sends `event` and `person` to `/impact` and `stat` to
   `/get-involved`, and `programHref` links a program to its page, or to its section on the Programs hub
   when it is drawn inline there (Kids & STEM, Cultural Exchange).
+- Phase 8 (ADR 0037, ADR 0039): `galleryPage.creditsAndConsent` is plain text and `intro` is retired;
+  `@oy/content/albums` holds an album's year (its own date, else its edition's), its tile line and the
+  gallery's order; `galleryPageQuery` and `albumPageQuery` (by slug) read the two routes, taking an album's
+  edition from its `event`, else from the edition whose `album` names it. The registry's three condition rows
+  read their wordings from constants: the album's credit (`ALBUM_CREDIT_PENDING`), a photograph's own credit
+  (`PHOTO_CREDIT_PENDING`) and the album's year where neither the date nor either link gives one
+  (`ALBUM_YEAR_PENDING`); an album without photographs is a field row (`photos[]`), and the presence row
+  counts only albums holding a photograph. The route map sends `galleryPage` and `event` to both gallery routes
+  and keeps `photographer` off `/gallery`. The seed revises the gallery's header line to name the three albums
+  that exist.
 - The seed accepts `SANITY_WRITE_TOKEN` as an alias of `SANITY_API_WRITE_TOKEN` with a warning,
   because the owner's `packages/web/.env` predates the wizard's names.

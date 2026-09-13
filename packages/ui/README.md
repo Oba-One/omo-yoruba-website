@@ -9,12 +9,14 @@ PullQuote, ZoneCard, TicketTierCard, ListRow, PersonCard, OutcomeCard), content 
 ProverbLine, ZoneGrid, Schedule, ScheduleRow, FactList, PartnerRow, TicketTiers, SponsorLevels, Accordion,
 Disclosure, EntryList, EventList, ContactBlock, Timeline, and the pure helpers
 `edition-dates`, `vendor-terms`, `figure-sentence`, `count-word`), media (ImagePlaceholder,
-PhotoTile, PhotoMosaic, PhotoCarousel, CreditLine), forms, navigation (SiteNav, SiteFooter, Logo),
+PhotoTile, PhotoMosaic, PhotoCarousel, CreditLine, AlbumTile, AlbumGrid, AlbumIntro, PhotoGrid, Lightbox,
+GalleryCredits),
+forms, navigation (SiteNav, SiteFooter, Logo),
 bands (EventBand, NewsletterBand, PatternBand);
 `docs/design/COMPONENT-MAP.md` holds the inventory. `src/fixtures/` holds seed-shaped story data
 (confirmed facts and Pending states only; the photographs import from `docs/design/design/images/w2`
 as URL assets). `src/pages/homepage/`, `odunde/`, `gala/`, `programs/`, `lessons/`, `collective/`,
-`get-involved/`, `impact/`, `our-story/` and `donate/` hold the page-section stories, one file per layout
+`get-involved/`, `impact/`, `our-story/`, `donate/` and `gallery/` hold the page-section stories, one file per layout
 option (`sections.ts` beside them builds each section from the fixtures). Imports nothing from `packages/web`. Components are imported by path:
 `@oy/ui/core/Button/Button.astro`.
 
@@ -36,8 +38,14 @@ data attributes, and sets `data-ready` on the host once wired (ADR 0018,
 `docs/research/phase-3-storybook-play-functions.md`). The framework serves a hoisted `<script>`
 untransformed in dev and emits nothing for it in a static build, so this is the one form that
 runs in the canvas, in the static build and on the site alike; `<ClientRouter />` leaves inline
-scripts alone on navigation and custom elements upgrade on insertion. Since Phase 5 `media/PhotoCarousel` is the third such element (`oy-photo-carousel`, ADR 0027): its four
-play stories drive the buttons and the tablist keys. Since Phase 6 `content/Accordion` and
+scripts alone on navigation and custom elements upgrade on insertion. Phase 3 wrote four such elements (`oy-site-nav`, `oy-newsletter`, `oy-enquiry-modal`, `oy-give-dialog`);
+since Phase 5 `media/PhotoCarousel` is the fifth (`oy-photo-carousel`, ADR 0027): its four
+play stories drive the buttons and the tablist keys. Since Phase 8 `media/Lightbox` is the sixth
+(`oy-lightbox`, ADR 0037): a dialog served open for a photo address with link controls, which its play stories
+open from created photograph links, move with the arrows and buttons, and close with Escape and the background.
+It writes the address with the History API, and on the site the layout's head hands it Back and Forward before
+the router (`window.oyHistoryGuard`); in a story it listens to `popstate` itself. Both photograph steppers move
+on one touch swipe (ADR 0038), which only Playwright can dispatch. Since Phase 6 `content/Accordion` and
 `content/Disclosure` need no script at all: they are native `details` (ADR 0032), whose play functions
 click and Tab, since synthetic Enter and Space cannot toggle a summary. A story's `play` function
 waits for `data-ready`, then drives the keyboard (a synthetic Escape does not fire a dialog's

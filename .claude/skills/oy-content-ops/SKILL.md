@@ -40,9 +40,17 @@ rather than duplicates. Ids never contain a period.
   order of `collectivePage.initiatives`. The status line is the pill in the Collective's own words, set
   only from what the owner confirms ("[ How far the project has come ]"); `status`, `serves`, `since` and
   `next` are the four facts, each its own chip while empty.
-- **Album**: upload photos, create `album` with cover, photos with `alt` and captions, the
-  album-level `credit`, `creditConfirmed`, `consentNote`, and the `event` reference. Each photo's
-  `_key` is its lightbox deep link.
+- **Album**: upload photos, create `album` with a title and slug, the `event` reference for an edition's
+  photographs (its year dates the album; `date` only when there is no edition or the day matters), the cover
+  (else the first photograph shows), photos in the order the album page and the Lightbox show them, each with
+  `alt` (who, doing what, where) and a caption, the album-level `credit` (a `photographer` document),
+  `creditConfirmed` only once the photographer confirms, and a `consentNote` for anything specific to the
+  album's faces. A photo sets its own `credit` or `creditNote` only where it differs. Each photo's `_key` is its
+  photo address (`/gallery/<slug>?photo=<key>`, ADR 0037): keep the key when replacing an image so shared links
+  still open it. The gallery shows an album only with a photograph, newest year first (ADR 0039); an album with
+  neither a date nor an edition shows the year's chip.
+- **Gallery policy**: `galleryPage.creditsAndConsent` is the owner's own consent and removal policy in plain
+  text; the page never drafts it. Removal requests go to `siteSettings.generalEmail`.
 - **Person**: `person` with `group` (board, staff, volunteer, teacher) and `order`, the `role`, the short
   bio and, for Our Story's `bios` option, the full bio; portrait optional (the no-portrait card is a real
   design, and a photograph never stands in for someone named). Our Story lists the board by order, then
