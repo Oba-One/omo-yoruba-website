@@ -246,3 +246,37 @@ export const FESTIVAL_GIVE_HANDOFF = {
   text: 'Too small to sponsor, but want the day to happen? A gift does the same work.',
   action: { label: 'Donate', kind: 'give' },
 };
+
+/** A carousel slide from a register photograph: the seed stores its caption as the alt text too. */
+const slide = (key: string, photo: { src: string; alt: string }) => ({
+  _key: key,
+  image: photo.src,
+  alt: photo.alt,
+  caption: photo.alt,
+});
+
+/** The first eight photographs of the Odunde 2026 album, in album order, as the dataset holds them. */
+export const ODUNDE_PAST_SLIDES = [
+  slide('odunde-2026-kid-playing-with-elder', PHOTOS.kidWithElder),
+  slide('odunde-2026-procession-begins', PHOTOS.processionBegins),
+  slide('odunde-2026-procession-with-drummer', PHOTOS.processionDrummer),
+  slide('odunde-2026-procession-zoomed', PHOTOS.processionZoomed),
+  slide('odunde-2026-president-receiving-gift', PHOTOS.receivingGift),
+  slide('odunde-2026-performer-speaking-with-theater-backdrop', PHOTOS.performerSpeaking),
+  slide('odunde-2026-performer-gele-speaking', PHOTOS.performerGeleSpeaking),
+  slide('odunde-2026-performer-doing-gele-tying', PHOTOS.geleTying),
+];
+
+/** The six photographs of the End-of-Year Gala 2025 album, in album order. */
+export const GALA_PAST_SLIDES = [
+  slide('gala-2025-attendees-group-photo', PHOTOS.galaGroupPortrait),
+  slide('gala-2025-three-friends-selfie', PHOTOS.galaSelfie),
+  slide('gala-2025-attendees-smiling', PHOTOS.galaSmiling),
+  slide('gala-2025-group-photo', PHOTOS.galaGroup),
+  slide('gala-2025-attendees-sitting', PHOTOS.galaSitting),
+  slide('gala-2025-attendees-getting-food', PHOTOS.galaGettingFood),
+];
+
+/** The albums' credits as the dataset holds them, neither confirmed yet. */
+export const ODUNDE_ALBUM_CREDIT = { credit: 'Red Carpet Media', confirmed: false };
+export const GALA_ALBUM_CREDIT = { credit: 'Members and volunteers', confirmed: false };

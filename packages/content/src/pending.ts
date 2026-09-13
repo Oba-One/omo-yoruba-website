@@ -413,6 +413,12 @@ export const PRESENCE: readonly PresenceEntry[] = [
   { type: 'person', minimum: 1, where: 'About, board and staff', what: 'names, roles and bios' },
   { type: 'partner', minimum: 1, where: 'Partner rows', what: 'partner and funder names' },
   {
+    type: 'album',
+    minimum: 1,
+    where: 'Gallery; Odunde and Gala, past years',
+    what: 'the photo albums',
+  },
+  {
     type: 'outcome',
     minimum: 1,
     where: 'Impact, outcomes',

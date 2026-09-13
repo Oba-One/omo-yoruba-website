@@ -103,7 +103,13 @@ const seeded = {
         slug: 'odunde-2026',
         creditConfirmed: false,
         credit: 'Red Carpet Media',
-        photos: [],
+        photos: [
+          {
+            _key: 'photo-1',
+            ...image('An elder high-fives a toddler', 'An elder high-fives a toddler'),
+          },
+          { _key: 'photo-2', ...image('The procession begins', 'The procession begins') },
+        ],
       },
     }),
   ],
@@ -328,5 +334,81 @@ describe('buildFestivalPage', () => {
     );
     const draft = buildFestivalPage(seeded, { ...options, draft: true });
     expect(draft.takePart.rows[1]?.edit).toContain('path=takePart:way-2');
+  });
+
+  it('carries the newest past album as slides, its credit and the attendance chip', () => {
+    const view = buildFestivalPage(seeded, options);
+    expect(view.past.slides.map((slide) => slide.alt)).toEqual([
+      'An elder high-fives a toddler',
+      'The procession begins',
+    ]);
+    expect(view.past.slides[0]?.image?.src).toContain('cdn.sanity.io');
+    expect(view.past.slides[1]?.caption).toBe('The procession begins');
+    expect(view.past.album).toMatchObject({
+      credit: 'Red Carpet Media',
+      confirmed: false,
+      pending: 'photographer credit to confirm',
+    });
+    expect(view.past.attendance).toBeUndefined();
+    expect(view.past.attendancePending).toBe('the attendance figure');
+    expect(view.past.pending).toBe('the photo albums');
+
+    const counted = {
+      ...seeded,
+      editions: seeded.editions?.map((event) =>
+        event?.edition === 2026
+          ? {
+              ...event,
+              attendance: { value: '[ 0 ]', label: 'people came', source: null, asOf: null },
+            }
+          : event,
+      ),
+    } as FestivalPageData;
+    expect(buildFestivalPage(counted, options).past.attendance).toBe('[ 0 ] people came.');
+  });
+
+  it('shows no past album, credit or attendance chip when no past edition has photographs', () => {
+    const bare = {
+      ...seeded,
+      editions: seeded.editions?.map((event) =>
+        event?.album ? { ...event, album: { ...event.album, photos: [] } } : event,
+      ),
+    } as FestivalPageData;
+    const view = buildFestivalPage(bare, options);
+    expect(view.past.slides).toEqual([]);
+    expect(view.past.album).toBeUndefined();
+    expect(view.past.attendancePending).toBeUndefined();
+    expect(buildFestivalPage(null, options).past.slides).toEqual([]);
+  });
+
+  it('carries the partners with their logos resolved, or the registry wording for none', () => {
+    const withPartners = {
+      ...seeded,
+      partnersIntro: 'The day is open because these organizations help pay for it.',
+      partners: [
+        { _id: 'partner-1', name: '[ Partner name ]', url: null, kind: 'partner', logo: null },
+        {
+          _id: 'partner-2',
+          name: '[ Funder name ]',
+          url: 'https://example.org',
+          kind: 'funder',
+          logo: image('[ Funder name ]'),
+        },
+      ],
+    } as unknown as FestivalPageData;
+    const view = buildFestivalPage(withPartners, options);
+    expect(view.partners.intro).toBe(
+      'The day is open because these organizations help pay for it.',
+    );
+    expect(view.partners.items.map((partner) => partner.name)).toEqual([
+      '[ Partner name ]',
+      '[ Funder name ]',
+    ]);
+    expect(view.partners.items[0]?.logo).toBeUndefined();
+    expect(view.partners.items[1]?.logo?.alt).toBe('[ Funder name ]');
+    expect(buildFestivalPage(null, options).partners).toMatchObject({
+      items: [],
+      pending: 'partner and funder names',
+    });
   });
 });

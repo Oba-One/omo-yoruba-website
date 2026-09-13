@@ -1,0 +1,441 @@
+---
+/**
+ * The framed photo carousel (`Photo Carousel.dc.html`; COMPONENT-MAP, Media): the paper frame with
+ * the aṣọ òkè strip, one photograph at a time on the indigo stage, previous and next, the caption,
+ * the dots and the count. Built as APG's tabbed carousel
+ * (`docs/research/phase-5-photo-carousel-custom-element.md`; ADR 0018, ADR 0027): a group named by
+ * the section heading, the slides as tab panels inside a polite live region, the dots as 44px tabs
+ * with one tab stop, Left and Right on the tabs and the buttons, Home and End on the tabs, no
+ * rotation, no swipe, nothing on load. The chevrons are drawn, not glyphs, and the count is not
+ * uppercase (AGENTS.md outranks the prototype on both). The incoming photograph fades in over 0.2s,
+ * not at all under reduced motion.
+ *
+ * Without JavaScript the first photograph and its caption show; the controls keep their boxes but
+ * stay invisible until `oy-photo-carousel` marks itself ready, so the upgrade moves nothing. One
+ * photograph renders the framed figure with no controls; none renders the placeholder naming what
+ * the Studio owes. Every string is in the markup; the script only moves the selection. Vitest never
+ * runs the script, so the stories' play functions drive the keyboard and Playwright the page.
+ */
+import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
+import { altOf, type ImageInput, imgAttributes, positionOf } from '../image';
+
+export interface CarouselSlide {
+  _key?: string | null;
+  image?: ImageInput | null;
+  alt?: string | null;
+  caption?: string | null;
+}
+
+interface Props {
+  slides?: (CarouselSlide | null)[] | null;
+  /** The prefix of the ids inside, unique on the page. */
+  id: string;
+  /** The id of the visible heading that names the carousel. */
+  labelledby?: string;
+  /** The name when no heading labels it. */
+  label?: string;
+  sizes?: string;
+  /** The registry's wording when there are no photographs. */
+  pending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the album. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  slides,
+  id,
+  labelledby,
+  label = 'Photos',
+  // The stage: the content width less the frame's border and margins (research note, section D).
+  sizes = '(max-width: 720px) calc(100vw - 70px), (max-width: 1100px) calc(100vw - 78px), 1022px',
+  pending = 'the photographs',
+  edit,
+  class: className,
+} = Astro.props;
+
+const list = (slides ?? []).filter(
+  (slide): slide is CarouselSlide => slide !== null && Boolean(imgAttributes(slide.image)),
+);
+const total = list.length;
+const name = labelledby ? { 'aria-labelledby': labelledby } : { 'aria-label': label };
+const imageOf = (slide: CarouselSlide) => ({
+  ...imgAttributes(slide.image, sizes),
+  alt: slide.alt ?? altOf(slide.image),
+  style: positionOf(slide.image) ? `object-position: ${positionOf(slide.image)}` : undefined,
+});
+---
+
+{
+  total === 0 ? (
+    <div class:list={['oy-carousel', className]} data-sanity={edit}>
+      <div class="oy-carousel-top" aria-hidden="true" />
+      <div class="oy-carousel-stage">
+        <ImagePlaceholder what={pending} tone="adire" class="oy-carousel-placeholder" />
+      </div>
+    </div>
+  ) : total === 1 ? (
+    <figure class:list={['oy-carousel', 'oy-carousel--single', className]} data-sanity={edit}>
+      <div class="oy-carousel-top" aria-hidden="true" />
+      <div class="oy-carousel-stage">
+        <div class="oy-carousel-slide" data-active="true">
+          <img {...imageOf(list[0] as CarouselSlide)} loading="lazy" decoding="async" />
+        </div>
+      </div>
+      {list[0]?.caption && (
+        <figcaption class="oy-carousel-bar">
+          <span class="oy-carousel-cap">{list[0].caption}</span>
+        </figcaption>
+      )}
+    </figure>
+  ) : (
+    <oy-photo-carousel
+      class:list={['oy-carousel', className]}
+      role="group"
+      aria-roledescription="carousel"
+      {...name}
+      data-sanity={edit}
+    >
+      <div class="oy-carousel-top" aria-hidden="true" />
+      <div class="oy-carousel-stage">
+        <button
+          class="oy-carousel-btn oy-carousel-btn--prev"
+          type="button"
+          data-prev
+          aria-label="Previous photo"
+          aria-controls={`${id}-slides`}
+        >
+          <span class="oy-carousel-chevron" aria-hidden="true" />
+        </button>
+        <button
+          class="oy-carousel-btn oy-carousel-btn--next"
+          type="button"
+          data-next
+          aria-label="Next photo"
+          aria-controls={`${id}-slides`}
+        >
+          <span class="oy-carousel-chevron" aria-hidden="true" />
+        </button>
+        <div class="oy-carousel-slides" id={`${id}-slides`} aria-live="polite" aria-atomic="false">
+          {list.map((slide, at) => (
+            <div
+              class="oy-carousel-slide"
+              id={`${id}-slide-${at + 1}`}
+              role="tabpanel"
+              aria-labelledby={`${id}-tab-${at + 1}`}
+              data-position={`${at + 1} of ${total}`}
+              data-active={at === 0 ? 'true' : undefined}
+              hidden={at !== 0}
+            >
+              <img {...imageOf(slide)} loading="lazy" decoding="async" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="oy-carousel-bar">
+        <div class="oy-carousel-cap">
+          {list.map((slide, at) => (
+            <p data-active={at === 0 ? 'true' : undefined}>{slide.caption}</p>
+          ))}
+        </div>
+        <div class="oy-carousel-dots" role="tablist" aria-label="Choose a photo">
+          {list.map((_, at) => (
+            <button
+              class="oy-carousel-dot"
+              type="button"
+              role="tab"
+              id={`${id}-tab-${at + 1}`}
+              aria-controls={`${id}-slide-${at + 1}`}
+              aria-label={`Photo ${at + 1}`}
+              aria-selected={at === 0 ? 'true' : 'false'}
+              tabindex={at === 0 ? undefined : '-1'}
+            />
+          ))}
+        </div>
+        <p class="oy-carousel-count">1 of {total}</p>
+      </div>
+    </oy-photo-carousel>
+  )
+}
+
+<style>
+  oy-photo-carousel {
+    display: block;
+  }
+  /* Until the script wires them the controls keep their boxes, so the upgrade shifts nothing. */
+  oy-photo-carousel:not([data-ready]) .oy-carousel-btn,
+  oy-photo-carousel:not([data-ready]) .oy-carousel-dots,
+  oy-photo-carousel:not([data-ready]) .oy-carousel-count {
+    visibility: hidden;
+  }
+
+  /* One slide at a time: the port's stacked cross-fade becomes hidden slides and a short fade in. */
+  .oy-carousel-slide {
+    opacity: 1;
+    transition: none;
+    pointer-events: auto;
+  }
+  .oy-carousel-slide[hidden] {
+    display: none;
+  }
+  .oy-carousel-slide[data-active='true'] {
+    z-index: 1;
+  }
+  .oy-carousel-slide[data-fade] {
+    animation: oy-carousel-fade 0.2s ease;
+  }
+  @keyframes oy-carousel-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .oy-carousel-slide[data-fade] {
+      animation: none;
+    }
+  }
+  .oy-carousel-stage :global(.oy-carousel-placeholder) {
+    height: 100%;
+  }
+  .oy-carousel--single {
+    margin: 0;
+  }
+
+  /* Every caption in one cell, the active one visible: the bar keeps the longest caption's height. */
+  .oy-carousel-cap {
+    display: grid;
+  }
+  .oy-carousel-cap > p {
+    grid-area: 1 / 1;
+    margin: 0;
+    visibility: hidden;
+  }
+  .oy-carousel-cap > p[data-active='true'] {
+    visibility: visible;
+  }
+
+  /* Drawn chevrons (the glyph rule), the press settle and a ring that shows on any photograph. */
+  .oy-carousel-btn {
+    display: grid;
+    place-items: center;
+    padding: 0;
+    transition:
+      background-color 0.18s ease,
+      scale 0.12s ease;
+  }
+  .oy-carousel-btn:active {
+    scale: 0.985;
+  }
+  .oy-carousel-btn:focus-visible {
+    border-radius: 50%;
+    outline: 2px solid var(--white);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px var(--indigo-900);
+  }
+  .oy-carousel-chevron {
+    width: 11px;
+    height: 11px;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+  }
+  .oy-carousel-btn--prev .oy-carousel-chevron {
+    transform: translateX(2px) rotate(-135deg);
+  }
+  .oy-carousel-btn--next .oy-carousel-chevron {
+    transform: translateX(-2px) rotate(45deg);
+  }
+
+  /* The dots as 44px tabs with the 12px dot drawn inside. */
+  .oy-carousel-dots {
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .oy-carousel-dot {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+  .oy-carousel-dot::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 1.5px solid var(--indigo-700);
+    transition: background-color 0.18s ease;
+  }
+  .oy-carousel-dot:hover,
+  .oy-carousel-dot[aria-selected='true'] {
+    background: none;
+  }
+  .oy-carousel-dot:hover::before {
+    background: var(--indigo-100);
+  }
+  .oy-carousel-dot[aria-selected='true']::before {
+    background: var(--terra-600);
+    border-color: var(--terra-600);
+  }
+  @media (forced-colors: active) {
+    .oy-carousel-dot[aria-selected='true']::before {
+      background: Highlight;
+      border-color: Highlight;
+    }
+  }
+
+  /* Uppercase is for kickers and path chips only. */
+  .oy-carousel-count {
+    margin: 0;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  /*
+   * Under 720px eight 44px dots take two rows: the count moves up beside the caption, so it never
+   * sits on a row of its own, and the first dot lines up with the caption's first letter.
+   */
+  @media (max-width: 720px) {
+    oy-photo-carousel .oy-carousel-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 14px;
+      row-gap: 4px;
+    }
+    oy-photo-carousel .oy-carousel-cap {
+      grid-column: 1;
+      grid-row: 1;
+      min-width: 0;
+    }
+    oy-photo-carousel .oy-carousel-count {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: start;
+      padding-top: 3px;
+    }
+    oy-photo-carousel .oy-carousel-dots {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      margin-left: -16px;
+    }
+  }
+</style>
+
+<script is:inline>
+  if (!customElements.get('oy-photo-carousel')) {
+    const wireCarousel = (host) => {
+      const slides = Array.from(host.querySelectorAll('.oy-carousel-slide'));
+      if (slides.length < 2) return null;
+      const captions = Array.from(host.querySelectorAll('.oy-carousel-cap > p'));
+      const tabs = Array.from(host.querySelectorAll('.oy-carousel-dot'));
+      const prev = host.querySelector('[data-prev]');
+      const next = host.querySelector('[data-next]');
+      const count = host.querySelector('.oy-carousel-count');
+      const wrap = (index) => ((index % slides.length) + slides.length) % slides.length;
+      const current = () =>
+        Math.max(
+          0,
+          slides.findIndex((slide) => slide.dataset.active === 'true'),
+        );
+      // The photographs either side of the one shown start loading before they are asked for.
+      const warm = (index) => {
+        for (const at of [index - 1, index + 1]) {
+          const img = slides[wrap(at)].querySelector('img');
+          if (img && img.loading === 'lazy') img.loading = 'eager';
+        }
+      };
+      const show = (index, focusTab) => {
+        const to = wrap(index);
+        if (to === current()) {
+          if (focusTab) tabs[to].focus();
+          return;
+        }
+        const incoming = slides[to];
+        for (const slide of slides) delete slide.dataset.fade;
+        incoming.hidden = false;
+        // A reflow between removing and adding the attribute restarts an interrupted fade.
+        void incoming.offsetWidth;
+        incoming.dataset.fade = '';
+        slides.forEach((slide, at) => {
+          if (at === to) slide.dataset.active = 'true';
+          else delete slide.dataset.active;
+        });
+        captions.forEach((caption, at) => {
+          if (at === to) caption.dataset.active = 'true';
+          else delete caption.dataset.active;
+        });
+        tabs.forEach((tab, at) => {
+          tab.setAttribute('aria-selected', at === to ? 'true' : 'false');
+          if (at === to) tab.removeAttribute('tabindex');
+          else tab.setAttribute('tabindex', '-1');
+        });
+        if (count) count.textContent = incoming.dataset.position || '';
+        if (focusTab) tabs[to].focus();
+        warm(to);
+        // The outgoing photograph stays under the fade and hides once it ends; a later change wins.
+        const settle = () => {
+          if (incoming.dataset.active !== 'true') return;
+          delete incoming.dataset.fade;
+          slides.forEach((slide, at) => {
+            if (at !== to) slide.hidden = true;
+          });
+        };
+        const fades = typeof incoming.getAnimations === 'function' ? incoming.getAnimations() : [];
+        Promise.all(fades.map((animation) => animation.finished)).then(settle, settle);
+      };
+      if (prev) prev.addEventListener('click', () => show(current() - 1, false));
+      if (next) next.addEventListener('click', () => show(current() + 1, false));
+      tabs.forEach((tab, at) => tab.addEventListener('click', () => show(at, false)));
+      host.addEventListener('keydown', (event) => {
+        if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.shiftKey) return;
+        const onTab = tabs.includes(event.target);
+        if (!onTab && event.target !== prev && event.target !== next) return;
+        let to;
+        if (event.key === 'ArrowLeft') to = current() - 1;
+        else if (event.key === 'ArrowRight') to = current() + 1;
+        else if (onTab && event.key === 'Home') to = 0;
+        else if (onTab && event.key === 'End') to = slides.length - 1;
+        else return;
+        event.preventDefault();
+        show(to, onTab);
+      });
+      return { warm, current };
+    };
+
+    customElements.define(
+      'oy-photo-carousel',
+      class extends HTMLElement {
+        connectedCallback() {
+          if (!this.oyApi) this.oyApi = wireCarousel(this);
+          const api = this.oyApi;
+          if (!api) return;
+          if ('IntersectionObserver' in window) {
+            this.oyObserver = new IntersectionObserver(
+              (entries) => {
+                if (!entries.some((entry) => entry.isIntersecting)) return;
+                api.warm(api.current());
+                this.oyObserver.disconnect();
+                this.oyObserver = null;
+              },
+              { rootMargin: '600px 0px' },
+            );
+            this.oyObserver.observe(this);
+          }
+          this.dataset.ready = 'true';
+        }
+
+        disconnectedCallback() {
+          if (this.oyObserver) this.oyObserver.disconnect();
+          this.oyObserver = null;
+          delete this.dataset.ready;
+        }
+      },
+    );
+  }
+</script>

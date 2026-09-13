@@ -28,3 +28,11 @@ test('every visible control on the page and in the open modal is at least 44px',
   await expect(page.locator('dialog#enquiry')).toHaveAttribute('open', '');
   expect(await page.evaluate(small)).toEqual([]);
 });
+
+test('every visible control on the event pages is at least 44px', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'measured at 375');
+  for (const route of ['/odunde']) {
+    await page.goto(route);
+    expect(await page.evaluate(small), route).toEqual([]);
+  }
+});

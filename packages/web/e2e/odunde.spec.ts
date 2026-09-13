@@ -36,6 +36,8 @@ test.describe('the Odunde Festival page', () => {
       ...(schedule === 'hidden' ? [] : ['schedule']),
       'plan',
       'take-part',
+      'past',
+      'partners',
     ];
     expect(order.slice(0, expected.length)).toEqual(expected);
     const phead = await page.locator('body').getAttribute('data-phead');
@@ -163,6 +165,42 @@ test.describe('the Odunde Festival page', () => {
     await page.keyboard.press('Escape');
     await expect(giveDialog).not.toHaveAttribute('open', '');
     await expect(give).toBeFocused();
+  });
+
+  test('past years show the photographs or the placeholder, the credit and the albums link', async ({
+    page,
+  }) => {
+    await page.goto('/odunde');
+    const past = page.locator('#past');
+    await expect(past.locator('h2')).toHaveText('Odunde in past years');
+    if ((await past.locator('.oy-carousel-slide').count()) === 0) {
+      await expect(past.locator('.oy-carousel-stage .oy-ph')).toHaveCount(1);
+      await expect(past.locator('.oy-credit-line')).toHaveCount(0);
+    } else {
+      await expect(past.locator('.oy-credit-line')).toContainText('Photographs:');
+      const lead = await past.locator('.oy-sec-intro').innerText();
+      expect(/pending: the attendance figure|\d/i.test(lead)).toBe(true);
+    }
+    await expect(past.getByRole('link', { name: 'All Odunde albums' })).toHaveAttribute(
+      'href',
+      '/gallery',
+    );
+  });
+
+  test('partners show their chips or the Pending line, then Donate in gold and Sponsor Odunde', async ({
+    page,
+  }) => {
+    await page.goto('/odunde');
+    const partners = page.locator('#partners');
+    await expect(partners.locator('h2')).toHaveText('Partners and sponsors of Odunde');
+    if ((await partners.locator('.oy-partner').count()) === 0) {
+      await expect(partners.locator('.oy-pend-line')).toBeVisible();
+    }
+    await expect(partners.locator('.oy-btn--primary')).toHaveCount(1);
+    await expect(partners.locator('.oy-handoff a.oy-btn--primary[data-give]')).toHaveCount(1);
+    await expect(partners.locator('.oy-handoff a[data-enquiry="sponsor"]')).toHaveText(
+      'Sponsor Odunde',
+    );
   });
 
   test('is clean for axe with the page settled', async ({ page }) => {

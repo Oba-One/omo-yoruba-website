@@ -12,11 +12,14 @@ import { createImageSet } from '@oy/content/images';
 import { pendingWhat } from '@oy/content/pending';
 import { festivalPageQuery } from '@oy/content/queries';
 import FactList from '@oy/ui/content/FactList/FactList.astro';
+import PartnerRow from '@oy/ui/content/PartnerRow/PartnerRow.astro';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
 import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
 import ZoneGrid from '@oy/ui/content/ZoneGrid/ZoneGrid.astro';
 import Button from '@oy/ui/core/Button/Button.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
+import CreditLine from '@oy/ui/media/CreditLine/CreditLine.astro';
+import PhotoCarousel from '@oy/ui/media/PhotoCarousel/PhotoCarousel.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
 import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
@@ -153,6 +156,52 @@ cachePage(Astro, '/odunde', { draft: preview });
         variant="quiet"
         text="Too small to sponsor, but want the day to happen? A gift does the same work."
         action={{ label: 'Donate', kind: 'give' }}
+      />
+    </Section>
+
+    <Section id="past" ground="alt" labelledby="past-heading">
+      <SectionHead
+        kicker={{ yo: 'Ọdún tí ó kọjá', en: 'Years past' }}
+        title="Odunde in past years"
+        intro={page.past.intro}
+        note={page.past.attendance}
+        notePending={page.past.attendancePending}
+        id="past-heading"
+      />
+      <PhotoCarousel
+        id="past-carousel"
+        labelledby="past-heading"
+        slides={page.past.slides}
+        pending={page.past.pending}
+        edit={page.past.album?.edit}
+      />
+      {
+        page.past.album && (
+          <CreditLine
+            credit={page.past.album.credit}
+            confirmed={page.past.album.confirmed}
+            pending={page.past.album.pending}
+          />
+        )
+      }
+      <ButtonRow>
+        <Button variant="secondary" href="/gallery" arrow>All Odunde albums</Button>
+      </ButtonRow>
+    </Section>
+
+    <Section id="partners" labelledby="partners-heading">
+      <SectionHead
+        title="Partners and sponsors of Odunde"
+        intro={page.partners.intro}
+        id="partners-heading"
+      />
+      <PartnerRow partners={page.partners.items} pending={page.partners.pending} />
+      <Handoff
+        shape="box"
+        variant="primary"
+        text="Want the day to happen again next June? Give now, or sponsor and join this row."
+        action={{ label: 'Donate', kind: 'give' }}
+        secondAction={{ label: 'Sponsor Odunde', kind: 'enquiry', enquiryKind: 'sponsor' }}
       />
     </Section>
   </main>
