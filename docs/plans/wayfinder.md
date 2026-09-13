@@ -105,6 +105,11 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   [the event pages follow their prototypes under the repo rules](../adr/0028-event-pages-follow-their-prototypes-under-the-repo-rules.md).
   Page-section stories show owed content in the prototypes' bracketed placeholder form ("[ Price ]",
   "[ The opening of the day ]") beside Pending chips, never a mock name or price.
+- [Take-part rows grow to nine ways in, with the row's own chip](../adr/0029-nine-ways-in-and-the-row-chip.md),
+  [collective events list while dated and still to come](../adr/0030-collective-events-list-while-dated-and-to-come.md),
+  and [the program pages follow the slimmed prototypes](../adr/0031-program-pages-content-model.md): Lessons
+  without voices, sub-programs with their own photographs and facts, the year strip naming kinds, green
+  inside the Collective page's `main` (Phase 6 grill, owner's answers in `docs/tickets/phase-6/spec.md`).
 - [The homepage under the mobile performance budget](../tickets/wayfinder/issues/33-homepage-mobile-lighthouse-budget.md):
   right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
   0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).
