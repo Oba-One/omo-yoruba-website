@@ -1,7 +1,7 @@
 # 16: Docs, the owner's tickets and the Phase 8 prompt
 
 Labels: later
-Status: open
+Status: resolved
 Blocked by: 15
 
 **What to build:** the repo's documents describe what Phase 7 built, and the owner has what they need to
@@ -14,7 +14,7 @@ facts, and the Phase 8 prompt in `docs/plans/prompt-phase-8.md`.
 - [x] `oy-content-ops` recipes; READMEs and runbook updated
 - [x] Wayfinder: the decisions, the check-and-merge ticket, the owed-facts ticket and the frontier
 - [x] The code review on the whole diff, its findings fixed, the pull request open against `main`
-- [ ] The Phase 8 prompt; the owner runs `/mattpocock-skills:handoff` for `docs/plans/handoff-phase-7.md`
+- [x] The Phase 8 prompt; the owner runs `/mattpocock-skills:handoff` for `docs/plans/handoff-phase-7.md`
 
 ## Comments
 
@@ -30,3 +30,7 @@ pages and merge) and ticket 42 (the trust pages' owed facts) join the frontier, 
 `docs/plans/prompt-phase-8.md` is written. The handoff document is not: the handoff skill runs only when
 the owner invokes it, so the ticket stays open until `/mattpocock-skills:handoff` saves
 `docs/plans/handoff-phase-7.md`.
+
+13 September 2026, later. The owner ran `/mattpocock-skills:handoff`; the handoff is
+`docs/plans/handoff-phase-7.md`. On pull request 8, CI had 10 checks passing and none failing, with
+Playwright and axe still running.
