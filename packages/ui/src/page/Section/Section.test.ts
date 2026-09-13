@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody } from '../../test/stories';
 import * as stories from './Section.stories';
 
-const { Default, Alt, Paper, Batik, Narrow } = composeStories(stories);
+const { Default, Alt, Paper, Batik, Narrow, Dark } = composeStories(stories);
 
 describe('Section', () => {
   it('wraps the content at the content width and labels the section by its heading', async () => {
@@ -24,5 +24,14 @@ describe('Section', () => {
     const narrow = (await renderToBody(Narrow)).querySelector('section');
     expect(narrow?.classList.contains('oy-section--narrow')).toBe(true);
     expect((await renderToBody(Default)).querySelector('section.oy-section--narrow')).toBeNull();
+  });
+
+  it('draws the dark band in the dark scope with its drifting dot field', async () => {
+    const section = (await renderToBody(Dark)).querySelector('section.oy-section');
+    expect(section?.classList.contains('oy-section--dark')).toBe(true);
+    expect(section?.classList.contains('oy-dark')).toBe(true);
+    expect(
+      section?.querySelector(':scope > .v2-dots.v2-dots--drift')?.getAttribute('aria-hidden'),
+    ).toBe('true');
   });
 });

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './GlanceStrip.stories';
 
-const { Five, Four, WithCaption, Pending, InColumn, Empty } = composeStories(stories);
+const { Five, Four, WithCaption, Pending, InColumn, Empty, NoteLink } = composeStories(stories);
 
 describe('GlanceStrip', () => {
   it('sets five facts with a label, the value or its chip, and the note', async () => {
@@ -52,5 +52,13 @@ describe('GlanceStrip', () => {
     const band = (await renderToBody(Empty)).querySelector('.oy-glance-band');
     expect(band?.querySelector('.oy-glance')).toBeNull();
     expect(text(band?.querySelector('.oy-pend-line'))).toContain('the facts at a glance');
+  });
+
+  it("makes a cell's note a link when it has a safe href", async () => {
+    const cells = (await renderToBody(NoteLink)).querySelectorAll('.oy-glance > div');
+    expect(cells[0]?.querySelector('small a')).toBeNull();
+    const link = cells[1]?.querySelector('small a.oy-glance-link');
+    expect(link?.getAttribute('href')).toBe('/our-story#board');
+    expect(text(link)).toBe('Our Story');
   });
 });

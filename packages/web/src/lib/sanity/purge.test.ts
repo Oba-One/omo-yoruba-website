@@ -6,8 +6,9 @@ describe('purgePlan', () => {
   it('purges the type tag as a tag and every route tag as a path', () => {
     expect(purgePlan(cacheTagsFor('event'))).toEqual({
       tags: ['type:event'],
-      // The year strip names the festival and the Gala by kind, so an edition no longer reaches /programs.
-      paths: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/news'],
+      // The year strip names the festival and the Gala by kind, so an edition no longer reaches /programs;
+      // Impact's civic cells read the festival's editions (ADR 0035).
+      paths: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/impact', '/news'],
     });
     expect(purgePlan(cacheTagsFor('album', 'gala-2025'))).toEqual({
       tags: ['type:album'],

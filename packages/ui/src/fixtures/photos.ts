@@ -31,6 +31,7 @@ import processionZoomed from '../../../../docs/design/design/images/w2/odunde-20
 import vendorNecklaces from '../../../../docs/design/design/images/w2/odunde-2026-vendor-necklaces.jpg?url';
 import vendorSuya from '../../../../docs/design/design/images/w2/odunde-2026-vendor-selling-suya.jpg?url';
 import teachingSession from '../../../../docs/design/design/images/w2/odunde-2026-yoruba-language-teaching-session.jpg?url';
+import summerCampArt from '../../../../docs/design/design/images/w2/summer-camp-kids-art.jpg?url';
 
 export interface FixturePhoto {
   src: string;
@@ -133,6 +134,10 @@ export const PHOTOS = {
   galaGroup: {
     src: galaGroup,
     alt: 'Six guests in agbádá, gèlè and a wide-brimmed hat stand arm in arm',
+  },
+  summerCampArt: {
+    src: summerCampArt,
+    alt: 'The children and their teacher show their drawings outdoors on the lawn',
   },
   galaSitting: {
     src: galaSitting,

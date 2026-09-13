@@ -6,11 +6,12 @@
  * kicker deepens to terracotta 700 and muted text to its on-tint token so both keep AA. Pages
  * compose sections from this and `SectionHead`; the textures come from the tokens and the
  * pattern option on the page root dims them. `width="narrow"` holds the wrap at 900px, as the Lessons
- * page sets its questions.
+ * page sets its questions. The `dark` ground is the indigo band a page closes on (`14 Impact.dc.html`,
+ * Fund the next year): the dark scope with the drifting àdìrẹ dot field behind the content.
  */
 import PatternBand from '../../bands/PatternBand/PatternBand.astro';
 
-export type SectionGround = 'white' | 'alt' | 'paper';
+export type SectionGround = 'white' | 'alt' | 'paper' | 'dark';
 
 interface Props {
   id?: string;
@@ -42,6 +43,7 @@ const {
     'oy-section',
     ground === 'alt' && 'oy-section--alt',
     ground === 'paper' && 'oy-section--paper',
+    ground === 'dark' && ['oy-section--dark', 'oy-dark'],
     width === 'narrow' && 'oy-section--narrow',
     texture !== 'none' && 'oy-section--textured',
     className,
@@ -49,6 +51,7 @@ const {
   aria-labelledby={labelledby}
   {...rest}
 >
+  {ground === 'dark' && <div class="v2-dots v2-dots--drift" aria-hidden="true" />}
   {texture === 'batik' && <PatternBand pattern="batik" />}
   <div class="oy-wrap oy-section-inner">
     <slot />
@@ -63,6 +66,14 @@ const {
   .oy-section--alt {
     --accent-kicker: var(--terra-700);
     --text-muted: var(--text-muted-on-tint);
+  }
+  .oy-section--dark {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-dark);
+  }
+  .oy-section--dark .oy-section-inner {
+    position: relative;
   }
   .oy-section--narrow .oy-section-inner {
     max-width: 900px;

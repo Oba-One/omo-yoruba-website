@@ -105,3 +105,97 @@ export const TALK = {
   namePending: GENERAL_CONTACT_PENDING,
   respondsPending: GENERAL_RESPONDS_PENDING,
 };
+
+// Impact
+
+export const IMPACT_HEADER = {
+  kicker: { yo: 'Iṣẹ́ wa', en: 'Our work' },
+  title: 'What we have built since 1997',
+  line: 'A 501(c)(3) serving the Yoruba community of Southern California through language, festival, and family programs.',
+  actions: [
+    { label: 'Sponsor or partner', kind: 'enquiry', enquiryKind: 'sponsor' },
+    { label: 'Talk to us', kind: 'enquiry', enquiryKind: 'contact' },
+  ],
+};
+
+/** The four confirmed figures with the Impact page's full labels, each still waiting for its source. */
+export const IMPACT_STATS = STATS.map(({ value, label }) => ({ value, label, source: null }));
+
+export const SOURCES_LEAD =
+  'Every number carries a source line: the year it covers and how it was counted.';
+
+export const HOW_WE_WORK_PHOTO = {
+  ...PHOTOS.atMarket,
+  caption: 'Àjọṣe • Partners and friends at the table',
+};
+
+/** The registry's wording for an outcome slot's chip and a figure's missing source. */
+export const OUTCOMES_PENDING = owed('impactPage', 'outcomes[]');
+export const OUTCOME_SOURCE_PENDING = owed('outcome', 'figure.source');
+
+/** The four slots Impact keeps while the Studio holds no outcome, each named as the page names it. */
+export const OUTCOME_SLOTS = [
+  { title: 'Yoruba Language Lessons', href: '/programs/yoruba-lessons' },
+  { title: 'Odunde Festival', href: '/odunde' },
+  { title: 'Kids & STEM', href: '/programs#kids' },
+  { title: 'Yoruba Cultural Collective', href: '/programs/cultural-collective' },
+];
+
+/** An outcome with its figure and source in the bracketed form, to show the layout an owner's outcome takes. */
+export const OUTCOME_PLACEHOLDER = {
+  title: 'Odunde Festival',
+  figure: '[ Figure ]',
+  line: '[ What the figure counts, and for which year ]',
+  source: '[ How it was counted ]',
+};
+
+export const CIVIC_PROSE = blocks(
+  'Odunde is a public cultural day held in Leimert Park. It is open to the whole neighborhood, not only to Yoruba families, and it is one of the few days in the year when the park is programmed end to end by a community organization rather than rented out.',
+);
+
+/** The civic cells as the development dataset stands: every edition fact owed. */
+export const CIVIC_CELLS = [
+  { label: 'Attendance', pending: owed('event', 'attendance', 'festival') },
+  { label: 'Vendors hosted', pending: owed('event', 'vendorsHosted', 'festival') },
+  { label: 'Partners', pending: 'partner and funder names' },
+  { label: 'Cost to attend', pending: owed('event', 'cost', 'festival') },
+];
+
+/** Impact's six photographs with the short captions the seed writes. */
+export const IMPACT_PHOTOS = [
+  { image: PHOTOS.processionBegins, caption: 'Odunde • 2026' },
+  { image: PHOTOS.kidsCrafts, caption: 'Àgbàlá Ọmọde • 2026' },
+  { image: PHOTOS.teachingSession, caption: 'Yoruba lesson • Odunde 2026' },
+  { image: PHOTOS.vendorSuya, caption: 'Ọjà Balógun • 2026' },
+  { image: PHOTOS.galaGroupPortrait, caption: 'End-of-Year Gala • 2025' },
+  { image: PHOTOS.summerCampArt, caption: 'Summer camp' },
+];
+
+/** Governance as the development dataset stands: the tax status confirmed, everything else owed. */
+export const GOVERNANCE_CELLS = [
+  { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+  { label: 'EIN', pending: owed('siteSettings', 'ein') },
+  { label: 'Board', pending: "the board's names, roles and bios" },
+  { label: 'Financials', pending: 'the annual report position' },
+];
+
+export const GOVERNANCE_FACTS = [
+  { label: 'Mailing address', pending: owed('siteSettings', 'address') },
+  { label: 'Form 990', pending: 'the Form 990 position' },
+  { label: 'Annual report', pending: 'the annual report position' },
+  { label: 'Audit', pending: 'the audit position' },
+];
+
+export const FUNDERS_INTRO = 'Everyone who has supported the work.';
+
+/** The closing band while the partnerships lead is unnamed: the role and the chip for how soon. */
+export const FUND = {
+  kicker: { yo: 'Ọdún tí ń bọ̀', en: 'The year ahead' },
+  title: 'Fund the next year',
+  line: 'Our partnerships lead answers',
+  linePending: 'how soon the partnerships lead replies',
+  actions: [
+    { label: 'Sponsor or partner', kind: 'enquiry', enquiryKind: 'sponsor' },
+    { label: 'Talk to us', kind: 'enquiry', enquiryKind: 'contact' },
+  ],
+};

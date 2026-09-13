@@ -3,6 +3,12 @@ import {
   COLLECTIVE_VOICE_SLOT,
   GENERAL_CONTACT_PENDING,
   GENERAL_RESPONDS_PENDING,
+  GOVERNANCE_NOTE_PENDING,
+  IMPACT_OUTCOME_SLOTS,
+  IMPACT_SIX_PENDING,
+  IMPACT_VOICE_SLOTS,
+  OUTCOME_PENDING,
+  PARTNERSHIPS_RESPONDS_PENDING,
   PENDING,
   type PendingEntry,
   PRESENCE,
@@ -375,5 +381,59 @@ describe('Get Involved', () => {
       GENERAL_CONTACT_PENDING,
       GENERAL_RESPONDS_PENDING,
     ]);
+  });
+});
+
+describe('Impact', () => {
+  it('names the headline figures, the six cells and the photograph beside How we work', () => {
+    expect(pendingWhat('impactPage', 'stats[]')).toBe('the headline figures');
+    expect(pendingWhat('stat', 'source')).toBe('a source line under the figure');
+    const six = PENDING.find((row) => row.what === IMPACT_SIX_PENDING);
+    // Listed only while the page asks for six.
+    expect(six?.condition).toContain('layout.stats == "six"');
+    expect(pendingWhat('impactPage', 'howWeWorkImage')).toBe('a photograph of the work');
+  });
+
+  it("names an outcome's missing source only where it has a figure, and one with nothing at all", () => {
+    expect(pendingWhat('outcome', 'figure.source')).toBe('a source line under the figure');
+    const source = PENDING.find(
+      (row) => row.type === 'outcome' && row.fields?.includes('figure.source'),
+    );
+    expect(source?.filter).toBe('defined(figure)');
+    expect(PENDING.find((row) => row.what === OUTCOME_PENDING)?.condition).toBe(
+      '!defined(figure) && !defined(plainStatement)',
+    );
+    expect(IMPACT_OUTCOME_SLOTS).toEqual([
+      { program: 'program-yoruba-lessons' },
+      { kind: 'festival' },
+      { program: 'program-kids-stem' },
+      { program: 'program-cultural-collective' },
+    ]);
+  });
+
+  it('reads the civic cells from the festival edition, each with the wording the Odunde page uses', () => {
+    expect(pendingWhat('event', 'attendance', 'festival')).toBe('the attendance figure');
+    expect(pendingWhat('event', 'vendorsHosted', 'festival')).toBe('the number of vendors hosted');
+    expect(pendingWhat('event', 'vendorsHosted', 'gala')).toBeUndefined();
+    expect(pendingWhat('event', 'cost', 'festival')).toBe('the cost');
+  });
+
+  it('names each kind of governance document apart, and a document with neither file nor note', () => {
+    expect(presenceWhat('governanceDoc', 'form990')?.what).toBe('the Form 990 position');
+    expect(presenceWhat('governanceDoc', 'annualReport')?.what).toBe('the annual report position');
+    expect(presenceWhat('governanceDoc', 'audit')?.what).toBe('the audit position');
+    expect(PENDING.find((row) => row.what === GOVERNANCE_NOTE_PENDING)?.type).toBe('governanceDoc');
+    expect(presenceWhat('person', 'board')?.what).toBe("the board's names, roles and bios");
+  });
+
+  it("waits for the homepage's three voices, and names the partnerships lead's reply time", () => {
+    expect(IMPACT_VOICE_SLOTS.map((slot) => slot.context)).toEqual([
+      'lessons',
+      'general',
+      'festival',
+    ]);
+    expect(pendingWhat('impactPage', 'voices[]')).toBe('voices with permission to name');
+    const reply = PENDING.find((row) => row.what === PARTNERSHIPS_RESPONDS_PENDING);
+    expect(reply?.condition).toContain('role == "partnerships"');
   });
 });

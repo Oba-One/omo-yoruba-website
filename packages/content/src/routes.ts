@@ -68,12 +68,33 @@ export function programRoute(page: string | null | undefined): PublicRoute {
   return ROUTE_SINGLETONS.programsPage as PublicRoute;
 }
 
+/** The sections the two inline programs keep on the Programs hub, by the program's slug. */
+export const INLINE_PROGRAM_SECTIONS: Readonly<Record<string, string>> = {
+  'kids-stem': 'kids',
+  'cultural-exchange': 'exchange',
+};
+
+/**
+ * Where a link to a program lands: its own page, or its section on the Programs hub for an inline program
+ * (Impact's outcome links), else the hub itself.
+ */
+export function programHref(
+  page: string | null | undefined,
+  slug: string | null | undefined,
+): string {
+  const route = programRoute(page);
+  const section =
+    route === ROUTE_SINGLETONS.programsPage && slug ? INLINE_PROGRAM_SECTIONS[slug] : undefined;
+  return section ? `${route}#${section}` : route;
+}
+
 /** Every document type and the routes that read it; an empty list means never shown. */
 export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   siteSettings: PUBLIC_ROUTES,
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
   // The year strip names the festival and the Gala by kind, so no edition reaches the Programs hub.
-  event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/news'],
+  // Impact's civic cells read the festival's editions (ADR 0035).
+  event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/impact', '/news'],
   // The festival page draws the zones; the Gala's running order names a row's zone too.
   zone: ['/odunde', '/gala'],
   ticketTier: ['/gala'],
@@ -82,7 +103,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   // The Collective's page shows the Collective program's photograph (wayfinder ticket 31, ADR 0031).
   program: ['/', '/programs', '/programs/cultural-collective', '/impact'],
   initiative: ['/programs/cultural-collective'],
-  person: ['/our-story', '/programs/yoruba-lessons'],
+  // Impact's governance cell counts the board.
+  person: ['/our-story', '/programs/yoruba-lessons', '/impact'],
   timelineEntry: ['/our-story'],
   // The slimmed Lessons page has no voices; a lessons testimonial fills the homepage's parent slot.
   testimonial: ['/', '/impact', '/programs/cultural-collective'],

@@ -14,7 +14,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The headline figures: big serif numbers with a small label each, on white with the corner dot fields. The Impact page turns the source lines on; a figure without a source shows the Pending chip the registry names.',
+          "The headline figures: big serif numbers with a small label each. The band is the homepage's, on white with the corner dot fields; the framed grid is Impact's, inside its section, with the source lines on. A figure without a source shows the Pending chip the registry names, and under Impact's six the empty cells wait for attendance and learners served.",
       },
     },
   },
@@ -46,3 +46,31 @@ export const WithOneSource: Story = {
 
 /** No figures: the Pending line. */
 export const Pending: Story = { args: { stats: [] } };
+
+/** Impact's framed grid: the four seeded figures, each waiting for its source line. */
+export const Framed: Story = { args: { variant: 'framed', sources: true, stats: STATS } };
+
+/** Impact's six with the four seeded figures: the two empty cells name what they wait for. */
+export const FramedSix: Story = {
+  args: {
+    variant: 'framed',
+    sources: true,
+    stats: STATS,
+    columns: 6,
+    padPending: 'attendance and learners served, with their sources',
+  },
+};
+
+/** Impact's grid with its source lines hidden. */
+export const FramedSourcesHidden: Story = { args: { variant: 'framed', stats: STATS } };
+
+/** Impact's grid with no figures: the Pending line. */
+export const FramedPending: Story = {
+  args: {
+    variant: 'framed',
+    stats: [],
+    what: 'the headline figures',
+    padPending: 'attendance and learners served, with their sources',
+    columns: 6,
+  },
+};

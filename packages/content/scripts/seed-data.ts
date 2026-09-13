@@ -107,6 +107,20 @@ function withKeys<T extends object>(
     .map((item, index) => ({ _key: key(prefix, index), ...item }));
 }
 
+/**
+ * Impact's six photographs and the short captions `14 Impact.dc.html` gives them: the place and the year,
+ * and no place or year the register does not confirm (the summer camp's is unknown). Alt text keeps the
+ * register's description.
+ */
+const IMPACT_PHOTOS: readonly (readonly [file: string, caption: string])[] = [
+  ['odunde-2026-procession-begins.jpg', 'Odunde • 2026'],
+  ['odunde-2026-kids-doing-crafts.jpg', 'Àgbàlá Ọmọde • 2026'],
+  ['odunde-2026-yoruba-language-teaching-session.jpg', 'Yoruba lesson • Odunde 2026'],
+  ['odunde-2026-vendor-selling-suya.jpg', 'Ọjà Balógun • 2026'],
+  ['gala-2025-attendees-group-photo.jpg', 'End-of-Year Gala • 2025'],
+  ['summer-camp-kids-art.jpg', 'Summer camp'],
+];
+
 /** Get Involved's doors in the page's order: the four cards, then the give door that closes the page. */
 const GET_INVOLVED_DOORS = withKeys(
   'door',
@@ -840,14 +854,17 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       civicInfra: blocks(
         'Odunde is a public cultural day held in Leimert Park. It is open to the whole neighborhood, not only to Yoruba families, and it is one of the few days in the year when the park is programmed end to end by a community organization rather than rented out.',
       ),
-      photos: withKeys('photo', [
-        image(assets, 'odunde-2026-procession-begins.jpg'),
-        image(assets, 'odunde-2026-kids-doing-crafts.jpg'),
-        image(assets, 'odunde-2026-yoruba-language-teaching-session.jpg'),
-        image(assets, 'odunde-2026-vendor-selling-suya.jpg'),
-        image(assets, 'gala-2025-attendees-group-photo.jpg'),
-        image(assets, 'summer-camp-kids-art.jpg'),
-      ]),
+      howWeWorkImage: image(
+        assets,
+        'odunde-2026-attendees-sitting-at-market.jpg',
+        'Àjọṣe • Partners and friends at the table',
+        [50, 50],
+      ),
+      photos: withKeys(
+        'photo',
+        IMPACT_PHOTOS.map(([file, caption]) => image(assets, file, caption)),
+      ),
+      fundersIntro: 'Everyone who has supported the work.',
       nextYear: { title: 'Fund the next year' },
       primaryAction: cta('Sponsor or partner', 'enquiry', 'sponsor'),
       secondaryActions: withKeys('action', [cta('Talk to us', 'enquiry', 'contact')]),
@@ -927,6 +944,8 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
     'yearStrip[].event',
   ],
   lessonsPage: ['voices'],
+  // The closing band's line names the partnerships lead instead (ADR 0035).
+  impactPage: ['nextYear.blurb'],
 };
 
 /**
@@ -945,8 +964,18 @@ export interface SeedRevision {
  * The revisions this seed applies. Each moves a stored value only while it still reads exactly as the
  * earlier seed wrote it; an editor's change, however small, keeps its value.
  */
-export function buildRevisions(_assets: SeedAssets): SeedRevision[] {
+export function buildRevisions(assets: SeedAssets): SeedRevision[] {
+  // The keys follow the photographs the assets hold, as `withKeys` gives them.
+  const impactPhotos = IMPACT_PHOTOS.filter(([file]) => assets.has(file));
   return [
+    // Impact (spec, Seed revisions): the earlier seed captioned each photograph with the register's long
+    // description; the page's tiles take the prototype's place and year.
+    ...impactPhotos.map(([file, caption], index) => ({
+      type: 'impactPage',
+      path: `photos[_key=="photo-${index + 1}"].caption`,
+      was: assets.get(file)?.caption,
+      now: caption,
+    })),
     // Get Involved (ADR 0034): the header's gold action no prototype draws, and the door list without
     // the vendor door.
     {

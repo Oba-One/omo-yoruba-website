@@ -1753,10 +1753,20 @@
         },
         "optional": true
       },
-      "title": {
+      "kind": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "festival"
+            },
+            {
+              "type": "string",
+              "value": "gala"
+            }
+          ]
         },
         "optional": true
       },
@@ -1769,13 +1779,6 @@
         "optional": true
       },
       "plainStatement": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "year": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -3857,6 +3860,14 @@
         },
         "optional": true
       },
+      "howWeWorkImage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "oyImage"
+        },
+        "optional": true
+      },
       "outcomes": {
         "type": "objectAttribute",
         "value": {
@@ -3944,13 +3955,6 @@
           "type": "object",
           "attributes": {
             "title": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            },
-            "blurb": {
               "type": "objectAttribute",
               "value": {
                 "type": "string"
@@ -6889,6 +6893,14 @@
               "name": "scheduleItem"
             }
           }
+        },
+        "optional": true
+      },
+      "vendorsHosted": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "sourcedFigure"
         },
         "optional": true
       },

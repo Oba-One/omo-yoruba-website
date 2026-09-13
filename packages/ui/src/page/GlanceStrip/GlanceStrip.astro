@@ -19,6 +19,8 @@ export interface GlanceFact {
   pending?: string;
   /** The registry's wording when the note is a missing fact (the venue line). */
   notePending?: string;
+  /** Makes the note a link when the href is safe. */
+  noteHref?: string | null;
 }
 
 interface Props {

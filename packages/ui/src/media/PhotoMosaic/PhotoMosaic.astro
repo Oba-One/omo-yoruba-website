@@ -3,7 +3,8 @@ import type { ImageInput } from '../image';
 /**
  * The year-in-the-life mosaic (`02 Homepage.dc.html`): seven tiles with the first spanning two
  * rows and two columns, five with two wide tiles at the bottom, or three of a kind across; the
- * `gallery` option picks the count. Extra tiles stay out and missing ones are padded with the
+ * `gallery` option picks the count. Six is Impact's work in photographs (`14 Impact.dc.html`): two rows
+ * of three equal tiles. Extra tiles stay out and missing ones are padded with the
  * placeholder, so the arrangement always holds its shape. Two columns under 860px.
  */
 import PhotoTile from '../PhotoTile/PhotoTile.astro';
@@ -18,14 +19,14 @@ export interface MosaicTile {
 
 interface Props {
   tiles?: MosaicTile[] | null;
-  count?: 7 | 5 | 3 | '7' | '5' | '3';
+  count?: 7 | 6 | 5 | 3 | '7' | '6' | '5' | '3';
   /** A `data-sanity` attribute for the mosaic, so click-to-edit reaches the gallery option. */
   edit?: string;
   class?: string;
 }
 
 const { tiles = [], count = 7, edit, class: className, ...rest } = Astro.props;
-const wanted = Number(count) as 7 | 5 | 3;
+const wanted = Number(count) as 7 | 6 | 5 | 3;
 const shown = (tiles ?? []).slice(0, wanted);
 const padding = Math.max(0, wanted - shown.length);
 ---
@@ -64,9 +65,18 @@ const padding = Math.max(0, wanted - shown.length);
     grid-column: span 1;
     grid-row: span 1;
   }
+  .oy-mosaic[data-count='6'] {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 190px;
+  }
+  .oy-mosaic[data-count='6'] > :global(*) {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
   @media (max-width: 860px) {
     .oy-mosaic,
-    .oy-mosaic[data-count='3'] {
+    .oy-mosaic[data-count='3'],
+    .oy-mosaic[data-count='6'] {
       grid-template-columns: 1fr 1fr;
       grid-auto-rows: 150px;
     }

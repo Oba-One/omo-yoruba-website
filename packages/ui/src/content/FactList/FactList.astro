@@ -17,6 +17,8 @@ export interface FactLike {
   pending?: string;
   /** Makes the value a link (`mailto:`, `tel:`, a page); an unsafe href leaves it text. */
   href?: string | null;
+  /** A plain sentence after the value (a linked document's note: "Copies on request"). */
+  note?: string | null;
 }
 
 interface Props {
@@ -50,6 +52,7 @@ const rows = (facts ?? []).filter((fact) => fact?.label?.trim());
             ) : (
               <Pending what={fact?.pending} />
             )}
+            {fact?.value?.trim() && fact.note?.trim() && <span class="oy-fact-note"> {fact.note}</span>}
           </dd>
         </div>
       ))}

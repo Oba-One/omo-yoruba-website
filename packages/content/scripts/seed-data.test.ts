@@ -584,3 +584,59 @@ describe('Get Involved', () => {
     expect(revisedFields('getInvolvedPage', owners, buildRevisions(assets)).set).toEqual({});
   });
 });
+
+describe('Impact', () => {
+  const impactAssets: SeedAssets = new Map(
+    [
+      'odunde-2026-attendees-sitting-at-market.jpg',
+      'odunde-2026-procession-begins.jpg',
+      'summer-camp-kids-art.jpg',
+    ].map((file) => [
+      file,
+      {
+        assetId: `image-${file.replace(/\W/g, '')}-10x10-jpg`,
+        caption: `The register's description of ${file}`,
+        album: file.startsWith('summer') ? 'summer-camp' : 'odunde-2026',
+        photographer: 'red-carpet-media',
+      },
+    ]),
+  );
+  const impact = buildSeed(impactAssets).find((doc) => doc._id === 'impactPage') as unknown as {
+    howWeWorkImage?: { caption: string; alt: string };
+    photos: { _key: string; caption: string; alt: string }[];
+    fundersIntro?: string;
+    nextYear: { title: string; blurb?: string };
+  };
+
+  it("seeds the homepage's partners photograph beside How we work, and short captions on the six tiles", () => {
+    expect(impact.howWeWorkImage?.caption).toBe('Àjọṣe • Partners and friends at the table');
+    expect(impact.photos.map((photo) => photo.caption)).toEqual(['Odunde • 2026', 'Summer camp']);
+    // The alt text keeps the register's description of the moment.
+    expect(impact.photos[0]?.alt).toBe(
+      "The register's description of odunde-2026-procession-begins.jpg",
+    );
+    expect(impact.fundersIntro).toBe('Everyone who has supported the work.');
+    expect(impact.nextYear).toEqual({ title: 'Fund the next year' });
+    // No year or place for the summer camp, whose year the register leaves unstated.
+    expect(JSON.stringify(impact)).not.toMatch(/Citrus College|before Odunde/);
+  });
+
+  it('revises a caption still as the earlier seed wrote it, and retires the closing band line', () => {
+    const stored = {
+      photos: [
+        {
+          _key: 'photo-1',
+          caption: "The register's description of odunde-2026-procession-begins.jpg",
+        },
+        { _key: 'photo-2', caption: 'Summer camp, as the owner wrote it' },
+      ],
+    };
+    expect(revisedFields('impactPage', stored, buildRevisions(impactAssets))).toEqual({
+      set: { 'photos[_key=="photo-1"].caption': 'Odunde • 2026' },
+      unset: [],
+    });
+    expect(retiredFields('impactPage', { nextYear: { title: 'x', blurb: 'y' } })).toEqual([
+      'nextYear.blurb',
+    ]);
+  });
+});

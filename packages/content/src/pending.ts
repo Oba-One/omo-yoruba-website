@@ -64,6 +64,21 @@ export const TEACHER_EMAIL_PENDING = "the teacher's email";
 export const GENERAL_CONTACT_PENDING = 'who answers the general inbox';
 export const GENERAL_RESPONDS_PENDING = 'how soon the general inbox replies';
 
+/** The chip beside Impact's closing sentence, which names the partnerships lead and how soon they reply. */
+export const PARTNERSHIPS_RESPONDS_PENDING = 'how soon the partnerships lead replies';
+
+/**
+ * The chip in each empty cell of Impact's headline numbers under the `six` option: the two figures the
+ * wireframe waits for beside the four confirmed ones.
+ */
+export const IMPACT_SIX_PENDING = 'attendance and learners served, with their sources';
+
+/** An outcome with neither a figure nor a plain statement of what is being measured. */
+export const OUTCOME_PENDING = 'participation figures or what is being measured';
+
+/** A governance document with neither its file nor a note on when it comes. */
+export const GOVERNANCE_NOTE_PENDING = 'a file, or a note such as Copies on request';
+
 /** A page's take-part band: no rows yet, or a row missing its way in, title or button label. */
 const takePartRows = (type: string, where: string): PendingEntry[] => [
   { type, fields: ['takePart[]'], where, what: 'the ways in' },
@@ -527,15 +542,79 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'impactPage',
+    fields: ['stats[]'],
+    where: 'Impact, numbers',
+    what: 'the headline figures',
+  },
+  // Six chosen and fewer than six figures referenced: the empty cells wait for the wireframe's two.
+  {
+    type: 'impactPage',
+    condition: 'layout.stats == "six" && count(stats) < 6',
+    where: 'Impact, numbers',
+    what: IMPACT_SIX_PENDING,
+  },
+  {
+    type: 'impactPage',
     fields: ['howWeWork'],
     where: 'Impact, how we work',
     what: 'your account of the organisation',
   },
   {
     type: 'impactPage',
+    fields: ['howWeWorkImage'],
+    where: 'Impact, how we work',
+    what: 'a photograph of the work',
+  },
+  {
+    type: 'impactPage',
     fields: ['outcomes[]'],
     where: 'Impact, outcomes',
     what: 'participation figures per program',
+  },
+  {
+    type: 'outcome',
+    condition: '!defined(figure) && !defined(plainStatement)',
+    where: 'Impact, outcomes',
+    what: OUTCOME_PENDING,
+  },
+  {
+    type: 'outcome',
+    fields: ['figure.source'],
+    filter: 'defined(figure)',
+    where: 'Impact, outcomes',
+    what: 'a source line under the figure',
+  },
+  {
+    type: 'impactPage',
+    fields: ['civicInfra'],
+    where: 'Impact, Odunde as civic infrastructure',
+    what: 'what the festival gives the neighborhood, in your words',
+  },
+  // The festival edition the civic cells read, the same one Odunde's past years shows.
+  {
+    type: 'event',
+    fields: ['vendorsHosted'],
+    filter: `${FESTIVAL} && defined(album)`,
+    where: 'Impact, Odunde as civic infrastructure',
+    what: 'the number of vendors hosted',
+  },
+  {
+    type: 'impactPage',
+    fields: ['voices[]'],
+    where: 'Impact, in their words',
+    what: 'voices with permission to name',
+  },
+  {
+    type: 'governanceDoc',
+    condition: '!defined(file) && !defined(note)',
+    where: 'Impact, governance',
+    what: GOVERNANCE_NOTE_PENDING,
+  },
+  {
+    type: 'siteSettings',
+    condition: 'count(contacts[role == "partnerships" && defined(responds)]) == 0',
+    where: 'Impact, fund the next year',
+    what: PARTNERSHIPS_RESPONDS_PENDING,
   },
   {
     type: 'storyPage',
@@ -642,11 +721,27 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Impact, outcomes',
     what: 'participation figures per program',
   },
+  // Governance names each kind of document it waits for, the newest of each shown when it exists.
   {
     type: 'governanceDoc',
     minimum: 1,
+    filter: 'kind == "form990"',
     where: 'Impact, governance',
-    what: '990, annual report and audit position',
+    what: 'the Form 990 position',
+  },
+  {
+    type: 'governanceDoc',
+    minimum: 1,
+    filter: 'kind == "annualReport"',
+    where: 'Impact, governance',
+    what: 'the annual report position',
+  },
+  {
+    type: 'governanceDoc',
+    minimum: 1,
+    filter: 'kind == "audit"',
+    where: 'Impact, governance',
+    what: 'the audit position',
   },
   { type: 'timelineEntry', minimum: 1, where: 'About, timeline', what: 'the dated entries' },
   {
@@ -725,6 +820,31 @@ export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
     role: 'Vendor, Ọjà Balógun',
     context: 'festival',
   },
+];
+
+/**
+ * Impact's three voices while its testimonials are missing (`14 Impact.dc.html`, In their words): the
+ * same parent, elder and vendor the homepage waits for, filled by context the same way.
+ */
+export const IMPACT_VOICE_SLOTS: readonly VoiceSlot[] = HOMEPAGE_VOICE_SLOTS;
+
+export interface OutcomeSlot {
+  /** The program the slot waits for, by its document id. */
+  program?: string;
+  /** Or the event page's kind. */
+  kind?: 'festival' | 'gala';
+}
+
+/**
+ * The subjects Impact's outcome cards wait for while the page references fewer than four (`14
+ * Impact.dc.html`, What each program produced; ADR 0035), in the prototype's order. A slot goes once an
+ * outcome names its subject; its name comes from the program, or the event page, as the Studio holds it.
+ */
+export const IMPACT_OUTCOME_SLOTS: readonly OutcomeSlot[] = [
+  { program: 'program-yoruba-lessons' },
+  { kind: 'festival' },
+  { program: 'program-kids-stem' },
+  { program: 'program-cultural-collective' },
 ];
 
 /**

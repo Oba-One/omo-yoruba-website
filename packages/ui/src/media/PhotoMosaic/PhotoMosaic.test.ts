@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody } from '../../test/stories';
 import * as stories from './PhotoMosaic.stories';
 
-const { Seven, Five, Three, Padded, Pending } = composeStories(stories);
+const { Seven, Six, Five, Three, Padded, Pending } = composeStories(stories);
 
 describe('PhotoMosaic', () => {
   it('shows as many tiles as the option asks for', async () => {
@@ -12,6 +12,7 @@ describe('PhotoMosaic', () => {
     expect(seven?.querySelectorAll('figure.v2-mo')).toHaveLength(7);
     expect((await renderToBody(Five)).querySelectorAll('[data-count="5"] figure')).toHaveLength(5);
     expect((await renderToBody(Three)).querySelectorAll('[data-count="3"] figure')).toHaveLength(3);
+    expect((await renderToBody(Six)).querySelectorAll('[data-count="6"] figure')).toHaveLength(6);
   });
 
   it('pads missing tiles with the placeholder', async () => {

@@ -451,9 +451,26 @@ export const impactPage = definePage({
   name: 'impactPage',
   title: 'Impact page',
   fields: [
-    refs('stats', 'Headline numbers', 'stat', 'Four or six, in order.'),
+    refs(
+      'stats',
+      'Headline numbers',
+      'stat',
+      'Four or six, in order; each shows its source line under the figure.',
+    ),
     defineField({ name: 'howWeWork', title: 'How we work', type: 'blockContent' }),
-    refs('outcomes', 'What each program produced', 'outcome'),
+    defineField({
+      name: 'howWeWorkImage',
+      title: 'Photograph beside How we work',
+      type: 'oyImage',
+      description:
+        'Its caption shows over it ("Àjọṣe • Partners and friends at the table"). Empty shows Pending.',
+    }),
+    refs(
+      'outcomes',
+      'What each program produced',
+      'outcome',
+      'In order. While fewer than four, the page keeps a place for Yoruba Language Lessons, the Odunde Festival, Kids & STEM and the Collective.',
+    ),
     defineField({
       name: 'civicInfra',
       title: 'Odunde as civic infrastructure',
@@ -471,9 +488,10 @@ export const impactPage = definePage({
       name: 'nextYear',
       title: 'Fund the next year',
       type: 'object',
+      description:
+        'The dark band that closes the page. Its line names the partnerships lead from the site settings, and how soon they answer.',
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
-        text('blurb', 'Blurb', 2),
       ],
     }),
   ],

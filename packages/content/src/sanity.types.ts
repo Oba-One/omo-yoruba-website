@@ -271,10 +271,9 @@ export type Outcome = {
   _updatedAt: string;
   _rev: string;
   program?: ProgramReference;
-  title?: string;
+  kind?: "festival" | "gala";
   figure?: SourcedFigure;
   plainStatement?: string;
-  year?: string;
   order?: number;
 };
 
@@ -607,6 +606,7 @@ export type ImpactPage = {
     _key: string;
   } & StatReference>;
   howWeWork?: BlockContent;
+  howWeWorkImage?: OyImage;
   outcomes?: Array<{
     _key: string;
   } & OutcomeReference>;
@@ -620,7 +620,6 @@ export type ImpactPage = {
   fundersIntro?: string;
   nextYear?: {
     title?: string;
-    blurb?: string;
   };
   primaryAction?: Cta;
   secondaryActions?: Array<{
@@ -1012,6 +1011,7 @@ export type Event = {
   schedule?: Array<{
     _key: string;
   } & ScheduleItem>;
+  vendorsHosted?: SourcedFigure;
   vendorTerms?: {
     fees?: string;
     closeDate?: string;
@@ -3969,6 +3969,183 @@ export type GetInvolvedPageQueryResult = {
   } | null;
 } | null;
 
+// Source: src/queries/trust-pages.ts
+// Variable: impactPageQuery
+// Query: *[_type == "impactPage" && _id == "impactPage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  "stats": stats[]->{_id, value, label, source},  howWeWork,  howWeWorkImage{_type, alt, caption, hotspot, crop, asset},  "outcomes": outcomes[]->{    _id,    kind,    plainStatement,    figure{value, label, source},    "program": program->{_id, name, page, "slug": slug.current}  },  "programs": *[_type == "program"] | order(order asc){_id, name, page, "slug": slug.current},  civicInfra,  "festivals": *[_type == "event" && kind == "festival"] | order(edition desc){    _id,    kind,    edition,    start,    end,    cost,    attendance{value, label, source},    vendorsHosted{value, label, source},    "album": album->{_id, "photos": count(photos)}  },  "festivalPartners": count(*[_type == "partner" && "odunde" in scope]),  "voices": voices[]->{_id, quote, name, relation, permissionToName, context},  photos[]{_key, _type, alt, caption, hotspot, crop, asset},  "governance": {    "form990": *[_type == "governanceDoc" && kind == "form990"] | order(year desc)[0]{      _id, year, note, "file": file.asset->{url, originalFilename, extension}    },    "annualReport": *[_type == "governanceDoc" && kind == "annualReport"] | order(year desc)[0]{      _id, year, note, "file": file.asset->{url, originalFilename, extension}    },    "audit": *[_type == "governanceDoc" && kind == "audit"] | order(year desc)[0]{      _id, year, note, "file": file.asset->{url, originalFilename, extension}    }  },  "boardCount": count(*[_type == "person" && group == "board"]),  "partners": *[_type == "partner"] | order(name asc){    _id,    name,    url,    kind,    logo{_type, alt, caption, hotspot, crop, asset}  },  fundersIntro,  nextYear{title},  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    ein,    address,    "partnerships": contacts[role == "partnerships"][0]{name, email, responds}  },  layout{stats, outcomes, sources, funders},  seo{title, description}}
+export type ImpactPageQueryResult = {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
+  stats: Array<{
+    _id: string;
+    value: string | null;
+    label: string | null;
+    source: string | null;
+  }> | null;
+  howWeWork: BlockContent | null;
+  howWeWorkImage: {
+    _type: "oyImage";
+    alt: string | null;
+    caption: string | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    asset: SanityImageAssetReference | null;
+  } | null;
+  outcomes: Array<{
+    _id: string;
+    kind: "festival" | "gala" | null;
+    plainStatement: string | null;
+    figure: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+    } | null;
+    program: {
+      _id: string;
+      name: string | null;
+      page: "collective" | "lessons" | null;
+      slug: string | null;
+    } | null;
+  }> | null;
+  programs: Array<{
+    _id: string;
+    name: string | null;
+    page: "collective" | "lessons" | null;
+    slug: string | null;
+  }>;
+  civicInfra: BlockContent | null;
+  festivals: Array<{
+    _id: string;
+    kind: "festival";
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    cost: string | null;
+    attendance: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+    } | null;
+    vendorsHosted: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+    } | null;
+    album: {
+      _id: string;
+      photos: number | null;
+    } | null;
+  }>;
+  festivalPartners: number;
+  voices: Array<{
+    _id: string;
+    quote: string | null;
+    name: string | null;
+    relation: string | null;
+    permissionToName: boolean | null;
+    context: "collective" | "festival" | "general" | "lessons" | null;
+  }> | null;
+  photos: Array<{
+    _key: string;
+    _type: "oyImage";
+    alt: string | null;
+    caption: string | null;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    asset: SanityImageAssetReference | null;
+  }> | null;
+  governance: {
+    form990: {
+      _id: string;
+      year: string | null;
+      note: string | null;
+      file: {
+        url: string | null;
+        originalFilename: string | null;
+        extension: string | null;
+      } | null;
+    } | null;
+    annualReport: {
+      _id: string;
+      year: string | null;
+      note: string | null;
+      file: {
+        url: string | null;
+        originalFilename: string | null;
+        extension: string | null;
+      } | null;
+    } | null;
+    audit: {
+      _id: string;
+      year: string | null;
+      note: string | null;
+      file: {
+        url: string | null;
+        originalFilename: string | null;
+        extension: string | null;
+      } | null;
+    } | null;
+  };
+  boardCount: number;
+  partners: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+    kind: "funder" | "partner" | "sponsor" | null;
+    logo: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  fundersIntro: string | null;
+  nextYear: {
+    title: string | null;
+  } | null;
+  settings: {
+    ein: string | null;
+    address: string | null;
+    partnerships: {
+      name: string | null;
+      email: string | null;
+      responds: string | null;
+    } | null;
+  } | null;
+  layout: {
+    stats: "four" | "six" | null;
+    outcomes: "cards" | "rows" | null;
+    sources: "hidden" | "shown" | null;
+    funders: "hidden" | "shown" | null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | null;
+
 // Query TypeMap
 declare global {
   interface SanityQueries {
@@ -3982,6 +4159,7 @@ declare global {
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;
     "*[_type == \"subscriber\" && email == $email][0]._id": SubscriberByEmailQueryResult;
     "*[_type == \"getInvolvedPage\" && _id == \"getInvolvedPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"doors\": doors[]->{\n    _id, key, title, blurb, bullets,\n    action{label, kind, enquiryKind, href, newTab},\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  hometownAssociations{\n    title,\n    prose,\n    \"stat\": stat->{_id, value, label}\n  },\n  \"associations\": *[_type == \"hometownAssociation\"] | order(name asc){_id, name, url},\n  fallback{title, blurb},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    generalEmail,\n    phone,\n    \"general\": contacts[role == \"general\"][0]{name, responds}\n  },\n  layout{doors, hta},\n  seo{title, description}\n}": GetInvolvedPageQueryResult;
+    "*[_type == \"impactPage\" && _id == \"impactPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"stats\": stats[]->{_id, value, label, source},\n  howWeWork,\n  howWeWorkImage{_type, alt, caption, hotspot, crop, asset},\n  \"outcomes\": outcomes[]->{\n    _id,\n    kind,\n    plainStatement,\n    figure{value, label, source},\n    \"program\": program->{_id, name, page, \"slug\": slug.current}\n  },\n  \"programs\": *[_type == \"program\"] | order(order asc){_id, name, page, \"slug\": slug.current},\n  civicInfra,\n  \"festivals\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    edition,\n    start,\n    end,\n    cost,\n    attendance{value, label, source},\n    vendorsHosted{value, label, source},\n    \"album\": album->{_id, \"photos\": count(photos)}\n  },\n  \"festivalPartners\": count(*[_type == \"partner\" && \"odunde\" in scope]),\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  photos[]{_key, _type, alt, caption, hotspot, crop, asset},\n  \"governance\": {\n    \"form990\": *[_type == \"governanceDoc\" && kind == \"form990\"] | order(year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    },\n    \"annualReport\": *[_type == \"governanceDoc\" && kind == \"annualReport\"] | order(year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    },\n    \"audit\": *[_type == \"governanceDoc\" && kind == \"audit\"] | order(year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    }\n  },\n  \"boardCount\": count(*[_type == \"person\" && group == \"board\"]),\n  \"partners\": *[_type == \"partner\"] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  fundersIntro,\n  nextYear{title},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    ein,\n    address,\n    \"partnerships\": contacts[role == \"partnerships\"][0]{name, email, responds}\n  },\n  layout{stats, outcomes, sources, funders},\n  seo{title, description}\n}": ImpactPageQueryResult;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

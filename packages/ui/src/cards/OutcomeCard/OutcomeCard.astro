@@ -1,0 +1,104 @@
+---
+/**
+ * What a program, an event or a gift produces (COMPONENT-MAP, Cards; `14 Impact.dc.html`, What each program
+ * produced; `16 Donate.dc.html`, What your gift does): the tokens' `.oy-outcome` card with the subject's
+ * name when it has one, the figure in the display face, the line under it (what the figure counts, or the
+ * plain statement of what is being measured when there is no figure), and the source line under a figure
+ * or the registry's chip while it is owed. A card with neither figure nor line shows the chip the page
+ * names. `row` sets the name, the figure and the line on one line, the source under them, as Impact's
+ * rows option draws it. The border deepens on hover; nothing lifts.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+
+interface Props {
+  /** The subject's name: "Yoruba Language Lessons", "Odunde Festival". Donate's levels have none. */
+  title?: string | null;
+  /** The figure as shown: "137", "$25 a month". */
+  figure?: string | null;
+  /** What the figure counts, or with no figure the plain statement. */
+  line?: string | null;
+  /** The source line under a figure. */
+  source?: string | null;
+  /** Draw the source line under a figure; off under Impact's `sources: hidden`. */
+  sources?: boolean;
+  /** The registry's wording for a figure's missing source. */
+  sourcePending?: string;
+  /** The registry's wording for a figure's missing line. */
+  linePending?: string;
+  /** The registry's wording for a card with neither figure nor line. */
+  pending?: string;
+  variant?: 'card' | 'row';
+  /** A `data-sanity` attribute, so click-to-edit reaches the document. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  title,
+  figure,
+  line,
+  source,
+  sources = true,
+  sourcePending = 'a source line under the figure',
+  linePending,
+  pending = 'what is being measured',
+  variant = 'card',
+  edit,
+  class: className,
+} = Astro.props;
+const name = title?.trim();
+const value = figure?.trim();
+const words = line?.trim();
+---
+
+<article
+  class:list={['oy-outcome', variant === 'row' && 'oy-outcome--row', className]}
+  data-sanity={edit}
+  data-measured={value ? 'figure' : words ? 'statement' : undefined}
+>
+  {name && <h3>{name}</h3>}
+  {value && <span class="oy-outcome-fig">{value}</span>}
+  {
+    words ? (
+      <p>{line}</p>
+    ) : value ? (
+      linePending && (
+        <p>
+          <Pending what={linePending} />
+        </p>
+      )
+    ) : (
+      <p>
+        <Pending what={pending} />
+      </p>
+    )
+  }
+  {value && sources && <div class="oy-source">{source?.trim() ? source : <Pending what={sourcePending} />}</div>}
+</article>
+
+<style>
+  .oy-outcome h3,
+  .oy-outcome p {
+    margin: 0;
+  }
+  /* The row form (`14 Impact.dc.html`, the rows option). */
+  .oy-outcome--row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 26px;
+  }
+  .oy-outcome--row h3 {
+    min-width: 220px;
+  }
+  .oy-outcome--row .oy-source {
+    width: 100%;
+    margin-top: 6px;
+  }
+  @media (max-width: 600px) {
+    .oy-outcome--row h3 {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+</style>
