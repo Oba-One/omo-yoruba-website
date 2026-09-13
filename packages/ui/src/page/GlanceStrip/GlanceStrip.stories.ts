@@ -65,3 +65,15 @@ export const InColumn: Story = {
   },
   parameters: { layout: 'padded' },
 };
+
+/** A note that links, as Impact's board cell points to Our Story. */
+export const NoteLink: Story = {
+  args: {
+    band: false,
+    facts: [
+      { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+      { label: 'Board', value: 'Listed', note: 'Our Story', noteHref: '/our-story#board' },
+    ],
+  },
+  parameters: { layout: 'padded' },
+};

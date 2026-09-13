@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './FactList.stories';
 
-const { Default, Mixed, Pending, OneColumn, Linked } = composeStories(stories);
+const { Default, Mixed, Pending, OneColumn, Linked, LinkedWithNote } = composeStories(stories);
 
 describe('FactList', () => {
   it('pairs each label with its fact or the chip, in a description list', async () => {
@@ -38,5 +38,16 @@ describe('FactList', () => {
     expect(text(rows[0]?.querySelector('a'))).toBe('[ inbox@example.org ]');
     expect(rows[1]?.querySelector('a')).toBeNull();
     expect(text(rows[1])).toBe('[ A link ]');
+  });
+
+  it("sets a linked document's note after its link", async () => {
+    const list = (await renderToBody(LinkedWithNote)).querySelector('.oy-facts');
+    const filed = list?.querySelector('.oy-fact dd');
+    expect(filed?.querySelector('a')?.getAttribute('href')).toBe(
+      'https://cdn.sanity.io/files/example/development/990.pdf',
+    );
+    expect(text(filed?.querySelector('a'))).toBe('Form 990, [ Year ]');
+    expect(text(filed?.querySelector('.oy-fact-note'))).toBe('[ A note on the filing ]');
+    expect(list?.querySelectorAll('.oy-fact-note')).toHaveLength(1);
   });
 });

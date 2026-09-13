@@ -1371,6 +1371,10 @@
             },
             {
               "type": "string",
+              "value": "vendor"
+            },
+            {
+              "type": "string",
               "value": "partner"
             },
             {
@@ -1677,78 +1681,6 @@
     }
   },
   {
-    "name": "stat",
-    "type": "document",
-    "attributes": {
-      "_id": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_type": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string",
-          "value": "stat"
-        }
-      },
-      "_createdAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_updatedAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "_rev": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        }
-      },
-      "value": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "label": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "shortLabel": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "source": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "asOf": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      }
-    }
-  },
-  {
     "type": "type",
     "name": "program.reference",
     "value": {
@@ -1821,10 +1753,20 @@
         },
         "optional": true
       },
-      "title": {
+      "kind": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "festival"
+            },
+            {
+              "type": "string",
+              "value": "gala"
+            }
+          ]
         },
         "optional": true
       },
@@ -1837,13 +1779,6 @@
         "optional": true
       },
       "plainStatement": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "year": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -2443,13 +2378,6 @@
         },
         "optional": true
       },
-      "title": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
       "blurb": {
         "type": "objectAttribute",
         "value": {
@@ -2457,11 +2385,10 @@
         },
         "optional": true
       },
-      "image": {
+      "milestone": {
         "type": "objectAttribute",
         "value": {
-          "type": "inline",
-          "name": "oyImage"
+          "type": "boolean"
         },
         "optional": true
       },
@@ -3333,6 +3260,28 @@
                 "type": "string"
               },
               "optional": true
+            },
+            "facts": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "array",
+                "of": {
+                  "type": "object",
+                  "attributes": {
+                    "_key": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "rest": {
+                    "type": "inline",
+                    "name": "fact"
+                  }
+                }
+              },
+              "optional": true
             }
           }
         },
@@ -3412,6 +3361,35 @@
           "of": {
             "type": "object",
             "attributes": {
+              "kind": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "union",
+                  "of": [
+                    {
+                      "type": "string",
+                      "value": "check"
+                    },
+                    {
+                      "type": "string",
+                      "value": "matching"
+                    },
+                    {
+                      "type": "string",
+                      "value": "inKind"
+                    },
+                    {
+                      "type": "string",
+                      "value": "daf"
+                    },
+                    {
+                      "type": "string",
+                      "value": "other"
+                    }
+                  ]
+                },
+                "optional": true
+              },
               "title": {
                 "type": "objectAttribute",
                 "value": {
@@ -3420,6 +3398,13 @@
                 "optional": true
               },
               "blurb": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "detail": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"
@@ -3603,6 +3588,36 @@
         },
         "optional": true
       },
+      "foundingFacts": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "fact"
+            }
+          }
+        },
+        "optional": true
+      },
+      "foundingImage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "oyImage"
+        },
+        "optional": true
+      },
       "timeline": {
         "type": "objectAttribute",
         "value": {
@@ -3657,6 +3672,28 @@
                 "type": "string"
               },
               "optional": true
+            }
+          }
+        },
+        "optional": true
+      },
+      "takePart": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
             }
           }
         },
@@ -3925,6 +3962,14 @@
         },
         "optional": true
       },
+      "howWeWorkImage": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "oyImage"
+        },
+        "optional": true
+      },
       "outcomes": {
         "type": "objectAttribute",
         "value": {
@@ -4012,13 +4057,6 @@
           "type": "object",
           "attributes": {
             "title": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string"
-              },
-              "optional": true
-            },
-            "blurb": {
               "type": "objectAttribute",
               "value": {
                 "type": "string"
@@ -4230,6 +4268,14 @@
                 "name": "blockContent"
               },
               "optional": true
+            },
+            "stat": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "stat.reference"
+              },
+              "optional": true
             }
           }
         },
@@ -4336,6 +4382,78 @@
         "value": {
           "type": "inline",
           "name": "seo"
+        },
+        "optional": true
+      }
+    }
+  },
+  {
+    "name": "stat",
+    "type": "document",
+    "attributes": {
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "stat"
+        }
+      },
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        }
+      },
+      "value": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "label": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "shortLabel": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "source": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "asOf": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
         },
         "optional": true
       }
@@ -6877,6 +6995,14 @@
               "name": "scheduleItem"
             }
           }
+        },
+        "optional": true
+      },
+      "vendorsHosted": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "sourcedFigure"
         },
         "optional": true
       },

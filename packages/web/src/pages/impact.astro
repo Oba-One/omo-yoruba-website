@@ -1,0 +1,221 @@
+---
+/**
+ * Impact (`14 Impact.dc.html`, ROUTES sections 1, 4 and 5, ADR 0035): composed from the one Impact query
+ * through `loadQuery`, with the registry's Pending chips for every fact the Studio does not hold and the
+ * layout options read from the singleton with the schema defaults filled. Built for the grant reviewer:
+ * every figure carries its source line or its chip, a program with no number says what is being measured,
+ * and the governance block names what is not yet published rather than leaving it out. The page arranges
+ * library parts and owns its copy (the kickers and headings the prototype carries) and its layout.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { impactPageQuery } from '@oy/content/queries';
+import OutcomeCard from '@oy/ui/cards/OutcomeCard/OutcomeCard.astro';
+import PullQuote from '@oy/ui/cards/PullQuote/PullQuote.astro';
+import FactList from '@oy/ui/content/FactList/FactList.astro';
+import PartnerRow from '@oy/ui/content/PartnerRow/PartnerRow.astro';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import ActionButton from '@oy/ui/core/ActionButton/ActionButton.astro';
+import Button from '@oy/ui/core/Button/Button.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import PhotoMosaic from '@oy/ui/media/PhotoMosaic/PhotoMosaic.astro';
+import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
+import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
+import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
+import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
+import StatStrip from '@oy/ui/page/StatStrip/StatStrip.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { cachePage } from '../lib/cache';
+import { STUDIO_BASE_PATH } from '../lib/paths';
+import { buildImpactPage } from '../lib/sanity/impact-page';
+import { loadQuery } from '../lib/sanity/load-query';
+
+const { data, preview, error } = await loadQuery(impactPageQuery, {}, { cookies: Astro.cookies });
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildImpactPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/impact', { draft: preview, failed: Boolean(error) });
+const rows = page.outcomes.layout === 'row';
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending={page.header.titlePending}
+      line={page.header.line}
+      actions={page.header.actions}
+    />
+
+    <Section id="numbers" labelledby="numbers-heading" data-sanity={page.edit.stats}>
+      <SectionHead
+        kicker={{ yo: 'Ní ṣókí', en: 'In brief' }}
+        title="Headline numbers"
+        intro={page.numbers.lead}
+        id="numbers-heading"
+      />
+      <StatStrip
+        variant="framed"
+        stats={page.numbers.stats}
+        sources={page.numbers.sources}
+        columns={page.numbers.columns}
+        padPending={page.numbers.padPending}
+        what={page.numbers.pending}
+        data-sanity={page.edit.sources}
+      />
+    </Section>
+
+    <Section id="how" ground="alt" labelledby="how-heading">
+      <Split>
+        <SectionHead title="How we work" id="how-heading" />
+        {
+          page.how.prose ? (
+            <Prose value={page.how.prose} />
+          ) : (
+            <p>
+              <Pending what={page.how.pending} />
+            </p>
+          )
+        }
+        <PhotoTile
+          slot="aside"
+          shape="figure"
+          height={320}
+          image={page.how.photo}
+          caption={page.how.caption}
+          what={page.how.photoWhat}
+          sizes="(min-width: 1100px) 480px, (min-width: 900px) 42vw, 100vw"
+          edit={page.how.photoEdit}
+        />
+      </Split>
+    </Section>
+
+    <Section id="outcomes" labelledby="outcomes-heading" data-sanity={page.edit.outcomes}>
+      <SectionHead
+        kicker={{ yo: 'Èsì', en: 'Results' }}
+        title="What each program produced"
+        intro="Where a program has no number yet, we say what is being measured this year."
+        id="outcomes-heading"
+      />
+      <CardGrid columns={rows ? 1 : 4}>
+        {
+          page.outcomes.cards.map((card) => (
+            <OutcomeCard
+              title={card.title}
+              figure={card.figure}
+              line={card.line}
+              source={card.source}
+              sources={page.outcomes.sources}
+              sourcePending={page.outcomes.sourcePending}
+              pending={card.pending}
+              variant={page.outcomes.layout}
+              edit={card.edit}
+            />
+          ))
+        }
+      </CardGrid>
+      {
+        page.outcomes.links.length > 0 && (
+          <ButtonRow>
+            {page.outcomes.links.map((link) => (
+              <Button variant="quiet" href={link.href} arrow>
+                {link.name}
+              </Button>
+            ))}
+          </ButtonRow>
+        )
+      }
+    </Section>
+
+    <Section id="civic" ground="alt" labelledby="civic-heading">
+      <Split>
+        <SectionHead title="Odunde as civic infrastructure" id="civic-heading" />
+        {
+          page.civic.prose ? (
+            <Prose value={page.civic.prose} />
+          ) : (
+            <p>
+              <Pending what={page.civic.pending} />
+            </p>
+          )
+        }
+        <Button variant="quiet" href="/odunde" arrow>The festival page</Button>
+        <GlanceStrip slot="aside" band={false} facts={page.civic.cells} edit={page.civic.edit} />
+      </Split>
+    </Section>
+
+    <Section id="voices" labelledby="voices-heading">
+      <SectionHead
+        title="In their words"
+        intro="A parent, an elder, and a vendor, in their own words."
+        id="voices-heading"
+      />
+      <CardGrid columns={3}>
+        {
+          page.voices.items.map((item) => (
+            <PullQuote
+              testimonial={item.testimonial}
+              placeholder={item.placeholder}
+              pending={page.voices.pending}
+            />
+          ))
+        }
+      </CardGrid>
+    </Section>
+
+    <Section id="photographs" ground="alt" labelledby="photographs-heading">
+      <SectionHead
+        title="The work, in photographs"
+        intro="Across years and programs, captioned with the year and what is happening."
+        id="photographs-heading"
+      />
+      <PhotoMosaic count={6} tiles={page.photos.tiles} />
+      <ButtonRow>
+        <Button variant="secondary" href="/gallery" arrow>Open the gallery</Button>
+      </ButtonRow>
+    </Section>
+
+    <Section id="governance" labelledby="governance-heading">
+      <SectionHead
+        kicker={{ yo: 'Ìdúró', en: 'Standing' }}
+        title="Governance and accountability"
+        intro="What we are, how we are governed, and what we publish. Where a document is not ready yet, we say when it will be."
+        id="governance-heading"
+      />
+      <GlanceStrip band={false} facts={page.governance.cells} />
+      <FactList facts={page.governance.facts} />
+    </Section>
+
+    {
+      page.partners.shown && (
+        <Section id="funders" ground="alt" labelledby="funders-heading" data-sanity={page.edit.funders}>
+          <SectionHead title="Partners and funders" intro={page.partners.intro} id="funders-heading" />
+          <PartnerRow partners={page.partners.items} pending={page.partners.pending} />
+        </Section>
+      )
+    }
+
+    <Section id="fund" ground="dark" labelledby="fund-heading">
+      <SectionHead
+        kicker={{ yo: 'Ọdún tí ń bọ̀', en: 'The year ahead' }}
+        swatch={false}
+        title={page.fund.title}
+        intro={page.fund.line}
+        notePending={page.fund.linePending}
+        id="fund-heading"
+      />
+      <ButtonRow>
+        <ActionButton action={page.fund.actions[0]} variant="primary" />
+        <ActionButton action={page.fund.actions[1]} variant="secondary" arrow={false} />
+      </ButtonRow>
+    </Section>
+  </main>
+</SiteLayout>

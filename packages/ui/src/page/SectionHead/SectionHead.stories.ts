@@ -39,6 +39,16 @@ export const SingleKicker: Story = {
 
 export const NoKicker: Story = { args: { kicker: undefined, title: 'Raise your hand' } };
 
+/** A dark closing band's kicker without the swatch (`14 Impact.dc.html`, Fund the next year). */
+export const NoSwatch: Story = {
+  ...onDark,
+  args: {
+    kicker: { yo: 'Ọdún tí ń bọ̀', en: 'The year ahead' },
+    title: 'Fund the next year',
+    swatch: false,
+  },
+};
+
 /** The kicker test string at 12px. */
 export const Diacritics: Story = { args: { kicker: { yo: TEST_STRING, en: 'Welcome' } } };
 

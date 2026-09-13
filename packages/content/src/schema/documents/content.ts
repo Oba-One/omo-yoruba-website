@@ -1,4 +1,6 @@
 import { defineField, defineType } from 'sanity';
+import { DOOR_KEYS } from '../../doors';
+import { EVENT_PAGE_NAMES } from '../../routes';
 import { voice } from '../../validation/rules';
 import { lines, order, slug, text } from '../helpers';
 
@@ -115,6 +117,15 @@ export const event = defineType({
       type: 'array',
       of: [{ type: 'scheduleItem' }],
       group: 'day',
+    }),
+    defineField({
+      name: 'vendorsHosted',
+      title: 'Vendors hosted',
+      type: 'sourcedFigure',
+      group: 'vendors',
+      hidden: ({ document }) => document?.kind !== 'festival',
+      description:
+        'For a past edition: how many vendors the market hosted, with the source ("Vendor register, 2026"). Impact shows it beside the attendance (ADR 0035).',
     }),
     defineField({
       name: 'vendorTerms',
@@ -397,6 +408,10 @@ export const person = defineType({
   },
 });
 
+/**
+ * One entry on Our Story's timeline (ADR 0035): a year or a span and one line, as `15 People and
+ * History.dc.html` draws it; a milestone (the founding, today) is drawn apart from the rest.
+ */
 export const timelineEntry = defineType({
   name: 'timelineEntry',
   title: 'Timeline entry',
@@ -406,21 +421,28 @@ export const timelineEntry = defineType({
       name: 'year',
       title: 'Year',
       type: 'string',
-      description: '"2003", "1998 to 2002".',
+      description: '"2003", "1998 to 2002", "Today".',
       validation: voice.requiredText,
     }),
     defineField({
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-      validation: voice.requiredHeading,
+      name: 'blurb',
+      title: 'What happened',
+      type: 'text',
+      rows: 2,
+      description: 'One line.',
+      validation: voice.requiredText,
     }),
-    text('blurb', 'Blurb', 2),
-    defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
+    defineField({
+      name: 'milestone',
+      title: 'Milestone',
+      type: 'boolean',
+      description: 'Drawn apart from the other entries, as the founding and today are.',
+      initialValue: false,
+    }),
     order,
   ],
   orderings: [{ title: 'Order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
-  preview: { select: { title: 'title', subtitle: 'year', media: 'image' } },
+  preview: { select: { title: 'year', subtitle: 'blurb' } },
 });
 
 export const TESTIMONIAL_CONTEXTS = ['lessons', 'festival', 'collective', 'general'] as const;
@@ -619,10 +641,26 @@ export const partner = defineType({
   preview: { select: { title: 'name', subtitle: 'kind', media: 'logo' } },
 });
 
+export const OUTCOME_KINDS = ['festival', 'gala'] as const;
+
+/**
+ * What one program or event produced (ADR 0035): exactly one subject, a program or an event page's kind,
+ * as a year strip row names one (ADR 0031); its heading on Impact is the subject's name. A figure carries
+ * its source line; without one, the plain statement says what is being measured.
+ */
 export const outcome = defineType({
   name: 'outcome',
   title: 'Outcome',
   type: 'document',
+  validation: (rule) =>
+    rule.custom((document) => {
+      const value = document as { program?: unknown; kind?: string } | undefined;
+      if (!value) return true;
+      if (value.program && value.kind) return 'Choose a program or an event, not both.';
+      if (!value.program && !value.kind)
+        return 'Choose the program or the event this outcome is for.';
+      return true;
+    }),
   fields: [
     defineField({
       name: 'program',
@@ -631,16 +669,22 @@ export const outcome = defineType({
       to: [{ type: 'program' }],
     }),
     defineField({
-      name: 'title',
-      title: 'Title',
+      name: 'kind',
+      title: 'Event',
       type: 'string',
-      validation: voice.requiredHeading,
+      description: 'The event whose page the outcome names; its name shows without a year.',
+      options: {
+        list: OUTCOME_KINDS.map((kind) => ({ title: EVENT_PAGE_NAMES[kind], value: kind })),
+        layout: 'radio',
+        direction: 'horizontal',
+      },
     }),
     defineField({
       name: 'figure',
       title: 'Figure',
       type: 'sourcedFigure',
-      description: 'Optional; a plain statement stands in when nothing is measured yet.',
+      description:
+        'The number and what it counts ("Learners taught since 2019"), with its source. Leave empty while nothing is measured yet, and write the plain statement instead.',
     }),
     text(
       'plainStatement',
@@ -648,11 +692,19 @@ export const outcome = defineType({
       2,
       'What is being measured this year, when there is no figure.',
     ),
-    defineField({ name: 'year', title: 'Year', type: 'string', validation: voice.text }),
     order,
   ],
   orderings: [{ title: 'Order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
-  preview: { select: { title: 'title', subtitle: 'figure.value' } },
+  preview: {
+    select: { program: 'program.name', kind: 'kind', value: 'figure.value' },
+    prepare: ({ program, kind, value }) => {
+      const event = OUTCOME_KINDS.find((known) => known === kind);
+      return {
+        title: program ?? (event ? EVENT_PAGE_NAMES[event] : 'An outcome'),
+        subtitle: value ?? 'no figure yet',
+      };
+    },
+  },
 });
 
 export const stat = defineType({
@@ -694,9 +746,10 @@ export const stat = defineType({
   },
 });
 
-export const DOOR_KEYS = ['member', 'volunteer', 'partner', 'give'] as const;
-
-/** One of the four ways in, shown by the homepage, Get Involved and Donate (ADR 0013). */
+/**
+ * One of the ways in, shown by the homepage, Get Involved and Donate (ADR 0013); the vendor door joined in
+ * Phase 7 (ADR 0034).
+ */
 export const door = defineType({
   name: 'door',
   title: 'Door',

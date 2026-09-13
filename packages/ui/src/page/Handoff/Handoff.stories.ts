@@ -1,3 +1,4 @@
+import { pendingWhat } from '@oy/content/pending';
 import type { ComponentProps } from 'astro/types';
 import { FESTIVAL_GIVE_HANDOFF } from '../../fixtures/event-pages';
 import { type Meta, onDark, type StoryArgs, type StoryObj } from '../../storybook';
@@ -46,5 +47,16 @@ export const BoxTwoButtons: Story = {
     text: 'Want the day to happen again next June? Give now, or sponsor and join this row.',
     action: { label: 'Donate', kind: 'give' },
     secondAction: { label: 'Sponsor Odunde', kind: 'enquiry', enquiryKind: 'sponsor' },
+  },
+};
+
+/** The box whose line is a missing fact: Get Involved's give door without its blurb shows the chip. */
+export const BoxPending: Story = {
+  args: {
+    shape: 'box',
+    variant: 'primary',
+    text: undefined,
+    textPending: pendingWhat('door', 'blurb'),
+    action: { label: 'Donate', kind: 'give' },
   },
 };

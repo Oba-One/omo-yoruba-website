@@ -1,5 +1,9 @@
 ---
-/** One cell of the glance strip: the label, the value or its chip, and the note or its chip. */
+/**
+ * One cell of the glance strip: the label, the value or its chip, and the note or its chip. A note with a
+ * safe `noteHref` is a link with a 44px target (Impact's board cell linking to Our Story).
+ */
+import { safeHref } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
 import type { GlanceFact } from './GlanceStrip.astro';
 
@@ -8,6 +12,7 @@ interface Props {
 }
 
 const { fact } = Astro.props;
+const href = safeHref(fact.noteHref);
 ---
 
 <div>
@@ -15,7 +20,7 @@ const { fact } = Astro.props;
   {fact.value?.trim() ? <span>{fact.value}</span> : <Pending what={fact.pending} />}
   {
     fact.note?.trim() ? (
-      <small>{fact.note}</small>
+      <small>{href ? <a class="oy-glance-link" href={href}>{fact.note}</a> : fact.note}</small>
     ) : (
       fact.notePending && (
         <small>
@@ -25,3 +30,13 @@ const { fact } = Astro.props;
     )
   }
 </div>
+
+<style>
+  /* A link on its own under a figure: the 44px target, its negative margin keeping the cell's height. */
+  .oy-glance-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    margin: -12px 0;
+  }
+</style>

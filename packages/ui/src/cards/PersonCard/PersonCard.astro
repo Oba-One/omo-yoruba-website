@@ -4,8 +4,12 @@
  * `.oy-person` card with the role as a small kicker, the name and a short bio. With a portrait the
  * photograph sits above, framed by its hotspot; without one the card draws the woven tick in place of
  * a face, a design of its own rather than a placeholder. `compact` tightens the type. A missing name
- * shows the registry's chip. The border deepens and the name warms on hover, nothing lifts.
+ * shows the registry's chip, and so do a missing role and bio where the page asks for them (Our Story's
+ * board). `full` adds the person's full bio under the short one when it is written (Our Story's `bios`).
+ * The border deepens and the name warms on hover, nothing lifts.
  */
+import type { ComponentProps } from 'astro/types';
+import Prose from '../../content/Prose/Prose.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
 
@@ -14,6 +18,8 @@ export interface PersonLike {
   name?: string | null;
   role?: string | null;
   bio?: string | null;
+  /** The full bio as Portable Text, shown under the short one with `full`. */
+  bioFull?: ComponentProps<typeof Prose>['value'];
   image?: ImageInput | null;
 }
 
@@ -22,8 +28,12 @@ interface Props {
   /** `portrait` falls back to the woven tick when there is no photograph. */
   variant?: 'portrait' | 'nophoto' | 'compact';
   namePending?: string;
+  /** The registry's wording for a missing role; without it a missing role draws nothing. */
+  rolePending?: string;
   /** The registry's wording for a missing bio; without it a missing bio draws nothing. */
   bioPending?: string;
+  /** Add the full bio under the short one when it is written. */
+  full?: boolean;
   sizes?: string;
   /** A `data-sanity` attribute, so click-to-edit reaches the person. */
   edit?: string;
@@ -34,13 +44,18 @@ const {
   person,
   variant = 'portrait',
   namePending = 'the name',
+  rolePending,
   bioPending,
+  full = false,
   sizes = '(min-width: 1100px) 340px, (min-width: 860px) 30vw, 100vw',
   edit,
   class: className,
 } = Astro.props;
 const img = variant === 'nophoto' ? undefined : imgAttributes(person.image, sizes);
 const position = positionOf(person.image);
+// Portable Text arrives as a list of blocks; an empty list is no bio.
+const longBio =
+  full && Array.isArray(person.bioFull) && person.bioFull.length > 0 ? person.bioFull : undefined;
 ---
 
 <article
@@ -66,7 +81,17 @@ const position = positionOf(person.image);
     )
   }
   <div class="oy-person-body">
-    {person.role?.trim() && <p class="oy-person-role">{person.role}</p>}
+    {
+      person.role?.trim() ? (
+        <p class="oy-person-role">{person.role}</p>
+      ) : (
+        rolePending && (
+          <p class="oy-person-role">
+            <Pending what={rolePending} />
+          </p>
+        )
+      )
+    }
     <h3 class="oy-person-name">{person.name?.trim() || <Pending what={namePending} />}</h3>
     {
       person.bio?.trim() ? (
@@ -79,6 +104,7 @@ const position = positionOf(person.image);
         )
       )
     }
+    {longBio && <Prose value={longBio} class="oy-person-bio oy-person-bio--full" />}
   </div>
 </article>
 
@@ -86,5 +112,8 @@ const position = positionOf(person.image);
   .oy-person-role,
   .oy-person-name {
     margin: 0;
+  }
+  .oy-person-bio--full {
+    margin-top: 8px;
   }
 </style>

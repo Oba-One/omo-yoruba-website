@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './CardGrid.stories';
 
-const { Three, Two, Four, ProgramsFour, ProgramsPairs, Pending, WithNote } =
+const { Three, Two, One, Five, Four, ProgramsFour, ProgramsPairs, Pending, WithNote } =
   composeStories(stories);
 
 describe('CardGrid', () => {
@@ -14,6 +14,12 @@ describe('CardGrid', () => {
     expect((await renderToBody(Two)).querySelector('[data-columns="2"] .oy-card')).not.toBeNull();
     expect((await renderToBody(Four)).querySelectorAll('[data-columns="4"] .oy-card')).toHaveLength(
       4,
+    );
+    expect((await renderToBody(One)).querySelectorAll('[data-columns="1"] .oy-card')).toHaveLength(
+      2,
+    );
+    expect((await renderToBody(Five)).querySelectorAll('[data-columns="5"] .oy-card')).toHaveLength(
+      5,
     );
   });
 

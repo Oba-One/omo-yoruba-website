@@ -54,7 +54,12 @@ export const STATS: { _id: string; value: string; label: string; shortLabel?: st
     shortLabel: 'Yoruba community in SoCal',
   },
   { _id: 'stat-zones', value: '4', label: 'festival zones at Odunde' },
-  { _id: 'stat-associations', value: '9', label: 'hometown associations' },
+  {
+    _id: 'stat-associations',
+    value: '9',
+    label: 'hometown associations in the community',
+    shortLabel: 'hometown associations',
+  },
 ];
 
 /** The same figures as the homepage strip reads them, by buildHomepage's rule. */

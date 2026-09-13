@@ -57,3 +57,19 @@ export const Linked: Story = {
     ],
   },
 };
+
+/** A linked document with its note after the link, as Impact's governance facts set a filed Form 990. */
+export const LinkedWithNote: Story = {
+  args: {
+    columns: 1,
+    facts: [
+      {
+        label: 'Form 990',
+        value: 'Form 990, [ Year ]',
+        href: 'https://cdn.sanity.io/files/example/development/990.pdf',
+        note: '[ A note on the filing ]',
+      },
+      { label: 'Audit', pending: 'the audit position' },
+    ],
+  },
+};

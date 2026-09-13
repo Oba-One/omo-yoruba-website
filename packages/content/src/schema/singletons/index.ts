@@ -1,4 +1,5 @@
 import { defineField } from 'sanity';
+import { OTHER_WAY_KINDS, OTHER_WAY_TITLES } from '../../giving';
 import { PAGE_LAYOUTS } from '../../layout-options';
 import { EVENT_PAGE_NAMES } from '../../routes';
 import { voice } from '../../validation/rules';
@@ -411,7 +412,12 @@ export const getInvolvedPage = definePage({
   name: 'getInvolvedPage',
   title: 'Get Involved page',
   fields: [
-    refs('doors', 'Doors', 'door', 'The four ways in, in order.'),
+    refs(
+      'doors',
+      'Doors',
+      'door',
+      'The ways in, in order: the member, volunteer, vendor and partner doors show as cards, and the give door closes the page as a box (ADR 0034).',
+    ),
     defineField({
       name: 'hometownAssociations',
       title: 'Hometown associations',
@@ -419,6 +425,14 @@ export const getInvolvedPage = definePage({
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
         defineField({ name: 'prose', title: 'Prose', type: 'blockContent' }),
+        defineField({
+          name: 'stat',
+          title: 'The count',
+          type: 'reference',
+          to: [{ type: 'stat' }],
+          description:
+            'The headline figure beside the prose ("9 hometown associations"), kept once for the homepage and this page. The associations themselves are listed under the prose once the Studio holds them; listing them is optional.',
+        }),
       ],
     }),
     defineField({
@@ -438,9 +452,26 @@ export const impactPage = definePage({
   name: 'impactPage',
   title: 'Impact page',
   fields: [
-    refs('stats', 'Headline numbers', 'stat', 'Four or six, in order.'),
+    refs(
+      'stats',
+      'Headline numbers',
+      'stat',
+      'Four or six, in order; each shows its source line under the figure.',
+    ),
     defineField({ name: 'howWeWork', title: 'How we work', type: 'blockContent' }),
-    refs('outcomes', 'What each program produced', 'outcome'),
+    defineField({
+      name: 'howWeWorkImage',
+      title: 'Photograph beside How we work',
+      type: 'oyImage',
+      description:
+        'Its caption shows over it ("Àjọṣe • Partners and friends at the table"). Empty shows Pending.',
+    }),
+    refs(
+      'outcomes',
+      'What each program produced',
+      'outcome',
+      'In order. While fewer than four, the page keeps a place for Yoruba Language Lessons, the Odunde Festival, Kids & STEM and the Collective.',
+    ),
     defineField({
       name: 'civicInfra',
       title: 'Odunde as civic infrastructure',
@@ -458,9 +489,10 @@ export const impactPage = definePage({
       name: 'nextYear',
       title: 'Fund the next year',
       type: 'object',
+      description:
+        'The dark band that closes the page. Its line names the partnerships lead from the site settings, and how soon they answer.',
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
-        text('blurb', 'Blurb', 2),
       ],
     }),
   ],
@@ -477,7 +509,24 @@ export const storyPage = definePage({
       type: 'blockContent',
       description: 'The 1997 story, in your words.',
     }),
-    refs('timeline', 'Timeline', 'timelineEntry'),
+    facts(
+      'foundingFacts',
+      'Founding facts',
+      'Beside the story: when and where, who founded it, its status, the first year. Empty values show Pending.',
+    ),
+    defineField({
+      name: 'foundingImage',
+      title: 'The earliest photograph',
+      type: 'oyImage',
+      description:
+        'The earliest photograph you have, even a poor one: an early gathering, or the founders. Empty shows Pending.',
+    }),
+    refs(
+      'timeline',
+      'Timeline',
+      'timelineEntry',
+      'In order. The layout option keeps the timeline hidden until you confirm you want one (wayfinder ticket 07).',
+    ),
     text('boardIntro', 'Board intro', 2),
     text('staffIntro', 'Staff and volunteers intro', 2),
     defineField({
@@ -489,6 +538,7 @@ export const storyPage = definePage({
         text('blurb', 'Blurb', 2),
       ],
     }),
+    takePart,
   ],
   layout: PAGE_LAYOUTS.storyPage,
 });
@@ -504,6 +554,11 @@ export const donatePage = definePage({
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
         text('blurb', 'Blurb'),
+        facts(
+          'facts',
+          'Facts beside it',
+          'Fees, the receipt, monthly giving and what happens if the form fails. Fees, the receipt and monthly depend on how your Zeffy form is set up; empty values show Pending. The trust block reads the Receipt fact too.',
+        ),
       ],
     }),
     defineField({
@@ -513,19 +568,44 @@ export const donatePage = definePage({
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
         text('blurb', 'Blurb', 2),
-        refs('doors', 'Doors', 'door', 'The partner and sponsor doors.'),
+        refs(
+          'doors',
+          'Doors',
+          'door',
+          'For organizations: one door fills the width, two or more show as cards (ADR 0034).',
+        ),
       ],
     }),
-    refs('whatYourGiftDoes', 'What your gift does', 'givingLevel'),
+    refs(
+      'whatYourGiftDoes',
+      'What your gift does',
+      'givingLevel',
+      'The preset amounts in your Zeffy form, each with what it pays for and the source of that cost.',
+    ),
     defineField({
       name: 'otherWays',
       title: 'Other ways to give',
       type: 'array',
+      description: 'Only the ways you accept.',
       of: [
         {
           type: 'object',
           name: 'otherWay',
           fields: [
+            defineField({
+              name: 'kind',
+              title: 'Kind',
+              type: 'string',
+              description:
+                'A check shows the mailing address, and employer matching and a donor-advised fund show the EIN and the legal name, from the site settings (ADR 0035).',
+              options: {
+                list: OTHER_WAY_KINDS.map((kind) => ({
+                  title: OTHER_WAY_TITLES[kind],
+                  value: kind,
+                })),
+                layout: 'radio',
+              },
+            }),
             defineField({
               name: 'title',
               title: 'Title',
@@ -533,8 +613,16 @@ export const donatePage = definePage({
               validation: voice.requiredHeading,
             }),
             text('blurb', 'Blurb', 2),
+            defineField({
+              name: 'detail',
+              title: 'Detail',
+              type: 'string',
+              description:
+                'A practical line: what to write on the check, what an employer form asks for. The address or the EIN is added for you.',
+              validation: voice.text,
+            }),
           ],
-          preview: { select: { title: 'title' } },
+          preview: { select: { title: 'title', subtitle: 'kind' } },
         },
       ],
     }),
@@ -542,6 +630,7 @@ export const donatePage = definePage({
       name: 'taxLine',
       title: 'Tax-deductible line',
       type: 'string',
+      description: 'The trust block\'s "Deductible" cell: "To the extent allowed by law".',
       validation: voice.text,
     }),
   ],

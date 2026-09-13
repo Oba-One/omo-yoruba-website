@@ -5,7 +5,8 @@
  * what it recognizes as the ticked list beside it, each with the registry's chip while the Studio owes
  * it. The entry form, `kind="entry"`: a title as the heading and its line, alone in one column as the
  * Lessons levels draw it (`11 Yoruba Language School.dc.html`), with the registry's chip for a missing
- * line. The event form, `kind="event"` (`12 Yoruba Cultural Collective.dc.html`, Collective events): the
+ * line, and a detail line under it with its chip (Donate's other ways to give, `16 Donate.dc.html`). The
+ * event form, `kind="event"` (`12 Yoruba Cultural Collective.dc.html`, Collective events): the
  * month and day in the date block, the title, the summary, the weekday and start time with the venue or
  * its chip, and a quiet action; the page words the date in Los Angeles time (`content/edition-dates`).
  * The row warms on hover, nothing lifts.
@@ -25,6 +26,10 @@ export interface EntryRowLike {
   _key?: string | null;
   title?: string | null;
   line?: string | null;
+  /** The practical detail under the line (Donate's other ways: the address, the EIN). */
+  detail?: string | null;
+  /** The registry's wording for a fact the detail still owes (the EIN), after what it holds. */
+  detailPending?: string;
 }
 
 /** An event row as the page words it: the date block and the weekday and time already in words. */
@@ -117,6 +122,13 @@ const when = event?.when?.trim();
               <Pending what={props.linePending} />
             </p>
           )
+        )}
+        {(props.row.detail?.trim() || props.row.detailPending) && (
+          <div class="oy-lrow-where">
+            {props.row.detail?.trim()}
+            {props.row.detail?.trim() && props.row.detailPending && ' '}
+            {props.row.detailPending && <Pending what={props.row.detailPending} />}
+          </div>
         )}
       </div>
     </li>

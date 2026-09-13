@@ -35,6 +35,24 @@ export function cleanText(value: string | null | undefined): string | undefined 
   return value ? stegaClean(value).trim() || undefined : undefined;
 }
 
+/** The Studio's text when it holds any, its stega kept for click-to-edit; else the page's own words. */
+export function textOr(value: string | null | undefined, fallback: string): string {
+  return cleanText(value) ? (value ?? fallback) : fallback;
+}
+
+/** A multi-line value (the mailing address) on one line, its lines joined by commas, or undefined. */
+export function oneLine(value: string | null | undefined): string | undefined {
+  const lines = (cleanText(value) ?? '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return lines.length > 0 ? lines.join(', ') : undefined;
+}
+
+/** Whether a list item is there: the filter every builder runs over a list the query may answer with nulls. */
+export const present = <T>(value: T | null | undefined): value is T =>
+  value !== null && value !== undefined;
+
 /**
  * The edit attribute for a path, on the page's own document unless another is named; undefined
  * outside draft mode, so a public page never carries one.

@@ -8,6 +8,7 @@ const {
   Partner,
   Volunteer,
   Give,
+  Vendor,
   Pending,
   TakePartRow,
   Quiet,
@@ -44,6 +45,14 @@ describe('PathRow', () => {
     expect(text(give?.querySelector('.oy-path-chip'))).toBe('Give');
     expect(give?.getAttribute('data-accent')).toBe('give');
     expect(give?.querySelector('[data-give]')).not.toBeNull();
+  });
+
+  it("names the vendor door's chip and accent from its key, its blurb owed", async () => {
+    const row = (await renderToBody(Vendor)).querySelector('.oy-path[data-door="vendor"]');
+    expect(text(row?.querySelector('.oy-path-chip'))).toBe('Vendors');
+    expect(row?.getAttribute('data-accent')).toBe('vendor');
+    expect(row?.querySelector('a.oy-btn')?.getAttribute('data-enquiry')).toBe('vendor');
+    expect(text(row?.querySelector('.oy-path-body .oy-pend'))).toBe('Pending: the blurb');
   });
 
   it('names what is missing for an empty door', async () => {

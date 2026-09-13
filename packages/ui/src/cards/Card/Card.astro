@@ -16,8 +16,11 @@ interface Props {
   image?: ImageInput | null;
   /** Alt text for the photo; a resolved image's own alt wins when set. */
   alt?: string;
-  /** The photo's height in pixels; 170 for program cards, 190 for doors. */
-  mediaHeight?: number;
+  /**
+   * The photo's height in pixels; 170 for program cards, 190 for doors. `fill` leaves the height to the
+   * card built on this one (a door in the row form, whose photograph fills the row).
+   */
+  mediaHeight?: number | 'fill';
   /** `sizes` for a resolved image's srcset. */
   sizes?: string;
   /** A `data-sanity` attribute for the photo, so click-to-edit reaches the image field. */
@@ -30,6 +33,8 @@ interface Props {
   rule?: boolean;
   /** Inline custom properties a card built on this one sets for its parts (a placeholder's height). */
   style?: string;
+  /** The anchor the card answers to (a door's key on Get Involved). */
+  id?: string;
   class?: string;
 }
 
@@ -51,7 +56,13 @@ const {
 const img = imgAttributes(image, sizes);
 const altText = altOf(image, alt ?? '');
 const position = positionOf(image);
-const mediaStyle = `height: ${mediaHeight}px${position ? `; object-position: ${position}` : ''}`;
+const mediaStyle =
+  [
+    mediaHeight === 'fill' ? undefined : `height: ${mediaHeight}px`,
+    position && `object-position: ${position}`,
+  ]
+    .filter(Boolean)
+    .join('; ') || undefined;
 ---
 
 <Tag class:list={['oy-card', 'v2-card', className]} {...rest}>

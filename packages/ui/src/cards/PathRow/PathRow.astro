@@ -10,10 +10,10 @@
  * accent follows the way in through the tokens (`data-accent`; enrol and member share the performer
  * accent, updates the give accent); the border deepens on hover, no rule, no lift. The default slot
  * follows the line inside its paragraph (the festival's vendor terms). The action is outline by
- * default, gold once per view, quiet for the give and updates rows. The door chips are the
- * prototypes' own: "Membership" and "Partnership" from the homepage rows, "Volunteer" and "Give"
- * from the take-part rows of `11 Yoruba Language School.dc.html`, which share the accents.
+ * default, gold once per view, quiet for the give and updates rows. The door chips and accents come
+ * from `@oy/content/doors`, one chip per door across the site (ADR 0034).
  */
+import { DOOR_ACCENTS, DOOR_CHIPS, isDoorKey } from '@oy/content/doors';
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import { type ActionLike, resolveAction } from '../../core/ActionButton/action';
@@ -41,26 +41,13 @@ interface Props {
   class?: string;
 }
 
-const CHIPS: Record<string, string> = {
-  member: 'Membership',
-  volunteer: 'Volunteer',
-  partner: 'Partnership',
-  give: 'Give',
-};
-/** The chip accent per door, as the prototype colours them (the member row borrows the performer accent). */
-const ACCENTS: Record<string, string> = {
-  member: 'performer',
-  partner: 'sponsor',
-  volunteer: 'volunteer',
-  give: 'give',
-};
-
 const { door, primary = false, variant, edit, class: className } = Astro.props;
 const key = door?.key ?? '';
+const known = isDoorKey(key) ? key : undefined;
 const row = door
   ? {
-      chip: CHIPS[key],
-      accent: ACCENTS[key],
+      chip: known && DOOR_CHIPS[known],
+      accent: known && DOOR_ACCENTS[known],
       title: door.title,
       line: door.blurb,
       action: door.action,

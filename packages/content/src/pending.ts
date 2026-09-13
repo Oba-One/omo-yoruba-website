@@ -31,6 +31,14 @@ export interface PresenceEntry {
   what: string;
 }
 
+/** The trust pages as the registry's Where column names them. */
+const TRUST_PAGE_NAMES = {
+  getInvolvedPage: 'Get Involved',
+  impactPage: 'Impact',
+  storyPage: 'Our Story',
+  donatePage: 'Donate',
+} as const;
+
 const FESTIVAL = 'kind == "festival"';
 const GALA = 'kind == "gala"';
 const COLLECTIVE = 'kind == "collective"';
@@ -47,6 +55,29 @@ const fieldRows = (
  * her routing contact, so a page reads the wording from here rather than finding the row.
  */
 export const TEACHER_EMAIL_PENDING = "the teacher's email";
+
+/**
+ * The chips for the general routing contact beside the general inbox (Get Involved's "Or just talk to
+ * someone", Our Story's "Reach us"): who answers, and how soon. Their rows are conditions on the
+ * settings' contacts, so a page reads the wording from here.
+ */
+export const GENERAL_CONTACT_PENDING = 'who answers the general inbox';
+export const GENERAL_RESPONDS_PENDING = 'how soon the general inbox replies';
+
+/** The chip beside Impact's closing sentence, which names the partnerships lead and how soon they reply. */
+export const PARTNERSHIPS_RESPONDS_PENDING = 'how soon the partnerships lead replies';
+
+/**
+ * The chip in each empty cell of Impact's headline numbers under the `six` option: the two figures the
+ * wireframe waits for beside the four confirmed ones.
+ */
+export const IMPACT_SIX_PENDING = 'attendance and learners served, with their sources';
+
+/** An outcome with neither a figure nor a plain statement of what is being measured. */
+export const OUTCOME_PENDING = 'participation figures or what is being measured';
+
+/** A governance document with neither its file nor a note on when it comes. */
+export const GOVERNANCE_NOTE_PENDING = 'a file, or a note such as Copies on request';
 
 /** A page's take-part band: no rows yet, or a row missing its way in, title or button label. */
 const takePartRows = (type: string, where: string): PendingEntry[] => [
@@ -217,7 +248,13 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'the header photograph',
   },
   { type: 'galaPage', fields: ['header.title'], where: 'Gala, header', what: 'the page heading' },
-  // The program pages' slim headers draw no photograph, so only the heading is owed.
+  // The program pages' and the trust pages' slim headers draw no photograph, so only the heading is owed.
+  ...Object.entries(TRUST_PAGE_NAMES).map(([type, name]) => ({
+    type,
+    fields: ['header.title'],
+    where: `${name}, header`,
+    what: 'the page heading',
+  })),
   {
     type: 'programsPage',
     fields: ['header.title'],
@@ -448,22 +485,91 @@ export const PENDING: readonly PendingEntry[] = [
 
   // Get Involved and Donate
   {
+    type: 'getInvolvedPage',
+    fields: ['doors[]'],
+    where: 'Get Involved, doors',
+    what: 'the ways in',
+  },
+  // The give door closes Get Involved as a box, and no page draws its bullets (ADR 0034).
+  {
     type: 'door',
     fields: ['bullets[]'],
+    filter: 'key != "give"',
     where: 'Get Involved, doors',
     what: 'what this way in asks and gives',
   },
   {
+    type: 'getInvolvedPage',
+    fields: ['hometownAssociations.prose'],
+    where: 'Get Involved, hometown associations',
+    what: 'what the associations are, in your words',
+  },
+  {
+    type: 'getInvolvedPage',
+    fields: ['hometownAssociations.stat'],
+    where: 'Get Involved, hometown associations',
+    what: 'the number of associations',
+  },
+  {
+    type: 'siteSettings',
+    condition: 'count(contacts[role == "general" && defined(name)]) == 0',
+    where: 'Get Involved and Our Story, talk to someone',
+    what: GENERAL_CONTACT_PENDING,
+  },
+  {
+    type: 'siteSettings',
+    condition: 'count(contacts[role == "general" && defined(responds)]) == 0',
+    where: 'Get Involved and Our Story, talk to someone',
+    what: GENERAL_RESPONDS_PENDING,
+  },
+  {
     type: 'donatePage',
     fields: ['whatYourGiftDoes[]'],
-    where: 'Donate',
+    where: 'Donate, what your gift does',
     what: 'the preset amounts and what each buys',
   },
   {
     type: 'donatePage',
     fields: ['otherWays[]'],
-    where: 'Donate',
+    where: 'Donate, other ways to give',
     what: 'which other ways to give you accept',
+  },
+  // Fees, the receipt and monthly giving depend on how the owner's Zeffy form is set up (spec Q14).
+  {
+    type: 'donatePage',
+    fields: ['giveNow.facts[]'],
+    where: 'Donate, give now',
+    what: 'the give-now facts',
+  },
+  {
+    type: 'donatePage',
+    condition: 'count(giveNow.facts[!defined(value)]) > 0',
+    where: 'Donate, give now',
+    what: 'how your Zeffy form handles this',
+  },
+  {
+    type: 'donatePage',
+    fields: ['largerScale.doors[]'],
+    where: 'Donate, giving at a larger scale',
+    what: 'the doors for organizations',
+  },
+  {
+    type: 'donatePage',
+    fields: ['taxLine'],
+    where: 'Donate, tax-deductible',
+    what: 'the tax-deductible line',
+  },
+  {
+    type: 'givingLevel',
+    fields: ['what'],
+    where: 'Donate, what your gift does',
+    what: 'what the gift does',
+  },
+  {
+    type: 'givingLevel',
+    fields: ['source'],
+    where: 'Donate, what your gift does',
+    what: 'where the cost comes from',
   },
 
   // Impact and Our Story
@@ -475,9 +581,28 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'impactPage',
+    fields: ['stats[]'],
+    where: 'Impact, numbers',
+    what: 'the headline figures',
+  },
+  // Six chosen and fewer than six figures referenced: the empty cells wait for the wireframe's two.
+  {
+    type: 'impactPage',
+    condition: 'layout.stats == "six" && count(stats) < 6',
+    where: 'Impact, numbers',
+    what: IMPACT_SIX_PENDING,
+  },
+  {
+    type: 'impactPage',
     fields: ['howWeWork'],
     where: 'Impact, how we work',
     what: 'your account of the organisation',
+  },
+  {
+    type: 'impactPage',
+    fields: ['howWeWorkImage'],
+    where: 'Impact, how we work',
+    what: 'a photograph of the work',
   },
   {
     type: 'impactPage',
@@ -486,11 +611,91 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'participation figures per program',
   },
   {
+    type: 'outcome',
+    condition: '!defined(figure) && !defined(plainStatement)',
+    where: 'Impact, outcomes',
+    what: OUTCOME_PENDING,
+  },
+  {
+    type: 'outcome',
+    fields: ['figure.source'],
+    filter: 'defined(figure)',
+    where: 'Impact, outcomes',
+    what: 'a source line under the figure',
+  },
+  {
+    type: 'impactPage',
+    fields: ['civicInfra'],
+    where: 'Impact, Odunde as civic infrastructure',
+    what: 'what the festival gives the neighborhood, in your words',
+  },
+  // The festival edition the civic cells read, the same one Odunde's past years shows.
+  {
+    type: 'event',
+    fields: ['vendorsHosted'],
+    filter: `${FESTIVAL} && defined(album)`,
+    where: 'Impact, Odunde as civic infrastructure',
+    what: 'the number of vendors hosted',
+  },
+  {
+    type: 'impactPage',
+    fields: ['voices[]'],
+    where: 'Impact, in their words',
+    what: 'voices with permission to name',
+  },
+  {
+    type: 'governanceDoc',
+    condition: '!defined(file) && !defined(note)',
+    where: 'Impact, governance',
+    what: GOVERNANCE_NOTE_PENDING,
+  },
+  {
+    type: 'siteSettings',
+    condition: 'count(contacts[role == "partnerships" && defined(responds)]) == 0',
+    where: 'Impact, fund the next year',
+    what: PARTNERSHIPS_RESPONDS_PENDING,
+  },
+  {
     type: 'storyPage',
     fields: ['founding'],
-    where: 'About, founding',
+    where: 'Our Story, how it began',
     what: 'the 1997 story, in your words',
   },
+  {
+    type: 'storyPage',
+    fields: ['foundingImage'],
+    where: 'Our Story, how it began',
+    what: 'the earliest photograph you have: an early gathering, or the founders',
+  },
+  {
+    type: 'storyPage',
+    fields: ['foundingFacts[]'],
+    where: 'Our Story, how it began',
+    what: 'the founding facts',
+  },
+  // The seed labels who founded it and the first year; their values are the owner's.
+  {
+    type: 'storyPage',
+    condition: 'count(foundingFacts[!defined(value)]) > 0',
+    where: 'Our Story, how it began',
+    what: 'a founding fact',
+  },
+  // Our Story's people: a board member's short bio, and the role of anyone listed there.
+  {
+    type: 'person',
+    fields: ['bioShort'],
+    filter: 'group == "board"',
+    where: 'Our Story, board',
+    what: 'a short bio',
+  },
+  {
+    type: 'person',
+    fields: ['role'],
+    filter: 'group in ["board", "staff", "volunteer"]',
+    where: 'Our Story, people',
+    what: 'the role',
+  },
+  ...takePartRows('storyPage', 'Our Story, take part'),
 
   // News and Gallery
   { type: 'newsPost', fields: ['body'], where: 'News', what: 'the body of the post' },
@@ -561,7 +766,22 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Homepage, Impact, Collective',
     what: 'member voices with permission to name',
   },
-  { type: 'person', minimum: 1, where: 'About, board and staff', what: 'names, roles and bios' },
+  // Our Story lists the board apart from the staff and volunteers, each with its own Pending line; the
+  // teacher is shown on the Lessons page only, so no count asks for her here.
+  {
+    type: 'person',
+    minimum: 1,
+    filter: 'group == "board"',
+    where: 'Our Story, board',
+    what: "the board's names, roles and bios",
+  },
+  {
+    type: 'person',
+    minimum: 1,
+    filter: 'group in ["staff", "volunteer"]',
+    where: 'Our Story, staff and volunteers',
+    what: 'the staff and volunteers to list',
+  },
   { type: 'partner', minimum: 1, where: 'Partner rows', what: 'partner and funder names' },
   {
     type: 'album',
@@ -575,24 +795,34 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Impact, outcomes',
     what: 'participation figures per program',
   },
+  // Governance names each kind of document it waits for, the newest of each shown when it exists.
   {
     type: 'governanceDoc',
     minimum: 1,
+    filter: 'kind == "form990"',
     where: 'Impact, governance',
-    what: '990, annual report and audit position',
+    what: 'the Form 990 position',
   },
-  { type: 'timelineEntry', minimum: 1, where: 'About, timeline', what: 'the dated entries' },
+  {
+    type: 'governanceDoc',
+    minimum: 1,
+    filter: 'kind == "annualReport"',
+    where: 'Impact, governance',
+    what: 'the annual report position',
+  },
+  {
+    type: 'governanceDoc',
+    minimum: 1,
+    filter: 'kind == "audit"',
+    where: 'Impact, governance',
+    what: 'the audit position',
+  },
+  { type: 'timelineEntry', minimum: 1, where: 'Our Story, timeline', what: 'the dated entries' },
   {
     type: 'givingLevel',
     minimum: 1,
-    where: 'Donate',
+    where: 'Donate, what your gift does',
     what: 'the preset amounts and what each buys',
-  },
-  {
-    type: 'hometownAssociation',
-    minimum: 9,
-    where: 'Get Involved',
-    what: 'the nine association names',
   },
   // Still to come as GROQ reads it (ADR 0030): dated, with an end ahead, or no end and a start within the
   // last day.
@@ -667,6 +897,29 @@ export const HOMEPAGE_VOICE_SLOTS: readonly VoiceSlot[] = [
 ];
 
 /**
+ * Impact's three voices while its testimonials are missing (`14 Impact.dc.html`, In their words): the
+ * same parent, elder and vendor the homepage waits for, filled by context the same way.
+ */
+export const IMPACT_VOICE_SLOTS: readonly VoiceSlot[] = HOMEPAGE_VOICE_SLOTS;
+
+/** A subject an outcome slot waits for: a program by its document id, or an event page's kind, never both. */
+export type OutcomeSlot =
+  | { program: string; kind?: never }
+  | { kind: 'festival' | 'gala'; program?: never };
+
+/**
+ * The subjects Impact's outcome cards wait for while the page references fewer than four (`14
+ * Impact.dc.html`, What each program produced; ADR 0035), in the prototype's order. A slot goes once an
+ * outcome names its subject; its name comes from the program, or the event page, as the Studio holds it.
+ */
+export const IMPACT_OUTCOME_SLOTS: readonly OutcomeSlot[] = [
+  { program: 'program-yoruba-lessons' },
+  { kind: 'festival' },
+  { program: 'program-kids-stem' },
+  { program: 'program-cultural-collective' },
+];
+
+/**
  * The Collective's one voice while no collective testimonial exists (`12 Yoruba Cultural
  * Collective.dc.html`, spec Q15 of Phase 6): the prototype's placeholder form, under the registry's chip
  * "the quote and who said it". The prototype's own quote and speaker are invented.
@@ -680,8 +933,9 @@ export const COLLECTIVE_VOICE_SLOT: VoiceSlot = {
 
 /**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
- * `kind` picks the row for one kind of document (an event's `gala` or `festival`): its own row, else
- * a row every kind shares, never a row the registry keeps for another kind. An array's name without
+ * `kind` picks the row for one kind of document (an event's `gala` or `festival`, a person's `board` or
+ * `staff` group): its own row, else a row every kind shares, never a row the registry keeps for another
+ * kind. An array's name without
  * `[]` answers the row for one of its items missing a value.
  */
 export function pendingWhat(type: string, field: string, kind?: string): string | undefined {
@@ -695,15 +949,24 @@ export function pendingWhat(type: string, field: string, kind?: string): string 
   return rowForKind(conditions, kind)?.what;
 }
 
-/** The kinds a row's filter narrows it to (`kind == "festival"`); none for a row every kind shares. */
+/**
+ * The kinds a row's filter narrows it to: an edition's kind or a person's group, named once
+ * (`kind == "festival"`, `group == "board"`) or as a list (`group in ["staff", "volunteer"]`); none for a
+ * row every kind shares.
+ */
 function rowKinds(entry: { filter?: string }): string[] {
-  return [...(entry.filter ?? '').matchAll(/\bkind == "([^"]+)"/g)].map((match) => match[1] ?? '');
+  const filter = entry.filter ?? '';
+  const one = [...filter.matchAll(/\b(?:kind|group) == "([^"]+)"/g)].map((match) => match[1] ?? '');
+  const lists = [...filter.matchAll(/\b(?:kind|group) in \[([^\]]*)\]/g)].flatMap((match) =>
+    [...(match[1] ?? '').matchAll(/"([^"]+)"/g)].map((name) => name[1] ?? ''),
+  );
+  return [...one, ...lists];
 }
 
 /**
- * The row that answers for one kind: a row narrowed to that kind, else a row no kind narrows. A row
- * narrowed to another kind never answers, since the Studio lists it for that kind's documents only.
- * Without a kind the first row answers.
+ * The row that answers for one kind (an edition's kind, a person's group): a row narrowed to that kind,
+ * else a row no kind narrows. A row narrowed to another kind never answers, since the Studio lists it for
+ * that kind's documents only. Without a kind the first row answers.
  */
 function rowForKind<T extends { filter?: string }>(rows: readonly T[], kind: string | undefined) {
   if (!kind) return rows[0];

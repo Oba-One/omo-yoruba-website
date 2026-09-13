@@ -36,6 +36,21 @@ export async function expectEnquiryRoundTrip(page: Page, trigger: Locator) {
   await expect(trigger).toBeFocused();
 }
 
+/** A layout option as the page root carries it on the body (`data-<name>`). */
+export const bodyOption = (page: Page, name: string) =>
+  page.locator('body').getAttribute(`data-${name}`);
+
+/** A Give trigger's round trip: the click opens the Give Dialog, Escape closes it, focus returns to it. */
+export async function expectGiveRoundTrip(page: Page, trigger: Locator) {
+  const dialog = page.locator('dialog#give');
+  await trigger.scrollIntoViewIfNeeded();
+  await trigger.click();
+  await expect(dialog).toHaveAttribute('open', '');
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toHaveAttribute('open', '');
+  await expect(trigger).toBeFocused();
+}
+
 /**
  * devalue's flat encoding for a plain object of primitives and nested objects: the root at
  * index 0, every value an index into the array. It is what Astro's action client decodes from

@@ -51,3 +51,34 @@ export const BioPending: Story = {
     bioPending: "the teacher's short bio",
   },
 };
+
+/** Our Story's board member owed their role and short bio: both chips. */
+export const RoleAndBioPending: Story = {
+  args: {
+    person: { name: '[ Name ]' },
+    variant: 'nophoto',
+    rolePending: 'the role',
+    bioPending: 'a short bio',
+  },
+};
+
+/** Our Story's `bios: full`: the full bio under the short one. */
+export const FullBio: Story = {
+  args: {
+    full: true,
+    person: {
+      name: '[ Name ]',
+      role: '[ Role ]',
+      bio: '[ A short bio ]',
+      bioFull: [
+        {
+          _type: 'block',
+          _key: 'full-1',
+          style: 'normal',
+          markDefs: [],
+          children: [{ _type: 'span', _key: 'full-1-span', text: '[ The full bio ]', marks: [] }],
+        },
+      ],
+    } as Args['person'],
+  },
+};

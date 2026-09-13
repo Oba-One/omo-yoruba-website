@@ -22,7 +22,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'A section at the content width with the section padding from the tokens, on white, the theme tint or paper, and the low-opacity batik wash behind the content. Texture, never costume.',
+          'A section at the content width with the section padding from the tokens, on white, the theme tint, paper or the dark indigo band with its drifting dot field, and the low-opacity batik wash behind the content. Texture, never costume.',
       },
     },
   },
@@ -41,3 +41,6 @@ export const Batik: Story = { args: { ground: 'paper', texture: 'batik' } };
 
 /** The narrow wrap, 900px, as the Lessons page sets its questions (`11 Yoruba Language School.dc.html`). */
 export const Narrow: Story = { args: { ground: 'alt', width: 'narrow' } };
+
+/** The dark band a page closes on (Impact's Fund the next year): the dark scope and the drifting dot field. */
+export const Dark: Story = { args: { ground: 'dark' } };

@@ -19,6 +19,8 @@ export interface GlanceFact {
   pending?: string;
   /** The registry's wording when the note is a missing fact (the venue line). */
   notePending?: string;
+  /** Makes the note a link when the href is safe. */
+  noteHref?: string | null;
 }
 
 interface Props {
@@ -80,7 +82,8 @@ const columns = shown.length === 5 ? undefined : String(shown.length);
   .oy-glance :global(small .oy-pend) {
     margin-top: 0;
   }
-  .oy-glance--inline {
+  /* Under a paragraph in its column; first in a column (a split's aside) it aligns with the heading. */
+  :global(*) + .oy-glance--inline {
     margin-top: 20px;
   }
   .oy-glance-caption {

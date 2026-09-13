@@ -83,7 +83,9 @@ describe('TYPE_ROUTES and routesFor', () => {
       '/gallery',
       '/odunde',
       '/gala',
+      '/impact',
     ]);
+    expect(routesFor('impactPage')).toEqual(['/impact', '/donate']);
     expect(routesFor('newsPost', 'odunde-2026-recap')).toEqual([
       '/news/odunde-2026-recap',
       '/news',
@@ -104,6 +106,7 @@ describe('cacheTagsFor', () => {
       'route:/gallery',
       'route:/odunde',
       'route:/gala',
+      'route:/impact',
     ]);
     expect(cacheTagsFor('enquiry')).toEqual([]);
   });

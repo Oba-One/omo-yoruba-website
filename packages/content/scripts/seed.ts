@@ -10,7 +10,8 @@
  * script passes --env-file). Stops before writing anything when either is missing or the
  * dataset does not answer. Idempotent: documents are created if missing and their fields set
  * only where missing, so an owner's edit survives a re-run; fields a schema change retired are
- * unset (`RETIRED_FIELDS`); assets are matched by SHA-1.
+ * unset (`RETIRED_FIELDS`); a value still exactly as an earlier seed wrote it moves to this seed's
+ * (`buildRevisions`, ADR 0035); assets are matched by SHA-1.
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -19,11 +20,14 @@ import { ClientError, createClient, type SanityClient } from '@sanity/client';
 import { STUDIO_API_VERSION } from '../src/studio/config';
 import { PHOTOS_DIR, REGISTER_PATH, type RegisterPhoto, registerPhotos } from './register';
 import {
+  buildRevisions,
   buildSeed,
   missingFields,
   retiredFields,
+  revisedFields,
   type SeedAssets,
   type SeedDocument,
+  type SeedRevision,
 } from './seed-data';
 
 interface Options {
@@ -155,21 +159,28 @@ async function ensureAssets(
 // fail on whichever side is written first. The body stays far below the 4 MB limit.
 const BATCH = 500;
 
+/** The seed's documents as the dataset holds them now, by id. */
+async function storedDocuments(
+  client: SanityClient,
+  docs: readonly SeedDocument[],
+): Promise<Map<string, Record<string, unknown>>> {
+  const stored = await client.fetch<Record<string, unknown>[]>('*[_id in $ids]', {
+    ids: docs.map((doc) => doc._id),
+  });
+  return new Map(stored.map((doc) => [doc._id as string, doc]));
+}
+
 async function writeDocuments(
   client: SanityClient,
   docs: SeedDocument[],
+  revisions: readonly SeedRevision[],
   replace: boolean,
 ): Promise<void> {
-  const existing = new Map(
-    (
-      await client.fetch<Record<string, unknown>[]>('*[_id in $ids]', {
-        ids: docs.map((doc) => doc._id),
-      })
-    ).map((doc) => [doc._id as string, doc]),
-  );
+  const existing = await storedDocuments(client, docs);
   let created = 0;
   let updated = 0;
   let unchanged = 0;
+  let revised = 0;
   for (let start = 0; start < docs.length; start += BATCH) {
     const transaction = client.transaction();
     let mutations = 0;
@@ -194,16 +205,22 @@ async function writeDocuments(
       // so a field added to the schema later still lands.
       const missing = missingFields(fields, current);
       const retired = retiredFields(_type, current);
-      if (Object.keys(missing).length === 0 && retired.length === 0) {
+      // A value still exactly as an earlier seed wrote it moves to this seed's value (ADR 0035).
+      const revision = revisedFields(_type, current, revisions);
+      const unset = [...retired, ...revision.unset];
+      const hasSet = Object.keys(revision.set).length > 0;
+      if (Object.keys(missing).length === 0 && unset.length === 0 && !hasSet) {
         unchanged += 1;
         continue;
       }
       transaction.patch(_id, (patch) => {
         const filled = Object.keys(missing).length > 0 ? patch.setIfMissing(missing) : patch;
-        return retired.length > 0 ? filled.unset(retired) : filled;
+        const moved = hasSet ? filled.set(revision.set) : filled;
+        return unset.length > 0 ? moved.unset(unset) : moved;
       });
       mutations += 1;
       updated += 1;
+      revised += Object.keys(revision.set).length + revision.unset.length;
     }
     if (mutations === 0) continue;
     try {
@@ -218,7 +235,7 @@ async function writeDocuments(
     }
   }
   console.log(
-    `seed: ${docs.length} documents, ${created} created, ${updated} updated, ${unchanged} unchanged`,
+    `seed: ${docs.length} documents, ${created} created, ${updated} updated, ${unchanged} unchanged, ${revised} earlier seed values revised`,
   );
 }
 
@@ -242,14 +259,24 @@ async function main(): Promise<void> {
   const photos = registerPhotos(readFileSync(REGISTER_PATH, 'utf8'));
   const assets = await ensureAssets(client, photos, options.dryRun);
   const docs = buildSeed(assets);
+  const revisions = buildRevisions(assets);
 
   if (options.dryRun) {
     const counts: Record<string, number> = {};
     for (const doc of docs) counts[doc._type] = (counts[doc._type] ?? 0) + 1;
     console.log('seed: would write', counts);
+    // The same rule a real run applies: a value moves only while it still reads as the earlier seed wrote it.
+    const existing = await storedDocuments(client, docs);
+    const due = docs.reduce((count, doc) => {
+      const current = existing.get(doc._id);
+      if (!current || options.replace) return count;
+      const revision = revisedFields(doc._type, current, revisions);
+      return count + Object.keys(revision.set).length + revision.unset.length;
+    }, 0);
+    console.log(`seed: would revise ${due} earlier seed values still as that seed wrote them`);
     return;
   }
-  await writeDocuments(client, docs, options.replace);
+  await writeDocuments(client, docs, revisions, options.replace);
 }
 
 main().catch((cause: unknown) => {

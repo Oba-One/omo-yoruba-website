@@ -3,8 +3,19 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './ContactBlock.stories';
 
-const { Default, PhoneMissing, EmailMissing, AddressMissing, Pending, OnTint } =
-  composeStories(stories);
+const {
+  Default,
+  PhoneMissing,
+  EmailMissing,
+  AddressMissing,
+  Pending,
+  OnTint,
+  GetInvolved,
+  OurStory,
+  ContactPending,
+  ActionsOnly,
+  FactsOnly,
+} = composeStories(stories);
 
 const facts = async (story: Parameters<typeof renderToBody>[0]) => {
   const block = (await renderToBody(story)).querySelector('.oy-contact');
@@ -65,5 +76,59 @@ describe('ContactBlock', () => {
     expect(
       body.querySelector('a[data-enquiry="contact"]')?.classList.contains('oy-btn--quiet'),
     ).toBe(true);
+  });
+
+  it('lists who answers and how soon, calls the phone and opens the form, as Get Involved sets it', async () => {
+    const { block, rows, byLabel } = await facts(GetInvolved);
+    expect(rows.map((row) => text(row.querySelector('dt')))).toEqual([
+      'Email',
+      'Phone',
+      'Who answers',
+      'Response time',
+    ]);
+    expect(text(byLabel('Who answers')?.querySelector('dd'))).toBe('[ Name ]');
+    // The response line completes a sentence elsewhere, so it takes a capital as a fact.
+    expect(text(byLabel('Response time')?.querySelector('dd'))).toBe(
+      'Within [ how many ] working days',
+    );
+    const call = block?.querySelector('.oy-contact-actions a[href^="tel:"]');
+    expect(text(call)).toBe('Call [ (000) 000-0000 ]');
+    expect(call?.classList.contains('oy-btn--secondary')).toBe(true);
+    expect(
+      block?.querySelector('a[data-enquiry="contact"]')?.classList.contains('oy-btn--quiet'),
+    ).toBe(true);
+  });
+
+  it('lists the address and who receives the message with no button, as Our Story sets it beside its form', async () => {
+    const { block, rows, byLabel } = await facts(OurStory);
+    expect(rows.map((row) => text(row.querySelector('dt')))).toEqual([
+      'Email',
+      'Phone',
+      'Mailing address',
+      'Who receives this',
+    ]);
+    expect(text(byLabel('Who receives this')?.querySelector('dd'))).toBe('[ Name ]');
+    expect(block?.querySelector('.oy-contact-actions')).toBeNull();
+  });
+
+  it("asks for the routing contact's name and reply time, and draws no Call button without a phone", async () => {
+    const { block, byLabel } = await facts(ContactPending);
+    expect(text(byLabel('Who answers')?.querySelector('.oy-pend'))).toBe(
+      'Pending: who answers the general inbox',
+    );
+    expect(text(byLabel('Response time')?.querySelector('.oy-pend'))).toBe(
+      'Pending: how soon the general inbox replies',
+    );
+    expect(block?.querySelector('a[href^="tel:"]')).toBeNull();
+    expect(block?.querySelector('a[data-enquiry="contact"]')).toBeInstanceOf(HTMLElement);
+  });
+
+  it('draws the actions or the facts alone', async () => {
+    const actions = (await renderToBody(ActionsOnly)).querySelector('.oy-contact');
+    expect(actions?.querySelector('.oy-facts')).toBeNull();
+    expect(actions?.querySelectorAll('.oy-contact-actions .oy-btn')).toHaveLength(2);
+    const only = (await renderToBody(FactsOnly)).querySelector('.oy-contact');
+    expect(only?.querySelectorAll('.oy-fact')).toHaveLength(2);
+    expect(only?.querySelector('.oy-contact-actions')).toBeNull();
   });
 });

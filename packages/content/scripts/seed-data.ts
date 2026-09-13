@@ -107,6 +107,32 @@ function withKeys<T extends object>(
     .map((item, index) => ({ _key: key(prefix, index), ...item }));
 }
 
+/**
+ * Impact's six photographs and the short captions `14 Impact.dc.html` gives them: the place and the year,
+ * and no place or year the register does not confirm (the summer camp's is unknown). Alt text keeps the
+ * register's description.
+ */
+const IMPACT_PHOTOS: readonly (readonly [file: string, caption: string])[] = [
+  ['odunde-2026-procession-begins.jpg', 'Odunde • 2026'],
+  ['odunde-2026-kids-doing-crafts.jpg', 'Àgbàlá Ọmọde • 2026'],
+  ['odunde-2026-yoruba-language-teaching-session.jpg', 'Yoruba lesson • Odunde 2026'],
+  ['odunde-2026-vendor-selling-suya.jpg', 'Ọjà Balógun • 2026'],
+  ['gala-2025-attendees-group-photo.jpg', 'End-of-Year Gala • 2025'],
+  ['summer-camp-kids-art.jpg', 'Summer camp'],
+];
+
+/** Get Involved's doors in the page's order: the four cards, then the give door that closes the page. */
+const GET_INVOLVED_DOORS = withKeys(
+  'door',
+  ['door-member', 'door-volunteer', 'door-vendor', 'door-partner', 'door-give'].map(ref),
+);
+
+/** Impact's headline numbers in `14 Impact.dc.html`'s order: the associations before the zones. */
+const IMPACT_STATS = ['stat-years', 'stat-community', 'stat-associations', 'stat-zones'];
+
+/** The associations figure's full label as Impact reads it; the homepage strip keeps the short one. */
+const ASSOCIATIONS_LABEL = 'hometown associations in the community';
+
 function page(name: string, fields: Record<string, unknown>): SeedDocument {
   const layout = layoutDefaults(name);
   return { _id: name, _type: name, ...fields, ...(layout ? { layout } : {}) };
@@ -145,7 +171,12 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       shortLabel: 'Yoruba community in SoCal',
     },
     { id: 'stat-zones', value: '4', label: 'festival zones at Odunde' },
-    { id: 'stat-associations', value: '9', label: 'hometown associations' },
+    {
+      id: 'stat-associations',
+      value: '9',
+      label: ASSOCIATIONS_LABEL,
+      shortLabel: 'hometown associations',
+    },
   ];
   for (const stat of stats)
     docs.push({
@@ -400,6 +431,17 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       title: 'Give',
       blurb: 'Would rather give than join? That takes about a minute.',
       action: cta('Donate', 'give'),
+    },
+    // Last in the list so the doors seeded before Phase 7 keep their order; Get Involved places it after
+    // the volunteer door (ADR 0034). What a booth costs and when applications close are owed, so no blurb
+    // or bullets; the photograph is a vendor at Ọjà Balógun, framed as `14 Impact.dc.html` frames it.
+    {
+      id: 'door-vendor',
+      key: 'vendor',
+      title: 'Sell at Odunde',
+      action: cta('Apply for a booth', 'enquiry', 'vendor'),
+      image: 'odunde-2026-vendor-selling-suya.jpg',
+      focus: [50, 40] as Focus,
     },
   ];
   doors.forEach((door, index) => {
@@ -792,22 +834,20 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Raise your hand',
         line: 'Àgbájọ ọwọ́ la fi ń sọ̀yà. Many hands make the load light. Four ways in. Each one explains what it asks of you before you fill anything in.',
       },
-      doors: withKeys(
-        'door',
-        ['door-member', 'door-volunteer', 'door-partner', 'door-give'].map(ref),
-      ),
+      doors: GET_INVOLVED_DOORS,
       hometownAssociations: {
         title: 'Hometown associations',
         prose: blocks(
           'Nine hometown associations sit inside this community. They are the older structure underneath Omo Yorùbá: family and town networks that predate the organization in Southern California and still do much of the work of holding people together, from naming ceremonies to funerals.',
           'You do not have to belong to one to be a member here. If you already do, say so when you join and we will connect you to the others from your town.',
         ),
+        stat: ref('stat-associations'),
       },
       fallback: {
         title: 'Or just talk to someone',
         blurb: 'A phone call or an email works just as well as any form on this page.',
       },
-      primaryAction: cta('Become a member', 'enquiry', 'member'),
+      // No header action: the prototype's four doors sit directly under the header (ADR 0034).
     }),
   );
 
@@ -818,21 +858,21 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'What we have built since 1997',
         line: 'A 501(c)(3) serving the Yoruba community of Southern California through language, festival, and family programs.',
       },
-      stats: withKeys(
-        'stat',
-        stats.map((stat) => ref(stat.id)),
-      ),
+      stats: withKeys('stat', IMPACT_STATS.map(ref)),
       civicInfra: blocks(
         'Odunde is a public cultural day held in Leimert Park. It is open to the whole neighborhood, not only to Yoruba families, and it is one of the few days in the year when the park is programmed end to end by a community organization rather than rented out.',
       ),
-      photos: withKeys('photo', [
-        image(assets, 'odunde-2026-procession-begins.jpg'),
-        image(assets, 'odunde-2026-kids-doing-crafts.jpg'),
-        image(assets, 'odunde-2026-yoruba-language-teaching-session.jpg'),
-        image(assets, 'odunde-2026-vendor-selling-suya.jpg'),
-        image(assets, 'gala-2025-attendees-group-photo.jpg'),
-        image(assets, 'summer-camp-kids-art.jpg'),
-      ]),
+      howWeWorkImage: image(
+        assets,
+        'odunde-2026-attendees-sitting-at-market.jpg',
+        'Àjọṣe • Partners and friends at the table',
+        [50, 50],
+      ),
+      photos: withKeys(
+        'photo',
+        IMPACT_PHOTOS.map(([file, caption]) => image(assets, file, caption)),
+      ),
+      fundersIntro: 'Everyone who has supported the work.',
       nextYear: { title: 'Fund the next year' },
       primaryAction: cta('Sponsor or partner', 'enquiry', 'sponsor'),
       secondaryActions: withKeys('action', [cta('Talk to us', 'enquiry', 'contact')]),
@@ -846,11 +886,33 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'People and history',
         line: 'Who carries this work, and how it started in 1997.',
       },
+      // The two facts the client confirmed; who founded it and the first year are theirs to give.
+      foundingFacts: withKeys('fact', [
+        fact('Founded', '1997, Los Angeles'),
+        fact('Founders'),
+        fact('Status', '501(c)(3) nonprofit'),
+        fact('First year'),
+      ]),
+      staffIntro: 'The people who run the programs, and the volunteers who have been here longest.',
       reachUs: {
         title: 'Reach us',
         blurb: 'For anything not covered on Get Involved. Write, call, or send a message.',
       },
-      primaryAction: cta('Send a message', 'enquiry', 'contact'),
+      // Two rows only (the wireframe): someone reading the board bios is close to joining. The prototype's
+      // member line promised a say in what gets built, a member vote the register marks invented.
+      takePart: withKeys('way', [
+        { _type: 'takePartRow', way: 'member', title: 'Become a member', label: 'Become a member' },
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          // The prototype's chip, the volunteer door's own (ADR 0034), where the way in's is "Volunteers".
+          chip: 'Volunteer',
+          title: 'Raise your hand',
+          line: 'One form. We place you where you are needed.',
+          label: 'Volunteer',
+        },
+      ]),
+      // No header action: the prototype's header is plain (ADR 0034).
     }),
   );
 
@@ -865,6 +927,13 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Give now',
         blurb:
           'Choose an amount, one time or monthly, and pay securely through Zeffy without leaving this page. Your receipt arrives by email straight away.',
+        // Only the Give Dialog's own fallback is ours to state; the rest depends on the Zeffy form (spec Q14).
+        facts: withKeys('fact', [
+          fact('Fees'),
+          fact('Receipt'),
+          fact('Monthly'),
+          fact('If the form fails', 'The dialog offers contact and a mailing address instead.'),
+        ]),
       },
       largerScale: {
         title: 'Giving at a larger scale',
@@ -872,6 +941,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           'Organizations, funders, and civic partners. Named levels, recognition, and a conversation with a person. Four questions and we send the deck.',
         doors: withKeys('door', [ref('door-partner')]),
       },
+      // The standard wording for a 501(c)(3), from the confirmed status (spec Q17).
+      taxLine: 'To the extent allowed by law',
       primaryAction: cta('Give now', 'give'),
       secondaryActions: withKeys('action', [cta('Partner or sponsor', 'enquiry', 'sponsor')]),
     }),
@@ -912,7 +983,128 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
     'yearStrip[].event',
   ],
   lessonsPage: ['voices'],
+  // The closing band's line names the partnerships lead instead (ADR 0035).
+  impactPage: ['nextYear.blurb'],
 };
+
+/**
+ * A value an earlier seed wrote that this seed writes differently (ADR 0035): the header actions no
+ * prototype draws, a list that gained an item, a caption that became short. `path` is the patch path
+ * (`primaryAction`, `photos[_key=="photo-1"].caption`); `now` undefined unsets the field. `id` narrows it to
+ * one seeded document of the type (a single stat).
+ */
+export interface SeedRevision {
+  type: string;
+  id?: string;
+  path: string;
+  was: unknown;
+  now?: unknown;
+}
+
+/**
+ * The revisions this seed applies. Each moves a stored value only while it still reads exactly as the
+ * earlier seed wrote it; an editor's change, however small, keeps its value.
+ */
+export function buildRevisions(assets: SeedAssets): SeedRevision[] {
+  // The keys follow the photographs the assets hold, as `withKeys` gives them.
+  const impactPhotos = IMPACT_PHOTOS.filter(([file]) => assets.has(file));
+  return [
+    // Impact (spec, Seed revisions): the earlier seed captioned each photograph with the register's long
+    // description; the page's tiles take the prototype's place and year.
+    ...impactPhotos.map(([file, caption], index) => ({
+      type: 'impactPage',
+      path: `photos[_key=="photo-${index + 1}"].caption`,
+      was: assets.get(file)?.caption,
+      now: caption,
+    })),
+    // Get Involved (ADR 0034): the header's gold action no prototype draws, and the door list without
+    // the vendor door.
+    {
+      type: 'getInvolvedPage',
+      path: 'primaryAction',
+      was: cta('Become a member', 'enquiry', 'member'),
+    },
+    // Our Story (ADR 0034): the header's gold action no prototype draws.
+    { type: 'storyPage', path: 'primaryAction', was: cta('Send a message', 'enquiry', 'contact') },
+    {
+      type: 'getInvolvedPage',
+      path: 'doors',
+      was: withKeys(
+        'door',
+        ['door-member', 'door-volunteer', 'door-partner', 'door-give'].map(ref),
+      ),
+      now: GET_INVOLVED_DOORS,
+    },
+    // Impact (ticket 15, the prototype comparison): the homepage strip's order, and the associations
+    // figure's short label where the page reads the full one.
+    {
+      type: 'impactPage',
+      path: 'stats',
+      was: withKeys(
+        'stat',
+        ['stat-years', 'stat-community', 'stat-zones', 'stat-associations'].map(ref),
+      ),
+      now: withKeys('stat', IMPACT_STATS.map(ref)),
+    },
+    {
+      type: 'stat',
+      id: 'stat-associations',
+      path: 'label',
+      was: 'hometown associations',
+      now: ASSOCIATIONS_LABEL,
+    },
+  ];
+}
+
+/** The steps of a patch path: a field, or a field and the `_key` of one of its array's items. */
+function pathSteps(path: string): { field: string; key?: string }[] {
+  return [...path.matchAll(/([^.[\]]+)(?:\[_key=="([^"]*)"\])?/g)].map((match) => ({
+    field: match[1] ?? '',
+    key: match[2],
+  }));
+}
+
+/** The stored value at a patch path, or undefined when any step is missing. */
+function valueAt(document: unknown, path: string): unknown {
+  let value: unknown = document;
+  for (const { field, key } of pathSteps(path)) {
+    if (!isPlainObject(value)) return undefined;
+    value = value[field];
+    if (key !== undefined) {
+      if (!Array.isArray(value)) return undefined;
+      value = value.find((item) => isPlainObject(item) && item._key === key);
+    }
+  }
+  return value;
+}
+
+/** A value as JSON with every object's keys in order, so two stored values compare by content. */
+function canonical(value: unknown): string {
+  return JSON.stringify(value, (_key, item: unknown) =>
+    isPlainObject(item)
+      ? Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b)))
+      : item,
+  );
+}
+
+/** The revisions a stored document takes: the values to set and the fields to unset. */
+export function revisedFields(
+  type: string,
+  current: Record<string, unknown>,
+  revisions: readonly SeedRevision[],
+): { set: Record<string, unknown>; unset: string[] } {
+  const set: Record<string, unknown> = {};
+  const unset: string[] = [];
+  for (const revision of revisions) {
+    if (revision.type !== type) continue;
+    if (revision.id !== undefined && revision.id !== current._id) continue;
+    const stored = valueAt(current, revision.path);
+    if (stored === undefined || canonical(stored) !== canonical(revision.was)) continue;
+    if (revision.now === undefined) unset.push(revision.path);
+    else set[revision.path] = revision.now;
+  }
+  return { set, unset };
+}
 
 /** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`. */
 function storedPaths(value: unknown, steps: readonly string[], prefix: string): string[] {

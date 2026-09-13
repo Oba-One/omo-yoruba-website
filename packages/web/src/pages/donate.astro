@@ -1,0 +1,133 @@
+---
+/**
+ * Donate (`16 Donate.dc.html`, ROUTES sections 1, 4 and 5, ADR 0034, ADR 0035): composed from the one Donate
+ * query through `loadQuery`, with the registry's Pending chips for every fact the Studio does not hold and
+ * the layout option read from the singleton with the schema defaults filled. One decision at the top: the
+ * header's gold "Give now" opens the Give Dialog, and nothing below it asks in gold. `#give` still opens
+ * the dialog on load (the dialog keeps that id; the section is `#give-now`). The page arranges library parts
+ * and owns its copy (the kickers and headings the prototype carries) and its layout.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { donatePageQuery } from '@oy/content/queries';
+import DoorCard from '@oy/ui/cards/DoorCard/DoorCard.astro';
+import OutcomeCard from '@oy/ui/cards/OutcomeCard/OutcomeCard.astro';
+import EntryList from '@oy/ui/content/EntryList/EntryList.astro';
+import FactList from '@oy/ui/content/FactList/FactList.astro';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
+import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { cachePage } from '../lib/cache';
+import { STUDIO_BASE_PATH } from '../lib/paths';
+import { buildDonatePage } from '../lib/sanity/donate-page';
+import { loadQuery } from '../lib/sanity/load-query';
+
+const { data, preview, error } = await loadQuery(donatePageQuery, {}, { cookies: Astro.cookies });
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildDonatePage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/donate', { draft: preview, failed: Boolean(error) });
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending={page.header.titlePending}
+      line={page.header.line}
+      actions={page.header.actions}
+    />
+
+    <Section id="give-now" labelledby="give-heading">
+      <Split align="center">
+        <SectionHead kicker={{ yo: 'Ẹ ṣe àánú', en: 'Give' }} title={page.give.title} id="give-heading" />
+        {page.give.blurb && <Prose text={page.give.blurb} />}
+        <FactList slot="aside" facts={page.give.facts} pending={page.give.factsPending} columns={1} />
+      </Split>
+    </Section>
+
+    <Section id="larger" ground="alt" labelledby="larger-heading">
+      <SectionHead
+        kicker={{ yo: 'Àtìlẹ́yìn', en: 'Support' }}
+        title={page.larger.title}
+        intro={page.larger.intro}
+        id="larger-heading"
+      />
+      {
+        page.larger.doors.length === 0 ? (
+          <Pending variant="line" what={page.larger.pending} />
+        ) : (
+          <CardGrid columns={page.larger.layout === 'row' ? 1 : 2}>
+            {page.larger.doors.map((item) => (
+              <DoorCard door={item.door} layout={page.larger.layout} imageEdit={item.imageEdit} />
+            ))}
+          </CardGrid>
+        )
+      }
+    </Section>
+
+    {
+      page.gifts.shown && (
+        <Section id="what" labelledby="what-heading" data-sanity={page.edit.impact}>
+          <SectionHead
+            title="What your gift does"
+            intro="What the preset amounts pay for."
+            id="what-heading"
+          />
+          {page.gifts.levels.length === 0 ? (
+            <Pending variant="line" what={page.gifts.pending} />
+          ) : (
+            <CardGrid columns={3}>
+              {page.gifts.levels.map((level) => (
+                <OutcomeCard
+                  figure={level.figure}
+                  line={level.line}
+                  source={level.source}
+                  linePending={page.gifts.linePending}
+                  sourcePending={page.gifts.sourcePending}
+                  pending={page.gifts.linePending}
+                  edit={level.edit}
+                />
+              ))}
+            </CardGrid>
+          )}
+        </Section>
+      )
+    }
+
+    <Section id="other" ground="alt" labelledby="other-heading">
+      <SectionHead
+        title="Other ways to give"
+        intro="If a card online is not for you."
+        id="other-heading"
+      />
+      <EntryList entries={page.other.ways} pending={page.other.pending} />
+    </Section>
+
+    <Section id="trust" labelledby="trust-heading">
+      <SectionHead
+        title="Tax-deductible, and where it goes"
+        intro="The details your accountant or your employer's matching program will ask for."
+        id="trust-heading"
+      />
+      <GlanceStrip band={false} facts={page.trust.cells} />
+      <Handoff
+        shape="box"
+        variant="quiet"
+        text={page.trust.handoff}
+        action={{ label: 'See our impact', kind: 'url', href: '/impact' }}
+      />
+    </Section>
+  </main>
+</SiteLayout>

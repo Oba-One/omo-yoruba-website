@@ -20,6 +20,10 @@ const routes = [
   '/programs',
   '/programs/yoruba-lessons',
   '/programs/cultural-collective',
+  '/get-involved',
+  '/impact',
+  '/our-story',
+  '/donate',
 ];
 
 module.exports = {

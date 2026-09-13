@@ -1,0 +1,64 @@
+---
+/**
+ * The years of the organisation (COMPONENT-MAP, Lists and rows; `15 People and History.dc.html`, 1997 to
+ * now): the tokens' `.oy-timeline`, a list of entries down a hairline, each a year or a span in the display
+ * face and one line under it, a gold dot beside it, and a terracotta dot for a milestone (the founding,
+ * today). No entry shows the registry's Pending line. The page decides whether the timeline shows at all
+ * (the `timeline` option, hidden until the owner confirms the entries).
+ */
+import { presenceWhat } from '@oy/content/pending';
+import Pending from '../../core/Pending/Pending.astro';
+
+export interface TimelineEntryLike {
+  _id?: string | null;
+  year?: string | null;
+  /** The one line under the year. */
+  line?: string | null;
+  milestone?: boolean | null;
+}
+
+interface Props {
+  entries?: (TimelineEntryLike | null)[] | null;
+  /** The registry's wording when there are no entries. */
+  pending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the timeline. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  entries,
+  pending = presenceWhat('timelineEntry')?.what,
+  edit,
+  class: className,
+} = Astro.props;
+const list = (entries ?? []).filter((entry): entry is TimelineEntryLike =>
+  Boolean(entry?.year?.trim() && entry.line?.trim()),
+);
+---
+
+{
+  list.length === 0 ? (
+    <div class:list={['oy-timeline-pending', className]} data-sanity={edit}>
+      <Pending variant="line" what={pending} />
+    </div>
+  ) : (
+    <ol class:list={['oy-timeline', className]} data-sanity={edit}>
+      {list.map((entry) => (
+        <li class:list={[entry.milestone && 'oy-timeline-major']}>
+          <b>{entry.year}</b>
+          <p>{entry.line}</p>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+<style>
+  .oy-timeline {
+    max-width: 720px;
+  }
+  .oy-timeline p {
+    margin-bottom: 0;
+  }
+</style>

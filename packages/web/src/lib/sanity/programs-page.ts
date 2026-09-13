@@ -12,7 +12,7 @@
  */
 import { pendingWhat } from '@oy/content/pending';
 import type { programsPageQuery } from '@oy/content/queries';
-import { EVENT_PAGE_NAMES } from '@oy/content/routes';
+import { EVENT_PAGE_NAMES, INLINE_PROGRAM_SECTIONS } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton } from './page-skeleton';
@@ -29,10 +29,6 @@ export interface ProgramsLayout extends Record<string, string> {
 const PAGE_TITLE = 'Our programs';
 
 /** The sections the two inline programs keep on this page, by the program's slug. */
-const INLINE_SECTIONS: Readonly<Record<string, string>> = {
-  'kids-stem': 'kids',
-  'cultural-exchange': 'exchange',
-};
 
 const COLUMNS: Record<ProgramsLayout['cards'], 2 | 3 | 4> = { four: 4, three: 3, pairs: 2 };
 
@@ -75,7 +71,8 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
       // The prototype frames the photographs taller when three cards share the row.
       mediaHeight: layout.cards === 'three' ? 200 : 160,
       items: shown.map((program) => {
-        const section = !program.page && program.slug ? INLINE_SECTIONS[program.slug] : undefined;
+        const section =
+          !program.page && program.slug ? INLINE_PROGRAM_SECTIONS[program.slug] : undefined;
         return {
           program: {
             ...program,

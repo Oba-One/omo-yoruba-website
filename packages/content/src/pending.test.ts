@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   COLLECTIVE_VOICE_SLOT,
+  GENERAL_CONTACT_PENDING,
+  GENERAL_RESPONDS_PENDING,
+  GOVERNANCE_NOTE_PENDING,
+  IMPACT_OUTCOME_SLOTS,
+  IMPACT_SIX_PENDING,
+  IMPACT_VOICE_SLOTS,
+  OUTCOME_PENDING,
+  PARTNERSHIPS_RESPONDS_PENDING,
   PENDING,
   type PendingEntry,
   PRESENCE,
@@ -102,7 +110,6 @@ describe('PRESENCE', () => {
       'sponsorLevel',
       'honoree',
       'givingLevel',
-      'hometownAssociation',
       'timelineEntry',
       'governanceDoc',
       'outcome',
@@ -112,7 +119,11 @@ describe('PRESENCE', () => {
       expect(byType[type], type).toBeGreaterThanOrEqual(1);
     }
     expect(byType.zone).toBe(4);
-    expect(byType.hometownAssociation).toBe(9);
+  });
+
+  it('never asks for what is optional: the association names are listed only if the owner adds them', () => {
+    // The register calls prose only "the safe default" (ADR 0035), so no chip asks for nine names.
+    expect(PRESENCE.some((row) => row.type === 'hometownAssociation')).toBe(false);
   });
 });
 
@@ -318,6 +329,27 @@ describe('pendingWhat for one kind', () => {
   });
 });
 
+describe('a row narrowed by group', () => {
+  it("answers Our Story's board and its staff and volunteers apart, as a row narrowed by kind does", () => {
+    expect(presenceWhat('person', 'board')).toEqual({
+      what: "the board's names, roles and bios",
+      minimum: 1,
+    });
+    for (const group of ['staff', 'volunteer']) {
+      expect(presenceWhat('person', group)?.what, group).toBe('the staff and volunteers to list');
+    }
+    // The teacher is listed on the Lessons page, never counted here.
+    expect(presenceWhat('person', 'teacher')).toBeUndefined();
+    // The one row for everyone is gone: a page never asks for "names, roles and bios" of nobody in particular.
+    expect(PRESENCE.some((row) => row.type === 'person' && !row.filter)).toBe(false);
+  });
+
+  it('keeps an unnarrowed row answering for every group', () => {
+    // The linked teacher's short bio is narrowed by her id, not by a group, so it still answers.
+    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
+  });
+});
+
 describe('presenceCountQuery', () => {
   it('counts the type, narrowed by the filter when there is one', () => {
     expect(presenceCountQuery({ type: 'zone', minimum: 4, where: 'Odunde', what: 'zones' })).toBe(
@@ -332,5 +364,107 @@ describe('presenceCountQuery', () => {
         what: 'an edition',
       }),
     ).toBe('count(*[_type == "event" && kind == "gala"])');
+  });
+});
+
+describe('Get Involved', () => {
+  it('names an empty page of doors, the associations prose and the general contact the way the page shows them', () => {
+    expect(pendingWhat('getInvolvedPage', 'doors[]')).toBe('the ways in');
+    expect(pendingWhat('door', 'bullets[]')).toBe('what this way in asks and gives');
+    expect(pendingWhat('getInvolvedPage', 'hometownAssociations.prose')).toBe(
+      'what the associations are, in your words',
+    );
+    const general = PENDING.filter(
+      (row) => row.type === 'siteSettings' && row.condition?.includes('role == "general"'),
+    );
+    expect(general.map((row) => row.what)).toEqual([
+      GENERAL_CONTACT_PENDING,
+      GENERAL_RESPONDS_PENDING,
+    ]);
+  });
+});
+
+describe('Impact', () => {
+  it('names the headline figures, the six cells and the photograph beside How we work', () => {
+    expect(pendingWhat('impactPage', 'stats[]')).toBe('the headline figures');
+    expect(pendingWhat('stat', 'source')).toBe('a source line under the figure');
+    const six = PENDING.find((row) => row.what === IMPACT_SIX_PENDING);
+    // Listed only while the page asks for six.
+    expect(six?.condition).toContain('layout.stats == "six"');
+    expect(pendingWhat('impactPage', 'howWeWorkImage')).toBe('a photograph of the work');
+  });
+
+  it("names an outcome's missing source only where it has a figure, and one with nothing at all", () => {
+    expect(pendingWhat('outcome', 'figure.source')).toBe('a source line under the figure');
+    const source = PENDING.find(
+      (row) => row.type === 'outcome' && row.fields?.includes('figure.source'),
+    );
+    expect(source?.filter).toBe('defined(figure)');
+    expect(PENDING.find((row) => row.what === OUTCOME_PENDING)?.condition).toBe(
+      '!defined(figure) && !defined(plainStatement)',
+    );
+    expect(IMPACT_OUTCOME_SLOTS).toEqual([
+      { program: 'program-yoruba-lessons' },
+      { kind: 'festival' },
+      { program: 'program-kids-stem' },
+      { program: 'program-cultural-collective' },
+    ]);
+  });
+
+  it('reads the civic cells from the festival edition, each with the wording the Odunde page uses', () => {
+    expect(pendingWhat('event', 'attendance', 'festival')).toBe('the attendance figure');
+    expect(pendingWhat('event', 'vendorsHosted', 'festival')).toBe('the number of vendors hosted');
+    expect(pendingWhat('event', 'vendorsHosted', 'gala')).toBeUndefined();
+    expect(pendingWhat('event', 'cost', 'festival')).toBe('the cost');
+  });
+
+  it('names each kind of governance document apart, and a document with neither file nor note', () => {
+    expect(presenceWhat('governanceDoc', 'form990')?.what).toBe('the Form 990 position');
+    expect(presenceWhat('governanceDoc', 'annualReport')?.what).toBe('the annual report position');
+    expect(presenceWhat('governanceDoc', 'audit')?.what).toBe('the audit position');
+    expect(PENDING.find((row) => row.what === GOVERNANCE_NOTE_PENDING)?.type).toBe('governanceDoc');
+    expect(presenceWhat('person', 'board')?.what).toBe("the board's names, roles and bios");
+  });
+
+  it("waits for the homepage's three voices, and names the partnerships lead's reply time", () => {
+    expect(IMPACT_VOICE_SLOTS.map((slot) => slot.context)).toEqual([
+      'lessons',
+      'general',
+      'festival',
+    ]);
+    expect(pendingWhat('impactPage', 'voices[]')).toBe('voices with permission to name');
+    const reply = PENDING.find((row) => row.what === PARTNERSHIPS_RESPONDS_PENDING);
+    expect(reply?.condition).toContain('role == "partnerships"');
+  });
+});
+
+describe('Our Story', () => {
+  it('names the founding photograph, the founding facts and a board member without a short bio', () => {
+    expect(pendingWhat('storyPage', 'foundingImage')).toBe(
+      'the earliest photograph you have: an early gathering, or the founders',
+    );
+    expect(pendingWhat('storyPage', 'foundingFacts')).toBe('a founding fact');
+    expect(pendingWhat('storyPage', 'foundingFacts[]')).toBe('the founding facts');
+    expect(pendingWhat('person', 'bioShort', 'board')).toBe('a short bio');
+    // The Lessons page still reads its own row for the linked teacher.
+    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
+    expect(pendingWhat('person', 'role', 'staff')).toBe('the role');
+    expect(pendingWhat('person', 'role', 'teacher')).toBeUndefined();
+    expect(pendingWhat('storyPage', 'takePart[]')).toBe('the ways in');
+    expect(presenceWhat('timelineEntry')?.what).toBe('the dated entries');
+  });
+});
+
+describe('Donate', () => {
+  it("names the Zeffy form's facts, the doors, the tax line and a giving level's missing line and source", () => {
+    expect(pendingWhat('donatePage', 'giveNow.facts')).toBe('how your Zeffy form handles this');
+    expect(pendingWhat('donatePage', 'largerScale.doors[]')).toBe('the doors for organizations');
+    expect(pendingWhat('donatePage', 'taxLine')).toBe('the tax-deductible line');
+    expect(pendingWhat('donatePage', 'whatYourGiftDoes[]')).toBe(
+      'the preset amounts and what each buys',
+    );
+    expect(pendingWhat('givingLevel', 'what')).toBe('what the gift does');
+    expect(pendingWhat('givingLevel', 'source')).toBe('where the cost comes from');
+    expect(pendingWhat('donatePage', 'otherWays[]')).toBe('which other ways to give you accept');
   });
 });

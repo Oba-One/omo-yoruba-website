@@ -19,18 +19,20 @@ const call = (sourcePath: (string | number)[], fallback = true) => {
 };
 
 describe('stegaFilter', () => {
-  it('keeps every layout option of the homepage, the event pages and the program pages clean, and a row way in', () => {
-    for (const spec of [
-      ...PAGE_LAYOUTS.homepage,
-      ...PAGE_LAYOUTS.festivalPage,
-      ...PAGE_LAYOUTS.galaPage,
-      ...PAGE_LAYOUTS.programsPage,
-      ...PAGE_LAYOUTS.lessonsPage,
-      ...PAGE_LAYOUTS.collectivePage,
-    ]) {
-      expect(STEGA_LOGIC_KEYS.has(spec.name), spec.name).toBe(true);
+  it("keeps every page's layout option clean under `layout`, and a row way in", () => {
+    for (const [page, specs] of Object.entries(PAGE_LAYOUTS)) {
+      for (const spec of specs) {
+        expect(call(['layout', spec.name]), `${page} ${spec.name}`).toEqual({
+          encoded: false,
+          asked: false,
+        });
+      }
     }
     expect(STEGA_LOGIC_KEYS.has('way')).toBe(true);
+  });
+
+  it("leaves a text field that shares an option's name to the client default (an edition's doors time)", () => {
+    expect(call(['doors'])).toEqual({ encoded: true, asked: true });
   });
 
   it('keeps the discriminators and the layout values clean', () => {

@@ -5,9 +5,11 @@ import type { FilterDefault } from '@sanity/client/stega';
  * loader keeps them clean at the source and the page compares them safely. The client's own
  * default already skips ids, keys, slugs, dates, URLs and a denylist (`type`, `href`, `layout`,
  * `theme`, `variant` and more); this list adds the repo's discriminators, the hero's gold words
- * (found inside the heading by a string match), the layout option values of every page, which sit
+ * (found inside the heading by a string match), the layout option values of the earlier pages, which sit
  * under `layout` but end in their own names, a take-part row's `way`, and the settings the chrome
- * and the Lessons page put into `mailto:` and `tel:` links (a routing contact's `email`).
+ * and the pages put into `mailto:` and `tel:` links (a routing contact's `email`). Any value directly
+ * under `layout` stays clean whatever its name, so an option named like a text field elsewhere (Get
+ * Involved's `doors`, beside an edition's `doors` time) keeps that field's click-to-edit.
  */
 export const STEGA_LOGIC_KEYS: ReadonlySet<string> = new Set([
   'kind',
@@ -56,6 +58,7 @@ export const STEGA_LOGIC_KEYS: ReadonlySet<string> = new Set([
 /** The stega filter `loadQuery` passes with `stega: true`. */
 export const stegaFilter: FilterDefault = (props) => {
   const end = props.sourcePath.at(-1);
+  if (props.sourcePath.at(-2) === 'layout') return false;
   if (typeof end === 'string' && STEGA_LOGIC_KEYS.has(end)) return false;
   return props.filterDefault(props);
 };

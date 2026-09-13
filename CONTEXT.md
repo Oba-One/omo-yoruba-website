@@ -125,9 +125,9 @@ outside it.
 _Avoid_: green theme, collective mode
 
 **Door**:
-One of the four Get Involved entry points (member, volunteer, partner, give), kept once as a
-`door` document and shown by the homepage, Get Involved and Donate. Renders as a card or a
-path row.
+One of the Get Involved entry points (member, volunteer, vendor, partner, give), kept once as a
+`door` document and shown by the homepage, Get Involved and Donate. Renders as a card, a card
+laid out as a row, or a path row; on Get Involved the give door closes the page as a box.
 _Avoid_: tile, option, pathway
 
 **Glance strip**:
@@ -264,6 +264,46 @@ _Avoid_: validation error, warning email, lint failure
 A sourced figure kept once as a `stat` document and referenced, in order, by the pages that
 show it.
 _Avoid_: number, metric, KPI, headline figure inline
+
+**Source line**:
+The line under a figure saying which year it covers and how it was counted. A figure without one
+shows its chip until the owner writes it.
+_Avoid_: citation, footnote, reference
+
+**Outcome**:
+What one program or event (the festival, the Gala) produced: a figure with its source line, or a
+plain statement of what is being measured. Shown on Impact, one subject each.
+_Avoid_: result, impact metric, KPI
+
+**Slot**:
+The place a page keeps for a voice or an outcome it expects, drawn with the chip and the name of
+what it waits for until a document fills it.
+_Avoid_: placeholder card, mock, sample
+
+**Governance document**:
+A Form 990, an annual report or an audit position, kept as a file or as a note such as "Copies on
+request". Impact shows the newest of each kind and names a missing one.
+_Avoid_: financials, filing, paperwork
+
+**Timeline entry**:
+A year or a span of years and one line on Our Story's timeline; a milestone (the founding, today)
+is drawn apart from the rest.
+_Avoid_: event (that is an edition), history item
+
+**Giving level**:
+An amount and what it pays for, with the source of the cost. Donate shows each as an outcome card.
+_Avoid_: donation tier, preset, amount selector
+
+**Other way to give**:
+A way to give besides the Give Dialog: by check, employer matching, in-kind goods, a donor-advised
+fund. The check row carries the mailing address, and the matching and fund rows the EIN and the legal
+name, from the site settings.
+_Avoid_: offline donation, alternative payment
+
+**Hometown association**:
+One of the nine family and town networks inside the community. Listing their names is optional;
+the page describes them in prose until the owner adds them.
+_Avoid_: HTA in copy, chapter, club
 
 **Confirmed fact**:
 Content the client has supplied (list in `docs/design/CONTENT-MODEL.md` section 1).

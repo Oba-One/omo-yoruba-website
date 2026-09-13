@@ -1,6 +1,6 @@
 ---
 name: oy-content-ops
-description: Recipes for adding or changing site content through the Sanity MCP server. Use when the owner asks to add a news post, an event edition, an album, a person, or to clear a Pending item.
+description: Recipes for adding or changing site content through the Sanity MCP server. Use when the owner asks to add a news post, an event edition, an album, a person, an outcome, a governance document, a giving level, or to clear a Pending item.
 ---
 
 # Content operations
@@ -43,11 +43,34 @@ rather than duplicates. Ids never contain a period.
 - **Album**: upload photos, create `album` with cover, photos with `alt` and captions, the
   album-level `credit`, `creditConfirmed`, `consentNote`, and the `event` reference. Each photo's
   `_key` is its lightbox deep link.
-- **Person**: `person` with `group` and `order`; portrait optional (the no-portrait card is a
-  real design). The teacher is the `person` `lessonsPage.teacher` points at; her email on the Lessons
-  page is the `teacher` routing contact's.
+- **Person**: `person` with `group` (board, staff, volunteer, teacher) and `order`, the `role`, the short
+  bio and, for Our Story's `bios` option, the full bio; portrait optional (the no-portrait card is a real
+  design, and a photograph never stands in for someone named). Our Story lists the board by order, then
+  the staff and volunteers together; Impact's board cell counts the board. The teacher is the `person`
+  `lessonsPage.teacher` points at, listed on the Lessons page only; her email there is the `teacher`
+  routing contact's.
+- **Outcome**: an `outcome` for a `program` or for an event page (`kind` festival or gala), never both, with
+  the `figure` (the number, what it counts and its source) once something is measured, or the plain
+  statement of what is being measured this year; add it to `impactPage.outcomes` in order. Impact shows
+  the four subjects its prototype names (Language Lessons, the festival, Kids & STEM, the Collective) and
+  keeps a chip in each one no outcome fills. A figure without its source shows the source chip.
+- **Governance document**: a `governanceDoc` with its `kind` (Form 990, annual report, audit), the `year`
+  and the `file`, or with no file a `note` saying when it comes ("Copies on request"). Impact reads the
+  newest of each kind; the EIN and the mailing address come from `siteSettings`.
+- **Giving level**: a `givingLevel` with the `amount` as shown ("$25"), `what` it pays for (it gets
+  checked, so it must be true), `frequency` (once or monthly, which adds "a month") and the `source` of
+  the cost; Donate shows the levels `donatePage.whatYourGiftDoes` references, in order, under its
+  `impact` option. Only amounts the owner's Zeffy form offers.
+- **Other way to give**: a row in `donatePage.otherWays` with its `kind` (by check, employer matching,
+  in-kind goods, donor-advised fund, another way), its `title`, one line (`blurb`) and a practical `detail`.
+  A check row adds the mailing address and the matching and fund rows the EIN and legal name from
+  `siteSettings`, each the chip while the settings hold nothing; add only the ways the owner accepts.
+- **Timeline entry**: a `timelineEntry` with the `year` ("2003", "1998 to 2002", "Today"), one line and
+  `milestone` for the founding and today, referenced from `storyPage.timeline` in order. The page's
+  `timeline` option stays hidden until the owner confirms the entries (wayfinder ticket 07).
 - **Routing contact**: `siteSettings.contacts[]`, one entry per role with name, email, phone and
-  the response line the success copy uses ("within five working days").
+  the response line the success copy uses ("within five working days"). The `general` contact answers
+  on Get Involved and Our Story; `partnerships` closes Impact.
 - **Clear pending**: open Pending in the Studio (rows come from `packages/content/src/pending.ts`),
   fill the field, publish, confirm the chip is gone on the site after the purge. "Missing
   entirely" rows clear when the documents exist.

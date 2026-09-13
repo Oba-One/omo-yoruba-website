@@ -23,6 +23,11 @@
   max-width: 360px;
 }
 
+/* A card laid out as a row takes a page column's width, even inside a card-width wrapper. */
+.sb-oy-wide {
+  width: min(900px, calc(100vw - 32px));
+}
+
 /* The event pages' figure keeps the width of its half of the split. */
 .sb-oy-medium {
   max-width: 480px;

@@ -21,7 +21,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Two, three or four cards across at the content width. Three and two collapse to one column under 860px; four goes to two under 1000px and to one under 600px.',
+          'One column of cards as rows, or two, three, four or five across at the content width. Three and two collapse to one column under 860px; four goes to two under 1000px and to one under 600px; five goes to two under 1000px.',
       },
     },
   },
@@ -35,6 +35,17 @@ export const Default: Story = {};
 export const Three: Story = {};
 
 export const Two: Story = { args: { columns: 2, slots: { default: [card('One'), card('Two')] } } };
+
+/** One column, 14px apart: cards laid out as rows (Get Involved's rows option, Donate's one door). */
+export const One: Story = { args: { columns: 1, slots: { default: [card('One'), card('Two')] } } };
+
+/** Five across, 16px apart: Our Story's staff and volunteers as compact cards; two across under 1000px. */
+export const Five: Story = {
+  args: {
+    columns: 5,
+    slots: { default: [card('One'), card('Two'), card('Three'), card('Four'), card('Five')] },
+  },
+};
 
 export const Four: Story = {
   args: { columns: 4, slots: { default: [card('One'), card('Two'), card('Three'), card('Four')] } },

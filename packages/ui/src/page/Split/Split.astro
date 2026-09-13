@@ -6,19 +6,23 @@
  * 16px above the prose, as the prototypes set it, instead of the 30px a head keeps above a block, and
  * a list of facts after the copy keeps the 22px `10 Programs.dc.html` sets above Cultural Exchange's.
  * The `person` shape puts a 320px card in the first column beside the second at full height, stacking
- * under 860px, as `11 Yoruba Language School.dc.html` sets the teacher beside her form.
+ * under 860px, as `11 Yoruba Language School.dc.html` sets the teacher beside her form. `align="center"`
+ * centres the two columns on each other, as `16 Donate.dc.html` sets the give-now copy beside its facts.
  */
 interface Props {
   shape?: 'copy' | 'person';
+  /** The columns' vertical alignment: from the top, or centred on each other. */
+  align?: 'start' | 'center';
   class?: string;
 }
 
-const { shape = 'copy', class: className, ...rest } = Astro.props;
+const { shape = 'copy', align = 'start', class: className, ...rest } = Astro.props;
 ---
 
 <div
   class:list={['oy-split', className]}
   data-shape={shape === 'person' ? 'person' : undefined}
+  data-align={align === 'center' ? 'center' : undefined}
   {...rest}
 >
   <div class="oy-split-main"><slot /></div>
@@ -31,6 +35,9 @@ const { shape = 'copy', class: className, ...rest } = Astro.props;
   }
   .oy-split-main > :global(* + .oy-facts) {
     margin-top: 22px;
+  }
+  .oy-split[data-align='center'] {
+    align-items: center;
   }
   .oy-split[data-shape='person'] {
     grid-template-columns: 320px 1fr;

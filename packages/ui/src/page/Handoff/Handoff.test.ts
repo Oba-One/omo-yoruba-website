@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './Handoff.stories';
 
-const { Default, Quiet, ButtonOnly, Box, BoxTwoButtons } = composeStories(stories);
+const { Default, Quiet, ButtonOnly, Box, BoxTwoButtons, BoxPending } = composeStories(stories);
 
 describe('Handoff', () => {
   it('renders the outline button and the line beside it', async () => {
@@ -40,5 +40,11 @@ describe('Handoff', () => {
     expect(buttons[1]?.className).toContain('oy-btn--secondary');
     expect(buttons[1]?.getAttribute('data-enquiry')).toBe('sponsor');
     expect(buttons[1]?.querySelector('.oy-btn-arrow')).toBeNull();
+  });
+
+  it("puts the registry's chip in the box's line while that fact is owed", async () => {
+    const box = (await renderToBody(BoxPending)).querySelector('.oy-handoff');
+    expect(text(box?.querySelector('p.oy-handoff-say .oy-pend'))).toBe('Pending: the blurb');
+    expect(box?.querySelector('a[data-give]')).not.toBeNull();
   });
 });
