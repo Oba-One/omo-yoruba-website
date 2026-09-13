@@ -212,7 +212,7 @@ export type Door = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  key?: "member" | "volunteer" | "partner" | "give";
+  key?: "member" | "volunteer" | "vendor" | "partner" | "give";
   title?: string;
   blurb?: string;
   bullets?: Array<string>;
@@ -255,19 +255,6 @@ export type Cta = {
   enquiryKind?: "sponsor" | "performer" | "table" | "member" | "volunteer" | "enrol" | "vendor" | "contact";
   href?: string;
   newTab?: boolean;
-};
-
-export type Stat = {
-  _id: string;
-  _type: "stat";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  value?: string;
-  label?: string;
-  shortLabel?: string;
-  source?: string;
-  asOf?: string;
 };
 
 export type ProgramReference = {
@@ -661,6 +648,7 @@ export type GetInvolvedPage = {
   hometownAssociations?: {
     title?: string;
     prose?: BlockContent;
+    stat?: StatReference;
   };
   fallback?: {
     title?: string;
@@ -675,6 +663,19 @@ export type GetInvolvedPage = {
     hta?: "shown" | "hidden";
   };
   seo?: Seo;
+};
+
+export type Stat = {
+  _id: string;
+  _type: "stat";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  value?: string;
+  label?: string;
+  shortLabel?: string;
+  source?: string;
+  asOf?: string;
 };
 
 export type InitiativeReference = {
@@ -1259,7 +1260,7 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields | EnquiryVendorFields | EnquiryEnrolFields | EnquiryVolunteerFields | EnquiryMemberFields | EnquiryTableFields | EnquiryPerformerFields | EnquirySponsorFields | LintReport | SanityFileAssetReference | GovernanceDoc | GivingLevel | HometownAssociation | Door | SanityImageAssetReference | PhotographerReference | OyImage | Cta | Stat | ProgramReference | Outcome | SourcedFigure | Partner | EventReference | PersonReference | NewsPost | BlockContent | Bilingual | Slug | TimelineEntry | Initiative | Honoree | SponsorLevel | TicketTier | NewsPage | Seo | PageHeader | GalleryPage | DoorReference | GivingLevelReference | DonatePage | TimelineEntryReference | StoryPage | StatReference | OutcomeReference | TestimonialReference | ImpactPage | GetInvolvedPage | InitiativeReference | CollectivePage | Testimonial | LessonsPage | Person | ProgramsPage | Program | GalaPage | FestivalPage | Homepage | AlbumReference | Event | Album | SiteSettings | TakePartRow | PullQuote | ContactRole | FaqItem | ZoneReference | ScheduleItem | Zone | Fact | Photographer | SanityImageCrop | SanityImageHotspot | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
+export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields | EnquiryVendorFields | EnquiryEnrolFields | EnquiryVolunteerFields | EnquiryMemberFields | EnquiryTableFields | EnquiryPerformerFields | EnquirySponsorFields | LintReport | SanityFileAssetReference | GovernanceDoc | GivingLevel | HometownAssociation | Door | SanityImageAssetReference | PhotographerReference | OyImage | Cta | ProgramReference | Outcome | SourcedFigure | Partner | EventReference | PersonReference | NewsPost | BlockContent | Bilingual | Slug | TimelineEntry | Initiative | Honoree | SponsorLevel | TicketTier | NewsPage | Seo | PageHeader | GalleryPage | DoorReference | GivingLevelReference | DonatePage | TimelineEntryReference | StoryPage | StatReference | OutcomeReference | TestimonialReference | ImpactPage | GetInvolvedPage | Stat | InitiativeReference | CollectivePage | Testimonial | LessonsPage | Person | ProgramsPage | Program | GalaPage | FestivalPage | Homepage | AlbumReference | Event | Album | SiteSettings | TakePartRow | PullQuote | ContactRole | FaqItem | ZoneReference | ScheduleItem | Zone | Fact | Photographer | SanityImageCrop | SanityImageHotspot | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
 
 // Source: src/queries/event-pages.ts
 // Variable: festivalPageQuery
@@ -3475,7 +3476,7 @@ export type HomepageQueryResult = {
     blurb: string | null;
     doors: Array<{
       _id: string;
-      key: "give" | "member" | "partner" | "volunteer" | null;
+      key: "give" | "member" | "partner" | "vendor" | "volunteer" | null;
       title: string | null;
       blurb: string | null;
       bullets: Array<string> | null;
@@ -3883,6 +3884,91 @@ export type RoutingQueryResult = {
 // Query: *[_type == "subscriber" && email == $email][0]._id
 export type SubscriberByEmailQueryResult = string | null;
 
+// Source: src/queries/trust-pages.ts
+// Variable: getInvolvedPageQuery
+// Query: *[_type == "getInvolvedPage" && _id == "getInvolvedPage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  "doors": doors[]->{    _id, key, title, blurb, bullets,    action{label, kind, enquiryKind, href, newTab},    image{_type, alt, caption, hotspot, crop, asset}  },  hometownAssociations{    title,    prose,    "stat": stat->{_id, value, label}  },  "associations": *[_type == "hometownAssociation"] | order(name asc){_id, name, url},  fallback{title, blurb},  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    generalEmail,    phone,    "general": contacts[role == "general"][0]{name, responds}  },  layout{doors, hta},  seo{title, description}}
+export type GetInvolvedPageQueryResult = {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
+  doors: Array<{
+    _id: string;
+    key: "give" | "member" | "partner" | "vendor" | "volunteer" | null;
+    title: string | null;
+    blurb: string | null;
+    bullets: Array<string> | null;
+    action: {
+      label: string | null;
+      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+      href: string | null;
+      newTab: boolean | null;
+    } | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }> | null;
+  hometownAssociations: {
+    title: string | null;
+    prose: BlockContent | null;
+    stat: {
+      _id: string;
+      value: string | null;
+      label: string | null;
+    } | null;
+  } | null;
+  associations: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+  }>;
+  fallback: {
+    title: string | null;
+    blurb: string | null;
+  } | null;
+  settings: {
+    generalEmail: string | null;
+    phone: string | null;
+    general: {
+      name: string | null;
+      responds: string | null;
+    } | null;
+  } | null;
+  layout: {
+    doors: "cards" | "rows" | null;
+    hta: "hidden" | "shown" | null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | null;
+
 // Query TypeMap
 declare global {
   interface SanityQueries {
@@ -3895,6 +3981,7 @@ declare global {
     "*[_id == \"siteSettings\"][0]{\n  orgName,\n  wordmarkLine2,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  footerBlurb,\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;
     "*[_type == \"subscriber\" && email == $email][0]._id": SubscriberByEmailQueryResult;
+    "*[_type == \"getInvolvedPage\" && _id == \"getInvolvedPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"doors\": doors[]->{\n    _id, key, title, blurb, bullets,\n    action{label, kind, enquiryKind, href, newTab},\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  hometownAssociations{\n    title,\n    prose,\n    \"stat\": stat->{_id, value, label}\n  },\n  \"associations\": *[_type == \"hometownAssociation\"] | order(name asc){_id, name, url},\n  fallback{title, blurb},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    generalEmail,\n    phone,\n    \"general\": contacts[role == \"general\"][0]{name, responds}\n  },\n  layout{doors, hta},\n  seo{title, description}\n}": GetInvolvedPageQueryResult;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

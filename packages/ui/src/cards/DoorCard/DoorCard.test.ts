@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './DoorCard.stories';
 
-const { Member, Partner, WithBullets, Pending, WithEdit } = composeStories(stories);
+const { Member, Partner, WithBullets, Pending, WithEdit, GetInvolved, Vendor, Row } =
+  composeStories(stories);
 
 describe('DoorCard', () => {
   it('renders the member door with its photo, copy and the gold enquiry trigger', async () => {
@@ -45,5 +46,33 @@ describe('DoorCard', () => {
     expect(img?.getAttribute('data-sanity')).toBe(
       'id=door-member;type=door;path=image;base=%2Fadmin',
     );
+  });
+
+  it("carries Get Involved's chip above the title and the anchor, and none on the homepage", async () => {
+    const card = (await renderToBody(GetInvolved)).querySelector('.oy-card');
+    expect(card?.id).toBe('member');
+    const label = card?.querySelector('.oy-door-label');
+    expect(text(label)).toBe('Membership');
+    expect(label?.nextElementSibling?.tagName).toBe('H3');
+    expect((await renderToBody(Member)).querySelector('.oy-door-label')).toBeNull();
+  });
+
+  it('draws the vendor door with its chip, its button and the chips for what it owes', async () => {
+    const card = (await renderToBody(Vendor)).querySelector('.oy-card[data-door="vendor"]');
+    expect(text(card?.querySelector('.oy-door-label'))).toBe('Vendors');
+    expect(text(card?.querySelector('h3'))).toBe('Sell at Odunde');
+    expect([...(card?.querySelectorAll('.oy-pend') ?? [])].map(text)).toEqual([
+      'Pending: the blurb',
+      'Pending: what this way in asks and gives',
+    ]);
+    const button = card?.querySelector('a.oy-btn');
+    expect(button?.getAttribute('data-enquiry')).toBe('vendor');
+    expect(button?.className).toContain('oy-btn--secondary');
+  });
+
+  it('lays the card out as a row, the photograph without a fixed height', async () => {
+    const card = (await renderToBody(Row)).querySelector('.oy-card');
+    expect(card?.classList.contains('oy-door-card--row')).toBe(true);
+    expect(card?.querySelector('img.oy-card-media')?.getAttribute('style')).toBeNull();
   });
 });

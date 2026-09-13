@@ -29,7 +29,7 @@ test('every visible control on the page and in the open modal is at least 44px',
   expect(await page.evaluate(small)).toEqual([]);
 });
 
-test('every visible control on the event and program pages is at least 44px', async ({
+test('every visible control on the event, program and trust pages is at least 44px', async ({
   page,
   isMobile,
 }) => {
@@ -40,6 +40,7 @@ test('every visible control on the event and program pages is at least 44px', as
     '/programs',
     '/programs/yoruba-lessons',
     '/programs/cultural-collective',
+    '/get-involved',
   ]) {
     await page.goto(route);
     expect(await page.evaluate(small), route).toEqual([]);

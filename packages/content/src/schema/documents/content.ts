@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { DOOR_KEYS } from '../../doors';
 import { voice } from '../../validation/rules';
 import { lines, order, slug, text } from '../helpers';
 
@@ -694,9 +695,12 @@ export const stat = defineType({
   },
 });
 
-export const DOOR_KEYS = ['member', 'volunteer', 'partner', 'give'] as const;
+export { DOOR_KEYS };
 
-/** One of the four ways in, shown by the homepage, Get Involved and Donate (ADR 0013). */
+/**
+ * One of the ways in, shown by the homepage, Get Involved and Donate (ADR 0013); the vendor door joined in
+ * Phase 7 (ADR 0034).
+ */
 export const door = defineType({
   name: 'door',
   title: 'Door',

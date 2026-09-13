@@ -20,7 +20,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The ways to reach the organisation that Our Story's Reach us and Get Involved's fallback use (Phase 7): the general email and the phone from the site settings as links, the mailing address, each the registry's chip while the settings hold nothing, and a button opening the contact form. The values here are bracketed placeholders.",
+          "The ways to reach the organisation that Our Story's Reach us and Get Involved's fallback use (Phase 7): the general email and the phone from the site settings as links, the mailing address, the person who answers and how soon from the general routing contact, each the registry's chip while the Studio holds nothing, then a Call button while there is a phone and a button opening the contact form. `part` sets the facts or the actions alone. The values here are bracketed placeholders.",
       },
     },
   },
@@ -48,4 +48,47 @@ export const Pending: Story = { args: { settings: null } };
 export const OnTint: Story = {
   args: { variant: 'quiet' },
   decorators: [wrap('oy-section oy-section--alt')],
+};
+
+/** The general routing contact in the bracketed form. */
+const CONTACT = { name: '[ Name ]', responds: 'within [ how many ] working days' };
+
+/** Get Involved's fallback: the facts it lists, the Call button and the quiet message button. */
+export const GetInvolved: Story = {
+  args: {
+    contact: CONTACT,
+    rows: ['email', 'phone', 'name', 'responds'],
+    nameLabel: 'Who answers',
+    call: true,
+    variant: 'quiet',
+  },
+};
+
+/** Our Story's Reach us: the address and who receives the message, no button (the form card opens it). */
+export const OurStory: Story = {
+  args: {
+    contact: CONTACT,
+    rows: ['email', 'phone', 'address', 'name'],
+    nameLabel: 'Who receives this',
+    label: false,
+  },
+};
+
+/** The routing contact owed, as the development dataset stands: its two chips and no Call button. */
+export const ContactPending: Story = {
+  args: {
+    settings: null,
+    contact: null,
+    rows: ['email', 'phone', 'name', 'responds'],
+    call: true,
+    variant: 'quiet',
+  },
+};
+
+/** The actions alone, for the column beside the facts. */
+export const ActionsOnly: Story = { args: { part: 'actions', call: true, variant: 'quiet' } };
+
+/** The facts alone. */
+export const FactsOnly: Story = {
+  args: { part: 'facts', contact: CONTACT, rows: ['name', 'responds'] },
 };

@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { CONTACT_ROLES } from '../src/enquiry-kinds';
 import { documentTypes, SINGLETON_NAMES } from '../src/schema';
-import { buildSeed, missingFields, retiredFields, type SeedAssets } from './seed-data';
+import {
+  buildRevisions,
+  buildSeed,
+  missingFields,
+  retiredFields,
+  revisedFields,
+  type SeedAssets,
+  type SeedRevision,
+} from './seed-data';
 
 const assets: SeedAssets = new Map(
   [
@@ -106,7 +114,7 @@ describe('buildSeed', () => {
     expect(docs.filter((d) => d._type === 'initiative')).toHaveLength(2);
     expect(docs.filter((d) => d._type === 'newsPost')).toHaveLength(3);
     expect(docs.filter((d) => d._type === 'photographer')).toHaveLength(3);
-    expect(docs.filter((d) => d._type === 'door')).toHaveLength(4);
+    expect(docs.filter((d) => d._type === 'door')).toHaveLength(5);
   });
 
   it('invents nothing: no mock figures, addresses, phone numbers, names or the mock EIN', () => {
@@ -438,5 +446,141 @@ describe('the take-part rows and the retired fields', () => {
       'eventbriteUrl',
     ]);
     expect(retiredFields('homepage', { takePartOrder: [] })).toEqual([]);
+  });
+});
+
+describe('revisedFields', () => {
+  const action = { _type: 'cta', label: 'Become a member', kind: 'enquiry', enquiryKind: 'member' };
+  const revisions: SeedRevision[] = [
+    { type: 'getInvolvedPage', path: 'primaryAction', was: action },
+    {
+      type: 'impactPage',
+      path: 'photos[_key=="photo-1"].caption',
+      was: 'A long description',
+      now: 'Odunde • 2026',
+    },
+    {
+      type: 'getInvolvedPage',
+      path: 'doors',
+      was: [{ _key: 'door-1', _type: 'reference', _ref: 'door-member' }],
+      now: [
+        { _key: 'door-1', _type: 'reference', _ref: 'door-member' },
+        { _key: 'door-2', _type: 'reference', _ref: 'door-vendor' },
+      ],
+    },
+  ];
+
+  it('moves a value still exactly as the earlier seed wrote it, whatever the order of its keys', () => {
+    const stored = {
+      primaryAction: {
+        enquiryKind: 'member',
+        kind: 'enquiry',
+        label: 'Become a member',
+        _type: 'cta',
+      },
+      doors: [{ _ref: 'door-member', _type: 'reference', _key: 'door-1' }],
+    };
+    expect(revisedFields('getInvolvedPage', stored, revisions)).toEqual({
+      set: { doors: revisions[2]?.now },
+      unset: ['primaryAction'],
+    });
+  });
+
+  it('leaves a value anyone changed, and a value that is not stored at all', () => {
+    const edited = {
+      primaryAction: { ...action, label: 'Join us' },
+      doors: [
+        { _key: 'door-1', _type: 'reference', _ref: 'door-member' },
+        { _key: 'owner', _type: 'reference', _ref: 'door-give' },
+      ],
+    };
+    expect(revisedFields('getInvolvedPage', edited, revisions)).toEqual({ set: {}, unset: [] });
+    expect(revisedFields('getInvolvedPage', {}, revisions)).toEqual({ set: {}, unset: [] });
+  });
+
+  it('reaches a keyed item of an array, and never another type', () => {
+    const photos = [
+      { _key: 'photo-1', caption: 'A long description' },
+      { _key: 'photo-2', caption: 'A long description' },
+    ];
+    expect(revisedFields('impactPage', { photos }, revisions)).toEqual({
+      set: { 'photos[_key=="photo-1"].caption': 'Odunde • 2026' },
+      unset: [],
+    });
+    expect(revisedFields('impactPage', { photos: [{ _key: 'owner-photo' }] }, revisions)).toEqual({
+      set: {},
+      unset: [],
+    });
+    expect(revisedFields('storyPage', { primaryAction: action }, revisions)).toEqual({
+      set: {},
+      unset: [],
+    });
+  });
+});
+
+describe('Get Involved', () => {
+  it('seeds the vendor door with its photograph and button, owing its blurb and bullets', () => {
+    const vendor = byId.get('door-vendor') as unknown as {
+      key: string;
+      title: string;
+      blurb?: string;
+      bullets?: string[];
+      action: { label: string; kind: string; enquiryKind?: string };
+      image?: { hotspot?: { x: number; y: number } };
+    };
+    expect(vendor).toMatchObject({ key: 'vendor', title: 'Sell at Odunde' });
+    expect(vendor.action).toMatchObject({
+      label: 'Apply for a booth',
+      kind: 'enquiry',
+      enquiryKind: 'vendor',
+    });
+    expect(vendor.blurb).toBeUndefined();
+    expect(vendor.bullets).toBeUndefined();
+    // No fee, date or crowd the register marks invented.
+    expect(JSON.stringify(vendor)).not.toMatch(/\$|April|thousand|permit/i);
+  });
+
+  it('lists the four cards and the give door, with no header action and the associations stat', () => {
+    const page = byId.get('getInvolvedPage') as unknown as {
+      doors: { _ref: string }[];
+      primaryAction?: unknown;
+      hometownAssociations: { stat?: { _ref: string } };
+    };
+    expect(page.doors.map((door) => door._ref)).toEqual([
+      'door-member',
+      'door-volunteer',
+      'door-vendor',
+      'door-partner',
+      'door-give',
+    ]);
+    expect(page.primaryAction).toBeUndefined();
+    expect(page.hometownAssociations.stat?._ref).toBe('stat-associations');
+  });
+
+  it('revises the header action and the door list only where the earlier seed left them', () => {
+    const earlier = {
+      primaryAction: {
+        _type: 'cta',
+        label: 'Become a member',
+        kind: 'enquiry',
+        enquiryKind: 'member',
+      },
+      doors: ['door-member', 'door-volunteer', 'door-partner', 'door-give'].map((id, index) => ({
+        _key: `door-${index + 1}`,
+        _type: 'reference',
+        _ref: id,
+      })),
+    };
+    const revised = revisedFields('getInvolvedPage', earlier, buildRevisions(assets));
+    expect(revised.unset).toEqual(['primaryAction']);
+    expect((revised.set.doors as { _ref: string }[]).map((door) => door._ref)).toEqual([
+      'door-member',
+      'door-volunteer',
+      'door-vendor',
+      'door-partner',
+      'door-give',
+    ]);
+    const owners = { ...earlier, doors: earlier.doors.slice(0, 2) };
+    expect(revisedFields('getInvolvedPage', owners, buildRevisions(assets)).set).toEqual({});
   });
 });

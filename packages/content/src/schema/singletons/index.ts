@@ -411,7 +411,12 @@ export const getInvolvedPage = definePage({
   name: 'getInvolvedPage',
   title: 'Get Involved page',
   fields: [
-    refs('doors', 'Doors', 'door', 'The four ways in, in order.'),
+    refs(
+      'doors',
+      'Doors',
+      'door',
+      'The ways in, in order: the member, volunteer, vendor and partner doors show as cards, and the give door closes the page as a box (ADR 0034).',
+    ),
     defineField({
       name: 'hometownAssociations',
       title: 'Hometown associations',
@@ -419,6 +424,14 @@ export const getInvolvedPage = definePage({
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
         defineField({ name: 'prose', title: 'Prose', type: 'blockContent' }),
+        defineField({
+          name: 'stat',
+          title: 'The count',
+          type: 'reference',
+          to: [{ type: 'stat' }],
+          description:
+            'The headline figure beside the prose ("9 hometown associations"), kept once for the homepage and this page. The associations themselves are listed under the prose once the Studio holds them; listing them is optional.',
+        }),
       ],
     }),
     defineField({

@@ -91,7 +91,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   photographer: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],
   partner: ['/odunde', '/impact'],
   outcome: ['/impact'],
-  stat: ['/', '/impact'],
+  // Get Involved's associations block shows the count of hometown associations from its stat.
+  stat: ['/', '/get-involved', '/impact'],
   door: ['/', '/get-involved', '/donate'],
   hometownAssociation: ['/get-involved'],
   givingLevel: ['/donate'],

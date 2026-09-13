@@ -107,6 +107,12 @@ function withKeys<T extends object>(
     .map((item, index) => ({ _key: key(prefix, index), ...item }));
 }
 
+/** Get Involved's doors in the page's order: the four cards, then the give door that closes the page. */
+const GET_INVOLVED_DOORS = withKeys(
+  'door',
+  ['door-member', 'door-volunteer', 'door-vendor', 'door-partner', 'door-give'].map(ref),
+);
+
 function page(name: string, fields: Record<string, unknown>): SeedDocument {
   const layout = layoutDefaults(name);
   return { _id: name, _type: name, ...fields, ...(layout ? { layout } : {}) };
@@ -400,6 +406,17 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       title: 'Give',
       blurb: 'Would rather give than join? That takes about a minute.',
       action: cta('Donate', 'give'),
+    },
+    // Last in the list so the doors seeded before Phase 7 keep their order; Get Involved places it after
+    // the volunteer door (ADR 0034). What a booth costs and when applications close are owed, so no blurb
+    // or bullets; the photograph is a vendor at Ọjà Balógun, framed as `14 Impact.dc.html` frames it.
+    {
+      id: 'door-vendor',
+      key: 'vendor',
+      title: 'Sell at Odunde',
+      action: cta('Apply for a booth', 'enquiry', 'vendor'),
+      image: 'odunde-2026-vendor-selling-suya.jpg',
+      focus: [50, 40] as Focus,
     },
   ];
   doors.forEach((door, index) => {
@@ -792,22 +809,20 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Raise your hand',
         line: 'Àgbájọ ọwọ́ la fi ń sọ̀yà. Many hands make the load light. Four ways in. Each one explains what it asks of you before you fill anything in.',
       },
-      doors: withKeys(
-        'door',
-        ['door-member', 'door-volunteer', 'door-partner', 'door-give'].map(ref),
-      ),
+      doors: GET_INVOLVED_DOORS,
       hometownAssociations: {
         title: 'Hometown associations',
         prose: blocks(
           'Nine hometown associations sit inside this community. They are the older structure underneath Omo Yorùbá: family and town networks that predate the organization in Southern California and still do much of the work of holding people together, from naming ceremonies to funerals.',
           'You do not have to belong to one to be a member here. If you already do, say so when you join and we will connect you to the others from your town.',
         ),
+        stat: ref('stat-associations'),
       },
       fallback: {
         title: 'Or just talk to someone',
         blurb: 'A phone call or an email works just as well as any form on this page.',
       },
-      primaryAction: cta('Become a member', 'enquiry', 'member'),
+      // No header action: the prototype's four doors sit directly under the header (ADR 0034).
     }),
   );
 
@@ -913,6 +928,92 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   ],
   lessonsPage: ['voices'],
 };
+
+/**
+ * A value an earlier seed wrote that this seed writes differently (ADR 0035): the header actions no
+ * prototype draws, a list that gained an item, a caption that became short. `path` is the patch path
+ * (`primaryAction`, `photos[_key=="photo-1"].caption`); `now` undefined unsets the field.
+ */
+export interface SeedRevision {
+  type: string;
+  path: string;
+  was: unknown;
+  now?: unknown;
+}
+
+/**
+ * The revisions this seed applies. Each moves a stored value only while it still reads exactly as the
+ * earlier seed wrote it; an editor's change, however small, keeps its value.
+ */
+export function buildRevisions(_assets: SeedAssets): SeedRevision[] {
+  return [
+    // Get Involved (ADR 0034): the header's gold action no prototype draws, and the door list without
+    // the vendor door.
+    {
+      type: 'getInvolvedPage',
+      path: 'primaryAction',
+      was: cta('Become a member', 'enquiry', 'member'),
+    },
+    {
+      type: 'getInvolvedPage',
+      path: 'doors',
+      was: withKeys(
+        'door',
+        ['door-member', 'door-volunteer', 'door-partner', 'door-give'].map(ref),
+      ),
+      now: GET_INVOLVED_DOORS,
+    },
+  ];
+}
+
+/** The steps of a patch path: a field, or a field and the `_key` of one of its array's items. */
+function pathSteps(path: string): { field: string; key?: string }[] {
+  return [...path.matchAll(/([^.[\]]+)(?:\[_key=="([^"]*)"\])?/g)].map((match) => ({
+    field: match[1] ?? '',
+    key: match[2],
+  }));
+}
+
+/** The stored value at a patch path, or undefined when any step is missing. */
+function valueAt(document: unknown, path: string): unknown {
+  let value: unknown = document;
+  for (const { field, key } of pathSteps(path)) {
+    if (!isPlainObject(value)) return undefined;
+    value = value[field];
+    if (key !== undefined) {
+      if (!Array.isArray(value)) return undefined;
+      value = value.find((item) => isPlainObject(item) && item._key === key);
+    }
+  }
+  return value;
+}
+
+/** A value as JSON with every object's keys in order, so two stored values compare by content. */
+function canonical(value: unknown): string {
+  return JSON.stringify(value, (_key, item: unknown) =>
+    isPlainObject(item)
+      ? Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b)))
+      : item,
+  );
+}
+
+/** The revisions a stored document takes: the values to set and the fields to unset. */
+export function revisedFields(
+  type: string,
+  current: Record<string, unknown>,
+  revisions: readonly SeedRevision[],
+): { set: Record<string, unknown>; unset: string[] } {
+  const set: Record<string, unknown> = {};
+  const unset: string[] = [];
+  for (const revision of revisions) {
+    if (revision.type !== type) continue;
+    const stored = valueAt(current, revision.path);
+    if (stored === undefined || canonical(stored) !== canonical(revision.was)) continue;
+    if (revision.now === undefined) unset.push(revision.path);
+    else set[revision.path] = revision.now;
+  }
+  return { set, unset };
+}
 
 /** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`. */
 function storedPaths(value: unknown, steps: readonly string[], prefix: string): string[] {

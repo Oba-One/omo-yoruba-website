@@ -1,0 +1,144 @@
+---
+/**
+ * Get Involved (`13 Get Involved.dc.html`, ROUTES sections 1, 4 and 5, ADR 0034): composed from the one
+ * Get Involved query through `loadQuery`, with the registry's Pending chips for every fact the Studio
+ * does not hold and the layout options read from the singleton with the schema defaults filled. The doors
+ * sit directly under the slim header, each anchored by its key (the footer links `#member` and
+ * `#partner`); the give door's own words close the page. The page arranges library parts and owns its
+ * copy (the headings the prototype carries) and its layout.
+ */
+import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
+import { createImageSet } from '@oy/content/images';
+import { getInvolvedPageQuery } from '@oy/content/queries';
+import DoorCard from '@oy/ui/cards/DoorCard/DoorCard.astro';
+import ContactBlock from '@oy/ui/content/ContactBlock/ContactBlock.astro';
+import PartnerRow from '@oy/ui/content/PartnerRow/PartnerRow.astro';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
+import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
+import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
+import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
+import Section from '@oy/ui/page/Section/Section.astro';
+import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
+import Split from '@oy/ui/page/Split/Split.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { cachePage } from '../lib/cache';
+import { STUDIO_BASE_PATH } from '../lib/paths';
+import { buildGetInvolvedPage } from '../lib/sanity/get-involved-page';
+import { loadQuery } from '../lib/sanity/load-query';
+
+const { data, preview, error } = await loadQuery(
+  getInvolvedPageQuery,
+  {},
+  { cookies: Astro.cookies },
+);
+const imageSet = createImageSet({
+  projectId: PUBLIC_SANITY_PROJECT_ID,
+  dataset: PUBLIC_SANITY_DATASET,
+});
+const page = buildGetInvolvedPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
+cachePage(Astro, '/get-involved', { draft: preview, failed: Boolean(error) });
+const rows = page.doors.layout === 'row';
+---
+
+<SiteLayout title={page.title} description={page.description} root={page.root}>
+  <main id="main">
+    <PageHeader
+      variant={page.header.variant}
+      kicker={page.header.kicker}
+      title={page.header.title}
+      titlePending={page.header.titlePending}
+      line={page.header.line}
+      actions={page.header.actions}
+    />
+
+    <Section id="doors" labelledby="doors-heading" data-sanity={page.edit.doors}>
+      <h2 class="oy-visually-hidden" id="doors-heading">Ways in</h2>
+      {
+        page.doors.items.length === 0 ? (
+          <Pending variant="line" what={page.doors.pending} />
+        ) : (
+          <CardGrid columns={rows ? 1 : 2}>
+            {page.doors.items.map((item) => (
+              <DoorCard
+                door={item.door}
+                id={item.id}
+                label
+                bullets
+                primary={item.primary}
+                layout={page.doors.layout}
+                imageEdit={item.imageEdit}
+              />
+            ))}
+          </CardGrid>
+        )
+      }
+    </Section>
+
+    {
+      page.associations.shown && (
+        <Section
+          id="associations"
+          ground="alt"
+          labelledby="associations-heading"
+          data-sanity={page.edit.hta}
+        >
+          <Split>
+            <SectionHead title={page.associations.title} id="associations-heading" />
+            {page.associations.prose ? (
+              <Prose value={page.associations.prose} />
+            ) : (
+              <p>
+                <Pending what={page.associations.pending} />
+              </p>
+            )}
+            {page.associations.list.length > 0 && (
+              <PartnerRow partners={page.associations.list} class="oy-hta-list" />
+            )}
+            <GlanceStrip
+              slot="aside"
+              band={false}
+              facts={page.associations.cells}
+              edit={page.associations.statEdit}
+            />
+          </Split>
+        </Section>
+      )
+    }
+
+    <Section id="talk" labelledby="talk-heading">
+      <Split>
+        <SectionHead title={page.talk.title} intro={page.talk.intro} id="talk-heading" />
+        <ContactBlock settings={page.talk.settings} part="actions" call variant="quiet" />
+        <ContactBlock
+          slot="aside"
+          part="facts"
+          settings={page.talk.settings}
+          contact={page.talk.contact}
+          rows={['email', 'phone', 'name', 'responds']}
+          nameLabel="Who answers"
+          namePending={page.talk.namePending}
+          respondsPending={page.talk.respondsPending}
+        />
+      </Split>
+      <Handoff
+        shape="box"
+        variant="quiet"
+        text="Meet the people you are writing to."
+        action={{ label: 'Our Story', kind: 'url', href: '/our-story' }}
+      />
+      {
+        page.give && (
+          <Handoff
+            shape="box"
+            variant="primary"
+            text={page.give.text}
+            textPending={page.give.textPending}
+            action={page.give.action}
+          />
+        )
+      }
+    </Section>
+  </main>
+</SiteLayout>

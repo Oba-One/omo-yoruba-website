@@ -1,12 +1,15 @@
 ---
 /**
- * One of the four ways in as a card (`02 Homepage.dc.html`, Raise your hand; CONTEXT.md, Door):
- * the photo or its placeholder, the title, the blurb, what it asks and gives when the page
- * shows it, and one action that opens the door's enquiry kind or the Give Dialog through the
- * mounted dialogs. The first door on a view is gold, the rest outline. The row form is
- * `PathRow`. A missing blurb or empty bullets show the registry's chips; the title is required
- * in the Studio, so an empty one renders nothing.
+ * One of the ways in as a card (`02 Homepage.dc.html`, Raise your hand; `13 Get Involved.dc.html`, the
+ * doors; CONTEXT.md, Door): the photo or its placeholder, the door's chip above the title when the page
+ * shows it, the title, the blurb, what it asks and gives when the page shows it, and one action that opens
+ * the door's enquiry kind or the Give Dialog through the mounted dialogs. The first door on a view is gold,
+ * the rest outline. `row` lays the card out as Get Involved's rows draw it (and Donate's one door): the
+ * photograph on the left at 260px, filling the row's height, the copy beside it, stacking under 820px. The
+ * path row form is `PathRow`. A missing blurb or empty bullets show the registry's chips; the title is
+ * required in the Studio, so an empty one renders nothing.
  */
+import { DOOR_CHIPS, isDoorKey } from '@oy/content/doors';
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import type { ActionLike } from '../../core/ActionButton/action';
@@ -30,32 +33,51 @@ interface Props {
   primary?: boolean;
   /** Show the "what it asks and gives" bullets (Get Involved); the homepage leaves them out. */
   bullets?: boolean;
+  /** Show the door's chip above the title, as Get Involved's cards carry it. */
+  label?: boolean;
+  /** `row`: the photograph beside the copy. */
+  layout?: 'card' | 'row';
+  /** The anchor the card answers to (`member`, which the footer's link reaches). */
+  id?: string;
   /** A `data-sanity` attribute for the photo. */
   imageEdit?: string;
   class?: string;
 }
 
-const { door, primary = false, bullets = false, imageEdit, class: className } = Astro.props;
+const {
+  door,
+  primary = false,
+  bullets = false,
+  label = false,
+  layout = 'card',
+  id,
+  imageEdit,
+  class: className,
+} = Astro.props;
 const title = door.title?.trim();
+const chip = label && isDoorKey(door.key) ? DOOR_CHIPS[door.key] : undefined;
 const blurbPending = pendingWhat('door', 'blurb');
 const bulletsPending = pendingWhat('door', 'bullets[]');
+const row = layout === 'row';
 ---
 
 <Card
   image={door.image}
   imageEdit={imageEdit}
   alt=""
-  mediaHeight={190}
-  sizes="(min-width: 1100px) 540px, (min-width: 860px) 50vw, 100vw"
+  mediaHeight={row ? 'fill' : 190}
+  sizes={row ? '(min-width: 820px) 260px, 100vw' : '(min-width: 1100px) 540px, (min-width: 860px) 50vw, 100vw'}
   bodyClass="oy-door"
-  class:list={['oy-door-card', className]}
+  class:list={['oy-door-card', row && 'oy-door-card--row', className]}
   data-door={door.key ?? undefined}
+  id={id}
 >
   {
     !door.image && (
       <ImagePlaceholder slot="media" what={`a photo for ${title ?? 'this door'}`} aspect="520 / 190" class="oy-door-placeholder" />
     )
   }
+  {chip && <p class="oy-person-role oy-door-label">{chip}</p>}
   {title && <h3>{title}</h3>}
   <p>{door.blurb || <Pending what={blurbPending} />}</p>
   {
@@ -78,6 +100,10 @@ const bulletsPending = pendingWhat('door', 'bullets[]');
     height: 190px;
     aspect-ratio: auto;
   }
+  .oy-door-label {
+    margin: 0;
+    color: var(--accent-kicker, var(--terra-600));
+  }
   .oy-door-bullets {
     margin: 0;
     padding-left: 18px;
@@ -86,5 +112,31 @@ const bulletsPending = pendingWhat('door', 'bullets[]');
   }
   .oy-door-bullets li + li {
     margin-top: 4px;
+  }
+  /* The row form (`13 Get Involved.dc.html`, the rows option): the photograph fills the row's height. */
+  .oy-door-card--row {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .oy-door-card--row > :global(.oy-card-media),
+  .oy-door-card--row > :global(.oy-door-placeholder) {
+    flex: none;
+    width: 260px;
+    height: auto;
+    min-height: 190px;
+  }
+  .oy-door-card--row > :global(.oy-card-body) {
+    flex: 1;
+  }
+  @media (max-width: 820px) {
+    .oy-door-card--row {
+      flex-direction: column;
+    }
+    .oy-door-card--row > :global(.oy-card-media),
+    .oy-door-card--row > :global(.oy-door-placeholder) {
+      width: 100%;
+      height: 190px;
+      min-height: 0;
+    }
   }
 </style>

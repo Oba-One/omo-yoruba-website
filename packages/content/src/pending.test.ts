@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   COLLECTIVE_VOICE_SLOT,
+  GENERAL_CONTACT_PENDING,
+  GENERAL_RESPONDS_PENDING,
   PENDING,
   type PendingEntry,
   PRESENCE,
@@ -102,7 +104,6 @@ describe('PRESENCE', () => {
       'sponsorLevel',
       'honoree',
       'givingLevel',
-      'hometownAssociation',
       'timelineEntry',
       'governanceDoc',
       'outcome',
@@ -112,7 +113,11 @@ describe('PRESENCE', () => {
       expect(byType[type], type).toBeGreaterThanOrEqual(1);
     }
     expect(byType.zone).toBe(4);
-    expect(byType.hometownAssociation).toBe(9);
+  });
+
+  it('never asks for what is optional: the association names are listed only if the owner adds them', () => {
+    // The register calls prose only "the safe default" (ADR 0035), so no chip asks for nine names.
+    expect(PRESENCE.some((row) => row.type === 'hometownAssociation')).toBe(false);
   });
 });
 
@@ -318,6 +323,27 @@ describe('pendingWhat for one kind', () => {
   });
 });
 
+describe('a row narrowed by group', () => {
+  it("answers Our Story's board and its staff and volunteers apart, as a row narrowed by kind does", () => {
+    expect(presenceWhat('person', 'board')).toEqual({
+      what: "the board's names, roles and bios",
+      minimum: 1,
+    });
+    for (const group of ['staff', 'volunteer']) {
+      expect(presenceWhat('person', group)?.what, group).toBe('the staff and volunteers to list');
+    }
+    // The teacher is listed on the Lessons page, never counted here.
+    expect(presenceWhat('person', 'teacher')).toBeUndefined();
+    // The one row for everyone is gone: a page never asks for "names, roles and bios" of nobody in particular.
+    expect(PRESENCE.some((row) => row.type === 'person' && !row.filter)).toBe(false);
+  });
+
+  it('keeps an unnarrowed row answering for every group', () => {
+    // The linked teacher's short bio is narrowed by her id, not by a group, so it still answers.
+    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
+  });
+});
+
 describe('presenceCountQuery', () => {
   it('counts the type, narrowed by the filter when there is one', () => {
     expect(presenceCountQuery({ type: 'zone', minimum: 4, where: 'Odunde', what: 'zones' })).toBe(
@@ -332,5 +358,22 @@ describe('presenceCountQuery', () => {
         what: 'an edition',
       }),
     ).toBe('count(*[_type == "event" && kind == "gala"])');
+  });
+});
+
+describe('Get Involved', () => {
+  it('names an empty page of doors, the associations prose and the general contact the way the page shows them', () => {
+    expect(pendingWhat('getInvolvedPage', 'doors[]')).toBe('the ways in');
+    expect(pendingWhat('door', 'bullets[]')).toBe('what this way in asks and gives');
+    expect(pendingWhat('getInvolvedPage', 'hometownAssociations.prose')).toBe(
+      'what the associations are, in your words',
+    );
+    const general = PENDING.filter(
+      (row) => row.type === 'siteSettings' && row.condition?.includes('role == "general"'),
+    );
+    expect(general.map((row) => row.what)).toEqual([
+      GENERAL_CONTACT_PENDING,
+      GENERAL_RESPONDS_PENDING,
+    ]);
   });
 });

@@ -1,14 +1,19 @@
 ---
 /**
- * The ways to reach the organisation (COMPONENT-MAP, Lists and rows): Our Story's Reach us and Get
- * Involved's "Or just talk to someone" (`15 People and History.dc.html`, `13 Get Involved.dc.html`), built
- * in Phase 6 for Phase 7. The general email as a `mailto:` link, the phone as a `tel:` link and the
- * mailing address on one line, from the site settings, one fact to a row, each the registry's chip while
- * the settings hold nothing; then a button opening the `contact` enquiry, an outline by default so a
- * page's one gold action stays its own. The page passes values cleaned of stega, since two become hrefs.
+ * The ways to reach the organisation (COMPONENT-MAP, Lists and rows): Get Involved's "Or just talk to
+ * someone" and Our Story's "Reach us" (`13 Get Involved.dc.html`, `15 People and History.dc.html`). The
+ * facts, one to a row, each the registry's chip while the settings hold nothing: the general email as a
+ * `mailto:` link, the phone as a `tel:` link, the mailing address on one line, and from the general routing
+ * contact the person who answers (`nameLabel`: "Who answers", "Who receives this") and how soon they reply.
+ * `rows` picks the facts and their order. Then the actions: a Call button while the settings hold a phone
+ * (`call`), and a button opening the `contact` enquiry, an outline by default so a page's one gold action
+ * stays its own, or none (`label={false}`, where the page's own form card opens it). `part` draws the facts
+ * or the actions alone, for a page that sets them in two columns. The page passes values cleaned of stega,
+ * since two become hrefs.
  */
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import Button, { type ButtonVariant } from '../../core/Button/Button.astro';
 import FactList from '../FactList/FactList.astro';
 
 export interface ContactSettingsLike {
@@ -17,15 +22,48 @@ export interface ContactSettingsLike {
   address?: string | null;
 }
 
+/** The routing contact who answers the general inbox. */
+export interface ContactPersonLike {
+  name?: string | null;
+  /** Completes "replies ...": "within three working days". */
+  responds?: string | null;
+}
+
+export type ContactRow = 'email' | 'phone' | 'address' | 'name' | 'responds';
+
 interface Props {
   settings?: ContactSettingsLike | null;
-  /** The button's label. */
-  label?: string;
-  variant?: 'primary' | 'secondary' | 'quiet';
+  contact?: ContactPersonLike | null;
+  /** The facts shown, in order. */
+  rows?: readonly ContactRow[];
+  /** The name row's label. */
+  nameLabel?: string;
+  /** The registry's wording for the contact's missing name and response line. */
+  namePending?: string;
+  respondsPending?: string;
+  /** A Call button while the settings hold a phone. */
+  call?: boolean;
+  /** The message button's label, or `false` for no message button. */
+  label?: string | false;
+  variant?: ButtonVariant;
+  /** The facts alone, the actions alone, or both, the facts first. */
+  part?: 'facts' | 'actions' | 'both';
   class?: string;
 }
 
-const { settings, label = 'Send a message', variant = 'secondary', class: className } = Astro.props;
+const {
+  settings,
+  contact,
+  rows = ['email', 'phone', 'address'],
+  nameLabel = 'Who answers',
+  namePending = 'who answers the general inbox',
+  respondsPending = 'how soon the general inbox replies',
+  call = false,
+  label = 'Send a message',
+  variant = 'secondary',
+  part = 'both',
+  class: className,
+} = Astro.props;
 const email = settings?.generalEmail?.trim();
 const phone = settings?.phone?.trim();
 const digits = phone?.replace(/[^+\d]/g, '');
@@ -34,31 +72,58 @@ const address = (settings?.address ?? '')
   .map((line) => line.trim())
   .filter(Boolean)
   .join(', ');
+const responds = contact?.responds?.trim();
 
-const facts = [
-  {
+const FACTS = {
+  email: {
     label: 'Email',
     value: email,
     href: email ? `mailto:${email}` : undefined,
     pending: pendingWhat('siteSettings', 'generalEmail') ?? 'the general inbox',
   },
-  {
+  phone: {
     label: 'Phone',
     value: phone,
     href: digits ? `tel:${digits}` : undefined,
     pending: pendingWhat('siteSettings', 'phone') ?? 'phone number',
   },
-  {
+  address: {
     label: 'Mailing address',
     value: address,
     pending: pendingWhat('siteSettings', 'address') ?? 'mailing address',
   },
-];
+  name: { label: nameLabel, value: contact?.name?.trim(), pending: namePending },
+  // The line completes a sentence in the success copy ("replies within three working days"), so it
+  // starts with a capital when it stands as a fact.
+  responds: {
+    label: 'Response time',
+    value: responds ? `${responds.charAt(0).toUpperCase()}${responds.slice(1)}` : undefined,
+    pending: respondsPending,
+  },
+} as const;
+
+const facts = rows.map((row) => FACTS[row]);
+const showFacts = part !== 'actions' && facts.length > 0;
+const callHref = call && digits ? `tel:${digits}` : undefined;
+const showActions = part !== 'facts' && (Boolean(callHref) || label !== false);
 ---
 
-<div class:list={['oy-contact', className]}>
-  <FactList facts={facts} columns={1} />
-  <ActionButton action={{ label, kind: 'enquiry', enquiryKind: 'contact' }} variant={variant} />
+<div class:list={['oy-contact', className]} data-part={part}>
+  {showFacts && <FactList facts={facts} columns={1} />}
+  {
+    showActions && (
+      <div class="oy-contact-actions">
+        {callHref && (
+          <Button variant="secondary" href={callHref}>
+            Call {phone}
+          </Button>
+        )}
+        {label !== false && (
+          <ActionButton action={{ label, kind: 'enquiry', enquiryKind: 'contact' }} variant={variant} />
+        )}
+      </div>
+    )
+  }
 </div>
 
 <style>
@@ -67,5 +132,11 @@ const facts = [
     flex-direction: column;
     align-items: flex-start;
     gap: 22px;
+  }
+  .oy-contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
   }
 </style>

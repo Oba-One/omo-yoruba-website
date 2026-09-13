@@ -12,6 +12,7 @@
  */
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import type { ActionLike } from '../../core/ActionButton/action';
+import Pending from '../../core/Pending/Pending.astro';
 
 interface Props {
   action?: ActionLike | null;
@@ -19,6 +20,8 @@ interface Props {
   secondAction?: ActionLike | null;
   /** The line beside the button. */
   text?: string | null;
+  /** The box only: the registry's wording when the line is a missing fact (a door's blurb). */
+  textPending?: string;
   variant?: 'secondary' | 'quiet' | 'primary';
   shape?: 'line' | 'box';
   class?: string;
@@ -28,16 +31,26 @@ const {
   action,
   secondAction,
   text,
+  textPending,
   variant = 'secondary',
   shape = 'line',
   class: className,
 } = Astro.props;
+const line = text?.trim();
 ---
 
 {
   shape === 'box' ? (
     <div class:list={['oy-handoff', className]}>
-      {text && <p class="oy-handoff-say">{text}</p>}
+      {line ? (
+        <p class="oy-handoff-say">{text}</p>
+      ) : (
+        textPending && (
+          <p class="oy-handoff-say">
+            <Pending what={textPending} />
+          </p>
+        )
+      )}
       <div class="oy-handoff-actions">
         <ActionButton action={action} variant={variant} />
         {secondAction && <ActionButton action={secondAction} variant="secondary" arrow={false} />}

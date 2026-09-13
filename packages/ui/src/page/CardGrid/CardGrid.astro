@@ -2,11 +2,12 @@
 /**
  * The card arrangements of the page prototypes: two, three or four across at the content width,
  * collapsing the way `02 Homepage.dc.html` does (three and two to one column under 860px; four to
- * two under 1000px and to one under 600px). Children are the cards; the page only chooses the
+ * two under 1000px and to one under 600px), or one column of cards laid out as rows, closer together
+ * (`13 Get Involved.dc.html`, the doors as rows). Children are the cards; the page only chooses the
  * count, and may close the grid with a short muted note (the Programs hub's line under its cards).
  */
 interface Props {
-  columns?: 2 | 3 | 4;
+  columns?: 1 | 2 | 3 | 4;
   /** A line under the cards. */
   note?: string | null;
   class?: string;
@@ -31,6 +32,10 @@ const { columns = 3, note, class: className, ...rest } = Astro.props;
     max-width: 74ch;
     font-size: 14.5px;
     color: var(--text-muted);
+  }
+  .oy-card-grid[data-columns='1'] {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
   .oy-card-grid[data-columns='2'] {
     grid-template-columns: 1fr 1fr;
