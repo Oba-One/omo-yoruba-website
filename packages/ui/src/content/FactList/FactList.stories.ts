@@ -46,3 +46,14 @@ export const OneColumn: Story = {
     ],
   },
 };
+
+/** A fact that is a link, as the contact block writes its email and phone; an unsafe link stays text. */
+export const Linked: Story = {
+  args: {
+    columns: 1,
+    facts: [
+      { label: 'Email', value: '[ inbox@example.org ]', href: 'mailto:inbox@example.org' },
+      { label: 'Website', value: '[ A link ]', href: 'javascript:alert(1)' },
+    ],
+  },
+};

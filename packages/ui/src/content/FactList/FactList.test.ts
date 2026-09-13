@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './FactList.stories';
 
-const { Default, Mixed, Pending, OneColumn } = composeStories(stories);
+const { Default, Mixed, Pending, OneColumn, Linked } = composeStories(stories);
 
 describe('FactList', () => {
   it('pairs each label with its fact or the chip, in a description list', async () => {
@@ -30,5 +30,13 @@ describe('FactList', () => {
     );
     const two = (await renderToBody(Default)).querySelector('dl.oy-facts');
     expect(two?.hasAttribute('data-columns')).toBe(false);
+  });
+
+  it('makes a fact a link only through a safe href', async () => {
+    const rows = (await renderToBody(Linked)).querySelectorAll('dl.oy-facts .oy-fact dd');
+    expect(rows[0]?.querySelector('a')?.getAttribute('href')).toBe('mailto:inbox@example.org');
+    expect(text(rows[0]?.querySelector('a'))).toBe('[ inbox@example.org ]');
+    expect(rows[1]?.querySelector('a')).toBeNull();
+    expect(text(rows[1])).toBe('[ A link ]');
   });
 });

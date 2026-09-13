@@ -1,0 +1,71 @@
+---
+/**
+ * The ways to reach the organisation (COMPONENT-MAP, Lists and rows): Our Story's Reach us and Get
+ * Involved's "Or just talk to someone" (`15 People and History.dc.html`, `13 Get Involved.dc.html`), built
+ * in Phase 6 for Phase 7. The general email as a `mailto:` link, the phone as a `tel:` link and the
+ * mailing address on one line, from the site settings, one fact to a row, each the registry's chip while
+ * the settings hold nothing; then a button opening the `contact` enquiry, an outline by default so a
+ * page's one gold action stays its own. The page passes values cleaned of stega, since two become hrefs.
+ */
+import { pendingWhat } from '@oy/content/pending';
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import FactList from '../FactList/FactList.astro';
+
+export interface ContactSettingsLike {
+  generalEmail?: string | null;
+  phone?: string | null;
+  address?: string | null;
+}
+
+interface Props {
+  settings?: ContactSettingsLike | null;
+  /** The button's label. */
+  label?: string;
+  variant?: 'primary' | 'secondary' | 'quiet';
+  class?: string;
+}
+
+const { settings, label = 'Send a message', variant = 'secondary', class: className } = Astro.props;
+const email = settings?.generalEmail?.trim();
+const phone = settings?.phone?.trim();
+const digits = phone?.replace(/[^+\d]/g, '');
+const address = (settings?.address ?? '')
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter(Boolean)
+  .join(', ');
+
+const facts = [
+  {
+    label: 'Email',
+    value: email,
+    href: email ? `mailto:${email}` : undefined,
+    pending: pendingWhat('siteSettings', 'generalEmail') ?? 'the general inbox',
+  },
+  {
+    label: 'Phone',
+    value: phone,
+    href: digits ? `tel:${digits}` : undefined,
+    pending: pendingWhat('siteSettings', 'phone') ?? 'phone number',
+  },
+  {
+    label: 'Mailing address',
+    value: address,
+    pending: pendingWhat('siteSettings', 'address') ?? 'mailing address',
+  },
+];
+---
+
+<div class:list={['oy-contact', className]}>
+  <FactList facts={facts} columns={1} />
+  <ActionButton action={{ label, kind: 'enquiry', enquiryKind: 'contact' }} variant={variant} />
+</div>
+
+<style>
+  .oy-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+</style>

@@ -86,7 +86,7 @@ Conventions:
 | `FilterChips` | with and without year select; URL-synced; result count announced | `chips[]`, `years[]`, `selected` | News (later) |
 | `Accordion` (FAQ) | single open; multi open; closed rows keep 44px; open by default option | `items[]`, `multi`, `defaultOpen` | Lessons |
 | `Timeline` | dated entries with optional image; hideable by parent | `entries[]` | Our Story |
-| `ContactBlock` | address, phone, email, opens `contact` | `settings` | Our Story, Get Involved |
+| `ContactBlock` | the general email (`mailto:`), the phone (`tel:`) and the mailing address from the site settings, each the registry's chip while empty; a button opening `contact`, outline or quiet; built in Phase 6, no page uses it yet | `settings`, `label`, `variant` | Our Story, Get Involved (Phase 7) |
 
 ## Media
 
