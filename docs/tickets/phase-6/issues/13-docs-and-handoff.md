@@ -1,7 +1,7 @@
 # 13: Docs, decisions and the handoff
 
 Labels: later
-Status: open
+Status: resolved
 Blocked by: 12
 
 **What to build:** the repo's documents describe what Phase 6 built, and the owner has what they need to
@@ -18,7 +18,7 @@ Phase 7 prompt in `docs/plans/prompt-phase-7.md`.
       wording) and the frontier
 - [x] The code review run on the whole diff and its findings fixed before the pull request
 - [x] Phase 7 prompt written after the pull request is open
-- [ ] Handoff (`docs/plans/handoff-phase-6.md`): the owner runs `/mattpocock-skills:handoff`
+- [x] Handoff (`docs/plans/handoff-phase-6.md`): the owner runs `/mattpocock-skills:handoff`
 
 ## Comments
 
@@ -31,3 +31,6 @@ https://github.com/Oba-One/omo-yoruba-website/pull/7 is open. Wayfinder ticket 3
 merge) and ticket 40 (the program pages' owed facts) join the frontier, and `docs/plans/prompt-phase-7.md`
 is written. The handoff document is not: the handoff skill runs only when the owner invokes it, so the
 ticket stays open until `/mattpocock-skills:handoff` saves `docs/plans/handoff-phase-6.md`.
+
+13 September 2026, later. The owner ran `/mattpocock-skills:handoff`; the handoff is
+`docs/plans/handoff-phase-6.md`. CI passed all 11 checks on pull request 7.
