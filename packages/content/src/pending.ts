@@ -34,6 +34,17 @@ export interface PresenceEntry {
 const FESTIVAL = 'kind == "festival"';
 const GALA = 'kind == "gala"';
 
+/** A page's take-part band: no rows yet, or a row missing its way in, title or button label. */
+const takePartRows = (type: string, where: string): PendingEntry[] => [
+  { type, fields: ['takePart[]'], where, what: 'the ways in' },
+  {
+    type,
+    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
+    where,
+    what: 'a way in, its title or its button label',
+  },
+];
+
 export const PENDING: readonly PendingEntry[] = [
   // Across the whole site
   { type: 'siteSettings', fields: ['ein'], where: 'Everywhere', what: 'EIN' },
@@ -140,18 +151,7 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Odunde, what the day is',
     what: 'a photograph of festival day',
   },
-  {
-    type: 'festivalPage',
-    fields: ['takePart[]'],
-    where: 'Odunde, take part',
-    what: 'the ways in',
-  },
-  {
-    type: 'festivalPage',
-    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
-    where: 'Odunde, take part',
-    what: 'a way in, its title or its button label',
-  },
+  ...takePartRows('festivalPage', 'Odunde, take part'),
   {
     type: 'festivalPage',
     fields: ['planYourVisit[]'],
@@ -215,18 +215,7 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Gala, the evening',
     what: 'the evening, in your words',
   },
-  {
-    type: 'galaPage',
-    fields: ['takePart[]'],
-    where: 'Gala, take part',
-    what: 'the ways in',
-  },
-  {
-    type: 'galaPage',
-    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
-    where: 'Gala, take part',
-    what: 'a way in, its title or its button label',
-  },
+  ...takePartRows('galaPage', 'Gala, take part'),
   {
     type: 'event',
     fields: ['schedule[]'],
@@ -297,6 +286,7 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Programs, Cultural Exchange',
     what: 'everything about this program',
   },
+  ...takePartRows('programsPage', 'Programs, take part'),
   {
     type: 'lessonsPage',
     condition: 'count(glance[!defined(value)]) > 0',
@@ -339,6 +329,7 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Lessons, voices',
     what: 'two testimonials with permission to name',
   },
+  ...takePartRows('lessonsPage', 'Lessons, take part'),
 
   // Cultural Collective
   {
@@ -353,6 +344,7 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Collective, one voice',
     what: 'the quote and who said it',
   },
+  ...takePartRows('collectivePage', 'Collective, take part'),
   {
     type: 'initiative',
     fields: ['blurb'],

@@ -173,6 +173,21 @@ describe('pendingWhat and pendingTitle', () => {
   });
 });
 
+describe('the take-part rows every page with a band registers', () => {
+  it('names an empty band and an unfinished row the same way on each page', () => {
+    for (const type of [
+      'festivalPage',
+      'galaPage',
+      'programsPage',
+      'lessonsPage',
+      'collectivePage',
+    ]) {
+      expect(pendingWhat(type, 'takePart[]'), type).toBe('the ways in');
+      expect(pendingWhat(type, 'takePart'), type).toBe('a way in, its title or its button label');
+    }
+  });
+});
+
 describe('pendingWhat for one kind', () => {
   it("never answers a kind from a condition row narrowed to another kind's documents", () => {
     // The festival and the Gala each keep a row for a schedule row missing its time; no row names "other".

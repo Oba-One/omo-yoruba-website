@@ -266,6 +266,7 @@ export const programsPage = definePage({
         },
       ],
     }),
+    takePart,
   ],
   layout: PAGE_LAYOUTS.programsPage,
 });
@@ -333,6 +334,7 @@ export const lessonsPage = definePage({
       of: [{ type: 'faqItem' }],
     }),
     refs('voices', 'Voices', 'testimonial'),
+    takePart,
   ],
   layout: PAGE_LAYOUTS.lessonsPage,
 });
@@ -361,6 +363,7 @@ export const collectivePage = definePage({
       description: 'Off points the updates row at the footer newsletter.',
       initialValue: false,
     }),
+    takePart,
   ],
   layout: PAGE_LAYOUTS.collectivePage,
 });
@@ -528,8 +531,6 @@ export const newsPage = definePage({
   fields: [],
   layout: PAGE_LAYOUTS.newsPage,
 });
-
-export { WAY_INS } from '../../take-part';
 
 export const singletonTypes = [
   siteSettings,

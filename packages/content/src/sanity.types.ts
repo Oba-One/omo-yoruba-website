@@ -697,6 +697,9 @@ export type CollectivePage = {
   } & InitiativeReference>;
   voice?: TestimonialReference;
   keepsOwnList?: boolean;
+  takePart?: Array<{
+    _key: string;
+  } & TakePartRow>;
   primaryAction?: Cta;
   secondaryActions?: Array<{
     _key: string;
@@ -754,6 +757,9 @@ export type LessonsPage = {
   voices?: Array<{
     _key: string;
   } & TestimonialReference>;
+  takePart?: Array<{
+    _key: string;
+  } & TakePartRow>;
   primaryAction?: Cta;
   secondaryActions?: Array<{
     _key: string;
@@ -820,6 +826,9 @@ export type ProgramsPage = {
     _type: "yearStripRow";
     _key: string;
   }>;
+  takePart?: Array<{
+    _key: string;
+  } & TakePartRow>;
   primaryAction?: Cta;
   secondaryActions?: Array<{
     _key: string;
@@ -1063,7 +1072,8 @@ export type SiteSettings = {
 
 export type TakePartRow = {
   _type: "takePartRow";
-  way?: "vendor" | "sponsor" | "performer" | "volunteer" | "table" | "give";
+  way?: "vendor" | "sponsor" | "performer" | "volunteer" | "table" | "give" | "enrol" | "member" | "updates";
+  chip?: string;
   title?: string;
   line?: string;
   label?: string;
@@ -1762,6 +1772,150 @@ export type FestivalPageQueryResult = {
     href: string | null;
     newTab: boolean | null;
   }> | null;
+  extraFacts: null;
+  whatItIs: null;
+  whatItIsImage: null;
+  zonesIntro: null;
+  planYourVisit: null;
+  takePart: Array<{
+    _key: string;
+    way: "enrol" | "give" | "member" | "performer" | "sponsor" | "table" | "updates" | "vendor" | "volunteer" | null;
+    title: string | null;
+    line: string | null;
+    label: string | null;
+  }> | null;
+  pastYearsIntro: null;
+  partnersIntro: null;
+  editions: Array<{
+    _id: string;
+    kind: "festival";
+    title: string | null;
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    venue: {
+      name: string | null;
+      address: string | null;
+      line: string | null;
+    } | null;
+    cost: string | null;
+    summary: string | null;
+    schedule: Array<{
+      _key: string;
+      time: string | null;
+      day: string | null;
+      title: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+      detail: string | null;
+      zone: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    }> | null;
+    vendorTerms: {
+      fees: string | null;
+      closeDate: string | null;
+      decisionDate: string | null;
+      permitNote: string | null;
+    } | null;
+    attendance: {
+      value: string | null;
+      label: string | null;
+      source: string | null;
+      asOf: string | null;
+    } | null;
+    album: {
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+      photos: Array<{
+        _key: string;
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      }> | null;
+    } | null;
+  }>;
+  zones: Array<{
+    _id: string;
+    name: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  partners: Array<{
+    _id: string;
+    name: string | null;
+    url: string | null;
+    kind: "funder" | "partner" | "sponsor" | null;
+    logo: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  }>;
+  layout: {
+    phead: null;
+    zones: null;
+    schedule: null;
+    takepart: null;
+    labels: null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
   extraFacts: Array<{
     _key: string;
     label: string | null;
@@ -1774,7 +1928,7 @@ export type FestivalPageQueryResult = {
   planYourVisit: null;
   takePart: Array<{
     _key: string;
-    way: "give" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    way: "enrol" | "give" | "member" | "performer" | "sponsor" | "table" | "updates" | "vendor" | "volunteer" | null;
     title: string | null;
     line: string | null;
     label: string | null;
@@ -1935,7 +2089,7 @@ export type FestivalPageQueryResult = {
   }> | null;
   takePart: Array<{
     _key: string;
-    way: "give" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    way: "enrol" | "give" | "member" | "performer" | "sponsor" | "table" | "updates" | "vendor" | "volunteer" | null;
     title: string | null;
     line: string | null;
     label: string | null;
@@ -2509,6 +2663,140 @@ export type GalaPageQueryResult = {
     href: string | null;
     newTab: boolean | null;
   }> | null;
+  extraFacts: null;
+  eveningIntro: null;
+  tiersIntro: null;
+  sponsorIntro: null;
+  honoreesIntro: null;
+  pastIntro: null;
+  takePart: Array<{
+    _key: string;
+    way: "enrol" | "give" | "member" | "performer" | "sponsor" | "table" | "updates" | "vendor" | "volunteer" | null;
+    title: string | null;
+    line: string | null;
+    label: string | null;
+  }> | null;
+  editions: Array<{
+    _id: string;
+    kind: "gala";
+    title: string | null;
+    edition: number | null;
+    start: string | null;
+    end: string | null;
+    doors: string | null;
+    venue: {
+      name: string | null;
+      address: string | null;
+      line: string | null;
+    } | null;
+    dress: string | null;
+    ticketsUrl: string | null;
+    schedule: Array<{
+      _key: string;
+      time: string | null;
+      day: string | null;
+      title: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+      detail: string | null;
+      zone: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    }> | null;
+    tiers: Array<{
+      _id: string;
+      name: string | null;
+      price: string | null;
+      includes: Array<string> | null;
+      variant: "buyNow" | "enquiry" | null;
+      featured: boolean | null;
+    }>;
+    album: {
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+      photos: Array<{
+        _key: string;
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      }> | null;
+    } | null;
+  }>;
+  sponsorLevels: Array<{
+    _id: string;
+    name: string | null;
+    amount: string | null;
+    recognition: Array<string> | null;
+    eventId: string | null;
+  }>;
+  honorees: Array<{
+    _id: string;
+    name: string | null;
+    award: string | null;
+    blurb: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+    eventId: string | null;
+  }>;
+  layout: {
+    treatment: null;
+    tiers: null;
+    emphasis: null;
+    awards: null;
+    schedule: null;
+    past: null;
+    labels: null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+    image: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
   extraFacts: Array<{
     _key: string;
     label: string | null;
@@ -2522,7 +2810,7 @@ export type GalaPageQueryResult = {
   pastIntro: null;
   takePart: Array<{
     _key: string;
-    way: "give" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    way: "enrol" | "give" | "member" | "performer" | "sponsor" | "table" | "updates" | "vendor" | "volunteer" | null;
     title: string | null;
     line: string | null;
     label: string | null;
@@ -2661,7 +2949,7 @@ export type GalaPageQueryResult = {
   pastIntro: string | null;
   takePart: Array<{
     _key: string;
-    way: "give" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    way: "enrol" | "give" | "member" | "performer" | "sponsor" | "table" | "updates" | "vendor" | "volunteer" | null;
     title: string | null;
     line: string | null;
     label: string | null;

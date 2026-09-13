@@ -4459,6 +4459,28 @@
         },
         "optional": true
       },
+      "takePart": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
+            }
+          }
+        },
+        "optional": true
+      },
       "primaryAction": {
         "type": "objectAttribute",
         "value": {
@@ -4880,6 +4902,28 @@
             "rest": {
               "type": "inline",
               "name": "testimonial.reference"
+            }
+          }
+        },
+        "optional": true
+      },
+      "takePart": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
             }
           }
         },
@@ -5352,6 +5396,28 @@
                   }
                 }
               }
+            }
+          }
+        },
+        "optional": true
+      },
+      "takePart": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "takePartRow"
             }
           }
         },
@@ -7244,8 +7310,27 @@
               {
                 "type": "string",
                 "value": "give"
+              },
+              {
+                "type": "string",
+                "value": "enrol"
+              },
+              {
+                "type": "string",
+                "value": "member"
+              },
+              {
+                "type": "string",
+                "value": "updates"
               }
             ]
+          },
+          "optional": true
+        },
+        "chip": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
           },
           "optional": true
         },

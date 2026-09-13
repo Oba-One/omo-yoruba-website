@@ -639,6 +639,32 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         { _type: 'yearStripRow', program: ref('program-kids-stem') },
         { _type: 'yearStripRow', program: ref('program-cultural-collective') },
       ]),
+      // The prototypes' rows without the volunteer roles, dues, member benefits and what a gift buys
+      // (spec Q14, ADR 0029); a chip only where the page names the way in differently.
+      takePart: withKeys('way', [
+        {
+          _type: 'takePartRow',
+          way: 'enrol',
+          title: 'Start Yoruba lessons',
+          line: 'Online lessons for children and adults, scheduled with the teacher. Write to her to start.',
+          label: 'Enrol a learner',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          chip: 'Volunteer',
+          title: 'Help with a program',
+          line: 'One form, and we place you.',
+          label: 'Volunteer',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'give',
+          title: 'Give toward the programs',
+          line: "Gifts hold up the language lessons, the children's programs, and the festival.",
+          label: 'Donate',
+        },
+      ]),
       primaryAction: cta('Enrol a learner', 'enquiry', 'enrol'),
     }),
   );
@@ -668,6 +694,31 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           'What if my child already understands some Yoruba?',
         ].map((question) => ({ _type: 'faqItem', question })),
       ),
+      // "Help with lessons" would claim a lesson-helper role the register marks invented, so the
+      // volunteer row takes the volunteer door's words; the give row states nothing a gift buys.
+      takePart: withKeys('way', [
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          chip: 'Volunteer',
+          title: 'Volunteer with us',
+          line: 'One short form. You tell us when you are free and what you can do, and we place you where the gap is.',
+          label: 'Raise your hand',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'member',
+          title: 'Become a member',
+          line: 'Members carry the lessons and every other program.',
+          label: 'Become a member',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'give',
+          title: 'Give toward the lessons',
+          label: 'Donate',
+        },
+      ]),
       primaryAction: cta('Write to the teacher', 'enquiry', 'enrol'),
     }),
   );
@@ -684,6 +735,32 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         ref('initiative-green-goods'),
       ]),
       keepsOwnList: false,
+      // The skills the projects need are invented; the Updates row points at the newsletter form.
+      takePart: withKeys('way', [
+        {
+          _type: 'takePartRow',
+          way: 'sponsor',
+          chip: 'Partner',
+          title: 'Partner or fund a project',
+          line: 'Organizations, funders, and civic partners. Four questions and we send the deck.',
+          label: 'Talk to us',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'volunteer',
+          chip: 'Skills',
+          title: 'Bring a skill',
+          line: 'Tell us what you can do and we will find where it fits.',
+          label: 'Volunteer a skill',
+        },
+        {
+          _type: 'takePartRow',
+          way: 'updates',
+          title: 'Follow the Collective',
+          line: 'Collective news goes out with our newsletter, once or twice a month.',
+          label: 'Subscribe',
+        },
+      ]),
       primaryAction: cta('Partner with the Collective', 'enquiry', 'sponsor'),
       secondaryActions: withKeys('action', [cta('See what is on', 'anchor', '#events')]),
     }),

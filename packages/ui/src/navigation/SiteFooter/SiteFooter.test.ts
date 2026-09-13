@@ -28,6 +28,8 @@ describe('SiteFooter', () => {
     );
     expect(body.querySelectorAll('.oy-pend')).toHaveLength(3);
     expect(body.querySelector('form.oy-signup')).not.toBeNull();
+    // The anchor an Updates take-part row sends the reader to, as the homepage's band carries it.
+    expect(body.querySelector('#subscribe.oy-footer-newsletter form.oy-signup')).not.toBeNull();
   });
 
   it('renders the real EIN, address, email, phone and one link per social network once set', async () => {

@@ -3,9 +3,10 @@ import { WAY_INS } from '../../take-part';
 import { voice } from '../../validation/rules';
 
 /**
- * One row of a take-part band (ADR 0025): the way in, which decides the chip, the accent and what the
- * button opens, then the row's own title, one line and the button label. Facts never go in the
- * line: the festival's vendor row adds the edition's vendor terms itself.
+ * One row of a take-part band (ADR 0025, ADR 0029): the way in, which decides the accent and what the
+ * button opens, an optional chip replacing the way in's own on this page, then the row's title, one
+ * line and the button label. Facts never go in the line: the festival's vendor row adds the edition's
+ * vendor terms itself.
  */
 export const takePartRow = defineType({
   name: 'takePartRow',
@@ -18,8 +19,16 @@ export const takePartRow = defineType({
       type: 'string',
       options: { list: WAY_INS.map((way) => ({ title: way, value: way })), layout: 'radio' },
       description:
-        'Vendor, sponsor, performer, volunteer and table open their form; give opens the Give Dialog.',
+        'Vendor, sponsor, performer, volunteer, table, enrol and member open their form; give opens the Give Dialog; updates goes to the newsletter form on the page.',
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'chip',
+      title: 'Chip',
+      type: 'string',
+      description:
+        'The label beside the row when it is not the way in\'s own: "Partner" on a sponsor row, "Skills" on a volunteer row. Empty uses the way in\'s.',
+      validation: voice.text,
     }),
     defineField({
       name: 'title',

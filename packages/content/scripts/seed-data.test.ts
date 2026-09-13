@@ -269,6 +269,57 @@ describe('the take-part rows and the retired fields', () => {
     }
   });
 
+  it('seeds each program page with its rows and chips, and none of the facts the register invents', () => {
+    for (const [id, rows] of [
+      [
+        'programsPage',
+        [
+          ['enrol', undefined, 'Enrol a learner'],
+          ['volunteer', 'Volunteer', 'Volunteer'],
+          ['give', undefined, 'Donate'],
+        ],
+      ],
+      [
+        'lessonsPage',
+        [
+          ['volunteer', 'Volunteer', 'Raise your hand'],
+          ['member', undefined, 'Become a member'],
+          ['give', undefined, 'Donate'],
+        ],
+      ],
+      [
+        'collectivePage',
+        [
+          ['sponsor', 'Partner', 'Talk to us'],
+          ['volunteer', 'Skills', 'Volunteer a skill'],
+          ['updates', undefined, 'Subscribe'],
+        ],
+      ],
+    ] as const) {
+      const stored = (byId.get(id)?.takePart ?? []) as {
+        way: string;
+        chip?: string;
+        title: string;
+        line?: string;
+        label: string;
+      }[];
+      expect(
+        stored.map((row) => [row.way, row.chip, row.label]),
+        id,
+      ).toEqual(rows);
+      for (const row of stored) {
+        expect(row.title, `${id} ${row.way}`).toBeTruthy();
+        // Dues, member benefits, volunteer roles and hours, what a gift buys, the fee policy.
+        expect(`${row.title} ${row.line ?? ''}`).not.toMatch(
+          /\$\d|a year|vote|hours|classroom|second adult|books|cannot pay|engineering|permitting/i,
+        );
+      }
+    }
+    // Lessons' give row states nothing a gift buys, so it has no line.
+    const lessons = byId.get('lessonsPage')?.takePart as { way: string; line?: string }[];
+    expect(lessons.find((row) => row.way === 'give')).not.toHaveProperty('line');
+  });
+
   it('unsets a retired field only where it is still stored', () => {
     expect(retiredFields('festivalPage', { takePartOrder: ['vendor'] })).toEqual(['takePartOrder']);
     expect(retiredFields('festivalPage', {})).toEqual([]);
