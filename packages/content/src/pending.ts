@@ -340,17 +340,25 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'when it runs',
   },
   ...takePartRows('programsPage', 'Programs, take part'),
+  // A glance fact the seed labels and leaves for the owner (the ages); format and cost are seeded.
   {
     type: 'lessonsPage',
     condition: 'count(glance[!defined(value)]) > 0',
     where: 'Lessons, at a glance',
-    what: 'format, ages and fee',
+    what: 'a glance fact',
   },
   {
     type: 'lessonsPage',
     fields: ['teacher'],
     where: 'Lessons, teacher',
-    what: 'the teacher, her bio and how she wants enquiries',
+    what: "the teacher's name and bio",
+  },
+  // How she wants enquiries: the enrol form always, and her own address beside it once it is set.
+  {
+    type: 'siteSettings',
+    condition: 'count(contacts[role == "teacher" && defined(email)]) == 0',
+    where: 'Lessons, teacher',
+    what: "the teacher's email",
   },
   {
     type: 'lessonsPage',
@@ -375,12 +383,6 @@ export const PENDING: readonly PendingEntry[] = [
     condition: 'count(faq[!defined(answer)]) > 0',
     where: 'Lessons, questions',
     what: 'an answer',
-  },
-  {
-    type: 'lessonsPage',
-    fields: ['voices[]'],
-    where: 'Lessons, voices',
-    what: 'two testimonials with permission to name',
   },
   ...takePartRows('lessonsPage', 'Lessons, take part'),
 
@@ -523,7 +525,7 @@ export const PRESENCE: readonly PresenceEntry[] = [
   {
     type: 'testimonial',
     minimum: 1,
-    where: 'Homepage, Lessons, Impact',
+    where: 'Homepage, Impact, Collective',
     what: 'member voices with permission to name',
   },
   { type: 'person', minimum: 1, where: 'About, board and staff', what: 'names, roles and bios' },

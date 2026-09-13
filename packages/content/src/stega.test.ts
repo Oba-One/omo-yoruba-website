@@ -25,6 +25,7 @@ describe('stegaFilter', () => {
       ...PAGE_LAYOUTS.festivalPage,
       ...PAGE_LAYOUTS.galaPage,
       ...PAGE_LAYOUTS.programsPage,
+      ...PAGE_LAYOUTS.lessonsPage,
     ]) {
       expect(STEGA_LOGIC_KEYS.has(spec.name), spec.name).toBe(true);
     }

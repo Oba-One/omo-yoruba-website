@@ -40,3 +40,26 @@ export const programsPageQuery =
   layout{cards, inline, yearstrip},
   seo{title, description}
 }`);
+
+/**
+ * The Lessons page in one read (ROUTES section 1): the `lessonsPage` singleton with its header,
+ * actions, glance facts and take-part rows, the teacher it links with her portrait and short bio, and
+ * her routing contact's email from the settings, which the page offers beside the enrol form. Images
+ * project the asset reference (ADR 0022). Layout values come back as stored; the page fills the schema
+ * defaults (`withLayoutDefaults`).
+ */
+export const lessonsPageQuery = defineQuery(`*[_type == "lessonsPage" && _id == "lessonsPage"][0]{
+  header{kicker{yo, en}, title, line},
+  primaryAction{label, kind, enquiryKind, href, newTab},
+  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},
+  glance[]{_key, label, value, note},
+  "teacher": teacher->{
+    _id, name, role, bioShort,
+    portrait{_type, alt, caption, hotspot, crop, asset}
+  },
+  teacherIntro,
+  takePart[]{_key, way, chip, title, line, label},
+  "teacherEmail": *[_id == "siteSettings"][0].contacts[role == "teacher"][0].email,
+  layout{lesson, portraits, faq},
+  seo{title, description}
+}`);

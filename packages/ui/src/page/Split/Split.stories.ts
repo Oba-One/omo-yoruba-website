@@ -20,3 +20,14 @@ export default meta;
 type Story = StoryObj<Args>;
 
 export const Default: Story = {};
+
+/** The person shape: a 320px card beside the copy, as the Lessons page sets its teacher beside her form. */
+export const Person: Story = {
+  args: {
+    shape: 'person',
+    slots: {
+      default: '<p>The person card.</p>',
+      aside: '<p>The card beside it.</p>',
+    },
+  },
+};

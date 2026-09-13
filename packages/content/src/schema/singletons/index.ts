@@ -361,7 +361,6 @@ export const lessonsPage = definePage({
       type: 'array',
       of: [{ type: 'faqItem' }],
     }),
-    refs('voices', 'Voices', 'testimonial'),
     takePart,
   ],
   layout: PAGE_LAYOUTS.lessonsPage,

@@ -118,6 +118,31 @@ export const PROGRAMS_TAKE_PART = [
   },
 ];
 
+export const LESSONS_HEADER = {
+  kicker: { yo: 'Ẹ̀kọ́ èdè Yorùbá', en: 'Yoruba lessons' },
+  title: 'Yoruba Language Lessons',
+  line: 'Live online lessons with one teacher, for children and adults who want to speak, read, and carry the language forward. Times are set with her, one learner or one family at a time.',
+  actions: [{ label: 'Write to the teacher', kind: 'enquiry', enquiryKind: 'enrol' }],
+};
+
+/** The glance as the seed writes it: format, when and cost confirmed, the ages owed. */
+export const LESSONS_GLANCE = [
+  { label: 'Format', value: 'Online, live', note: 'Video call', pending: 'a glance fact' },
+  { label: 'When', value: 'Set with the teacher', pending: 'a glance fact' },
+  { label: 'Ages', pending: 'a glance fact' },
+  { label: 'Cost', value: 'Agreed with her', pending: 'a glance fact' },
+];
+
+export const TEACHER_INTRO =
+  'There is no sign-up form and no fixed timetable. You write, she places the learner and proposes a time, and the first lesson follows.';
+
+/** The teacher before the Studio links her: one teacher is confirmed, her name is owed. */
+export const TEACHER_PENDING = {
+  person: { role: 'Teacher' },
+  namePending: "the teacher's name and bio",
+  emailPending: "the teacher's email",
+};
+
 /** The Lessons page's take-part rows as the seed writes them; the give row has no line. */
 export const LESSONS_TAKE_PART = [
   {

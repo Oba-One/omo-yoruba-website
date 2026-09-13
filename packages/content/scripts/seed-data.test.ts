@@ -424,6 +424,9 @@ describe('the take-part rows and the retired fields', () => {
       ],
     };
     expect(retiredFields('programsPage', strip)).toEqual(['yearStrip[_key=="row-2"].event']);
+    expect(
+      retiredFields('lessonsPage', { voices: [{ _key: 'v', _ref: 'testimonial-1' }] }),
+    ).toEqual(['voices']);
     expect(retiredFields('programsPage', { kidsStem: { title: 'Kids & STEM' } })).toEqual([]);
   });
 

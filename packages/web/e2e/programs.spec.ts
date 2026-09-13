@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
-import { expectNoMockWhileOwed, settle } from './helpers';
+import { expectNoMockWhileOwed, goldSharingAView, settle } from './helpers';
 
 // The Programs hub in the prototype's order (ROUTES section 4), each block present whether the Studio
 // holds its content or renders Pending: CI runs with a placeholder project, where every read answers
@@ -225,6 +225,11 @@ test.describe('the Programs page', () => {
       await expect(giveDialog).not.toHaveAttribute('open', '');
       await expect(give).toBeFocused();
     }
+  });
+
+  test('keeps one gold action per screen view', async ({ page }) => {
+    await page.goto('/programs');
+    expect(await goldSharingAView(page)).toEqual([]);
   });
 
   test('is clean for axe with the page settled', async ({ page }) => {

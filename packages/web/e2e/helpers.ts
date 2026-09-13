@@ -93,3 +93,29 @@ export function expectNoMockWhileOwed(
     if (owed.test(text)) expect(text, `${mock} while "${what}" is owed`).not.toMatch(mock);
   }
 }
+
+/**
+ * The gold rule (QUALITY section 2): one gold primary action per screen view. Answers each pair of
+ * visible gold actions in `main` close enough that one viewport shows both, as their labels; the nav's
+ * Donate is sticky and never counted. Empty means the page keeps the rule at this viewport.
+ */
+export const goldSharingAView = (page: Page) =>
+  page.evaluate(() => {
+    const height = window.innerHeight;
+    const gold = Array.from(document.querySelectorAll<HTMLElement>('main .oy-btn--primary'))
+      .filter((el) => el.checkVisibility())
+      .map((el) => {
+        const box = el.getBoundingClientRect();
+        return {
+          label: (el.textContent ?? '').replace(/\s+/g, ' ').trim(),
+          top: box.top + window.scrollY,
+          bottom: box.bottom + window.scrollY,
+        };
+      })
+      .sort((a, b) => a.top - b.top);
+    return gold
+      .slice(1)
+      .map((next, at) => [gold[at], next] as const)
+      .filter(([one, other]) => one && other.top - one.bottom < height)
+      .map(([one, other]) => `${one?.label} + ${other.label}`);
+  });

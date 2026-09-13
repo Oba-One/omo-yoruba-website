@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './EnquiryCard.stories';
 
-const { Default, Secondary, WithNext } = composeStories(stories);
+const { Default, Secondary, WithNext, WithEmail, EmailPending } = composeStories(stories);
 
 describe('EnquiryCard', () => {
   it('explains the vendor form from the spec and opens it through a link trigger', async () => {
@@ -30,5 +30,17 @@ describe('EnquiryCard', () => {
     expect(text(body.querySelector('.oy-enquiry-card-meta'))).toBe(
       '8 questions • Dues are agreed with our membership lead',
     );
+  });
+
+  it("offers the page's own address beside the trigger, or the registry's chip while it is owed", async () => {
+    const body = await renderToBody(WithEmail);
+    expect(text(body.querySelector('a.oy-btn'))).toContain('Write to the teacher');
+    const line = body.querySelector('.oy-enquiry-card-action .oy-enquiry-card-email');
+    expect(text(line)).toBe('Or email teacher@example.org');
+    expect(line?.querySelector('a')?.getAttribute('href')).toBe('mailto:teacher@example.org');
+    const pending = (await renderToBody(EmailPending)).querySelector('.oy-enquiry-card-email');
+    expect(text(pending)).toBe("Or email Pending: the teacher's email");
+    expect(pending?.querySelector('a')).toBeNull();
+    expect((await renderToBody(Default)).querySelector('.oy-enquiry-card-email')).toBeNull();
   });
 });

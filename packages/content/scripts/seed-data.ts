@@ -896,8 +896,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
  * Fields a schema change retired, per document type: a re-run unsets them where they are still
  * stored, so the Studio shows no unknown field (`takePartOrder` became `takePart`, ADR 0025; the
  * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024; Kids & STEM's
- * section photograph and ages, a sub-program's ages and detail line, and a year strip row's edition
- * reference, ADR 0031). A path reaches
+ * section photograph and ages, a sub-program's ages and detail line, a year strip row's edition
+ * reference, and the Lessons page's voices, ADR 0031). A path reaches
  * into objects with a dot and into every keyed item of an array with `[]`.
  */
 export const RETIRED_FIELDS: Record<string, readonly string[]> = {
@@ -911,6 +911,7 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
     'kidsStem.subprograms[].detail',
     'yearStrip[].event',
   ],
+  lessonsPage: ['voices'],
 };
 
 /** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`. */

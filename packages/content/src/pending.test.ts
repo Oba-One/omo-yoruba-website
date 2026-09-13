@@ -196,6 +196,22 @@ describe('the inline programs on the Programs hub', () => {
   });
 });
 
+describe('the Lessons page', () => {
+  it('names a glance fact, the teacher and her email the way the page shows them, and no voices', () => {
+    expect(pendingWhat('lessonsPage', 'glance')).toBe('a glance fact');
+    expect(pendingWhat('lessonsPage', 'teacher')).toBe("the teacher's name and bio");
+    const email = PENDING.find(
+      (row) => row.type === 'siteSettings' && row.what === "the teacher's email",
+    );
+    expect(email?.condition).toContain('role == "teacher"');
+    // The slimmed page has no voices section (ADR 0031), so the Studio lists none.
+    expect(
+      PENDING.some((row) => row.type === 'lessonsPage' && row.fields?.includes('voices[]')),
+    ).toBe(false);
+    expect(PRESENCE.find((row) => row.type === 'testimonial')?.where).not.toContain('Lessons');
+  });
+});
+
 describe('the take-part rows every page with a band registers', () => {
   it('names an empty band and an unfinished row the same way on each page', () => {
     for (const type of [

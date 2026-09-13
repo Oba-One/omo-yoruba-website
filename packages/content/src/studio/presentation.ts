@@ -115,16 +115,13 @@ export const presentationOptions: PresentationPluginOptions = {
           ),
         }),
       }),
+      // A lessons testimonial fills the homepage's parent slot; the Collective's shows on its page.
       testimonial: defineLocations({
         select: { context: 'context' },
         resolve: (doc) => ({
           locations: leadWith(
             'testimonial',
-            doc?.context === 'lessons'
-              ? '/programs/yoruba-lessons'
-              : doc?.context === 'collective'
-                ? '/programs/cultural-collective'
-                : '/',
+            doc?.context === 'collective' ? '/programs/cultural-collective' : '/',
           ),
         }),
       }),

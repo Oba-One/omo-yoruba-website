@@ -77,7 +77,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   initiative: ['/programs/cultural-collective'],
   person: ['/our-story', '/programs/yoruba-lessons'],
   timelineEntry: ['/our-story'],
-  testimonial: ['/', '/impact', '/programs/yoruba-lessons', '/programs/cultural-collective'],
+  // The slimmed Lessons page has no voices; a lessons testimonial fills the homepage's parent slot.
+  testimonial: ['/', '/impact', '/programs/cultural-collective'],
   newsPost: ['/news/[slug]', '/news', '/'],
   album: ['/gallery/[album]', '/gallery', '/odunde', '/gala'],
   photographer: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],

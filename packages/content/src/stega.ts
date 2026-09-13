@@ -7,7 +7,7 @@ import type { FilterDefault } from '@sanity/client/stega';
  * `theme`, `variant` and more); this list adds the repo's discriminators, the hero's gold words
  * (found inside the heading by a string match), the layout option values of every page, which sit
  * under `layout` but end in their own names, a take-part row's `way`, and the settings the chrome
- * puts into `mailto:` and `tel:` links.
+ * and the Lessons page put into `mailto:` and `tel:` links (a routing contact's `email`).
  */
 export const STEGA_LOGIC_KEYS: ReadonlySet<string> = new Set([
   'kind',
@@ -43,6 +43,10 @@ export const STEGA_LOGIC_KEYS: ReadonlySet<string> = new Set([
   'cards',
   'inline',
   'yearstrip',
+  'lesson',
+  'portraits',
+  'faq',
+  'email',
   'way',
 ]);
 
