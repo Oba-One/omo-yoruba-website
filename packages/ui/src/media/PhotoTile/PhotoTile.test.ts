@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PhotoTile.stories';
 
-const { Default, Framed, EnglishOnly, NoCaption, Pending, Figure } = composeStories(stories);
+const { Default, Framed, EnglishOnly, NoCaption, Pending, Figure, FigureShort } =
+  composeStories(stories);
 
 describe('PhotoTile', () => {
   it('renders the photo lazily with the Yoruba-first caption and the gold dot', async () => {
@@ -43,5 +44,12 @@ describe('PhotoTile', () => {
     expect(figure?.querySelector('img')?.getAttribute('style')).toBe('object-position: 45% 50%');
     expect(figure?.querySelector('figcaption [lang]')).toBeNull();
     expect(text(figure?.querySelector('figcaption'))).toBe('Festival day • Leimert Park');
+  });
+
+  it('takes a figure height when the page draws a shorter one, and none by default', async () => {
+    const short = (await renderToBody(FigureShort)).querySelector('figure.oy-photo-tile--figure');
+    expect(short?.getAttribute('style')).toBe('--photo-tile-height: 280px');
+    const standard = (await renderToBody(Figure)).querySelector('figure.oy-photo-tile--figure');
+    expect(standard?.hasAttribute('style')).toBe(false);
   });
 });

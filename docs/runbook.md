@@ -296,7 +296,8 @@ owner's call: a failed Vercel build or a fork's pull request leaves them missing
 Without the secret, audit the production build locally: `bun run build`, serve
 `.vercel/output` (static files plus the render function's `fetch`, as Phase 4 did), then run the
 command above with `LIGHTHOUSE_BASE_URL=http://localhost:<port>` and no secret. It measures the
-application, not Vercel's CDN. The routes are `/`, `/odunde` and `/gala` since Phase 5.
+application, not Vercel's CDN. The routes are `/`, `/odunde`, `/gala`, `/programs`,
+`/programs/yoruba-lessons` and `/programs/cultural-collective` since Phase 6.
 
 ## Comparing a page with its prototype
 

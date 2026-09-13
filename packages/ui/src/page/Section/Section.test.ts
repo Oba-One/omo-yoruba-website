@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody } from '../../test/stories';
 import * as stories from './Section.stories';
 
-const { Default, Alt, Paper, Batik } = composeStories(stories);
+const { Default, Alt, Paper, Batik, Narrow } = composeStories(stories);
 
 describe('Section', () => {
   it('wraps the content at the content width and labels the section by its heading', async () => {
@@ -18,5 +18,11 @@ describe('Section', () => {
     expect((await renderToBody(Paper)).querySelector('.oy-section--paper')).not.toBeNull();
     const batik = (await renderToBody(Batik)).querySelector('.oy-section--textured');
     expect(batik?.querySelector('.oy-pattern--batik')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('narrows the wrap to 900px when asked', async () => {
+    const narrow = (await renderToBody(Narrow)).querySelector('section');
+    expect(narrow?.classList.contains('oy-section--narrow')).toBe(true);
+    expect((await renderToBody(Default)).querySelector('section.oy-section--narrow')).toBeNull();
   });
 });

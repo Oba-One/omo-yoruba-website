@@ -104,6 +104,7 @@ export const why: SlotValue = {
           component: PhotoTile,
           props: {
             shape: 'figure',
+            height: 280,
             image: PHOTOS.attendeeSmiling,
             what: 'a photo of Yoruba Cultural Collective',
           },

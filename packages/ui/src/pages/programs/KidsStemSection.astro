@@ -27,7 +27,7 @@ const { open = true } = Astro.props;
       title={KIDS_STEM.title}
       id="kids-heading"
     />
-    <Prose text={KIDS_STEM.blurb} />
+    <Prose text={KIDS_STEM.blurb} measure="wide" />
     <CardGrid columns={2}>
       {KIDS_STEM.subprograms.map((subprogram) => <SubprogramCard subprogram={subprogram} />)}
     </CardGrid>

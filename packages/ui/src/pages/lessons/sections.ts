@@ -162,7 +162,7 @@ export const lesson = (placeholders: boolean): SlotValue => ({
 /** Questions parents ask as the `faq` option starts them: all closed, or the first open. */
 export const faq = (option: 'closed' | 'open'): SlotValue => ({
   component: Section,
-  props: { id: 'faq', ground: 'alt', labelledby: 'faq-heading' },
+  props: { id: 'faq', ground: 'alt', width: 'narrow', labelledby: 'faq-heading' },
   slots: {
     default: [
       {

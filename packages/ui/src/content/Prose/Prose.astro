@@ -9,6 +9,7 @@
  * and renders the library's fallback, because a throw mid-stream would answer a blank page with a 200.
  * An empty value renders nothing: the page shows the registry's Pending chip instead. `text` takes a
  * Studio `text` field instead (the Gala's evening intro): a paragraph per blank-line-separated block.
+ * `measure="wide"` sets the column at 74ch where a prototype runs prose across its section (Kids & STEM).
  */
 import { PortableText } from 'astro-portabletext';
 import type { MissingComponentHandler, PortableTextProps } from 'astro-portabletext/types';
@@ -21,10 +22,13 @@ interface Props {
   value?: PortableTextProps['value'] | null;
   /** Plain text in place of Portable Text. */
   text?: string | null;
+  /** The tokens' 66ch column, or 74ch across a section. */
+  measure?: 'default' | 'wide';
   class?: string;
 }
 
-const { value, text, class: className, ...rest } = Astro.props;
+const { value, text, measure = 'default', class: className, ...rest } = Astro.props;
+const measureAttribute = measure === 'wide' ? 'wide' : undefined;
 const own = value ? structuredClone(value) : undefined;
 const paragraphs = (text ?? '')
   .split(/\n\s*\n/)
@@ -46,7 +50,7 @@ const onMissingComponent: MissingComponentHandler = (message, { nodeType, type }
 
 {
   paragraphs.length > 0 ? (
-    <div class:list={['oy-prose', className]} {...rest}>
+    <div class:list={['oy-prose', className]} data-measure={measureAttribute} {...rest}>
       {paragraphs.map((paragraph) => (
         <p>{paragraph}</p>
       ))}
@@ -54,9 +58,15 @@ const onMissingComponent: MissingComponentHandler = (message, { nodeType, type }
   ) : (
     own &&
     (Array.isArray(own) ? own.length > 0 : true) && (
-      <div class:list={['oy-prose', className]} {...rest}>
+      <div class:list={['oy-prose', className]} data-measure={measureAttribute} {...rest}>
         <PortableText value={own} components={components} onMissingComponent={onMissingComponent} />
       </div>
     )
   )
 }
+
+<style>
+  .oy-prose[data-measure='wide'] {
+    max-width: 74ch;
+  }
+</style>

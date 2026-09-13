@@ -64,8 +64,10 @@ const { open = true, label, edit, class: className } = Astro.props;
     .oy-disclosure-head {
       padding-right: 0;
     }
+    /* Block-level, so the auto margin sets the toggle at the right as the prototype does. */
     .oy-disclosure-toggle {
       position: static;
+      display: flex;
       width: max-content;
       margin: -12px 0 18px auto;
     }

@@ -45,6 +45,8 @@ const name = testimonial?.name?.trim();
 const who = name ? (testimonial?.permissionToName ? name : initialsOf(name)) : undefined;
 const parts = [who, testimonial?.relation?.trim()].filter(Boolean);
 const waiting = testimonial ? undefined : 'true';
+/** The placeholder in brackets, each held to its word so a bracket never wraps onto a line alone. */
+const bracketed = (quote: string) => `[\u00a0${quote}\u00a0]`;
 ---
 
 {
@@ -59,7 +61,7 @@ const waiting = testimonial ? undefined : 'true';
       ) : placeholder ? (
         <>
           <Pending what={pending} class="oy-quote-pending" />
-          <blockquote>[ {placeholder.quote} ]</blockquote>
+          <blockquote>{bracketed(placeholder.quote)}</blockquote>
           <figcaption>Name pending • {placeholder.role}</figcaption>
         </>
       ) : (
@@ -82,7 +84,7 @@ const waiting = testimonial ? undefined : 'true';
       ) : placeholder ? (
         <>
           <Pending what={pending} class="oy-quote-pending" />
-          <blockquote class="oy-quote-text">[ {placeholder.quote} ]</blockquote>
+          <blockquote class="oy-quote-text">{bracketed(placeholder.quote)}</blockquote>
           <figcaption class="oy-quote-who">Name pending • {placeholder.role}</figcaption>
         </>
       ) : (

@@ -38,3 +38,6 @@ export const Alt: Story = { args: { ground: 'alt' } };
 export const Paper: Story = { args: { ground: 'paper' } };
 
 export const Batik: Story = { args: { ground: 'paper', texture: 'batik' } };
+
+/** The narrow wrap, 900px, as the Lessons page sets its questions (`11 Yoruba Language School.dc.html`). */
+export const Narrow: Story = { args: { ground: 'alt', width: 'narrow' } };

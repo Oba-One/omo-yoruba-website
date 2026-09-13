@@ -56,7 +56,14 @@ test.describe('axe on the layout', () => {
 // leave out; heading order is the one a page composition can break (Phase 5: the footer's headings
 // followed Odunde's last h2 as h4s).
 test('headings never skip a level on the content routes', async ({ page }) => {
-  for (const route of ['/', '/odunde', '/gala']) {
+  for (const route of [
+    '/',
+    '/odunde',
+    '/gala',
+    '/programs',
+    '/programs/yoruba-lessons',
+    '/programs/cultural-collective',
+  ]) {
     await page.goto(route);
     const results = await new AxeBuilder({ page }).withRules(['heading-order']).analyze();
     expect(

@@ -31,7 +31,7 @@ const { open = true } = Astro.props;
     <Split>
       <p><Pending what={CULTURAL_EXCHANGE.blurbPending} /></p>
       <FactList facts={CULTURAL_EXCHANGE.facts} columns={1} />
-      <PhotoTile slot="aside" shape="figure" what={CULTURAL_EXCHANGE.imagePending} />
+      <PhotoTile slot="aside" shape="figure" height={280} what={CULTURAL_EXCHANGE.imagePending} />
     </Split>
   </Disclosure>
 </Section>

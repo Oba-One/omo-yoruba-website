@@ -4,9 +4,9 @@
  * CONTEXT, Initiative; spec Q10 of Phase 6): the status pill with its dot from the status line, or the
  * registry's chip while the line is owed (neither when the page's `status` option hides it), the
  * member-led pill, the heading, the blurb or its chip, the four facts in the column without the glance
- * band, and the photograph or a placeholder naming the project. `side` sets the copy beside the
- * photograph and `stacked` above it; under 900px both stack. The section carries the Collective scope,
- * so its greens hold wherever it is drawn. `proceedsReturn` is not drawn.
+ * band, and the photograph at the prototype's 340px or a placeholder naming the project. `side` sets the
+ * copy beside the photograph and `stacked` above it; under 900px both stack. The section carries the
+ * Collective scope, so its greens hold wherever it is drawn. `proceedsReturn` is not drawn.
  */
 import Pending from '../../core/Pending/Pending.astro';
 import type { ImageInput } from '../../media/image';
@@ -87,7 +87,7 @@ const pills = status || Boolean(initiative.memberLed);
       ? '(min-width: 1100px) 1100px, 100vw'
       : '(min-width: 1100px) 540px, (min-width: 900px) 50vw, 100vw'}
     edit={imageEdit}
-    class="cc-init-photo"
+    height={340}
   />
 </div>
 
@@ -112,10 +112,6 @@ const pills = status || Boolean(initiative.memberLed);
   }
   .cc-init .oy-sec-lead {
     max-width: 52ch;
-  }
-  /* The prototype frames an initiative's photograph at 340px. */
-  .cc-init :global(.cc-init-photo) {
-    height: 340px;
   }
   @media (max-width: 900px) {
     .cc-init {

@@ -80,7 +80,7 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
               title={page.kids.title ?? 'Kids & STEM'}
               id="kids-heading"
             />
-            {page.kids.blurb && <Prose text={page.kids.blurb} />}
+            {page.kids.blurb && <Prose text={page.kids.blurb} measure="wide" />}
             {page.kids.subprograms.length > 0 && (
               <CardGrid columns={2}>
                 {page.kids.subprograms.map((subprogram) => (
@@ -119,6 +119,7 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
               <PhotoTile
                 slot="aside"
                 shape="figure"
+                height={280}
                 image={page.exchange.image}
                 what={page.exchange.imagePending}
                 sizes="(min-width: 1100px) 480px, (min-width: 900px) 45vw, 100vw"

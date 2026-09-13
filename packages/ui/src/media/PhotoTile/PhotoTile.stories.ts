@@ -54,3 +54,9 @@ export const Figure: Story = {
   },
   decorators: [wrap('sb-oy-medium')],
 };
+
+/** A shorter figure, as a split draws its photograph beside a heading and facts: 280px on the Collective's why. */
+export const FigureShort: Story = {
+  args: { ...Figure.args, height: 280 },
+  decorators: [wrap('sb-oy-medium')],
+};
