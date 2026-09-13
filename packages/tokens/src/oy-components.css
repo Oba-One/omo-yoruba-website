@@ -2543,7 +2543,8 @@
   }
 }
 
-/* The pending chip keeps its own type wherever it is dropped in */
+/* The pending chip keeps its own type wherever it is dropped in (Phase 8 adds an album tile's meta, whose
+   spans are 13px, for the year an album owes) */
 .oy-pend,
 .oy-glance span.oy-pend,
 .oy-fact span.oy-pend,
@@ -2553,7 +2554,8 @@
 .oy-sched-time.oy-pend,
 .oy-year strong.oy-pend,
 .oy-year span.oy-pend,
-.oy-lrow-date span.oy-pend {
+.oy-lrow-date span.oy-pend,
+.oy-album-meta span.oy-pend {
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 700;

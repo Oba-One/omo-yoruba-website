@@ -584,15 +584,18 @@ export const album = defineType({
     select: {
       title: 'title',
       date: 'date',
+      editionYear: 'event.edition',
       count: 'photos.length',
       media: 'cover',
       confirmed: 'creditConfirmed',
     },
-    prepare: ({ title, date, media, confirmed }) => ({
+    // The date, else the edition's year, as the gallery dates an album (ADR 0039).
+    prepare: ({ title, date, editionYear, media, confirmed }) => ({
       title,
-      subtitle: [date ?? 'date pending', confirmed ? 'credit confirmed' : 'credit to confirm'].join(
-        ' • ',
-      ),
+      subtitle: [
+        date ?? (editionYear ? String(editionYear) : 'year to confirm'),
+        confirmed ? 'credit confirmed' : 'credit to confirm',
+      ].join(' • '),
       media,
     }),
   },

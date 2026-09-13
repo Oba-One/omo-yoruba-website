@@ -49,8 +49,25 @@ describe('the Gallery page-section stories', () => {
     expect(root?.querySelector('#credit')).not.toBeNull();
   });
 
-  it('open viewer: tiles lead to first photographs, and the album page arrives with the Lightbox open', async () => {
-    const root = (await renderToBody(Open.Viewer)).querySelector('.oy-home');
+  it('open: under viewer each tile leads to its first photograph, under grid to its album page', async () => {
+    const hrefs = async (story: typeof Open.Viewer) =>
+      [...((await renderToBody(story)).querySelectorAll('#albums a.oy-album') ?? [])].map((tile) =>
+        tile.getAttribute('href'),
+      );
+    expect(await hrefs(Open.Viewer)).toEqual([
+      '/gallery/odunde-2026?photo=odunde-2026-kid-playing-with-elder',
+      '/gallery/gala-2025?photo=gala-2025-attendees-group-photo',
+      '/gallery/summer-camp?photo=community-dance',
+    ]);
+    expect(await hrefs(Open.Grid)).toEqual([
+      '/gallery/odunde-2026',
+      '/gallery/gala-2025',
+      '/gallery/summer-camp',
+    ]);
+  });
+
+  it('open viewer: the album page arrives with the Lightbox open', async () => {
+    const root = (await renderToBody(Open.ViewerArrives)).querySelector('.oy-home');
     expect(root?.getAttribute('data-open')).toBe('viewer');
     expect(text(root?.querySelector('h1'))).toBe('End-of-Year Gala 2025');
     const dialog = root?.querySelector('dialog.oy-lightbox');
@@ -65,7 +82,7 @@ describe('the Gallery page-section stories', () => {
   });
 
   it('open grid: the album page with its photographs, the Lightbox closed, the credit owed', async () => {
-    const root = (await renderToBody(Open.Grid)).querySelector('.oy-home');
+    const root = (await renderToBody(Open.GridArrives)).querySelector('.oy-home');
     expect(root?.querySelector('dialog.oy-lightbox')?.hasAttribute('open')).toBe(false);
     expect(root?.querySelectorAll('.oy-photo-grid a[data-photo]')).toHaveLength(6);
     expect(text(root?.querySelector('p.oy-credit-line'))).toBe(

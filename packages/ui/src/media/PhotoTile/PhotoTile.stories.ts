@@ -61,5 +61,5 @@ export const FigureShort: Story = {
   decorators: [wrap('sb-oy-medium')],
 };
 
-/** The first photograph of an album page's first row: loaded at once, and first. */
-export const FirstInView: Story = { args: { eager: true, priority: true } };
+/** An album page's first photograph, the page's largest paint: loaded at once, and first. */
+export const LargestPaint: Story = { args: { priority: true } };

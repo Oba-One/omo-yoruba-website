@@ -8,9 +8,9 @@ const { Default, WithoutEdition, ConfirmedWithNote, Pending } = composeStories(s
 describe('AlbumIntro', () => {
   it("offers the way back to the gallery and to the edition's page, without a back arrow glyph", async () => {
     const body = await renderToBody(Default);
-    const nav = body.querySelector('nav.oy-album-intro-links');
-    expect(nav?.getAttribute('aria-label')).toBe('Albums');
-    const links = [...(nav?.querySelectorAll('a') ?? [])];
+    // Two quiet links, not a landmark of their own.
+    expect(body.querySelector('nav')).toBeNull();
+    const links = [...body.querySelectorAll('.oy-album-intro-links a')];
     expect(links.map((link) => link.getAttribute('href'))).toEqual(['/gallery', '/gala']);
     expect(text(links[0])).toBe('All albums');
     expect(text(links[1])).toContain('End-of-Year Gala');
@@ -33,7 +33,9 @@ describe('AlbumIntro', () => {
   });
 
   it('keeps the gallery link alone without an edition, and no credit line without an album', async () => {
-    expect((await renderToBody(WithoutEdition)).querySelectorAll('nav a')).toHaveLength(1);
+    expect(
+      (await renderToBody(WithoutEdition)).querySelectorAll('.oy-album-intro-links a'),
+    ).toHaveLength(1);
     expect((await renderToBody(Pending)).querySelector('.oy-credit-line')).toBeNull();
   });
 });

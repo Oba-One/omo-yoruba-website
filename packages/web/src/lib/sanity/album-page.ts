@@ -17,29 +17,26 @@ import {
   pendingWhat,
 } from '@oy/content/pending';
 import type { albumPageQuery } from '@oy/content/queries';
-import { EVENT_PAGE_NAMES, editionRoute } from '@oy/content/routes';
+import { albumHref, editionPage } from '@oy/content/routes';
 import type { ClientReturn } from '@sanity/client';
 import { galleryCredits } from './gallery-credits';
-import type { GalleryLayout } from './gallery-page';
-import { type BuildOptions, cleanText, editAttributes, present, resolveImage } from './view';
+import { GALLERY_TITLE, type GalleryLayout } from './gallery-page';
+import {
+  type BuildOptions,
+  cleanText,
+  editAttributes,
+  present,
+  resolveImage,
+  studioText,
+} from './view';
 
 export type AlbumPageData = NonNullable<ClientReturn<typeof albumPageQuery, unknown>>;
 
-/** The page's name when no album could be read. */
-const PAGE_TITLE = 'Photographs';
-
-/** The gallery's kicker when the singleton holds none. */
-const GALLERY_KICKER = { yo: 'Àwòrán', en: 'Photographs' };
+/** A photograph tile's shape on the album page's grid, about 340 by 200 pixels at its widest columns. */
+const TILE_ASPECT = 16 / 9;
 
 /** The one Lightbox on an album page, which the photographs' links name. */
 export const ALBUM_LIGHTBOX_ID = 'album-lightbox';
-
-/** The page an album's edition has, with its name: the festival, the Gala, the Collective. */
-const EDITION_PAGE_NAMES: Readonly<Record<string, string>> = {
-  festival: EVENT_PAGE_NAMES.festival,
-  gala: EVENT_PAGE_NAMES.gala,
-  collective: 'Yoruba Cultural Collective',
-};
 
 export function buildAlbumPage(
   data: AlbumPageData | null,
@@ -47,37 +44,36 @@ export function buildAlbumPage(
   photoParam: string | null | undefined,
 ) {
   const album = data?.album ?? null;
-  const edit = editAttributes(options, album?._id ?? 'album');
-  const galleryEdit = editAttributes(options, 'galleryPage');
+  const edit = editAttributes(options, 'galleryPage');
+  // The album's own fields open the album document, named by its id and its type.
+  const albumEdit = (path: string) => (album ? edit(path, album._id, 'album') : undefined);
   const { captions } = withLayoutDefaults<GalleryLayout>('galleryPage', data?.page?.layout);
 
   const slug = cleanText(album?.slug) ?? '';
   const title = cleanText(album?.title);
   const photos = (album?.photos ?? []).filter(present).flatMap((photo) => {
     const key = cleanText(photo._key);
-    return key ? [{ key, photo }] : [];
+    return key ? [{ key, photo, edit: albumEdit(`photos[_key=="${key}"]`) }] : [];
   });
   const line = albumLine({
     title: title ?? '',
-    year: albumYear({ date: album?.date, edition: album?.edition?.edition }),
+    year: albumYear({ date: album?.date, editionYear: album?.edition?.year }),
     count: photos.length,
   });
   const wanted = cleanText(photoParam ?? undefined);
   const openKey = wanted && photos.some(({ key }) => key === wanted) ? wanted : undefined;
-  const kind = cleanText(album?.edition?.kind);
-  const editionPage = editionRoute(kind);
-  const editionName = kind ? EDITION_PAGE_NAMES[kind] : undefined;
+  const edition = editionPage(cleanText(album?.edition?.kind));
   const albumConfirmed = album?.creditConfirmed === true;
 
   return {
     found: album !== null,
-    title: title ?? PAGE_TITLE,
-    description: title ? `${title}: ${line.count}.` : undefined,
+    title: title ?? GALLERY_TITLE,
+    description: title ? `${title}: ${line.photographs}.` : undefined,
     root: { captions },
     header: {
       variant: 'slim' as const,
-      kicker: data?.page?.header?.kicker ?? GALLERY_KICKER,
-      title: album?.title ?? PAGE_TITLE,
+      kicker: data?.page?.header?.kicker ?? undefined,
+      title: album?.title ?? GALLERY_TITLE,
       facts: album
         ? [
             ...(line.year
@@ -85,51 +81,50 @@ export function buildAlbumPage(
               : line.yearOwed
                 ? [{ pending: ALBUM_YEAR_PENDING }]
                 : []),
-            { text: line.count },
+            { text: line.photographs },
           ]
         : [],
     },
     links: {
       gallery: { label: 'All albums', href: '/gallery' },
-      edition:
-        editionPage && editionName
-          ? { label: editionName, href: editionPage as string }
-          : undefined,
+      edition: edition ? { label: edition.name, href: edition.route as string } : undefined,
     },
     credit: {
       credit: album?.credit ?? undefined,
       confirmed: albumConfirmed,
       pending: ALBUM_CREDIT_PENDING,
-      edit: album ? edit('credit') : undefined,
+      edit: albumEdit('credit'),
     },
-    consentNote: cleanText(album?.consentNote) ? (album?.consentNote ?? undefined) : undefined,
-    consentEdit: album ? edit('consentNote') : undefined,
+    consentNote: studioText(album?.consentNote),
+    consentEdit: albumEdit('consentNote'),
     photos: {
-      tiles: photos.map(({ key, photo }) => {
-        const image = resolveImage(options.imageSet, photo, { width: 360 });
+      tiles: photos.map(({ key, photo, edit: photoEdit }) => {
+        // The tile is a 200px band about 340px wide: cropped to its shape at the CDN around the hotspot, each
+        // photograph carries a quarter fewer pixels than the whole frame would.
+        const image = resolveImage(options.imageSet, photo, { width: 360, aspect: TILE_ASPECT });
         // A caption that says what the alt says: the tile's image stays silent, so a reader hears it once.
         const same = cleanText(photo.caption) === cleanText(photo.alt);
         return {
           key,
-          href: `?photo=${encodeURIComponent(key)}`,
+          href: albumHref(slug, key),
           image: image ? { ...image, alt: same ? '' : image.alt } : undefined,
           caption: photo.caption ?? undefined,
-          edit: edit(`photos[_key=="${key}"]`),
+          edit: photoEdit,
         };
       }),
       captions,
-      // Served open, the Lightbox covers the grid: its photograph loads first and alone.
-      eager: openKey ? 0 : 3,
+      // The first photograph is the page's largest paint; served open, the Lightbox's photograph is instead.
+      priority: !openKey,
       pending: pendingWhat('album', 'photos[]') ?? 'the photographs',
-      edit: galleryEdit('layout.captions'),
+      edit: edit('layout.captions'),
     },
     lightbox: {
       id: ALBUM_LIGHTBOX_ID,
-      label: title ?? PAGE_TITLE,
-      albumHref: `/gallery/${slug}`,
+      label: title ?? GALLERY_TITLE,
+      albumHref: albumHref(slug),
       album: slug,
       openKey,
-      photos: photos.map(({ key, photo }) => {
+      photos: photos.map(({ key, photo, edit: photoEdit }) => {
         const own = cleanText(photo.credit);
         return {
           key,
@@ -139,6 +134,7 @@ export function buildAlbumPage(
           credit: own ? photo.credit : (album?.credit ?? undefined),
           confirmed: own ? photo.creditConfirmed === true : albumConfirmed,
           creditPending: own ? PHOTO_CREDIT_PENDING : ALBUM_CREDIT_PENDING,
+          edit: photoEdit,
         };
       }),
     },

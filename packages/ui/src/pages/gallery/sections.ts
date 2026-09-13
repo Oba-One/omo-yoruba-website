@@ -4,24 +4,21 @@
  * `buildGalleryPage` and `buildAlbumPage`. The headings and the soon sentence are the page's copy, as on the site.
  */
 
-import FactList from '../../content/FactList/FactList.astro';
 import Prose from '../../content/Prose/Prose.astro';
-import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import Button from '../../core/Button/Button.astro';
 import {
   ALBUM_TILES,
   ALBUM_TILES_GRID,
-  CREDIT_ROWS,
   GALA_ALBUM,
+  GALLERY_CREDITS,
   GALLERY_HEADER,
   GALLERY_PENDING,
 } from '../../fixtures/gallery';
 import AlbumGrid from '../../media/AlbumGrid/AlbumGrid.astro';
+import GalleryCredits from '../../media/GalleryCredits/GalleryCredits.astro';
 import ButtonRow from '../../page/ButtonRow/ButtonRow.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
 import Section from '../../page/Section/Section.astro';
-import SectionHead from '../../page/SectionHead/SectionHead.astro';
-import Split from '../../page/Split/Split.astro';
 import type { SlotValue } from '../../storybook';
 import AlbumSection from './AlbumSection.astro';
 
@@ -84,39 +81,8 @@ export const soon: SlotValue = {
 
 /** Photography credit and permissions, every gallery route's close, with the policy and the inbox owed. */
 export const credits: SlotValue = {
-  component: Section,
-  props: { id: 'credit', ground: 'alt', labelledby: 'credit-heading' },
-  slots: {
-    default: {
-      component: Split,
-      slots: {
-        default: {
-          component: SectionHead,
-          props: {
-            title: 'Photography credit and permissions',
-            intro:
-              'These photographs show real people, including children. Here is how we credit them, how we ask permission, and how to ask for a photograph to be removed.',
-            id: 'credit-heading',
-          },
-        },
-        aside: [
-          { component: FactList, props: { facts: CREDIT_ROWS, columns: 1 } },
-          {
-            component: ButtonRow,
-            slots: {
-              default: {
-                component: ActionButton,
-                props: {
-                  action: { label: 'Send a message', kind: 'enquiry', enquiryKind: 'contact' },
-                  variant: 'quiet',
-                },
-              },
-            },
-          },
-        ],
-      },
-    },
-  },
+  component: GalleryCredits,
+  props: { credits: GALLERY_CREDITS },
 };
 
 /** An album page's header: the gallery's kicker, the album's title and its count. */

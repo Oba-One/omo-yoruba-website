@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './CreditLine.stories';
 
-const { Unconfirmed, Confirmed, Pending, ConfirmedWithoutName, Inline } = composeStories(stories);
+const { Unconfirmed, Confirmed, Pending, ConfirmedWithoutName, Inline, OnDark } =
+  composeStories(stories);
 
 describe('CreditLine', () => {
   it('names the photographer with the chip until the credit is confirmed', async () => {
@@ -32,5 +33,10 @@ describe('CreditLine', () => {
     expect(text(line)).toBe(
       'Photographs: Red Carpet Media Pending: photographer credit to confirm',
     );
+  });
+
+  it("sits in the dark scope with its chip, as the Lightbox's bar sets it", async () => {
+    const body = await renderToBody(OnDark);
+    expect(body.querySelector('.oy-dark span.oy-credit-line .oy-pend')).not.toBeNull();
   });
 });

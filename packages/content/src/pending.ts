@@ -725,10 +725,12 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Gallery, photographs',
     what: PHOTO_CREDIT_PENDING,
   },
-  // An edition's album takes the edition's year, so only an album with neither asks (ADR 0039).
+  // An edition's album takes the edition's year, so only an album with neither asks (ADR 0039). The edition is
+  // the one the album names, else one that names the album, as the gallery's queries read it.
   {
     type: 'album',
-    condition: '!defined(date) && !defined(event->edition)',
+    condition:
+      '!defined(date) && !defined(event->edition) && count(*[_type == "event" && album._ref == ^._id && defined(edition)]) == 0',
     where: 'Gallery, albums',
     what: ALBUM_YEAR_PENDING,
   },

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PhotoTile.stories';
 
-const { Default, Framed, EnglishOnly, NoCaption, Pending, Figure, FigureShort, FirstInView } =
+const { Default, Framed, EnglishOnly, NoCaption, Pending, Figure, FigureShort, LargestPaint } =
   composeStories(stories);
 
 describe('PhotoTile', () => {
@@ -53,8 +53,8 @@ describe('PhotoTile', () => {
     expect(standard?.hasAttribute('style')).toBe(false);
   });
 
-  it('loads a photograph in the first view at once, and the largest paint first', async () => {
-    const img = (await renderToBody(FirstInView)).querySelector('figure.v2-mo img');
+  it("loads the page's largest paint at once and first, and every other tile lazily", async () => {
+    const img = (await renderToBody(LargestPaint)).querySelector('figure.v2-mo img');
     expect(img?.getAttribute('loading')).toBe('eager');
     expect(img?.getAttribute('fetchpriority')).toBe('high');
     const lazy = (await renderToBody(Default)).querySelector('figure.v2-mo img');

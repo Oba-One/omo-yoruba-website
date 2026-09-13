@@ -10,16 +10,22 @@ export interface AlbumYearSource {
   /** The album's own date, `YYYY-MM-DD` as the Studio stores it. */
   date?: string | null;
   /** The year of the edition the album belongs to. */
-  edition?: number | null;
+  editionYear?: number | null;
+}
+
+/** What orders an album on the gallery and shapes its line: its cleaned title and its year, if it has one. */
+export interface AlbumOrder {
+  title: string;
+  year?: number;
 }
 
 const YEAR = /^(\d{4})-/;
 
 /** The album's year: its own date's, else its edition's, else none. */
-export function albumYear({ date, edition }: AlbumYearSource): number | undefined {
+export function albumYear({ date, editionYear }: AlbumYearSource): number | undefined {
   const own = date ? YEAR.exec(date)?.[1] : undefined;
   if (own) return Number(own);
-  return typeof edition === 'number' && Number.isInteger(edition) ? edition : undefined;
+  return typeof editionYear === 'number' && Number.isInteger(editionYear) ? editionYear : undefined;
 }
 
 /** The count in numerals, as the prototype's tiles set it: "1 photograph", "43 photographs". */
@@ -29,7 +35,8 @@ export const photographCount = (count: number): string =>
 export interface AlbumLine {
   /** The year, when the line shows it. */
   year?: string;
-  count: string;
+  /** The count as the line reads it: "43 photographs". */
+  photographs: string;
   /** No date and no edition: the line shows the registry's chip where the year would be. */
   yearOwed: boolean;
 }
@@ -38,26 +45,15 @@ export interface AlbumLine {
  * The line under an album's title: the year, then the count. A title that already names the year ("Odunde
  * 2026") reads the count alone; an album with no year owes it.
  */
-export function albumLine({
-  title,
-  year,
-  count,
-}: {
-  title: string;
-  year: number | undefined;
-  count: number;
-}): AlbumLine {
-  const counted = photographCount(count);
-  if (year === undefined) return { count: counted, yearOwed: true };
-  if (new RegExp(`(^|\\D)${year}(\\D|$)`).test(title)) return { count: counted, yearOwed: false };
-  return { year: String(year), count: counted, yearOwed: false };
+export function albumLine({ title, year, count }: AlbumOrder & { count: number }): AlbumLine {
+  const photographs = photographCount(count);
+  if (year === undefined) return { photographs, yearOwed: true };
+  if (new RegExp(`(^|\\D)${year}(\\D|$)`).test(title)) return { photographs, yearOwed: false };
+  return { year: String(year), photographs, yearOwed: false };
 }
 
 /** The gallery's order: newest year first, albums with no year after the dated ones, ties by title. */
-export function byNewestAlbum(
-  a: { title: string; year?: number },
-  b: { title: string; year?: number },
-): number {
+export function byNewestAlbum(a: AlbumOrder, b: AlbumOrder): number {
   if (a.year !== b.year) {
     if (a.year === undefined) return 1;
     if (b.year === undefined) return -1;

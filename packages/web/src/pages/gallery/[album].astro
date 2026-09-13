@@ -13,11 +13,11 @@ import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/clien
 import { createImageSet } from '@oy/content/images';
 import { albumPageQuery } from '@oy/content/queries';
 import AlbumIntro from '@oy/ui/media/AlbumIntro/AlbumIntro.astro';
+import GalleryCredits from '@oy/ui/media/GalleryCredits/GalleryCredits.astro';
 import Lightbox from '@oy/ui/media/Lightbox/Lightbox.astro';
 import PhotoGrid from '@oy/ui/media/PhotoGrid/PhotoGrid.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
-import GalleryCredits from '../../components/GalleryCredits.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { cachePage } from '../../lib/cache';
 import { STUDIO_BASE_PATH } from '../../lib/paths';
@@ -66,7 +66,7 @@ cachePage(Astro, '/gallery/[album]', { draft: preview, failed: Boolean(error) })
       />
       <AlbumIntro
         links={[page.links.gallery, page.links.edition]}
-        credited={page.found}
+        showCredit={page.found}
         credit={page.credit.credit}
         confirmed={page.credit.confirmed}
         pending={page.credit.pending}
@@ -78,7 +78,7 @@ cachePage(Astro, '/gallery/[album]', { draft: preview, failed: Boolean(error) })
         photos={page.photos.tiles}
         lightbox={page.lightbox.id}
         captions={page.photos.captions}
-        eager={page.photos.eager}
+        priority={page.photos.priority}
         pending={page.photos.pending}
         edit={page.photos.edit}
       />

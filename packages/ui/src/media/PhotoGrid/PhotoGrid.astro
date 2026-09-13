@@ -6,9 +6,10 @@
  * Lightbox's script opens it in place, and without JavaScript the address itself serves the Lightbox open.
  * Router transitions skip the links (`data-astro-reload`), since the Lightbox, not a page swap, answers them.
  * The border draws gold inside the tile on hover; nothing lifts or zooms. `captions: hover` hides the captions
- * until hover or keyboard focus where a pointer hovers. The first row loads at once, the first photograph
- * first, unless the page serves the Lightbox open over them (`eager={0}`). No photographs shows the Pending
- * line.
+ * until hover or keyboard focus where a pointer hovers. The first photograph is the page's largest paint,
+ * fetched at once and first, unless the page serves the Lightbox open over the grid (`priority={false}`);
+ * every other photograph loads lazily, which the browser starts at once for those in view. No photographs
+ * shows the Pending line.
  */
 import Pending from '../../core/Pending/Pending.astro';
 import type { ImageInput } from '../image';
@@ -31,8 +32,8 @@ interface Props {
   /** The id of the `Lightbox` the photographs open. */
   lightbox: string;
   captions?: 'always' | 'hover';
-  /** How many photographs load at once: the first row. */
-  eager?: number;
+  /** The first photograph is the page's largest paint: false when a Lightbox served open covers the grid. */
+  priority?: boolean;
   pending?: string;
   sizes?: string;
   /** A `data-sanity` attribute, so click-to-edit reaches the captions option. */
@@ -44,7 +45,7 @@ const {
   photos,
   lightbox,
   captions = 'always',
-  eager = 3,
+  priority = true,
   pending = 'the photographs',
   sizes = '(max-width: 600px) calc(100vw - 48px), (max-width: 900px) calc(50vw - 34px), 340px',
   edit,
@@ -75,8 +76,7 @@ const list = (photos ?? []).filter((photo): photo is PhotoGridItem => photo !== 
               what="this photograph"
               sizes={sizes}
               edit={photo.edit}
-              eager={at < eager}
-              priority={at === 0 && eager > 0}
+              priority={priority && at === 0}
             />
           </a>
         </li>

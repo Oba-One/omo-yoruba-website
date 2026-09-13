@@ -43,22 +43,45 @@ export const EVENT_PAGE_NAMES = {
   gala: 'End-of-Year Gala',
 } as const;
 
+export interface EditionPage {
+  route: PublicRoute;
+  /** What a link to the page reads. */
+  name: string;
+}
+
+/** The page each kind of edition opens, with its name: the festival's, the Gala's and the Collective's. */
+const EDITION_PAGES: Readonly<Record<string, EditionPage>> = {
+  festival: {
+    route: ROUTE_SINGLETONS.festivalPage as PublicRoute,
+    name: EVENT_PAGE_NAMES.festival,
+  },
+  gala: { route: ROUTE_SINGLETONS.galaPage as PublicRoute, name: EVENT_PAGE_NAMES.gala },
+  collective: {
+    route: ROUTE_SINGLETONS.collectivePage as PublicRoute,
+    name: 'Yoruba Cultural Collective',
+  },
+};
+
 /**
- * The page an edition opens, by its kind: the festival and the Gala have their own, a Collective
- * event opens the Collective's page, and any other kind has none. The one answer the news cards,
- * the event band and the Presentation tool share.
+ * The page an edition opens, by its kind, with its name: the festival and the Gala have their own, a
+ * Collective event opens the Collective's page, and any other kind has none.
  */
+export function editionPage(kind: string | null | undefined): EditionPage | undefined {
+  return kind && Object.hasOwn(EDITION_PAGES, kind) ? EDITION_PAGES[kind] : undefined;
+}
+
+/** The route alone: the one answer the news cards, the event band and the Presentation tool share. */
 export function editionRoute(kind: string | null | undefined): PublicRoute | undefined {
-  switch (kind) {
-    case 'festival':
-      return ROUTE_SINGLETONS.festivalPage;
-    case 'gala':
-      return ROUTE_SINGLETONS.galaPage;
-    case 'collective':
-      return ROUTE_SINGLETONS.collectivePage;
-    default:
-      return undefined;
-  }
+  return editionPage(kind)?.route;
+}
+
+/**
+ * An album's page, or the photo address of one of its photographs (ADR 0037). The slug and the key arrive
+ * cleaned of stega, since each becomes part of an address.
+ */
+export function albumHref(slug: string, photo?: string): string {
+  const page = `/gallery/${slug}`;
+  return photo ? `${page}?photo=${encodeURIComponent(photo)}` : page;
 }
 
 /** The page a program opens: its own page when it has one, else the Programs hub. */

@@ -33,9 +33,10 @@ describe('AlbumGrid', () => {
     );
     const two = await renderToBody(TwoAlbums);
     expect(two.querySelector('ul')?.getAttribute('data-count')).toBe('2');
+    // Both halves stand two rows tall, but only the first takes the lead's title.
     expect([...two.querySelectorAll('a')].map((tile) => tile.getAttribute('data-size'))).toEqual([
       'lead',
-      'lead',
+      'tile',
     ]);
     const four = await renderToBody(FourAlbums);
     expect(four.querySelector('ul')?.getAttribute('data-count')).toBe('many');

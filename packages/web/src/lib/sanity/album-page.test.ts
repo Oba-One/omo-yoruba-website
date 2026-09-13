@@ -30,7 +30,7 @@ const seeded = {
     consentNote: null,
     creditConfirmed: false,
     credit: 'Members and volunteers',
-    edition: { edition: 2025, kind: 'gala' },
+    edition: { year: 2025, kind: 'gala' },
     photos: [
       photo(
         'gala-2025-attendees-group-photo',
@@ -50,7 +50,6 @@ const seeded = {
     header: { kicker: { yo: 'Àwòrán', en: 'Photographs' } },
     creditsAndConsent: null,
     layout: { captions: 'always' },
-    seo: null,
   },
   settings: { generalEmail: null },
 } as unknown as AlbumPageData;
@@ -88,7 +87,7 @@ describe('buildAlbumPage', () => {
       edition: { label: 'End-of-Year Gala', href: '/gala' },
     });
     const festival = buildAlbumPage(
-      withAlbum({ edition: { edition: 2026, kind: 'festival' } }),
+      withAlbum({ edition: { year: 2026, kind: 'festival' } }),
       options,
       null,
     );
@@ -117,9 +116,9 @@ describe('buildAlbumPage', () => {
   it('links every photograph to its address, leaving the tile alt empty beside a caption that says the same', () => {
     const { photos } = buildAlbumPage(seeded, options, null);
     expect(photos.tiles.map((tile) => tile.href)).toEqual([
-      '?photo=gala-2025-attendees-group-photo',
-      '?photo=gala-2025-three-friends-selfie',
-      '?photo=gala-2025-attendees-smiling',
+      '/gallery/gala-2025?photo=gala-2025-attendees-group-photo',
+      '/gallery/gala-2025?photo=gala-2025-three-friends-selfie',
+      '/gallery/gala-2025?photo=gala-2025-attendees-smiling',
     ]);
     expect(photos.tiles[0]?.image?.alt).toBe('');
     expect(photos.tiles[0]?.caption).toBe(
@@ -137,7 +136,11 @@ describe('buildAlbumPage', () => {
       null,
     );
     expect(described.photos.tiles[0]?.image?.alt).toBe('Six guests stand arm in arm');
-    expect(photos.eager).toBe(3);
+    // Cropped to the tile's band at the CDN around the hotspot, so no tile carries the whole frame's pixels.
+    expect(photos.tiles[0]?.image).toMatchObject({ width: 360, height: 203 });
+    expect(photos.tiles[0]?.image?.src).toContain('fit=crop');
+    // The first photograph is the page's largest paint, fetched at once and first.
+    expect(photos.priority).toBe(true);
     expect(photos.pending).toBe('the photographs');
   });
 
@@ -186,7 +189,7 @@ describe('buildAlbumPage', () => {
     const open = buildAlbumPage(seeded, options, 'gala-2025-three-friends-selfie');
     expect(open.lightbox.openKey).toBe('gala-2025-three-friends-selfie');
     // Nothing behind the Lightbox loads before the photograph on screen.
-    expect(open.photos.eager).toBe(0);
+    expect(open.photos.priority).toBe(false);
     expect(
       buildAlbumPage(seeded, options, 'a-removed-photograph').lightbox.openKey,
     ).toBeUndefined();
@@ -208,7 +211,7 @@ describe('buildAlbumPage', () => {
     );
     expect(page.lightbox.albumHref).toBe('/gallery/gala-2025');
     expect(page.lightbox.openKey).toBe('gala-2025-group-photo');
-    expect(page.photos.tiles[0]?.href).toBe('?photo=gala-2025-group-photo');
+    expect(page.photos.tiles[0]?.href).toBe('/gallery/gala-2025?photo=gala-2025-group-photo');
     expect(page.photos.tiles[0]?.image?.alt).toBe('');
     expect(page.title).toBe('End-of-Year Gala 2025');
     expect(page.header.facts).toEqual([{ text: '1 photograph' }]);
@@ -235,20 +238,25 @@ describe('buildAlbumPage', () => {
     const failed = buildAlbumPage(null, options, null);
     expect(failed.found).toBe(false);
     expect(failed.title).toBe('Photographs');
-    expect(failed.header.kicker).toEqual({ yo: 'Àwòrán', en: 'Photographs' });
+    // The page's words never stand in for the Studio's: no kicker read, none shown, as on the gallery.
+    expect(failed.header.kicker).toBeUndefined();
     expect(failed.photos.tiles).toEqual([]);
     expect(failed.lightbox.photos).toEqual([]);
   });
 
   it('reaches every photograph, the credit and the captions option from click-to-edit in draft mode', () => {
     const page = buildAlbumPage(seeded, draft, null);
-    expect(page.photos.tiles[0]?.edit).toContain('album-gala-2025');
-    expect(page.photos.tiles[0]?.edit).toContain('gala-2025-attendees-group-photo');
-    expect(page.credit.edit).toContain('credit');
-    expect(page.photos.edit).toContain('galleryPage');
-    expect(page.photos.edit).toContain('layout.captions');
+    const photograph = 'id=album-gala-2025;type=album;path=photos:gala-2025-attendees-group-photo;';
+    expect(page.photos.tiles[0]?.edit).toContain(photograph);
+    // The Lightbox's photograph opens the same field, since a photo address covers the tiles.
+    expect(page.lightbox.photos[0]?.edit).toContain(photograph);
+    expect(page.credit.edit).toContain('id=album-gala-2025;type=album;path=credit');
+    expect(page.consentEdit).toContain('id=album-gala-2025;type=album;path=consentNote');
+    expect(page.photos.edit).toContain('id=galleryPage;type=galleryPage;path=layout.captions');
     const published = buildAlbumPage(seeded, options, null);
     expect(published.photos.tiles[0]?.edit).toBeUndefined();
+    expect(published.lightbox.photos[0]?.edit).toBeUndefined();
     expect(published.credit.edit).toBeUndefined();
+    expect(buildAlbumPage(null, draft, null).credit.edit).toBeUndefined();
   });
 });

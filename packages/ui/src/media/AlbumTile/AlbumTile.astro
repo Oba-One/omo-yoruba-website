@@ -33,8 +33,8 @@ interface Props extends AlbumTileData {
   size?: 'lead' | 'tile';
   heading?: 'h2' | 'h3';
   sizes?: string;
-  /** The first album on the page: fetched at once and first, since it is the largest paint. */
-  eager?: boolean;
+  /** The page's largest paint (the gallery's first album): fetched at once and first. */
+  priority?: boolean;
   class?: string;
 }
 
@@ -49,7 +49,7 @@ const {
   size = 'tile',
   heading: Heading = 'h2',
   sizes = '(max-width: 560px) calc(100vw - 48px), (max-width: 900px) calc(50vw - 32px), 340px',
-  eager = false,
+  priority = false,
   class: className,
 } = Astro.props;
 
@@ -65,8 +65,8 @@ const shownYear = year?.trim() || undefined;
         <img
           {...img}
           alt=""
-          loading={eager ? 'eager' : 'lazy'}
-          fetchpriority={eager ? 'high' : undefined}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchpriority={priority ? 'high' : undefined}
           decoding="async"
           style={position ? `object-position: ${position}` : undefined}
         />
@@ -133,11 +133,9 @@ const shownYear = year?.trim() || undefined;
   .oy-album-dot {
     color: var(--gold-300);
   }
-  /* The chip keeps its own box and type, and its on-dark colours from `.oy-dark .oy-pend`. */
+  /* The chip keeps its own type (the tokens' chip rule) and its on-dark colours; it sits beside the count. */
   .oy-album-line :global(span.oy-pend) {
     display: inline-flex;
     margin: 6px 0 0 8px;
-    font-size: 12px;
-    line-height: 1.4;
   }
 </style>

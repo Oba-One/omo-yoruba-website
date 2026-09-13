@@ -14,7 +14,13 @@ export default defineCliConfig({
     enforceRequiredFields: false,
   },
   typegen: {
-    path: ['./src/**/*.ts', '../web/src/**/*.{ts,astro}'],
+    // A dynamic route returns a Response from its frontmatter (`/gallery/[album]`'s 404), which the TypeGen
+    // parser rejects as a return outside a function; its queries live in src/queries like every other.
+    path: [
+      './src/**/*.ts',
+      '../web/src/**/*.{ts,astro}',
+      '!../web/src/pages/gallery/*album*.astro',
+    ],
     schema: './schema.json',
     generates: './src/sanity.types.ts',
     overloadClientMethods: true,

@@ -42,4 +42,4 @@ export const ConfirmedWithNote: Story = {
 };
 
 /** No album could be read: no credit line. */
-export const Pending: Story = { args: { credited: false, credit: undefined } };
+export const Pending: Story = { args: { showCredit: false, credit: undefined } };

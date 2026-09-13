@@ -97,7 +97,12 @@ describe('PENDING', () => {
     expect(covered('storyPage', 'founding')).toBe(true);
     expect(covered('galleryPage', 'creditsAndConsent')).toBe(true);
     expect(
-      PENDING.some((e) => e.type === 'album' && e.condition?.includes('creditConfirmed')),
+      PENDING.some(
+        (e) =>
+          e.type === 'album' &&
+          e.what === ALBUM_CREDIT_PENDING &&
+          e.condition?.includes('creditConfirmed'),
+      ),
     ).toBe(true);
   });
 });
@@ -463,7 +468,10 @@ describe('the gallery', () => {
     const row = PENDING.find(
       (entry) => entry.type === 'album' && entry.what === ALBUM_YEAR_PENDING,
     );
-    expect(row?.condition).toBe('!defined(date) && !defined(event->edition)');
+    // The edition either link names: the album's `event`, or an edition whose `album` is this one.
+    expect(row?.condition).toBe(
+      '!defined(date) && !defined(event->edition) && count(*[_type == "event" && album._ref == ^._id && defined(edition)]) == 0',
+    );
     expect(row?.fields).toBeUndefined();
     expect(ALBUM_YEAR_PENDING).toBe('the year of the album');
     // The field alone no longer answers: the site reads the named constant.

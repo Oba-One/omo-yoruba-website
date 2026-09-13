@@ -7,7 +7,7 @@
  * columns under 900px with the lead across both, one under 560px. The `grid` lays the tiles two, three or four
  * across at the port's densities (`.oy-albums`). `captions: hover` hides the titles until hover or keyboard
  * focus, only where the pointer can hover, so a phone always shows them. No albums shows the registry's Pending
- * line. The first tile loads first, as the page's largest paint.
+ * line. The first tile loads first, as the page's largest paint, and takes the lead's title.
  */
 import Pending from '../../core/Pending/Pending.astro';
 import AlbumTile, { type AlbumTileData } from '../AlbumTile/AlbumTile.astro';
@@ -40,10 +40,10 @@ const {
 const list = (albums ?? []).filter((album): album is AlbumTileData => album !== null);
 const count = list.length;
 
-// A mosaic tile two rows tall takes the lead's title. The widths the tiles are drawn at: the lead across the
+// The widths the tiles are drawn at: a tile two rows tall (the lead, and the second of two albums) across the
 // page under 900px and about 520px wide above it (a cover crops to its 436px height, so it asks wider); a
 // two-column tile about 520px, a single one about 250px, each half the page under 900px and all of it under
-// 560px; the grid's tiles at its density.
+// 560px; the grid's tiles at its density. Only the mosaic's first album takes the lead's 26px title (spec Q7).
 const tall = (at: number) => layout === 'mosaic' && (at === 0 || (count === 2 && at === 1));
 const wide = (at: number) =>
   layout === 'mosaic' && ((count === 3 && at > 0) || (count >= 4 && at === 3));
@@ -74,9 +74,9 @@ const sizesFor = (at: number) => {
         <li>
           <AlbumTile
             {...album}
-            size={tall(at) ? 'lead' : 'tile'}
+            size={layout === 'mosaic' && at === 0 ? 'lead' : 'tile'}
             sizes={sizesFor(at)}
-            eager={at === 0}
+            priority={at === 0}
             heading={heading}
           />
         </li>
@@ -151,6 +151,8 @@ const sizesFor = (at: number) => {
     }
   }
 
+  /* Not the port's `.oy-albums[data-caption='hover']`, which hides the titles on every device: a phone has no
+     hover to show them again (spec Q8). */
   @media (hover: hover) {
     .oy-album-grid[data-captions='hover'] :global(.oy-album-meta) {
       opacity: 0;

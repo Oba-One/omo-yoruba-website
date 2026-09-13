@@ -7,7 +7,7 @@
  * registration, "many festival sets", the old domain's inbox) are the register's inventions and stay out.
  */
 import { pendingWhat } from '@oy/content/pending';
-import { cleanText } from './view';
+import { cleanText, studioText } from './view';
 
 export const CREDITS_TITLE = 'Photography credit and permissions';
 
@@ -29,7 +29,7 @@ export function galleryCredits(
       { label: 'Credits', value: CREDITS_LINE },
       {
         label: 'Consent policy',
-        value: cleanText(policy) ? (policy ?? undefined) : undefined,
+        value: studioText(policy),
         pending:
           pendingWhat('galleryPage', 'creditsAndConsent') ??
           'your photo consent and removal policy',

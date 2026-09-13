@@ -19,7 +19,7 @@ const album = (
   id: string,
   title: string,
   slug: string,
-  edition: number | null,
+  editionYear: number | null,
   count: number,
   first: string,
   extra: Record<string, unknown> = {},
@@ -28,9 +28,9 @@ const album = (
   title,
   slug,
   date: null,
-  edition,
+  editionYear,
   cover: image(`image-${id.replace(/-/g, '')}cover-1024x683-jpg`, `The cover of ${title}`),
-  first: {
+  firstPhoto: {
     _key: first,
     ...image(`image-${id.replace(/-/g, '')}first-1024x683-jpg`, `The first photograph of ${title}`),
   },
@@ -103,22 +103,24 @@ describe('buildGalleryPage', () => {
   });
 
   it('dates an album by its own date first, and shows a year its title does not carry', () => {
+    // A hypothetical album in the placeholder form: the summer camp's year stays unconfirmed.
     const page = buildGalleryPage(
       withData({
         albums: [
-          album('summer-camp', 'Summer camp', 'summer-camp', null, 19, 'community-dance', {
-            date: '2019-07-28',
+          ...(seeded.albums ?? []),
+          album('placeholder', '[ Album title ]', 'placeholder', 2026, 2, 'photo-1', {
+            date: '2025-07-28',
           }),
-          ...(seeded.albums ?? []).slice(1),
         ],
       }),
       options,
     );
-    const camp = page.albums.tiles.find((tile) => tile.href.includes('summer-camp'));
-    expect(camp).toMatchObject({ year: '2019', count: '19 photographs', yearPending: undefined });
-    // A dated album sorts among the dated ones.
+    const dated = page.albums.tiles.find((tile) => tile.href.includes('placeholder'));
+    expect(dated).toMatchObject({ year: '2025', count: '2 photographs', yearPending: undefined });
+    // A dated album sorts among the dated ones, by its own year.
     expect(page.albums.tiles.map((tile) => tile.title)).toEqual([
       'Odunde 2026',
+      '[ Album title ]',
       'End-of-Year Gala 2025',
       'Summer camp',
     ]);

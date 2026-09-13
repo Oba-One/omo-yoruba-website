@@ -5,7 +5,7 @@
  * to the edition's page with the credit line, and the photographs. Markup, since the slot tree for a grid of links
  * and a dialog runs deeper than a story's configured slots render (the Programs sections do the same).
  */
-import { GALA_ALBUM, GALA_ALBUM_PHOTOS, GALLERY_PENDING } from '../../fixtures/gallery';
+import { GALA_ALBUM, GALA_ALBUM_PHOTOS, GALLERY_PENDING, photoTiles } from '../../fixtures/gallery';
 import AlbumIntro from '../../media/AlbumIntro/AlbumIntro.astro';
 import Lightbox from '../../media/Lightbox/Lightbox.astro';
 import PhotoGrid from '../../media/PhotoGrid/PhotoGrid.astro';
@@ -18,13 +18,6 @@ interface Props {
 }
 
 const { open = false, captions = 'always' } = Astro.props;
-const tiles = GALA_ALBUM_PHOTOS.map(({ key, href, image, tileAlt, caption }) => ({
-  key,
-  href,
-  image,
-  alt: tileAlt,
-  caption,
-}));
 ---
 
 <Section id="photographs">
@@ -43,10 +36,10 @@ const tiles = GALA_ALBUM_PHOTOS.map(({ key, href, image, tileAlt, caption }) => 
     pending={GALLERY_PENDING.credit}
   />
   <PhotoGrid
-    photos={tiles}
+    photos={photoTiles(GALA_ALBUM_PHOTOS)}
     lightbox="album-lightbox"
     captions={captions}
-    eager={open ? 0 : 3}
+    priority={!open}
     pending={GALLERY_PENDING.photographs}
   />
 </Section>

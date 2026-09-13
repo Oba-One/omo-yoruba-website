@@ -5,7 +5,16 @@
  * text), the counts of the register's sets, and the Pending states the Studio owes. No date, even as an ISO
  * string; a layout that needs more albums than exist uses the bracketed placeholder form.
  */
+import {
+  ALBUM_CREDIT_PENDING,
+  ALBUM_YEAR_PENDING,
+  PHOTO_CREDIT_PENDING,
+  pendingWhat,
+  presenceWhat,
+} from '@oy/content/pending';
+import { albumHref } from '@oy/content/routes';
 import type { AlbumTileData } from '../media/AlbumTile/AlbumTile.astro';
+import type { PhotoGridItem } from '../media/PhotoGrid/PhotoGrid.astro';
 import { PHOTOS } from './photos';
 
 export const GALLERY_HEADER = {
@@ -14,18 +23,16 @@ export const GALLERY_HEADER = {
   line: 'Odunde, the Gala and the summer camp. Open an album and start looking.',
 };
 
-/** The registry's wordings the gallery reads. */
+/** The registry's wordings the gallery reads, from the registry itself, so a story never drifts from the site's chip. */
 export const GALLERY_PENDING = {
-  albums: 'the photo albums',
-  year: 'the year of the album',
-  photographs: 'the photographs',
-  credit: 'photographer credit to confirm',
-  ownCredit: "a photograph's own credit to confirm",
-  consent: 'your photo consent and removal policy',
-  inbox: 'the general inbox',
-} as const;
-
-const firstPhoto = (album: string, key: string) => `/gallery/${album}?photo=${key}`;
+  albums: presenceWhat('album')?.what ?? '',
+  year: ALBUM_YEAR_PENDING,
+  photographs: pendingWhat('album', 'photos[]') ?? '',
+  credit: ALBUM_CREDIT_PENDING,
+  ownCredit: PHOTO_CREDIT_PENDING,
+  consent: pendingWhat('galleryPage', 'creditsAndConsent') ?? '',
+  inbox: pendingWhat('siteSettings', 'generalEmail') ?? '',
+};
 
 /**
  * The three albums in the gallery's order (newest year first, the summer camp without a year last), each
@@ -35,19 +42,19 @@ const firstPhoto = (album: string, key: string) => `/gallery/${album}?photo=${ke
 export const ALBUM_TILES: AlbumTileData[] = [
   {
     title: 'Odunde 2026',
-    href: firstPhoto('odunde-2026', 'odunde-2026-kid-playing-with-elder'),
+    href: albumHref('odunde-2026', 'odunde-2026-kid-playing-with-elder'),
     image: PHOTOS.kidWithElder.src,
     count: '43 photographs',
   },
   {
     title: 'End-of-Year Gala 2025',
-    href: firstPhoto('gala-2025', 'gala-2025-attendees-group-photo'),
+    href: albumHref('gala-2025', 'gala-2025-attendees-group-photo'),
     image: PHOTOS.galaGroupPortrait.src,
     count: '6 photographs',
   },
   {
     title: 'Summer camp',
-    href: firstPhoto('summer-camp', 'community-dance'),
+    href: albumHref('summer-camp', 'community-dance'),
     image: PHOTOS.summerCampArtClass.src,
     count: '19 photographs',
     yearPending: GALLERY_PENDING.year,
@@ -84,7 +91,7 @@ export interface FixturePhotograph {
 
 const photograph = (album: string, key: string, photo: { src: string; alt: string }) => ({
   key,
-  href: `?photo=${key}`,
+  href: albumHref(album, key),
   image: photo.src,
   // The caption is the register's description, as the dataset stores it (spec Q10).
   alt: photo.alt,
@@ -94,6 +101,16 @@ const photograph = (album: string, key: string, photo: { src: string; alt: strin
   confirmed: false,
   creditPending: GALLERY_PENDING.credit,
 });
+
+/** Photographs as `PhotoGrid` lists them: each tile's alt empty beside a caption that says the same. */
+export const photoTiles = (photos: FixturePhotograph[]): PhotoGridItem[] =>
+  photos.map(({ key, href, image, tileAlt, caption }) => ({
+    key,
+    href,
+    image,
+    alt: tileAlt,
+    caption,
+  }));
 
 /** The End-of-Year Gala 2025 album: all six photographs in album order, the credit unconfirmed. */
 export const GALA_ALBUM_PHOTOS: FixturePhotograph[] = [
@@ -143,3 +160,11 @@ export const CREDIT_ROWS = [
   { label: 'Consent policy', pending: GALLERY_PENDING.consent },
   { label: 'Removal requests', pending: GALLERY_PENDING.inbox },
 ];
+
+/** Photography credit and permissions as the site builds it (`galleryCredits`): the page's words, the rows owed. */
+export const GALLERY_CREDITS = {
+  title: 'Photography credit and permissions',
+  lead: 'These photographs show real people, including children. Here is how we credit them, how we ask permission, and how to ask for a photograph to be removed.',
+  rows: CREDIT_ROWS,
+  action: { label: 'Send a message', kind: 'enquiry', enquiryKind: 'contact' },
+};

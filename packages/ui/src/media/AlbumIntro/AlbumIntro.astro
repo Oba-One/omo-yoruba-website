@@ -16,8 +16,8 @@ export interface AlbumIntroLink {
 interface Props {
   /** The gallery first, then the edition's page when the album has one. */
   links?: (AlbumIntroLink | null | undefined)[];
-  /** Whether an album was read, so its credit is known to be owed or given. */
-  credited?: boolean;
+  /** Whether the credit line shows: false when no album could be read, so nothing is known of its credit. */
+  showCredit?: boolean;
   credit?: string | null;
   confirmed?: boolean | null;
   /** The registry's wording while the credit is unconfirmed. */
@@ -31,7 +31,7 @@ interface Props {
 
 const {
   links = [],
-  credited = true,
+  showCredit = true,
   credit,
   confirmed,
   pending,
@@ -46,17 +46,17 @@ const shown = links.filter((link): link is AlbumIntroLink => Boolean(link?.href)
 <div class:list={['oy-album-intro', className]}>
   {
     shown.length > 0 && (
-      <nav class="oy-album-intro-links" aria-label="Albums">
+      <div class="oy-album-intro-links">
         {shown.map((link, at) => (
           <Button variant="quiet" href={link.href} arrow={at > 0}>
             {link.label}
           </Button>
         ))}
-      </nav>
+      </div>
     )
   }
   {
-    credited && (
+    showCredit && (
       <div data-sanity={creditEdit}>
         <CreditLine credit={credit} confirmed={confirmed} pending={pending} />
       </div>

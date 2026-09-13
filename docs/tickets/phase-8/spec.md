@@ -146,8 +146,9 @@ glossary gains Album, Cover, Photo credit, Consent note and Photo address.
 
 ### The registry
 
-- The album's year becomes a condition row, `!defined(date) && !defined(event->edition)`, "the year of the
-  album", its wording a named constant.
+- The album's year becomes a condition row, "the year of the album", its wording a named constant: no date, no
+  year on the edition the album names, and no edition naming the album (the code review found the event pages
+  read the other end of the link, `event.album`).
 - New: `album.photos[]` ("the photographs", Gallery, album); a photograph's own credit left unconfirmed, a
   condition row ("a photograph's own credit to confirm", a named constant).
 - The album presence row counts albums with at least one photograph, as the gallery and past years show them.
@@ -157,11 +158,13 @@ glossary gains Album, Cover, Photo credit, Consent note and Photo address.
 ### Queries and routes
 
 - `galleryPageQuery`: `*[_type == "galleryPage" && _id == "galleryPage"][0]` with the header, the actions,
-  `creditsAndConsent`, the layout and SEO; every album with a photograph (title, slug, date, the edition's year
-  and kind, the cover, the first photograph, the count); and the settings' general inbox.
+  `creditsAndConsent`, the layout and SEO; every album with a photograph (title, slug, date, the edition's year,
+  the cover, the first photograph, the count; a tile never shows the edition's kind, so the query leaves it
+  out); and the settings' general inbox.
 - `albumPageQuery($slug)`: the album by slug with its credit and confirmation, consent note, edition (year and
   kind) and every photograph (asset, hotspot, crop, alt, caption, its own credit and confirmation); the gallery
   singleton's kicker, `creditsAndConsent` and `captions` option; the settings' general inbox.
+- Both read an album's edition from its `event`, else from the edition whose `album` names it.
 - Images project the asset reference, the hotspot and the crop (ADR 0022). Keys, slugs and the `?photo=` value
   are cleaned of stega before they become an href or a comparison.
 - The route map: `galleryPage` reaches `/gallery/[album]` too, and `event` reaches both gallery routes (an
@@ -171,7 +174,18 @@ glossary gains Album, Cover, Photo credit, Consent note and Photo address.
 - The album route: a read that answers no album is a 404 (an empty response, so a later 404 page renders in
   its place); a failed read answers 503 with the page's Pending form and is never cached.
 - Edit attributes on each option's container (the mosaic for `open` and `captions`, the albums section for
-  `state`), on every cover and every photograph (`photos[_key=="…"]`) and on the credit line.
+  `state`), on every cover and every photograph (`photos[_key=="…"]`, on the tile and on the Lightbox's frame)
+  and on the credit line, each naming the album document by its id and its type.
+
+### Performance (measured in ticket 07)
+
+- An album page fetches its first photograph at once and first (`priority`), and every other photograph lazily;
+  Q10 said "lazy after the first row", but on a phone the first row is one photograph and the eager second and
+  third competed with it: Lighthouse's mobile LCP on `/gallery/odunde-2026` went from 3.0 s to 2.7 s. The rest of
+  a desktop's first row is in view, so the browser fetches it at once anyway.
+- The grid's tiles are cropped to 16:9 at the CDN around the hotspot (a 200px band about 340px wide), a quarter
+  fewer pixels each: the mobile page's photographs went from 882 KB to 673 KB and its LCP to 2.46 to 2.79 s,
+  level with the event pages; the rest is the site-wide stylesheet and font cost of wayfinder ticket 35.
 
 ### Layout options
 
@@ -184,13 +198,17 @@ In `@oy/ui` with stories and tests, each variant a story and each empty state Pe
 
 - New: `AlbumTile` (the cover, the title, the line with its chip, lead and tile sizes) with `AlbumGrid` (the
   mosaic by count, the grid at two, three or four across, the captions option, the Pending line); `PhotoGrid`
-  (the album page's photographs as linked `PhotoTile`s, the captions option, the Pending line); `Lightbox`, the
-  inline `oy-lightbox` element (ADR 0018, ADR 0027): a `<dialog>`, every photograph a hidden figure with its
-  caption and credit in the markup, the controls links without JavaScript, `data-ready` once wired, play
-  functions that wait for it and drive the keyboard.
-- Extended: `PhotoTile` (a link around the figure, the hover-only caption), `PhotoCarousel` (swipe).
-- Reused as they are: `PageHeader`, `Section`, `SectionHead`, `Split`, `FactList`, `CreditLine`, `Button`,
-  `Pending`.
+  (the album page's photographs, each `PhotoTile` inside its link, the captions option, the Pending line);
+  `AlbumIntro` (the links, the credit line and the consent note with the prototype's spacing, added while
+  building ticket 05 since the page owns no styling); `GalleryCredits` (the credit and permissions section both
+  routes close with, moved from `packages/web` in the code review, since a visual part shared by two routes is a
+  library component); `Lightbox`, the inline `oy-lightbox` element (ADR 0018,
+  ADR 0027): a `<dialog>`, every photograph a hidden frame with its caption and credit in the markup, the
+  controls links without JavaScript, `data-ready` once wired, play functions that wait for it and drive the
+  keyboard.
+- Extended: `PhotoTile` (`priority` for the page's largest paint; the link lives in `PhotoGrid`), `CreditLine`
+  (a `span` inside the Lightbox's bar), `PhotoCarousel` (swipe).
+- Reused as they are: `PageHeader`, `Section`, `SectionHead`, `Split`, `FactList`, `Button`, `Pending`.
 - One page-section story per option under `Pages/Gallery` (Open, Captions, State), in `PageRoot`, on fixtures
   of the register's photographs with their captions as the dataset holds them, the bracketed placeholder form
   for owed copy and Pending states only: no dates, even as ISO strings.

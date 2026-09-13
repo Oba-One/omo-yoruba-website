@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { swipe } from './helpers';
 
 // The past years carousel (docs/research/phase-5-photo-carousel-custom-element.md, ADR 0027): an
 // inline custom element that upgrades the server-rendered first photograph. CI builds with a
@@ -95,29 +96,12 @@ for (const route of ROUTES) {
       const host = await carouselOn(page, route);
       const stage = host.locator('.oy-carousel-stage');
       const total = await host.getByRole('tab').count();
-      const swipe = async (dx: number, dy: number) => {
-        const box = await stage.boundingBox();
-        const x = (box?.x ?? 0) + (box?.width ?? 0) / 2;
-        const y = (box?.y ?? 0) + (box?.height ?? 0) / 2;
-        const start = [{ identifier: 1, clientX: x, clientY: y }];
-        const end = [{ identifier: 1, clientX: x + dx, clientY: y + dy }];
-        await stage.dispatchEvent('touchstart', {
-          touches: start,
-          changedTouches: start,
-          targetTouches: start,
-        });
-        await stage.dispatchEvent('touchend', {
-          touches: [],
-          changedTouches: end,
-          targetTouches: [],
-        });
-      };
-      await swipe(-120, 12);
+      await swipe(stage, -120, 12);
       await expect(host.locator('.oy-carousel-count')).toHaveText(`2 of ${total}`);
-      await swipe(120, -6);
+      await swipe(stage, 120, -6);
       await expect(host.locator('.oy-carousel-count')).toHaveText(`1 of ${total}`);
-      await swipe(-30, 0);
-      await swipe(-50, 120);
+      await swipe(stage, -30, 0);
+      await swipe(stage, -50, 120);
       await expect(host.locator('.oy-carousel-count')).toHaveText(`1 of ${total}`);
     });
 

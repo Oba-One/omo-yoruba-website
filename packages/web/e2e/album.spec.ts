@@ -1,12 +1,12 @@
 import { ALBUM_CREDIT_PENDING, pendingWhat } from '@oy/content/pending';
-import { expect, type Page, test } from '@playwright/test';
-import { axeViolations, goldSharingAView, PLACEHOLDER_PROJECT, settle } from './helpers';
+import { expect, type Page, type Request, test } from '@playwright/test';
+import { axeViolations, goldSharingAView, PLACEHOLDER_PROJECT, settle, swipe } from './helpers';
 
 // An album's page and its Lightbox (ROUTES sections 1 and 3, ADR 0037, ADR 0038): the page in the prototype's
 // order, the photo address served open and shareable, Back closing the Lightbox and Forward reopening it without
 // a new page, focus back on the photograph's tile, and a swipe on touch. End-of-Year Gala 2025 has six
 // photographs in `development`. CI runs with a placeholder project, where the read fails: the route answers 503
-// with its Pending form, and the Lightbox specs skip.
+// with its Pending form and no Lightbox, which every Lightbox spec asserts before it stops.
 
 const ALBUM = '/gallery/gala-2025';
 const KEYS = [
@@ -17,17 +17,37 @@ const KEYS = [
   'gala-2025-attendees-sitting',
   'gala-2025-attendees-getting-food',
 ];
-const NO_ALBUM = 'no album in the Studio (the CI placeholder project)';
 
 const dialog = (page: Page) => page.locator('dialog.oy-lightbox');
 const count = (page: Page) => page.locator('.oy-lb-count');
 const tile = (page: Page, key: string) => page.locator(`a[data-photo="${key}"]`);
 
-async function albumPage(page: Page, address = ALBUM) {
+/**
+ * The album page with its Lightbox wired. With the placeholder project the read fails: the page answers 503 with
+ * nothing to open, which is asserted before the spec stops (false).
+ */
+async function albumPage(page: Page, address = ALBUM): Promise<boolean> {
   const response = await page.goto(address);
-  test.skip(PLACEHOLDER_PROJECT, NO_ALBUM);
+  if (PLACEHOLDER_PROJECT) {
+    expect(response?.status()).toBe(503);
+    await expect(page.locator('oy-lightbox')).toHaveCount(0);
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
+    return false;
+  }
   await expect(page.locator('oy-lightbox')).toHaveAttribute('data-ready', 'true');
-  return response;
+  return true;
+}
+
+/** Every page request for the album's own path from now on: a document, or the router's fetch of one. */
+function pageRequests(page: Page): string[] {
+  const seen: string[] = [];
+  page.on('request', (request: Request) => {
+    const url = new URL(request.url());
+    if (url.pathname === ALBUM && ['document', 'fetch', 'xhr'].includes(request.resourceType())) {
+      seen.push(request.url());
+    }
+  });
+  return seen;
 }
 
 test.describe('an album page', () => {
@@ -41,13 +61,22 @@ test.describe('an album page', () => {
       Array.from(document.querySelectorAll('main > *')).map((el) => el.id),
     );
     expect(order).toEqual(['top', 'photographs', 'credit']);
+    // Photography credit and permissions closes the page in both data modes, the policy and the inbox owed.
+    const credit = page.locator('#credit');
+    await expect(credit.locator('h2')).toHaveText('Photography credit and permissions');
+    await expect(credit.locator('.oy-fact dt')).toHaveText([
+      'Credits',
+      'Consent policy',
+      'Removal requests',
+    ]);
     if (PLACEHOLDER_PROJECT) {
-      // The read failed: the Pending form, never cached, no Lightbox.
+      // The read failed: the Pending form, never cached, no Lightbox, no kicker the Studio did not give.
       expect(response?.status()).toBe(503);
       await expect(page.locator('#photographs .oy-pend-line')).toContainText(
         pendingWhat('album', 'photos[]') ?? '',
       );
       await expect(page.locator('oy-lightbox')).toHaveCount(0);
+      await expect(page.locator('header#top .oy-kicker')).toHaveCount(0);
       return;
     }
     expect(response?.status()).toBe(200);
@@ -77,7 +106,7 @@ test.describe('an album page', () => {
   test('a tile opens the Lightbox on its photograph and writes its address; arrows move and replace it', async ({
     page,
   }) => {
-    await albumPage(page);
+    if (!(await albumPage(page))) return;
     const before = await page.evaluate(() => history.length);
     await tile(page, KEYS[1] as string).click();
     await expect(dialog(page)).toHaveAttribute('open', '');
@@ -97,16 +126,14 @@ test.describe('an album page', () => {
     await expect(count(page)).toHaveText('2 of 6');
   });
 
-  test('Back closes the Lightbox onto the tile of the photograph on screen, Forward reopens it, in one document', async ({
+  test('Back closes the Lightbox onto the tile of the photograph on screen, Forward reopens it, with no page load', async ({
     page,
   }) => {
-    await albumPage(page);
-    await page.evaluate(() => {
-      (window as unknown as { kept: string }).kept = 'same document';
-    });
+    if (!(await albumPage(page))) return;
     await tile(page, KEYS[0] as string).click();
     await page.keyboard.press('ArrowRight');
     await expect(count(page)).toHaveText('2 of 6');
+    const loads = pageRequests(page);
     await page.goBack();
     await expect(dialog(page)).not.toHaveAttribute('open', '');
     await expect(page).toHaveURL(ALBUM);
@@ -114,23 +141,25 @@ test.describe('an album page', () => {
     await page.goForward();
     await expect(dialog(page)).toHaveAttribute('open', '');
     await expect(count(page)).toHaveText('2 of 6');
-    expect(await page.evaluate(() => (window as unknown as { kept?: string }).kept)).toBe(
-      'same document',
-    );
-    // The router never loaded a page for it: the progress bar stayed down.
-    await expect(page.locator('html')).not.toHaveAttribute('data-loading', 'true');
+    await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
+    // Neither traverse asked for the page again: no document, and no fetch by the router.
+    expect(loads).toEqual([]);
   });
 
-  test('Escape and the dark background close it; closing goes back one entry', async ({ page }) => {
-    await albumPage(page);
+  test('Escape and the dark background close it; closing goes back one entry, so Forward reopens it', async ({
+    page,
+  }) => {
+    if (!(await albumPage(page))) return;
     await tile(page, KEYS[3] as string).click();
     await expect(dialog(page)).toHaveAttribute('open', '');
     await page.keyboard.press('Escape');
     await expect(dialog(page)).not.toHaveAttribute('open', '');
     await expect(page).toHaveURL(ALBUM);
     await expect(tile(page, KEYS[3] as string)).toBeFocused();
-    await tile(page, KEYS[3] as string).click();
+    // The photo address is still ahead in history, not replaced: Forward opens it again.
+    await page.goForward();
     await expect(dialog(page)).toHaveAttribute('open', '');
+    await expect(count(page)).toHaveText('4 of 6');
     // The corner of the overlay: no photograph, no control.
     await page.mouse.click(8, 8);
     await expect(dialog(page)).not.toHaveAttribute('open', '');
@@ -141,7 +170,7 @@ test.describe('an album page', () => {
     page,
   }) => {
     await page.goto('/gallery');
-    await albumPage(page, `${ALBUM}?photo=${KEYS[4]}`);
+    if (!(await albumPage(page, `${ALBUM}?photo=${KEYS[4]}`))) return;
     await expect(dialog(page)).toHaveAttribute('open', '');
     expect(await dialog(page).evaluate((el) => el.matches(':modal'))).toBe(true);
     await expect(count(page)).toHaveText('5 of 6');
@@ -180,34 +209,21 @@ test.describe('an album page', () => {
 });
 
 test.describe('the Lightbox on touch', () => {
-  const swipe = async (page: Page, dx: number, dy: number) => {
-    const stage = page.locator('dialog.oy-lightbox .oy-lb-stage');
-    const box = await stage.boundingBox();
-    const x = (box?.x ?? 0) + (box?.width ?? 0) / 2;
-    const y = (box?.y ?? 0) + (box?.height ?? 0) / 2;
-    const start = [{ identifier: 1, clientX: x, clientY: y }];
-    const end = [{ identifier: 1, clientX: x + dx, clientY: y + dy }];
-    await stage.dispatchEvent('touchstart', {
-      touches: start,
-      changedTouches: start,
-      targetTouches: start,
-    });
-    await stage.dispatchEvent('touchend', { touches: [], changedTouches: end, targetTouches: [] });
-  };
-
   test('a sideways swipe moves the photograph; a short or mostly vertical one does not', async ({
     page,
-  }, testInfo) => {
-    test.skip(testInfo.project.name !== 'mobile', 'Touch runs in the mobile project.');
-    await albumPage(page, `${ALBUM}?photo=${KEYS[0]}`);
-    await swipe(page, -120, 10);
+    isMobile,
+  }) => {
+    test.skip(!isMobile, 'Touch runs in the mobile project.');
+    if (!(await albumPage(page, `${ALBUM}?photo=${KEYS[0]}`))) return;
+    const stage = page.locator('dialog.oy-lightbox .oy-lb-stage');
+    await swipe(stage, -120, 10);
     await expect(count(page)).toHaveText('2 of 6');
     await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
-    await swipe(page, 120, -8);
+    await swipe(stage, 120, -8);
     await expect(count(page)).toHaveText('1 of 6');
-    await swipe(page, -30, 0);
+    await swipe(stage, -30, 0);
     await expect(count(page)).toHaveText('1 of 6');
-    await swipe(page, -60, 140);
+    await swipe(stage, -60, 140);
     await expect(count(page)).toHaveText('1 of 6');
   });
 });
@@ -218,8 +234,12 @@ test.describe('the Lightbox without JavaScript', () => {
   test('a photo address serves it open, and its links step through the album and close it', async ({
     page,
   }) => {
-    await page.goto(`${ALBUM}?photo=${KEYS[0]}`);
-    test.skip(PLACEHOLDER_PROJECT, NO_ALBUM);
+    const response = await page.goto(`${ALBUM}?photo=${KEYS[0]}`);
+    if (PLACEHOLDER_PROJECT) {
+      expect(response?.status()).toBe(503);
+      await expect(page.locator('dialog[open]')).toHaveCount(0);
+      return;
+    }
     await expect(dialog(page)).toHaveAttribute('open', '');
     await expect(count(page)).toHaveText('1 of 6');
     await page.getByRole('link', { name: 'Next photo' }).click();

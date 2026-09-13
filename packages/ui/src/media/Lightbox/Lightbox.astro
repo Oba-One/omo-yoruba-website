@@ -19,7 +19,9 @@
  * without the layout the element hears `popstate` itself. Focus returns to the tile of the photograph on
  * screen. Each move announces the count and the
  * caption; a photograph that fails to load shows its caption in the frame; opening announces
- * `lightbox_opened`. The frame fades in over 0.2s, not at all under reduced motion.
+ * `lightbox_opened`, held until the page has parsed when the page arrives open, so the site's listener hears
+ * it. The frame fades in over 0.2s, not at all under reduced motion. Each frame carries its photograph's
+ * `data-sanity` attribute, since a photo address covers the tiles that carry it too.
  */
 import CreditLine from '../CreditLine/CreditLine.astro';
 import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
@@ -36,6 +38,8 @@ export interface LightboxPhoto {
   confirmed?: boolean | null;
   /** The registry's wording while that credit is unconfirmed. */
   creditPending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the photograph. */
+  edit?: string;
 }
 
 interface Props {
@@ -69,6 +73,9 @@ const openIndex = openKey ? list.findIndex((photo) => photo.key === openKey) : -
 const shown = Math.max(0, openIndex);
 const wrap = (index: number) => ((index % total) + total) % total;
 const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(index)]?.key ?? '')}`;
+// `CreditLine` draws nothing for a confirmed credit that names no one, and the dot then has nothing to sit before.
+const creditShown = (photo: LightboxPhoto) =>
+  Boolean(photo.credit?.trim()) || photo.confirmed !== true;
 ---
 
 {
@@ -90,6 +97,7 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
                 class="oy-lb-frame"
                 data-key={photo.key}
                 data-position={`${at + 1} of ${total}`}
+                data-sanity={photo.edit}
                 hidden={at !== shown}
               >
                 {img ? (
@@ -134,7 +142,7 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
           {list.map((photo, at) => (
             <p data-active={at === shown ? 'true' : undefined}>
               {photo.caption && <span class="oy-lb-caption">{photo.caption}</span>}
-              {photo.caption && (
+              {photo.caption && creditShown(photo) && (
                 <span class="oy-lb-dot" aria-hidden="true">
                   {' • '}
                 </span>
@@ -202,13 +210,26 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
         const key = new URLSearchParams(location.search).get('photo');
         return key !== null && keys.includes(key) ? key : null;
       };
-      const track = () =>
-        host.dispatchEvent(
-          new CustomEvent('oy:track', {
-            bubbles: true,
-            detail: { event: 'lightbox_opened', album: host.dataset.album || albumPath },
-          }),
-        );
+      const track = () => {
+        const report = () =>
+          host.dispatchEvent(
+            new CustomEvent('oy:track', {
+              bubbles: true,
+              detail: { event: 'lightbox_opened', album: host.dataset.album || albumPath },
+            }),
+          );
+        // Served open, the page is still parsing and the site's listener (a module script) not yet running.
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', report, { once: true });
+        } else {
+          report();
+        }
+      };
+      // A plain click of the main button: a held modifier or another button belongs to the browser.
+      const plainClick = (event) =>
+        !event.defaultPrevented &&
+        event.button === 0 &&
+        !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey);
       const load = (index) => {
         const img = frames[wrap(index)].querySelector('img');
         if (img && img.loading === 'lazy') img.loading = 'eager';
@@ -290,16 +311,22 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
         }
       };
 
-      const dismiss = () => {
-        if (!dialog.open || state.leaving) return;
+      // Leaves the photo address: back one entry when the Lightbox pushed it (the Back closes it), else the
+      // album's own address in place. True while that Back is on its way.
+      const leaveAddress = () => {
         if (state.pushed) {
           state.leaving = true;
           history.back();
-          return;
+          return true;
         }
         if (keyInAddress()) history.replaceState(history.state, '', addressFor(null));
         state.address = location.href;
-        finish();
+        return false;
+      };
+
+      const dismiss = () => {
+        if (!dialog.open || state.leaving) return;
+        if (!leaveAddress()) finish();
       };
 
       // Back or Forward: the address decides. A photo address this Lightbox pushed (its state is null)
@@ -331,19 +358,12 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
           state.closing = false;
           return;
         }
-        if (state.pushed && !state.leaving) {
-          state.leaving = true;
-          history.back();
-        } else if (!state.pushed && keyInAddress()) {
-          history.replaceState(history.state, '', addressFor(null));
-          state.address = location.href;
-        }
+        if (!state.leaving) leaveAddress();
         finish();
       });
 
       dialog.addEventListener('click', (event) => {
-        if (event.defaultPrevented || event.button !== 0) return;
-        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (!plainClick(event)) return;
         const target = event.target instanceof Element ? event.target : null;
         const control = target && target.closest('[data-prev], [data-next], [data-close]');
         if (control) {
@@ -421,12 +441,10 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
 
       return {
         state,
-        openAt,
         onHistory,
         // A photograph link that names this Lightbox opens it in place.
         onClick(event) {
-          if (event.defaultPrevented || event.button !== 0) return;
-          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          if (!plainClick(event)) return;
           const target = event.target instanceof Element ? event.target : null;
           const link = target && target.closest('a[data-lightbox][data-photo]');
           if (!link || link.dataset.lightbox !== host.id || !keys.includes(link.dataset.photo || '')) return;

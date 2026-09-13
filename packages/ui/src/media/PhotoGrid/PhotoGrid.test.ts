@@ -11,7 +11,9 @@ describe('PhotoGrid', () => {
     const links = [...body.querySelectorAll('ul.oy-photo-grid > li > a.oy-photo-link')];
     expect(links).toHaveLength(6);
     const first = links[0];
-    expect(first?.getAttribute('href')).toBe('?photo=gala-2025-attendees-group-photo');
+    expect(first?.getAttribute('href')).toBe(
+      '/gallery/gala-2025?photo=gala-2025-attendees-group-photo',
+    );
     expect(first?.getAttribute('data-lightbox')).toBe('album-lightbox');
     expect(first?.getAttribute('data-photo')).toBe('gala-2025-attendees-group-photo');
     // The router leaves the links to the Lightbox.
@@ -28,13 +30,13 @@ describe('PhotoGrid', () => {
     );
   });
 
-  it('loads the first row at once and the first photograph first, the rest lazily', async () => {
+  it("loads the first photograph at once and first, as the page's largest paint, and the rest lazily", async () => {
     const body = await renderToBody(Default);
     const images = [...body.querySelectorAll('img')];
     expect(images.map((img) => img.getAttribute('loading'))).toEqual([
       'eager',
-      'eager',
-      'eager',
+      'lazy',
+      'lazy',
       'lazy',
       'lazy',
       'lazy',

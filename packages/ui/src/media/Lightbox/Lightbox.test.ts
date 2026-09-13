@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './Lightbox.stories';
 
-const { Default, LaterPhotograph, OwnCredit, OnePhoto, Closed } = composeStories(stories);
+const { Default, LaterPhotograph, OwnCredit, OnePhoto, Closed, Pending, ConfirmedUnnamed } =
+  composeStories(stories);
 
 describe('Lightbox', () => {
   it('is a dialog named for the album, served open on the photo address with the element not yet wired', async () => {
@@ -90,6 +91,27 @@ describe('Lightbox', () => {
     );
   });
 
+  it('shows the placeholder naming a photograph the Studio holds no image for, its caption still below', async () => {
+    const body = await renderToBody(Pending);
+    const frame = body.querySelector('.oy-lb-frame:not([hidden])');
+    expect(frame?.querySelector('img')).toBeNull();
+    expect(text(frame?.querySelector('.oy-lb-placeholder'))).toContain('this photograph');
+    expect(text(body.querySelector('.oy-lb-cap > p[data-active="true"] .oy-lb-caption'))).toBe(
+      'Three women in gold, green and copper gèlè and lace stand together in the hall',
+    );
+  });
+
+  it('sets no dot after a caption when the credit line has nothing to say', async () => {
+    const body = await renderToBody(ConfirmedUnnamed);
+    const active = body.querySelector('.oy-lb-cap > p[data-active="true"]');
+    expect(active?.querySelector('.oy-lb-caption')).not.toBeNull();
+    expect(active?.querySelector('.oy-lb-dot')).toBeNull();
+    expect(active?.querySelector('.oy-credit-line')).toBeNull();
+    // With a credit to show, the dot sits between.
+    const owed = (await renderToBody(Default)).querySelector('.oy-lb-cap > p[data-active="true"]');
+    expect(owed?.querySelector('.oy-lb-dot')).not.toBeNull();
+  });
+
   it("names a photograph's own unconfirmed credit with its own chip", async () => {
     const body = await renderToBody(OwnCredit);
     expect(text(body.querySelector('.oy-lb-cap .oy-credit-line'))).toBe(
@@ -115,5 +137,9 @@ describe('Lightbox', () => {
     expect(source).toContain('const SWIPE = 40;');
     expect(source).toContain('window.visualViewport.scale > 1.01');
     expect(source).toContain("'lightbox_opened'");
+    // Served open, the event waits for the page to parse, when the site's listener runs.
+    expect(source).toContain(
+      "document.addEventListener('DOMContentLoaded', report, { once: true })",
+    );
   });
 });

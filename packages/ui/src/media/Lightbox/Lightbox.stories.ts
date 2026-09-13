@@ -54,10 +54,33 @@ export const OwnCredit: Story = {
   args: { photos: [OWN_CREDIT_PHOTO], openKey: OWN_CREDIT_PHOTO.key },
 };
 
+/** A credit confirmed with no photographer named: the caption alone, no dot before an empty credit. */
+export const ConfirmedUnnamed: Story = {
+  ...desktop,
+  args: {
+    photos: GALA_ALBUM_PHOTOS.slice(0, 2).map((photo) => ({
+      ...photo,
+      credit: undefined,
+      confirmed: true,
+    })),
+  },
+};
+
 /** One photograph: no previous or next. */
 export const OnePhoto: Story = {
   ...desktop,
   args: { photos: GALA_ALBUM_PHOTOS.slice(0, 1) },
+};
+
+/** A photograph the Studio holds no image for yet: the placeholder naming it, the caption and credit below. */
+export const Pending: Story = {
+  ...desktop,
+  args: {
+    photos: [
+      { ...(GALA_ALBUM_PHOTOS[0] as (typeof GALA_ALBUM_PHOTOS)[number]), image: undefined },
+      ...GALA_ALBUM_PHOTOS.slice(1),
+    ],
+  },
 };
 
 /** A photograph that fails to load shows its caption in the frame. */

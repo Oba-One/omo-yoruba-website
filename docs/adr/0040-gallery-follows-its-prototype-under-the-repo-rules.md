@@ -33,6 +33,16 @@ string in `span.sc-interp`, which the port's `.oy-album-meta span` rule sets at 
 for the lead, and the site draws those. At 375 the credit section's rows sit 16px lower than the prototype's, the
 section head's margin inside `Split` that every page carries.
 
+## Considered options
+
+- Match the prototype pixel for pixel, its fourth album, short captions and consent rows included: rejected, as in
+  ADR 0028, ADR 0033 and ADR 0036; a family would read invented captions and a consent promise no one made.
+- Crop the Lightbox's photograph to the prototype's 3:2 frame: rejected (Q11); a viewer asked to see a photograph
+  whole, and a portrait photograph would lose its subject.
+- Keep the buttons at the viewport's edges, as first built: rejected once measured; the prototype's centred row
+  sets them beside the photograph, and a reader's pointer travels less.
+- Draw the album titles at the runtime's 13px: rejected; the prototype's own CSS asks 19px and 26px.
+
 ## Consequences
 
 - The captures are reproducible from the runbook's comparison section, which now names the runtime's

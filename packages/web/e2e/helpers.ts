@@ -170,3 +170,21 @@ export const goldSharingAView = (page: Page) =>
       .filter(([one, other]) => one && other.top - one.bottom < height)
       .map(([one, other]) => `${one?.label} + ${other.label}`);
   });
+
+/**
+ * One touch swipe across the middle of an element (ADR 0038): a touchstart and a touchend `dx` sideways and `dy`
+ * down, dispatched on the element, since Playwright has no touch drag. Both photograph steppers listen there.
+ */
+export async function swipe(target: Locator, dx: number, dy: number) {
+  const box = await target.boundingBox();
+  const x = (box?.x ?? 0) + (box?.width ?? 0) / 2;
+  const y = (box?.y ?? 0) + (box?.height ?? 0) / 2;
+  const start = [{ identifier: 1, clientX: x, clientY: y }];
+  const end = [{ identifier: 1, clientX: x + dx, clientY: y + dy }];
+  await target.dispatchEvent('touchstart', {
+    touches: start,
+    changedTouches: start,
+    targetTouches: start,
+  });
+  await target.dispatchEvent('touchend', { touches: [], changedTouches: end, targetTouches: [] });
+}

@@ -11,7 +11,7 @@
 import { albumLine, albumYear, byNewestAlbum } from '@oy/content/albums';
 import { ALBUM_YEAR_PENDING, presenceWhat } from '@oy/content/pending';
 import type { galleryPageQuery } from '@oy/content/queries';
-import { EVENT_PAGE_NAMES, ROUTE_SINGLETONS } from '@oy/content/routes';
+import { albumHref, EVENT_PAGE_NAMES, ROUTE_SINGLETONS } from '@oy/content/routes';
 import type { ClientReturn } from '@sanity/client';
 import { galleryCredits } from './gallery-credits';
 import { pageSkeleton } from './page-skeleton';
@@ -25,36 +25,33 @@ export interface GalleryLayout extends Record<string, string> {
   state: 'built' | 'soon';
 }
 
-const PAGE_TITLE = 'Photographs';
+/** The gallery's name, and an album page's when no album could be read. */
+export const GALLERY_TITLE = 'Photographs';
 
 /** Under `state: soon`: nothing unconfirmed, and where the photographs are meanwhile (spec Q14). */
 const SOON_TEXT =
   'The albums are being prepared. Until then, the Odunde and Gala pages carry their own photographs.';
 
-/** An album's page, and the address of one of its photographs. */
-export const albumHref = (slug: string, photo?: string) =>
-  photo ? `/gallery/${slug}?photo=${encodeURIComponent(photo)}` : `/gallery/${slug}`;
-
 export function buildGalleryPage(data: GalleryPageData | null, options: BuildOptions) {
-  const page = pageSkeleton<GalleryLayout>('galleryPage', data, options, PAGE_TITLE);
+  const page = pageSkeleton<GalleryLayout>('galleryPage', data, options, GALLERY_TITLE);
   const { edit, layout } = page;
 
   const albums = (data?.albums ?? []).filter(present).flatMap((album) => {
     const slug = cleanText(album.slug);
     if (!slug) return [];
     const title = cleanText(album.title) ?? '';
-    const year = albumYear({ date: album.date, edition: album.edition });
+    const year = albumYear({ date: album.date, editionYear: album.editionYear });
     const line = albumLine({ title, year, count: album.count ?? 0 });
-    const first = cleanText(album.first?._key);
+    const first = cleanText(album.firstPhoto?._key);
     return [
       {
         order: { title, year },
         tile: {
           title: album.title ?? '',
           href: albumHref(slug, layout.open === 'viewer' ? first : undefined),
-          image: resolveImage(options.imageSet, album.cover ?? album.first, { width: 720 }),
+          image: resolveImage(options.imageSet, album.cover ?? album.firstPhoto, { width: 720 }),
           year: line.year,
-          count: line.count,
+          count: line.photographs,
           yearPending: line.yearOwed ? ALBUM_YEAR_PENDING : undefined,
           edit: edit(album.cover ? 'cover' : `photos[_key=="${first ?? ''}"]`, album._id, 'album'),
         },

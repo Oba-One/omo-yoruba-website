@@ -106,7 +106,7 @@ export const PAGE_LAYOUTS = {
       title: 'Opening an album',
       options: ['viewer', 'grid'],
       description:
-        "viewer opens the Lightbox on the album's first photograph; grid opens the album's page of photographs.",
+        "Viewer opens the Lightbox on the album's first photograph; grid opens the album's page of photographs.",
     },
     {
       name: 'captions',
@@ -120,7 +120,7 @@ export const PAGE_LAYOUTS = {
       title: 'State',
       options: ['built', 'soon'],
       description:
-        'soon hides the albums behind one sentence pointing to the Odunde and Gala pages while the albums are prepared.',
+        'Soon hides the albums behind one sentence pointing to the Odunde and Gala pages while the albums are prepared.',
     },
   ],
   newsPage: [

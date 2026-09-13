@@ -15,6 +15,9 @@ import {
 // project, where every read answers null and the albums are the Pending line. None of the prototype's inventions
 // (the consent rows, the soon sentence's delivery, the camp's college, the old inbox) stands in.
 
+/** The prototype's soon sentence waits on a delivery the dataset already holds. */
+const SOON_INVENTION = /delivers the 2026 set|stays out of the navigation/;
+
 const CONSENT_PENDING = pendingWhat('galleryPage', 'creditsAndConsent');
 const INBOX_PENDING = pendingWhat('siteSettings', 'generalEmail');
 
@@ -40,8 +43,10 @@ test.describe('the gallery', () => {
     page,
   }) => {
     await page.goto('/gallery');
+    await expect(page.locator('#albums')).not.toContainText(SOON_INVENTION);
     if ((await bodyOption(page, 'state')) === 'soon') {
       await expect(page.locator('#albums .oy-album-grid')).toHaveCount(0);
+      await expect(page.locator('#albums')).toContainText('The albums are being prepared.');
       return;
     }
     const tiles = page.locator('#albums a.oy-album');
@@ -81,20 +86,39 @@ test.describe('the gallery', () => {
     expect(await page.locator('#albums').innerText()).not.toMatch(/Citrus College|2018|2019/);
   });
 
-  test("opens an album's first photograph from its tile under open: viewer", async ({ page }) => {
+  test('opens an album from its tile, its first photograph under open: viewer; closing shows the album and Back returns', async ({
+    page,
+  }) => {
     await page.goto('/gallery');
     const tile = page.locator('#albums a.oy-album').first();
-    test.skip((await tile.count()) === 0, 'The Studio holds no album with a photograph here.');
+    if ((await tile.count()) === 0) {
+      // No album holds a photograph here (the placeholder project, or state: soon): nothing to open.
+      await expect(page.locator('#albums .oy-pend-line, #albums .oy-prose').first()).toBeVisible();
+      await expect(page.locator('dialog[open]')).toHaveCount(0);
+      return;
+    }
     const open = await bodyOption(page, 'open');
     await tile.click();
     await expect(page).toHaveURL(/\/gallery\/odunde-2026/);
     await expect(page.locator('h1')).toHaveText('Odunde 2026');
+    const lightbox = page.locator('dialog.oy-lightbox');
     if (open === 'viewer') {
-      await expect(page.locator('dialog.oy-lightbox')).toHaveAttribute('open', '');
+      await expect(lightbox).toHaveAttribute('open', '');
       await expect(page).toHaveURL(/photo=odunde-2026-kid-playing-with-elder/);
+      await expect(page.locator('oy-lightbox')).toHaveAttribute('data-ready', 'true');
+      // Closing keeps the album page, on its own address, with its photographs behind.
+      await page.keyboard.press('Escape');
+      await expect(lightbox).not.toHaveAttribute('open', '');
+      await expect(page).toHaveURL(/\/gallery\/odunde-2026$/);
+      await expect(page.locator('.oy-photo-grid a[data-photo]').first()).toBeVisible();
     } else {
       await expect(page.locator('dialog[open]')).toHaveCount(0);
     }
+    // Back returns to the gallery: the router's own traverse, which the Lightbox leaves alone.
+    await page.goBack();
+    await expect(page).toHaveURL(/\/gallery$/);
+    await expect(page.locator('#albums a.oy-album').first()).toBeVisible();
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
   });
 
   test('closes with photography credit and permissions, the policy and the inbox owed until the Studio holds them', async ({
@@ -111,6 +135,21 @@ test.describe('the gallery', () => {
     await expect(section.locator('.oy-fact').first()).toContainText(
       'Given with each album, and with a photograph where it differs.',
     );
+    // The policy is the Studio's words or its chip, and removal requests the inbox's link or its chip.
+    const [policy, removal] = [
+      section.locator('.oy-fact').nth(1),
+      section.locator('.oy-fact').nth(2),
+    ];
+    if ((await policy.locator('.oy-pend').count()) > 0) {
+      await expect(policy).toContainText(`Pending: ${CONSENT_PENDING}`);
+    } else {
+      await expect(policy.locator('dd')).not.toBeEmpty();
+    }
+    if ((await removal.locator('.oy-pend').count()) > 0) {
+      await expect(removal).toContainText(`Pending: ${INBOX_PENDING}`);
+    } else {
+      await expect(removal.locator('a[href^="mailto:"]')).toHaveCount(1);
+    }
     const text = await section.innerText();
     expectNoMockWhileOwed(text, [
       [/Signs at every entrance|written consent at registration/i, CONSENT_PENDING],
