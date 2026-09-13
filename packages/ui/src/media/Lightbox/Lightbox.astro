@@ -514,7 +514,8 @@ const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(inde
     border: 0;
     color: var(--white);
     display: grid;
-    grid-template-columns: 94px minmax(0, 1fr) 94px;
+    /* The prototype's centred row: the photograph up to 1080px, each button 18px beside it. */
+    grid-template-columns: minmax(94px, 1fr) minmax(0, 1080px) minmax(94px, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;
     grid-template-areas:
       'prev stage next'

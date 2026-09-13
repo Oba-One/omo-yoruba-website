@@ -312,7 +312,10 @@ prototype's runtime can draw its sections outside `.oy-home`, so its theme never
 (`12 Yoruba Cultural Collective.dc.html` and `15 People and History.dc.html` read paper where the `adire`
 tint belongs): check a surprising ground with `getComputedStyle` before matching it. A prototype's inline
 style can also override the tokens' mobile rules (`16 Donate.dc.html`'s give-now split runs off the screen
-at 375), so read its markup before copying a mobile layout. A page whose option hides a block (Our Story's
+at 375), so read its markup before copying a mobile layout. The prototypes' runtime also wraps every
+interpolated string in `span.sc-interp`, so a port rule on a container's spans restyles the text it interpolates
+(`18 Photo Gallery.dc.html`'s album titles render at the meta line's 13px): read `getComputedStyle` on the span,
+not its parent. A page whose option hides a block (Our Story's
 timeline) is compared through its page-section story, with the prototype's section forced visible. An edited `@oy/ui` component's scoped stylesheet can stay stale in `astro dev` until the
 server restarts.
 
