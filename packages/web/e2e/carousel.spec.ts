@@ -87,6 +87,40 @@ for (const route of ROUTES) {
       expect(shown).toBe(1);
     });
 
+    test('a sideways swipe on touch moves the photograph; a short or mostly vertical one does not', async ({
+      page,
+      isMobile,
+    }) => {
+      test.skip(!isMobile, 'Touch runs in the mobile project.');
+      const host = await carouselOn(page, route);
+      const stage = host.locator('.oy-carousel-stage');
+      const total = await host.getByRole('tab').count();
+      const swipe = async (dx: number, dy: number) => {
+        const box = await stage.boundingBox();
+        const x = (box?.x ?? 0) + (box?.width ?? 0) / 2;
+        const y = (box?.y ?? 0) + (box?.height ?? 0) / 2;
+        const start = [{ identifier: 1, clientX: x, clientY: y }];
+        const end = [{ identifier: 1, clientX: x + dx, clientY: y + dy }];
+        await stage.dispatchEvent('touchstart', {
+          touches: start,
+          changedTouches: start,
+          targetTouches: start,
+        });
+        await stage.dispatchEvent('touchend', {
+          touches: [],
+          changedTouches: end,
+          targetTouches: [],
+        });
+      };
+      await swipe(-120, 12);
+      await expect(host.locator('.oy-carousel-count')).toHaveText(`2 of ${total}`);
+      await swipe(120, -6);
+      await expect(host.locator('.oy-carousel-count')).toHaveText(`1 of ${total}`);
+      await swipe(-30, 0);
+      await swipe(-50, 120);
+      await expect(host.locator('.oy-carousel-count')).toHaveText(`1 of ${total}`);
+    });
+
     test('is clean for axe on the second photograph', async ({ page }) => {
       const host = await carouselOn(page, route);
       await host.getByRole('button', { name: 'Next photo' }).click();

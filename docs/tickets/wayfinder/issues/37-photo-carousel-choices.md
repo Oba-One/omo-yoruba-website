@@ -20,3 +20,10 @@ answer can be reversed:
 4. The count reads "1 of 8", not uppercase; the caption keeps 15px and the count 12.5px.
 5. Eight photographs, so eight dots take two rows at 375 (the count moves up beside the caption); the
    carousel could take six instead.
+
+## Comments
+
+13 September 2026 (Phase 8). Answer 1 is settled with the owner in the gallery grill (`docs/tickets/phase-8/spec.md`,
+Q3; ADR 0038): the Lightbox and the carousel both move on one touch swipe, at least 40px sideways and further
+sideways than down, ignored while the page is pinch-zoomed, with no change to scrolling or zoom; the buttons stay.
+Answers 2 to 5 (the dots as tabs, the drawn chevrons, the count's case, eight photographs) are still the owner's.

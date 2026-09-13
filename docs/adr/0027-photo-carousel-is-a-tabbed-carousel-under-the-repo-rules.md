@@ -23,7 +23,8 @@ differs, the site departs from it:
 - **Tab names.** "Photo 2" instead of "Photo 2 of 6": the tabs pattern carries the position, which the
   pattern calls unnecessary in a name.
 - **Swipe.** None. The component map lists swipe for the Lightbox, not the carousel, and the buttons
-  meet WCAG 2.5.1 without it; the Lightbox (Phase 8) decides for both.
+  meet WCAG 2.5.1 without it; the Lightbox (Phase 8) decides for both. Superseded by ADR 0038: both move on
+  one touch swipe.
 - **One slide at a time.** The prototype stacks every slide at opacity 0 behind a .35s fade and hides the
   inactive ones only with `aria-hidden`. The site renders the inactive slides `hidden`, fades the
   incoming one in over 0.2s (the conventions' range), not at all under reduced motion, and hides the
