@@ -5,6 +5,30 @@
  * Pending states in the registry's own wording. No cadence, age, fee, level, lesson step, teacher,
  * quote, status or date the register marks as invented.
  */
+import { PROGRAMS } from './homepage';
+
+/**
+ * The four programs as the Programs hub shows them: the seeded cadence of the Lessons and no ages yet
+ * (both Pending), and the inline programs linking to their sections on the page.
+ */
+export const PROGRAM_CARDS = PROGRAMS.map((program) => ({
+  ...program,
+  cadence: program.page === 'lessons' ? 'Online, by arrangement' : null,
+  ages: null,
+  action:
+    program.slug === 'kids-stem'
+      ? { label: 'On this page', kind: 'anchor', href: '#kids' }
+      : program.slug === 'cultural-exchange'
+        ? { label: 'On this page', kind: 'anchor', href: '#exchange' }
+        : program.action,
+}));
+
+export const PROGRAMS_HEADER = {
+  kicker: { yo: 'Ohun tí a ń ṣe', en: 'What we do' },
+  title: 'Our programs',
+  line: 'What runs through the year, for children, teenagers, and adults, across Los Angeles. Two programs have their own page. The rest are described in full below.',
+  actions: [{ label: 'Enrol a learner', kind: 'enquiry', enquiryKind: 'enrol' }],
+};
 
 /** The Programs page's take-part rows as the seed writes them. */
 export const PROGRAMS_TAKE_PART = [

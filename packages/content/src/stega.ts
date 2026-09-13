@@ -40,6 +40,9 @@ export const STEGA_LOGIC_KEYS: ReadonlySet<string> = new Set([
   'tiers',
   'awards',
   'past',
+  'cards',
+  'inline',
+  'yearstrip',
   'way',
 ]);
 

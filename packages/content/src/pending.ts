@@ -203,6 +203,25 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'the header photograph',
   },
   { type: 'galaPage', fields: ['header.title'], where: 'Gala, header', what: 'the page heading' },
+  // The program pages' slim headers draw no photograph, so only the heading is owed.
+  {
+    type: 'programsPage',
+    fields: ['header.title'],
+    where: 'Programs, header',
+    what: 'the page heading',
+  },
+  {
+    type: 'lessonsPage',
+    fields: ['header.title'],
+    where: 'Lessons, header',
+    what: 'the page heading',
+  },
+  {
+    type: 'collectivePage',
+    fields: ['header.title'],
+    where: 'Collective, header',
+    what: 'the page heading',
+  },
   {
     type: 'galaPage',
     fields: ['header.image'],

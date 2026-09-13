@@ -64,3 +64,12 @@ export const Pending: Story = {
     },
   },
 };
+
+/** The Programs hub's line under its cards, in the muted small type the prototype sets. */
+export const WithNote: Story = {
+  args: {
+    columns: 4,
+    note: 'Each card says who it is for and when it runs, so you can find the right one at a glance.',
+    slots: { default: programs(4) },
+  },
+};

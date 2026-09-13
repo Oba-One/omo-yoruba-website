@@ -162,6 +162,9 @@ describe('pendingWhat and pendingTitle', () => {
     expect(pendingWhat('event', 'venue.name', 'gala')).toBe('the venue');
     expect(pendingWhat('event', 'venue.name', 'festival')).toBe('the venue');
     expect(pendingWhat('homepage', 'hero.image')).toBe('the hero photograph');
+    for (const type of ['programsPage', 'lessonsPage', 'collectivePage']) {
+      expect(pendingWhat(type, 'header.title'), type).toBe('the page heading');
+    }
     expect(pendingWhat('festivalPage', 'planYourVisit[]')).toBe('the eight practical facts');
     expect(pendingWhat('festivalPage', 'planYourVisit')).toBe('a practical fact');
     expect(pendingWhat('festivalPage', 'extraFacts')).toBe('a glance fact');

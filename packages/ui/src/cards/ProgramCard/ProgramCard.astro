@@ -5,7 +5,9 @@
  * highlighted card (`data-highlight` on the page root, the `highlight` option) moves first and
  * takes the gold ring, the prototype's page rule ported below; the Collective's link reads
  * green, the one place green lives outside its page. A missing blurb shows the registry's chip;
- * without an action the card has no link.
+ * without an action the card has no link. With `when` (the Programs hub, `10 Programs.dc.html`) the
+ * card leads with the program's cadence and ages above its name, each the registry's chip while the
+ * Studio holds none.
  */
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
@@ -21,11 +23,17 @@ export interface ProgramLike {
   blurb?: string | null;
   image?: ImageInput | null;
   page?: string | null;
+  cadence?: string | null;
+  ages?: string | null;
   action?: ActionLike | null;
 }
 
 interface Props {
   program: ProgramLike;
+  /** The cadence and ages over the name, as the Programs hub draws its cards. */
+  when?: boolean;
+  /** The photograph's height: 170 on the homepage, 160 or 200 on the Programs hub. */
+  mediaHeight?: number;
   /** A `data-sanity` attribute for the photo. */
   imageEdit?: string;
   class?: string;
@@ -37,29 +45,43 @@ const HIGHLIGHT_CLASS: Record<string, string> = {
   collective: 'v2-prog--collective',
 };
 
-const { program, imageEdit, class: className } = Astro.props;
+const { program, when = false, mediaHeight = 170, imageEdit, class: className } = Astro.props;
 const name = program.name?.trim();
 const action: ActionLike | undefined = program.action?.label ? program.action : undefined;
 const blurbPending = pendingWhat('program', 'blurb');
+const cadence = program.cadence?.trim();
+const ages = program.ages?.trim();
 ---
 
 <Card
-  title={name || undefined}
+  title={when ? undefined : name || undefined}
   image={program.image}
   imageEdit={imageEdit}
   alt=""
-  mediaHeight={170}
+  mediaHeight={mediaHeight}
   class:list={[program.page && HIGHLIGHT_CLASS[program.page], className]}
   data-program={program.page ?? program.slug ?? undefined}
+  style={`--program-media-height: ${mediaHeight}px`}
 >
   {
     !program.image && (
       <ImagePlaceholder
         slot="media"
         what={`a photo of ${name ?? 'the program'}`}
-        aspect="360 / 170"
+        aspect={`360 / ${mediaHeight}`}
         class="oy-program-placeholder"
       />
+    )
+  }
+  {
+    when && (
+      <>
+        <div class="pg-when">
+          {cadence ? <span>{program.cadence}</span> : <Pending what={pendingWhat('program', 'cadence')} />}
+          {ages ? <span>{program.ages}</span> : <Pending what={pendingWhat('program', 'ages')} />}
+        </div>
+        {name && <h3>{name}</h3>}
+      </>
     )
   }
   <p>{program.blurb || <Pending what={blurbPending} />}</p>
@@ -68,7 +90,7 @@ const blurbPending = pendingWhat('program', 'blurb');
 
 <style>
   :global(.oy-card) > :global(.oy-program-placeholder) {
-    height: 170px;
+    height: var(--program-media-height, 170px);
     aspect-ratio: auto;
   }
   :global([data-program='collective']) :global(.oy-program-link) {

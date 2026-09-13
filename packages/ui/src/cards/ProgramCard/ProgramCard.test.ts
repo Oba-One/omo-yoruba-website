@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './ProgramCard.stories';
 
-const { Default, Collective, NoPhoto, Pending, WithEdit } = composeStories(stories);
+const { Default, Collective, NoPhoto, Pending, WithEdit, When, WhenPending } =
+  composeStories(stories);
 
 describe('ProgramCard', () => {
   it('renders the photo, the name, the blurb and the quiet action from the Studio', async () => {
@@ -42,5 +43,31 @@ describe('ProgramCard', () => {
   it('puts the edit attribute on the photo in draft mode', async () => {
     const img = (await renderToBody(WithEdit)).querySelector('img.oy-card-media');
     expect(img?.getAttribute('data-sanity')).toContain('type=program;path=image');
+  });
+
+  it('leads with the cadence and the ages on the Programs hub, each its chip while owed', async () => {
+    const card = (await renderToBody(When)).querySelector('.oy-card');
+    const when = card?.querySelector('.oy-card-body > .pg-when');
+    expect([...(when?.children ?? [])].map((cell) => text(cell))).toEqual([
+      'Online, by arrangement',
+      'Pending: the ages',
+    ]);
+    // The line sits above the name, which stays the card's one heading.
+    expect(when?.nextElementSibling?.tagName).toBe('H3');
+    expect(card?.querySelectorAll('h3')).toHaveLength(1);
+    expect(card?.querySelector('img.oy-card-media')?.getAttribute('style')).toContain(
+      'height: 160px',
+    );
+
+    const exchange = (await renderToBody(WhenPending)).querySelector('.oy-card');
+    expect(
+      [...(exchange?.querySelectorAll('.pg-when > *') ?? [])].map((cell) => text(cell)),
+    ).toEqual(['Pending: the cadence', 'Pending: the ages']);
+    expect(exchange?.querySelector('a.oy-btn--quiet')?.getAttribute('href')).toBe('#exchange');
+  });
+
+  it('leaves the when line off the homepage card', async () => {
+    const card = (await renderToBody(Default)).querySelector('.oy-card');
+    expect(card?.querySelector('.pg-when')).toBeNull();
   });
 });

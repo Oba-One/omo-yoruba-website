@@ -5,4 +5,5 @@
  */
 export * from './event-pages';
 export * from './homepage';
+export * from './program-pages';
 export * from './site';
