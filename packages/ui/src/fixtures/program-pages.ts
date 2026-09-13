@@ -77,6 +77,21 @@ export const CULTURAL_EXCHANGE = {
   imagePending: 'a photograph of the exchange',
 };
 
+/** The registry's wording for a year strip row without its when. */
+export const YEAR_WHEN_PENDING = 'when it runs';
+
+/**
+ * The year strip as the seed writes it: the two event rows with their confirmed months, the three
+ * program rows owing their cadence, and the notes the register confirms.
+ */
+export const YEAR_STRIP = [
+  { _key: 'row-1', name: 'Yoruba Language Lessons', note: 'Online, scheduled with the teacher' },
+  { _key: 'row-2', when: 'June', name: 'Odunde Festival', note: 'Leimert Park' },
+  { _key: 'row-3', when: 'Nov or Dec', name: 'End-of-Year Gala' },
+  { _key: 'row-4', name: 'Kids & STEM', note: 'Àgbàlá Ọmọde runs at the festival' },
+  { _key: 'row-5', name: 'Yoruba Cultural Collective', note: 'Solar Hub, Green Goods' },
+];
+
 /** The Programs page's take-part rows as the seed writes them. */
 export const PROGRAMS_TAKE_PART = [
   {

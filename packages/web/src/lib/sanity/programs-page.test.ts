@@ -147,6 +147,31 @@ const seeded = {
     howToJoin: null,
     image: null,
   },
+  yearStrip: [
+    {
+      _key: 'row-1',
+      when: null,
+      kind: null,
+      note: 'Online, scheduled with the teacher',
+      program: 'Yoruba Language Lessons',
+    },
+    { _key: 'row-2', when: 'June', kind: 'festival', note: 'Leimert Park', program: null },
+    { _key: 'row-3', when: 'Nov or Dec', kind: 'gala', note: null, program: null },
+    {
+      _key: 'row-4',
+      when: null,
+      kind: null,
+      note: 'Àgbàlá Ọmọde runs at the festival',
+      program: 'Kids & STEM',
+    },
+    {
+      _key: 'row-5',
+      when: null,
+      kind: null,
+      note: 'Solar Hub, Green Goods',
+      program: 'Yoruba Cultural Collective',
+    },
+  ],
   layout: { cards: 'four', inline: 'expanded', yearstrip: 'shown' },
   seo: null,
 } as unknown as ProgramsPageData;
@@ -302,6 +327,24 @@ describe('buildProgramsPage', () => {
     expect(none.kids.subprograms).toEqual([]);
   });
 
+  it("names each year strip row by its program or its event's page, its when or the chip", () => {
+    const year = buildProgramsPage(seeded, options).year;
+    expect(year).toMatchObject({
+      shown: true,
+      whenPending: 'when it runs',
+      pending: 'when each program runs',
+    });
+    expect(year.rows.map((row) => [row.when, row.name, row.note])).toEqual([
+      [null, 'Yoruba Language Lessons', 'Online, scheduled with the teacher'],
+      ['June', 'Odunde Festival', 'Leimert Park'],
+      ['Nov or Dec', 'End-of-Year Gala', null],
+      [null, 'Kids & STEM', 'Àgbàlá Ọmọde runs at the festival'],
+      [null, 'Yoruba Cultural Collective', 'Solar Hub, Green Goods'],
+    ]);
+    expect(buildProgramsPage(withLayout({ yearstrip: 'hidden' }), options).year.shown).toBe(false);
+    expect(buildProgramsPage(null, options).year.rows).toEqual([]);
+  });
+
   it('writes edit attributes only in draft mode', () => {
     expect(buildProgramsPage(seeded, options).edit.cards).toBeUndefined();
     const draft = buildProgramsPage(seeded, { ...options, draft: true });
@@ -311,5 +354,6 @@ describe('buildProgramsPage', () => {
     expect(draft.kids.subprograms[0]?.imageEdit).toContain('path=kidsStem.subprograms:sub-1.image');
     expect(draft.exchange.imageEdit).toContain('path=culturalExchange.image');
     expect(draft.edit.inline).toContain('path=layout.inline');
+    expect(draft.year.edit).toContain('path=yearStrip');
   });
 });

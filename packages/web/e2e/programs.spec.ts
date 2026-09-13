@@ -148,6 +148,37 @@ test.describe('the Programs page', () => {
     await context.close();
   });
 
+  test('shows when things run as the option says, each when or its chip, never an invented cadence', async ({
+    page,
+  }) => {
+    await page.goto('/programs');
+    const option = await page.locator('body').getAttribute('data-yearstrip');
+    const section = page.locator('#year');
+    if (option === 'hidden') {
+      await expect(section).toHaveCount(0);
+      return;
+    }
+    await expect(section.locator('h2')).toHaveText('When things run');
+    const cells = section.locator('.oy-year > div');
+    if ((await cells.count()) === 0) {
+      await expect(section.locator('.oy-pend-line')).toBeVisible();
+    } else {
+      for (const cell of await cells.all()) {
+        const when = await cell.locator('b').innerText();
+        expect(when.trim().length).toBeGreaterThan(0);
+        await expect(cell.locator('strong')).toHaveCount(1);
+      }
+      // An event row is named by its page, never by an edition's year.
+      expect(await section.locator('.oy-year strong').allInnerTexts()).not.toContainEqual(
+        expect.stringMatching(/20\d\d/),
+      );
+    }
+    expectNoMockWhileOwed(await section.innerText(), [
+      [/Year-round|Saturdays|Monthly|Date pending/i, pendingWhat('programsPage', 'yearStrip')],
+    ]);
+    await expect(section.locator('.oy-handoff a[href="/impact"]')).toContainText('See our impact');
+  });
+
   test('closes with the take-part rows, one gold action, the give row quiet', async ({ page }) => {
     await page.goto('/programs');
     const section = page.locator('#take-part');

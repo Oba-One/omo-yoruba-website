@@ -326,6 +326,19 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Programs, Cultural Exchange',
     what: 'a photograph of the exchange',
   },
+  // "Year-round", "Saturdays" and "Monthly" are invented; a row names its when once it is confirmed.
+  {
+    type: 'programsPage',
+    fields: ['yearStrip[]'],
+    where: 'Programs, when things run',
+    what: 'when each program runs',
+  },
+  {
+    type: 'programsPage',
+    condition: 'count(yearStrip[!defined(when)]) > 0',
+    where: 'Programs, when things run',
+    what: 'when it runs',
+  },
   ...takePartRows('programsPage', 'Programs, take part'),
   {
     type: 'lessonsPage',

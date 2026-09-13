@@ -237,16 +237,27 @@ export const programsPage = definePage({
       name: 'yearStrip',
       title: 'When things run',
       type: 'array',
+      description: 'Five columns, one per program or event, in order.',
       of: [
         {
           type: 'object',
           name: 'yearStripRow',
+          // A row names a program or an event page's kind, never an edition, which would go stale the
+          // day it ends (ADR 0031).
+          validation: (rule) =>
+            rule.custom((row) => {
+              const value = row as { program?: unknown; kind?: string } | undefined;
+              if (!value) return true;
+              return Boolean(value.program) !== Boolean(value.kind)
+                ? true
+                : 'Choose a program or an event, not both.';
+            }),
           fields: [
             defineField({
               name: 'when',
               title: 'When',
               type: 'string',
-              description: '"June", "Nov or Dec", "Year-round".',
+              description: '"June", "Nov or Dec". Empty shows Pending.',
               validation: voice.text,
             }),
             defineField({
@@ -256,14 +267,30 @@ export const programsPage = definePage({
               to: [{ type: 'program' }],
             }),
             defineField({
-              name: 'event',
+              name: 'kind',
               title: 'Event',
-              type: 'reference',
-              to: [{ type: 'event' }],
+              type: 'string',
+              description: 'The event whose page the row names; its name shows without a year.',
+              options: {
+                list: [
+                  { title: 'Odunde Festival', value: 'festival' },
+                  { title: 'End-of-Year Gala', value: 'gala' },
+                ],
+                layout: 'radio',
+                direction: 'horizontal',
+              },
             }),
             defineField({ name: 'note', title: 'Note', type: 'string', validation: voice.text }),
           ],
-          preview: { select: { title: 'when', subtitle: 'note' } },
+          preview: {
+            select: { when: 'when', program: 'program.name', kind: 'kind', note: 'note' },
+            prepare: ({ when, program, kind, note }) => ({
+              title:
+                program ??
+                (kind === 'gala' ? 'End-of-Year Gala' : kind ? 'Odunde Festival' : 'A row'),
+              subtitle: [when ?? 'when pending', note].filter(Boolean).join(' • '),
+            }),
+          },
         },
       ],
     }),

@@ -9,12 +9,20 @@
 
 import ProgramCard from '../../cards/ProgramCard/ProgramCard.astro';
 import { countWord } from '../../content/count-word';
-import { PROGRAM_CARDS, PROGRAMS_HEADER, PROGRAMS_TAKE_PART } from '../../fixtures/program-pages';
+import {
+  PROGRAM_CARDS,
+  PROGRAMS_HEADER,
+  PROGRAMS_TAKE_PART,
+  YEAR_STRIP,
+  YEAR_WHEN_PENDING,
+} from '../../fixtures/program-pages';
 import CardGrid from '../../page/CardGrid/CardGrid.astro';
+import Handoff from '../../page/Handoff/Handoff.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
 import Section from '../../page/Section/Section.astro';
 import SectionHead from '../../page/SectionHead/SectionHead.astro';
 import TakePartBand from '../../page/TakePartBand/TakePartBand.astro';
+import YearStrip from '../../page/YearStrip/YearStrip.astro';
 import type { SlotValue } from '../../storybook';
 import ExchangeSection from './ExchangeSection.astro';
 import KidsStemSection from './KidsStemSection.astro';
@@ -66,6 +74,38 @@ export const exchange = (option: InlineOption): SlotValue => ({
   component: ExchangeSection,
   props: { open: option === 'expanded' },
 });
+
+/** When things run: the five rows as seeded, then the impact handoff. */
+export const year: SlotValue = {
+  component: Section,
+  props: { id: 'year', ground: 'alt', labelledby: 'year-heading' },
+  slots: {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          kicker: { yo: 'Ọdún kan', en: 'One year' },
+          title: 'When things run',
+          intro: 'One line per program, across one year. Worth a screenshot.',
+          id: 'year-heading',
+        },
+      },
+      {
+        component: YearStrip,
+        props: { rows: YEAR_STRIP, whenPending: YEAR_WHEN_PENDING },
+      },
+      {
+        component: Handoff,
+        props: {
+          shape: 'box',
+          variant: 'quiet',
+          text: 'What these programs have produced, with a source line under every number.',
+          action: { label: 'See our impact', kind: 'url', href: '/impact' },
+        },
+      },
+    ],
+  },
+};
 
 export const takePart: SlotValue = {
   component: Section,

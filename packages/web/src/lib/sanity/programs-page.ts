@@ -5,7 +5,8 @@
  * missing heading, every program as a card in order (the first three under the `cards` option's
  * `three`), a program with its own page linking there and an inline program linking to its section
  * on this page, the two inline programs (Kids & STEM with its sub-programs, Cultural Exchange with its
- * facts) open or closed by `inline` and hidden with a card the `three` option leaves out, every
+ * facts) open or closed by `inline` and hidden with a card the `three` option leaves out, the year
+ * strip's rows named by program or by event page, every
  * photograph resolved to a CDN set with its alt and framing, the take-part rows with the intro that
  * counts them, and the `data-sanity` attributes for click-to-edit in draft mode.
  */
@@ -33,6 +34,12 @@ export const INLINE_SECTIONS: Readonly<Record<string, string>> = {
 };
 
 const COLUMNS: Record<ProgramsLayout['cards'], 2 | 3 | 4> = { four: 4, three: 3, pairs: 2 };
+
+/** An event row's name: its page's own, without an edition's year (ADR 0031). */
+const EVENT_NAMES: Readonly<Record<string, string>> = {
+  festival: 'Odunde Festival',
+  gala: 'End-of-Year Gala',
+};
 
 /** The take-part intro, counting the rows the band draws. */
 function takePartIntro(count: number): string | undefined {
@@ -135,6 +142,20 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
       image: resolveImage(options.imageSet, exchange?.image, { width: 540 }),
       imagePending: pending('culturalExchange.image'),
       imageEdit: edit('culturalExchange.image'),
+    },
+    year: {
+      shown: layout.yearstrip !== 'hidden',
+      rows: (data?.yearStrip ?? [])
+        .filter((row) => row !== null)
+        .map((row) => ({
+          _key: row._key,
+          when: row.when,
+          name: row.program ?? (row.kind ? EVENT_NAMES[row.kind] : undefined),
+          note: row.note,
+        })),
+      whenPending: pending('yearStrip'),
+      pending: pending('yearStrip[]'),
+      edit: edit('yearStrip'),
     },
     takePart: {
       ...page.takePart,

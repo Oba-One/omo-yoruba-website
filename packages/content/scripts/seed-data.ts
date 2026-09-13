@@ -636,21 +636,27 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         ]),
       },
       culturalExchange: { title: 'Cultural Exchange' },
+      // By program or by the event's kind, never an edition (ADR 0031). Only the confirmed whens and
+      // notes: June, November or December, Leimert Park, Àgbàlá Ọmọde at the festival, the Collective's
+      // two initiatives; "Year-round", "Saturdays" and "Monthly" stay Pending.
       yearStrip: withKeys('row', [
         {
           _type: 'yearStripRow',
           program: ref('program-yoruba-lessons'),
           note: 'Online, scheduled with the teacher',
         },
+        { _type: 'yearStripRow', when: 'June', kind: 'festival', note: 'Leimert Park' },
+        { _type: 'yearStripRow', when: 'Nov or Dec', kind: 'gala' },
         {
           _type: 'yearStripRow',
-          when: 'June',
-          event: ref('event-odunde-2027'),
-          note: 'Leimert Park',
+          program: ref('program-kids-stem'),
+          note: 'Àgbàlá Ọmọde runs at the festival',
         },
-        { _type: 'yearStripRow', when: 'Nov or Dec', event: ref('event-gala-2026') },
-        { _type: 'yearStripRow', program: ref('program-kids-stem') },
-        { _type: 'yearStripRow', program: ref('program-cultural-collective') },
+        {
+          _type: 'yearStripRow',
+          program: ref('program-cultural-collective'),
+          note: 'Solar Hub, Green Goods',
+        },
       ]),
       // The prototypes' rows without the volunteer roles, dues, member benefits and what a gift buys
       // (spec Q14, ADR 0029); a chip only where the page names the way in differently.
@@ -890,7 +896,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
  * Fields a schema change retired, per document type: a re-run unsets them where they are still
  * stored, so the Studio shows no unknown field (`takePartOrder` became `takePart`, ADR 0025; the
  * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024; Kids & STEM's
- * section photograph and ages, and a sub-program's ages and detail line, ADR 0031). A path reaches
+ * section photograph and ages, a sub-program's ages and detail line, and a year strip row's edition
+ * reference, ADR 0031). A path reaches
  * into objects with a dot and into every keyed item of an array with `[]`.
  */
 export const RETIRED_FIELDS: Record<string, readonly string[]> = {
@@ -902,6 +909,7 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
     'kidsStem.ages',
     'kidsStem.subprograms[].ages',
     'kidsStem.subprograms[].detail',
+    'yearStrip[].event',
   ],
 };
 

@@ -3,9 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as cards from './Cards.stories';
 import * as inline from './Inline.stories';
+import * as yearstrip from './Yearstrip.stories';
 
 const Cards = composeStories(cards);
 const Inline = composeStories(inline);
+const Yearstrip = composeStories(yearstrip);
 
 describe('the Programs page-section stories', () => {
   it('cards: the option on the root, the columns, the cards and the one heading', async () => {
@@ -54,5 +56,15 @@ describe('the Programs page-section stories', () => {
         'Placeholder for a photograph of the exchange',
       );
     }
+  });
+
+  it('yearstrip: the strip and its handoff when shown, the take-part band next when hidden', async () => {
+    const shown = (await renderToBody(Yearstrip.Shown)).querySelector('.oy-home');
+    expect(shown?.getAttribute('data-yearstrip')).toBe('shown');
+    expect(shown?.querySelectorAll('#year .oy-year > div')).toHaveLength(5);
+    expect(text(shown?.querySelector('#year .oy-handoff a'))).toContain('See our impact');
+    const hidden = (await renderToBody(Yearstrip.Hidden)).querySelector('.oy-home');
+    expect(hidden?.querySelector('#year')).toBeNull();
+    expect(hidden?.querySelector('#take-part')).not.toBeNull();
   });
 });

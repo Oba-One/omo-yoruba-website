@@ -376,6 +376,32 @@ describe('the take-part rows and the retired fields', () => {
     }
   });
 
+  it('seeds the year strip by program or by kind, with only the notes the register confirms', () => {
+    const rows = (
+      byId.get('programsPage') as unknown as {
+        yearStrip: {
+          _key: string;
+          when?: string;
+          kind?: string;
+          program?: { _ref: string };
+          note?: string;
+        }[];
+      }
+    ).yearStrip;
+    expect(
+      rows.map((row) => [row._key, row.when, row.kind ?? row.program?._ref, row.note]),
+    ).toEqual([
+      ['row-1', undefined, 'program-yoruba-lessons', 'Online, scheduled with the teacher'],
+      ['row-2', 'June', 'festival', 'Leimert Park'],
+      ['row-3', 'Nov or Dec', 'gala', undefined],
+      ['row-4', undefined, 'program-kids-stem', 'Àgbàlá Ọmọde runs at the festival'],
+      ['row-5', undefined, 'program-cultural-collective', 'Solar Hub, Green Goods'],
+    ]);
+    // An edition reference would go stale the day the edition ends (ADR 0031).
+    expect(rows.some((row) => 'event' in row)).toBe(false);
+    expect(JSON.stringify(rows)).not.toMatch(/Year-round|Saturdays|Monthly|Date pending/);
+  });
+
   it('unsets retired fields at nested paths, item by item, only where they are stored', () => {
     const stored = {
       kidsStem: {
@@ -391,6 +417,13 @@ describe('the take-part rows and the retired fields', () => {
       'kidsStem.subprograms[_key=="sub-1"].ages',
       'kidsStem.subprograms[_key=="sub-1"].detail',
     ]);
+    const strip = {
+      yearStrip: [
+        { _key: 'row-1', program: { _ref: 'program-yoruba-lessons' } },
+        { _key: 'row-2', event: { _ref: 'event-odunde-2027' }, when: 'June' },
+      ],
+    };
+    expect(retiredFields('programsPage', strip)).toEqual(['yearStrip[_key=="row-2"].event']);
     expect(retiredFields('programsPage', { kidsStem: { title: 'Kids & STEM' } })).toEqual([]);
   });
 

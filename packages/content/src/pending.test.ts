@@ -189,6 +189,11 @@ describe('the inline programs on the Programs hub', () => {
     // The lumped row the register wrote is gone, so no chip reads "everything about this program".
     expect(PENDING.some((row) => row.what === 'everything about this program')).toBe(false);
   });
+
+  it('names a year strip row without its when, and a strip with no rows', () => {
+    expect(pendingWhat('programsPage', 'yearStrip')).toBe('when it runs');
+    expect(pendingWhat('programsPage', 'yearStrip[]')).toBe('when each program runs');
+  });
 });
 
 describe('the take-part rows every page with a band registers', () => {

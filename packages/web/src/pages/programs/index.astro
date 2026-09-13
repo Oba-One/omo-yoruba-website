@@ -18,11 +18,13 @@ import Prose from '@oy/ui/content/Prose/Prose.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
 import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
+import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
 import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
 import Split from '@oy/ui/page/Split/Split.astro';
 import TakePartBand from '@oy/ui/page/TakePartBand/TakePartBand.astro';
+import YearStrip from '@oy/ui/page/YearStrip/YearStrip.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { cachePage } from '../../lib/cache';
 import { STUDIO_BASE_PATH } from '../../lib/paths';
@@ -124,6 +126,31 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
               />
             </Split>
           </Disclosure>
+        </Section>
+      )
+    }
+
+    {
+      page.year.shown && (
+        <Section id="year" ground="alt" labelledby="year-heading" data-sanity={page.edit.yearstrip}>
+          <SectionHead
+            kicker={{ yo: 'Ọdún kan', en: 'One year' }}
+            title="When things run"
+            intro="One line per program, across one year. Worth a screenshot."
+            id="year-heading"
+          />
+          <YearStrip
+            rows={page.year.rows}
+            whenPending={page.year.whenPending}
+            pending={page.year.pending}
+            edit={page.year.edit}
+          />
+          <Handoff
+            shape="box"
+            variant="quiet"
+            text="What these programs have produced, with a source line under every number."
+            action={{ label: 'See our impact', kind: 'url', href: '/impact' }}
+          />
         </Section>
       )
     }

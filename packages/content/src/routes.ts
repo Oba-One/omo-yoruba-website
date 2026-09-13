@@ -66,7 +66,8 @@ export function programRoute(page: string | null | undefined): PublicRoute {
 export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   siteSettings: PUBLIC_ROUTES,
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
-  event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/programs', '/news'],
+  // The year strip names the festival and the Gala by kind, so no edition reaches the Programs hub.
+  event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/news'],
   // The festival page draws the zones; the Gala's running order names a row's zone too.
   zone: ['/odunde', '/gala'],
   ticketTier: ['/gala'],

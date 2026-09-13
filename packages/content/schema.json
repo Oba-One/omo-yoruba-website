@@ -5364,11 +5364,20 @@
                 },
                 "optional": true
               },
-              "event": {
+              "kind": {
                 "type": "objectAttribute",
                 "value": {
-                  "type": "inline",
-                  "name": "event.reference"
+                  "type": "union",
+                  "of": [
+                    {
+                      "type": "string",
+                      "value": "festival"
+                    },
+                    {
+                      "type": "string",
+                      "value": "gala"
+                    }
+                  ]
                 },
                 "optional": true
               },
