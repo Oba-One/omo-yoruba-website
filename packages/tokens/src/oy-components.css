@@ -8,7 +8,8 @@
    mosaic keeps its columns under 820px (Phase 5); the Gala page's own style block (the warm
    treatment and the seam) is ported to the end of this file, with a narrow warm scrim in the formal
    scrim's vertical form; the Pending chip's corners are 16px instead of a full pill, the same on one
-   line and a rounded box when a long chip wraps in a narrow cell (Phase 5).
+   line and a rounded box when a long chip wraps in a narrow cell, and a chip keeps its own box in a
+   sponsor level's amount (Phase 5).
    Everything else is verbatim. */
 
 /* ---- Card treatment (polish pass 2): sharper corners, paper grounds, indigo hairline,
@@ -2455,6 +2456,7 @@
 .oy-pend,
 .oy-glance span.oy-pend,
 .oy-fact span.oy-pend,
+.oy-lrow-tier span.oy-pend,
 .oy-tier-price.oy-pend,
 .oy-outcome-fig.oy-pend,
 .oy-sched-time.oy-pend,
@@ -2469,6 +2471,12 @@
 /* A fact row sets its spans in ink (.oy-fact span); a chip there keeps its own colour. Added in
    Phase 5 for plan your visit. */
 .oy-fact span.oy-pend {
+  color: #7a4409;
+}
+/* A sponsor level sets its amount span as a muted block (.oy-lrow-tier span); a chip there keeps its
+   own box and colour. Added in Phase 5 for the Gala's sponsor levels. */
+.oy-lrow-tier span.oy-pend {
+  display: inline-flex;
   color: #7a4409;
 }
 

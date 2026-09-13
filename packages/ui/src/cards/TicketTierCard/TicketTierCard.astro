@@ -9,6 +9,7 @@
  * deepens on hover, nothing lifts.
  */
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import { safeHref } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
 
 export interface TierLike {
@@ -49,7 +50,8 @@ const {
 } = Astro.props;
 
 const enquiry = tier.variant === 'enquiry';
-const link = ticketsUrl?.trim();
+// A link the Studio's URL rule never saw (an API or seed write) counts as missing.
+const link = safeHref(ticketsUrl);
 const includes = (tier.includes ?? []).filter((line): line is string => Boolean(line?.trim()));
 const variant = primary ? 'primary' : 'secondary';
 ---

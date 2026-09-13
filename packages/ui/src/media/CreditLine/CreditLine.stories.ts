@@ -30,5 +30,8 @@ export const Gala: Story = { args: { ...GALA_ALBUM_CREDIT } };
 /** Confirmed in the Studio: the name alone. */
 export const Confirmed: Story = { args: { confirmed: true } };
 
-/** No credit held. */
+/** No credit held, not confirmed. */
 export const Pending: Story = { args: { credit: null } };
+
+/** Confirmed with no photographer named: no line. */
+export const ConfirmedWithoutName: Story = { args: { credit: null, confirmed: true } };

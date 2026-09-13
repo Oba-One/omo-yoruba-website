@@ -5,6 +5,7 @@
  * Studio holds one, linked to the partner's site when it has one. No partner renders the registry's
  * Pending line. The border deepens on a linked chip's hover; nothing lifts.
  */
+import { safeHref } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
 import { altOf, type ImageInput, imgAttributes } from '../../media/image';
 
@@ -39,7 +40,8 @@ const list = (partners ?? []).filter(
     <ul class:list={['oy-partners', 'oy-partner-row', className]} role="list" data-sanity={edit}>
       {list.map((partner) => {
         const logo = imgAttributes(partner.logo, '140px');
-        const url = partner.url?.trim();
+        // Checked again here: the Studio's URL rule does not run on API or seed writes.
+        const url = safeHref(partner.url);
         const classes = ['oy-partner', logo && 'oy-partner--logo'];
         const face = logo ? (
           <img

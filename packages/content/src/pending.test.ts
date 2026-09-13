@@ -165,7 +165,8 @@ describe('pendingWhat and pendingTitle', () => {
     expect(pendingWhat('festivalPage', 'planYourVisit[]')).toBe('the eight practical facts');
     expect(pendingWhat('festivalPage', 'planYourVisit')).toBe('a practical fact');
     expect(pendingWhat('festivalPage', 'extraFacts')).toBe('a glance fact');
-    expect(pendingWhat('galaPage', 'extraFacts')).toBe('a glance fact');
+    // The Gala's glance is full with the edition's five facts, so no extra row can show a chip.
+    expect(pendingWhat('galaPage', 'extraFacts')).toBeUndefined();
     expect(
       pendingTitle({ type: 'siteSettings', fields: ['ein'], where: 'Everywhere', what: 'EIN' }),
     ).toBe('Everywhere: EIN');

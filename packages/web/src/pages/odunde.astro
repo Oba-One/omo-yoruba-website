@@ -35,13 +35,13 @@ import { STUDIO_BASE_PATH } from '../lib/paths';
 import { buildFestivalPage } from '../lib/sanity/festival-page';
 import { loadQuery } from '../lib/sanity/load-query';
 
-const { data, preview } = await loadQuery(festivalPageQuery, {}, { cookies: Astro.cookies });
+const { data, preview, error } = await loadQuery(festivalPageQuery, {}, { cookies: Astro.cookies });
 const imageSet = createImageSet({
   projectId: PUBLIC_SANITY_PROJECT_ID,
   dataset: PUBLIC_SANITY_DATASET,
 });
 const page = buildFestivalPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
-cachePage(Astro, '/odunde', { draft: preview });
+cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
 ---
 
 <SiteLayout title={page.title} description={page.description} root={page.root}>
@@ -50,10 +50,10 @@ cachePage(Astro, '/odunde', { draft: preview });
       variant={page.header.variant}
       kicker={page.header.kicker}
       title={page.header.title}
-      titlePending="the page heading"
+      titlePending={page.header.titlePending}
       line={page.header.line}
       image={page.header.image}
-      imagePending="the header photograph"
+      imagePending={page.header.imagePending}
       imageEdit={page.header.imageEdit}
       actions={page.header.actions}
       facts={page.header.facts}
@@ -118,6 +118,7 @@ cachePage(Astro, '/odunde', { draft: preview });
             toggle
             open={page.schedule.open}
             pending={page.schedule.pending}
+            timePending={page.schedule.timePending}
             edit={page.edit.schedule}
           />
         </Section>

@@ -240,7 +240,12 @@ describe('buildGalaPage', () => {
   it('carries the evening intro, the running order the option shows and the take-part rows', () => {
     const view = buildGalaPage(seeded, options);
     expect(view.evening.intro).toBe('The Gala closes our year.');
-    expect(view.evening.schedule).toEqual({ shown: true, items: [], pending: 'the running order' });
+    expect(view.evening.schedule).toEqual({
+      shown: true,
+      items: [],
+      pending: 'the running order',
+      timePending: 'the time',
+    });
     const hidden = buildGalaPage(
       { ...seeded, layout: { schedule: 'hidden' } } as GalaPageData,
       options,
@@ -315,11 +320,29 @@ describe('buildGalaPage', () => {
     const levels = {
       ...seeded,
       sponsorIntro: '[ intro ]',
-      sponsorLevels: [{ _id: 'level-1', name: '[ level ]', amount: null, recognition: null }],
+      sponsorLevels: [
+        { _id: 'level-1', name: '[ level ]', amount: null, recognition: null, eventId: null },
+        {
+          _id: 'level-2026',
+          name: '[ this year ]',
+          amount: null,
+          recognition: null,
+          eventId: 'event-gala-2026',
+        },
+        {
+          _id: 'level-2025',
+          name: '[ last year ]',
+          amount: null,
+          recognition: null,
+          eventId: 'event-gala-2025',
+        },
+      ],
     } as unknown as GalaPageData;
     const draft = buildGalaPage(levels, { ...options, draft: true });
     expect(draft.sponsor.intro).toBe('[ intro ]');
     expect(draft.sponsor.levels[0]?.edit).toContain('id=level-1;type=sponsorLevel;path=name');
+    // A level tied to last year's gala leaves the page once that gala is over.
+    expect(draft.sponsor.levels.map((level) => level._id)).toEqual(['level-1', 'level-2026']);
   });
 
   it('hides the honorees unless the option shows them, and names what is owed', () => {

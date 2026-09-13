@@ -24,6 +24,17 @@ export type ActionResolution =
   | { ok: true; label: string; attributes: ActionAttributes }
   | { ok: false; pending: string };
 
+/**
+ * A Studio link fit for an href: http, https, mailto or tel, or a path, fragment or query on this site.
+ * The schema's `rule.uri` runs only in the Studio, so a value written through the API, the seed or the
+ * MCP is checked again wherever it becomes a link; anything else (a `javascript:` URL) answers
+ * undefined and the caller shows no link.
+ */
+export function safeHref(value: string | null | undefined): string | undefined {
+  const raw = value?.trim() ?? '';
+  return /^(https?:|mailto:|tel:)/i.test(raw) || /^(\/(?!\/)|#|\?)/.test(raw) ? raw : undefined;
+}
+
 /** The first of the actions that renders a button, so a half-filled one never replaces a whole one. */
 export function usableAction<A extends ActionLike>(
   ...actions: (A | null | undefined)[]
@@ -48,7 +59,7 @@ export function resolveAction(action: ActionLike | null | undefined): ActionReso
     case 'give':
       return { ok: true, label, attributes: { href: '/donate#give', 'data-give': '' } };
     case 'url': {
-      const href = action.href?.trim();
+      const href = safeHref(action.href);
       if (!href) return { ok: false, pending: 'the link' };
       return {
         ok: true,

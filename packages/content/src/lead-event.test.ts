@@ -36,13 +36,17 @@ describe('leadEvent', () => {
     expect(leadEvent([odunde2026, gala2025], { season: 'auto', now: september })).toBeUndefined();
   });
 
-  it('picks the kind the season names, by its nearest date or its newest edition', () => {
+  it('picks the kind the season names, the nearest edition, as the event page does', () => {
     expect(leadEvent(seeded, { season: 'odunde', now: september })).toBe(odunde2027);
     const dated = [
       { ...odunde2027, start: '2027-06-12T17:00:00Z' },
       { ...odunde2027, _id: 'odunde-2028', edition: 2028, start: '2028-06-10T17:00:00Z' },
     ];
     expect(leadEvent(dated, { season: 'odunde', now: september })?._id).toBe('odunde-2027');
+    // Two undated galas still to come: the band and /gala both lead with the nearer one.
+    const gala2027 = { _id: 'gala-2027', kind: 'gala', edition: 2027 };
+    expect(leadEvent([gala2027, gala2026], { season: 'gala', now: september })).toBe(gala2026);
+    expect(pageEdition([gala2027, gala2026], 'gala', { now: september })).toBe(gala2026);
   });
 
   it('picks the nearest dated edition of either kind for auto', () => {
@@ -79,6 +83,44 @@ describe('pageEdition', () => {
     expect(pageEdition([dated2028, odunde2027], 'festival', { now: september })).toBe(odunde2027);
     const dated2027 = { ...odunde2027, start: '2027-06-12T17:00:00Z' };
     expect(pageEdition([odunde2028, dated2027], 'festival', { now: september })).toBe(dated2027);
+  });
+
+  it('keeps an undated gala ahead for its whole year, and an undated festival until June ends', () => {
+    const gala2027 = { _id: 'gala-2027', kind: 'gala', edition: 2027 };
+    expect(pageEdition([gala2027, gala2026], 'gala', { now: february })).toBe(gala2027);
+    expect(pageEdition([gala2027], 'gala', { now: new Date('2027-12-31T20:00:00Z') })).toBe(
+      gala2027,
+    );
+    expect(pastEdition([{ ...gala2027, album: {} }], 'gala', { now: february })).toBeUndefined();
+    // The calendar is read in Los Angeles: 30 June at 8pm there is still June for Odunde 2027.
+    expect(pageEdition([odunde2027], 'festival', { now: new Date('2027-07-01T03:00:00Z') })).toBe(
+      odunde2027,
+    );
+    expect(
+      pageEdition([odunde2027], 'festival', { now: new Date('2027-07-01T08:00:00Z') }),
+    ).toBeUndefined();
+  });
+
+  it('keeps an edition with no end until the end of its start day in Los Angeles', () => {
+    // Gala night: doors at 6pm PST, no end entered.
+    const galaNight = { ...gala2026, start: '2026-12-06T02:00:00Z' };
+    expect(pageEdition([galaNight], 'gala', { now: new Date('2026-12-06T03:30:00Z') })).toBe(
+      galaNight,
+    );
+    expect(pageEdition([galaNight], 'gala', { now: new Date('2026-12-06T07:59:00Z') })).toBe(
+      galaNight,
+    );
+    expect(
+      pageEdition([galaNight], 'gala', { now: new Date('2026-12-06T08:00:00Z') }),
+    ).toBeUndefined();
+    // Festival day in June (PDT): over at Los Angeles midnight, 07:00 UTC.
+    const festivalDay = { ...odunde2027, start: '2027-06-12T18:00:00Z' };
+    expect(pageEdition([festivalDay], 'festival', { now: new Date('2027-06-13T06:59:00Z') })).toBe(
+      festivalDay,
+    );
+    expect(
+      pageEdition([festivalDay], 'festival', { now: new Date('2027-06-13T07:00:00Z') }),
+    ).toBeUndefined();
   });
 
   it('keeps an edition under way until it ends, and ignores other kinds', () => {

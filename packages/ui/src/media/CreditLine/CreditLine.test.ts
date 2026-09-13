@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './CreditLine.stories';
 
-const { Unconfirmed, Confirmed, Pending } = composeStories(stories);
+const { Unconfirmed, Confirmed, Pending, ConfirmedWithoutName } = composeStories(stories);
 
 describe('CreditLine', () => {
   it('names the photographer with the chip until the credit is confirmed', async () => {
@@ -20,5 +20,7 @@ describe('CreditLine', () => {
     expect(confirmed?.querySelector('.oy-pend')).toBeNull();
     const owed = (await renderToBody(Pending)).querySelector('p.oy-credit-line');
     expect(text(owed)).toBe('Photographs: Pending: photographer credit to confirm');
+    // The registry lists only unconfirmed albums, so a confirmed one without a name shows nothing.
+    expect((await renderToBody(ConfirmedWithoutName)).querySelector('.oy-credit-line')).toBeNull();
   });
 });

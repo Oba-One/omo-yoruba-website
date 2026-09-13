@@ -158,6 +158,130 @@ const imageOf = (slide: CarouselSlide) => ({
   )
 }
 
+{/* The element's script ships only where a carousel renders; the guard makes a second copy a no-op. */}
+{total > 1 && (
+<script is:inline>
+  if (!customElements.get('oy-photo-carousel')) {
+    const wireCarousel = (host) => {
+      const slides = Array.from(host.querySelectorAll('.oy-carousel-slide'));
+      if (slides.length < 2) return null;
+      const captions = Array.from(host.querySelectorAll('.oy-carousel-cap > p'));
+      const tabs = Array.from(host.querySelectorAll('.oy-carousel-dot'));
+      const prev = host.querySelector('[data-prev]');
+      const next = host.querySelector('[data-next]');
+      const count = host.querySelector('.oy-carousel-count');
+      const wrap = (index) => ((index % slides.length) + slides.length) % slides.length;
+      const current = () =>
+        Math.max(
+          0,
+          slides.findIndex((slide) => slide.dataset.active === 'true'),
+        );
+      // The photographs either side of the one shown start loading before they are asked for.
+      const warm = (index) => {
+        for (const at of [index - 1, index + 1]) {
+          const img = slides[wrap(at)].querySelector('img');
+          if (img && img.loading === 'lazy') img.loading = 'eager';
+        }
+      };
+      const show = (index, focusTab) => {
+        const to = wrap(index);
+        if (to === current()) {
+          if (focusTab) tabs[to].focus();
+          return;
+        }
+        const incoming = slides[to];
+        for (const slide of slides) delete slide.dataset.fade;
+        incoming.hidden = false;
+        incoming.dataset.fade = '';
+        slides.forEach((slide, at) => {
+          if (at === to) slide.dataset.active = 'true';
+          else delete slide.dataset.active;
+        });
+        captions.forEach((caption, at) => {
+          if (at === to) caption.dataset.active = 'true';
+          else delete caption.dataset.active;
+        });
+        tabs.forEach((tab, at) => {
+          tab.setAttribute('aria-selected', at === to ? 'true' : 'false');
+          if (at === to) tab.removeAttribute('tabindex');
+          else tab.setAttribute('tabindex', '-1');
+        });
+        if (count) count.textContent = incoming.dataset.position || '';
+        if (focusTab) tabs[to].focus();
+        warm(to);
+        // The outgoing photograph stays under the fade and hides once it ends; a later change wins.
+        const settle = () => {
+          if (incoming.dataset.active !== 'true') return;
+          delete incoming.dataset.fade;
+          slides.forEach((slide, at) => {
+            if (at !== to) slide.hidden = true;
+          });
+        };
+        const fades = typeof incoming.getAnimations === 'function' ? incoming.getAnimations() : [];
+        Promise.all(fades.map((animation) => animation.finished)).then(settle, settle);
+      };
+      if (prev) prev.addEventListener('click', () => show(current() - 1, false));
+      if (next) next.addEventListener('click', () => show(current() + 1, false));
+      tabs.forEach((tab, at) => tab.addEventListener('click', () => show(at, false)));
+      host.addEventListener('keydown', (event) => {
+        if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.shiftKey) return;
+        const onTab = tabs.includes(event.target);
+        if (!onTab && event.target !== prev && event.target !== next) return;
+        let to;
+        if (event.key === 'ArrowLeft') to = current() - 1;
+        else if (event.key === 'ArrowRight') to = current() + 1;
+        else if (onTab && event.key === 'Home') to = 0;
+        else if (onTab && event.key === 'End') to = slides.length - 1;
+        else return;
+        event.preventDefault();
+        show(to, onTab);
+      });
+      return { warm, current };
+    };
+
+    customElements.define(
+      'oy-photo-carousel',
+      class extends HTMLElement {
+        connectedCallback() {
+          if (!this.oyApi) this.oyApi = wireCarousel(this);
+          const api = this.oyApi;
+          if (!api) {
+            // A second carousel on the page upgrades as soon as the parser opens it, before its
+            // slides exist: try again once the document is parsed.
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', () => this.connectedCallback(), {
+                once: true,
+              });
+            }
+            return;
+          }
+          if ('IntersectionObserver' in window) {
+            this.oyObserver = new IntersectionObserver(
+              (entries) => {
+                if (!entries.some((entry) => entry.isIntersecting)) return;
+                api.warm(api.current());
+                this.oyObserver.disconnect();
+                this.oyObserver = null;
+              },
+              { rootMargin: '600px 0px' },
+            );
+            this.oyObserver.observe(this);
+          }
+          this.dataset.ready = 'true';
+        }
+
+        disconnectedCallback() {
+          if (this.oyObserver) this.oyObserver.disconnect();
+          this.oyObserver = null;
+          delete this.dataset.ready;
+        }
+      },
+    );
+  }
+</script>
+)}
+
 <style>
   oy-photo-carousel {
     display: block;
@@ -298,7 +422,7 @@ const imageOf = (slide: CarouselSlide) => ({
 
   /*
    * Under 720px eight 44px dots take two rows: the count moves up beside the caption, so it never
-   * sits on a row of its own, and the first dot lines up with the caption's first letter.
+   * sits on a row of its own, and the first dot sits close to the caption's first letter.
    */
   @media (max-width: 720px) {
     oy-photo-carousel .oy-carousel-bar {
@@ -321,121 +445,9 @@ const imageOf = (slide: CarouselSlide) => ({
     oy-photo-carousel .oy-carousel-dots {
       grid-column: 1 / -1;
       grid-row: 2;
-      margin-left: -16px;
+      /* 12px, not the dot's full 16px inset: the frame clips, and the focus ring needs 4px. */
+      margin-left: -12px;
     }
   }
 </style>
 
-<script is:inline>
-  if (!customElements.get('oy-photo-carousel')) {
-    const wireCarousel = (host) => {
-      const slides = Array.from(host.querySelectorAll('.oy-carousel-slide'));
-      if (slides.length < 2) return null;
-      const captions = Array.from(host.querySelectorAll('.oy-carousel-cap > p'));
-      const tabs = Array.from(host.querySelectorAll('.oy-carousel-dot'));
-      const prev = host.querySelector('[data-prev]');
-      const next = host.querySelector('[data-next]');
-      const count = host.querySelector('.oy-carousel-count');
-      const wrap = (index) => ((index % slides.length) + slides.length) % slides.length;
-      const current = () =>
-        Math.max(
-          0,
-          slides.findIndex((slide) => slide.dataset.active === 'true'),
-        );
-      // The photographs either side of the one shown start loading before they are asked for.
-      const warm = (index) => {
-        for (const at of [index - 1, index + 1]) {
-          const img = slides[wrap(at)].querySelector('img');
-          if (img && img.loading === 'lazy') img.loading = 'eager';
-        }
-      };
-      const show = (index, focusTab) => {
-        const to = wrap(index);
-        if (to === current()) {
-          if (focusTab) tabs[to].focus();
-          return;
-        }
-        const incoming = slides[to];
-        for (const slide of slides) delete slide.dataset.fade;
-        incoming.hidden = false;
-        // A reflow between removing and adding the attribute restarts an interrupted fade.
-        void incoming.offsetWidth;
-        incoming.dataset.fade = '';
-        slides.forEach((slide, at) => {
-          if (at === to) slide.dataset.active = 'true';
-          else delete slide.dataset.active;
-        });
-        captions.forEach((caption, at) => {
-          if (at === to) caption.dataset.active = 'true';
-          else delete caption.dataset.active;
-        });
-        tabs.forEach((tab, at) => {
-          tab.setAttribute('aria-selected', at === to ? 'true' : 'false');
-          if (at === to) tab.removeAttribute('tabindex');
-          else tab.setAttribute('tabindex', '-1');
-        });
-        if (count) count.textContent = incoming.dataset.position || '';
-        if (focusTab) tabs[to].focus();
-        warm(to);
-        // The outgoing photograph stays under the fade and hides once it ends; a later change wins.
-        const settle = () => {
-          if (incoming.dataset.active !== 'true') return;
-          delete incoming.dataset.fade;
-          slides.forEach((slide, at) => {
-            if (at !== to) slide.hidden = true;
-          });
-        };
-        const fades = typeof incoming.getAnimations === 'function' ? incoming.getAnimations() : [];
-        Promise.all(fades.map((animation) => animation.finished)).then(settle, settle);
-      };
-      if (prev) prev.addEventListener('click', () => show(current() - 1, false));
-      if (next) next.addEventListener('click', () => show(current() + 1, false));
-      tabs.forEach((tab, at) => tab.addEventListener('click', () => show(at, false)));
-      host.addEventListener('keydown', (event) => {
-        if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
-        if (event.shiftKey) return;
-        const onTab = tabs.includes(event.target);
-        if (!onTab && event.target !== prev && event.target !== next) return;
-        let to;
-        if (event.key === 'ArrowLeft') to = current() - 1;
-        else if (event.key === 'ArrowRight') to = current() + 1;
-        else if (onTab && event.key === 'Home') to = 0;
-        else if (onTab && event.key === 'End') to = slides.length - 1;
-        else return;
-        event.preventDefault();
-        show(to, onTab);
-      });
-      return { warm, current };
-    };
-
-    customElements.define(
-      'oy-photo-carousel',
-      class extends HTMLElement {
-        connectedCallback() {
-          if (!this.oyApi) this.oyApi = wireCarousel(this);
-          const api = this.oyApi;
-          if (!api) return;
-          if ('IntersectionObserver' in window) {
-            this.oyObserver = new IntersectionObserver(
-              (entries) => {
-                if (!entries.some((entry) => entry.isIntersecting)) return;
-                api.warm(api.current());
-                this.oyObserver.disconnect();
-                this.oyObserver = null;
-              },
-              { rootMargin: '600px 0px' },
-            );
-            this.oyObserver.observe(this);
-          }
-          this.dataset.ready = 'true';
-        }
-
-        disconnectedCallback() {
-          if (this.oyObserver) this.oyObserver.disconnect();
-          this.oyObserver = null;
-          delete this.dataset.ready;
-        }
-      },
-    );
-  }
-</script>

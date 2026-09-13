@@ -78,6 +78,14 @@ describe('PhotoCarousel', () => {
     expect(body.querySelector('oy-photo-carousel')?.getAttribute('aria-label')).toBe('Past galas');
   });
 
+  it('ships the element script with two photographs or more, and none without a carousel', async () => {
+    const script = (await renderToBody(Default)).querySelector('script');
+    expect(script?.textContent).toContain("customElements.define(\n      'oy-photo-carousel'");
+    expect(script?.textContent).toContain("document.readyState === 'loading'");
+    expect((await renderToBody(OnePhoto)).querySelector('script')).toBeNull();
+    expect((await renderToBody(Pending)).querySelector('script')).toBeNull();
+  });
+
   it('frames one photograph as a figure with no controls', async () => {
     const body = await renderToBody(OnePhoto);
     expect(body.querySelector('oy-photo-carousel')).toBeNull();

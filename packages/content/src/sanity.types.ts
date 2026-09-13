@@ -2044,7 +2044,7 @@ export type FestivalPageQueryResult = {
 
 // Source: src/queries/event-pages.ts
 // Variable: galaPageQuery
-// Query: *[_id == "galaPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  extraFacts[]{_key, label, value, note},  eveningIntro,  tiersIntro,  sponsorIntro,  honoreesIntro,  pastIntro,  takePart[]{_key, way, title, line, label},  "editions": *[_type == "event" && kind == "gala"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    doors,    venue{name, address, line},    dress,    ticketsUrl,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    "tiers": *[_type == "ticketTier" && event._ref == ^._id] | order(order asc){      _id,      name,      price,      includes,      variant,      featured    },    "album": album->{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "sponsorLevels": *[_type == "sponsorLevel" && scope in ["gala", "org"]] | order(order asc){    _id,    name,    amount,    recognition  },  "honorees": *[_type == "honoree" && event->kind == "gala"] | order(name asc){    _id,    name,    award,    blurb,    image{_type, alt, caption, hotspot, crop, asset},    "eventId": event._ref  },  layout{treatment, tiers, emphasis, awards, schedule, past, labels},  seo{title, description}}
+// Query: *[_id == "galaPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  extraFacts[]{_key, label, value, note},  eveningIntro,  tiersIntro,  sponsorIntro,  honoreesIntro,  pastIntro,  takePart[]{_key, way, title, line, label},  "editions": *[_type == "event" && kind == "gala"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    doors,    venue{name, address, line},    dress,    ticketsUrl,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    "tiers": *[_type == "ticketTier" && event._ref == ^._id] | order(order asc){      _id,      name,      price,      includes,      variant,      featured    },    "album": album->{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "sponsorLevels": *[_type == "sponsorLevel" && scope in ["gala", "org"]] | order(order asc){    _id,    name,    amount,    recognition,    "eventId": event._ref  },  "honorees": *[_type == "honoree" && event->kind == "gala"] | order(name asc){    _id,    name,    award,    blurb,    image{_type, alt, caption, hotspot, crop, asset},    "eventId": event._ref  },  layout{treatment, tiers, emphasis, awards, schedule, past, labels},  seo{title, description}}
 export type GalaPageQueryResult = {
   header: null;
   primaryAction: null;
@@ -2115,6 +2115,7 @@ export type GalaPageQueryResult = {
     name: string | null;
     amount: string | null;
     recognition: Array<string> | null;
+    eventId: string | null;
   }>;
   honorees: Array<{
     _id: string;
@@ -2203,6 +2204,7 @@ export type GalaPageQueryResult = {
     name: string | null;
     amount: string | null;
     recognition: Array<string> | null;
+    eventId: string | null;
   }>;
   honorees: Array<{
     _id: string;
@@ -2317,6 +2319,7 @@ export type GalaPageQueryResult = {
     name: string | null;
     amount: string | null;
     recognition: Array<string> | null;
+    eventId: string | null;
   }>;
   honorees: Array<{
     _id: string;
@@ -2444,6 +2447,7 @@ export type GalaPageQueryResult = {
     name: string | null;
     amount: string | null;
     recognition: Array<string> | null;
+    eventId: string | null;
   }>;
   honorees: Array<{
     _id: string;
@@ -2582,6 +2586,7 @@ export type GalaPageQueryResult = {
     name: string | null;
     amount: string | null;
     recognition: Array<string> | null;
+    eventId: string | null;
   }>;
   honorees: Array<{
     _id: string;
@@ -2720,6 +2725,7 @@ export type GalaPageQueryResult = {
     name: string | null;
     amount: string | null;
     recognition: Array<string> | null;
+    eventId: string | null;
   }>;
   honorees: Array<{
     _id: string;
@@ -3382,7 +3388,7 @@ export type SubscriberByEmailQueryResult = string | null;
 declare global {
   interface SanityQueries {
     "*[_id == \"festivalPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  whatItIs,\n  whatItIsImage{_type, alt, caption, hotspot, crop, asset},\n  zonesIntro,\n  planYourVisit[]{_key, label, value, note},\n  takePart[]{_key, way, title, line, label},\n  pastYearsIntro,\n  partnersIntro,\n  \"editions\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    venue{name, address, line},\n    cost,\n    summary,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    vendorTerms{fees, closeDate, decisionDate, permitNote},\n    attendance{value, label, source, asOf},\n    \"album\": album->{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"zones\": *[_type == \"zone\" && active != false] | order(order asc){\n    _id,\n    name{yo, en},\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"partners\": *[_type == \"partner\" && \"odunde\" in scope] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  layout{phead, zones, schedule, takepart, labels},\n  seo{title, description}\n}": FestivalPageQueryResult;
-    "*[_id == \"galaPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  eveningIntro,\n  tiersIntro,\n  sponsorIntro,\n  honoreesIntro,\n  pastIntro,\n  takePart[]{_key, way, title, line, label},\n  \"editions\": *[_type == \"event\" && kind == \"gala\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    doors,\n    venue{name, address, line},\n    dress,\n    ticketsUrl,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    \"tiers\": *[_type == \"ticketTier\" && event._ref == ^._id] | order(order asc){\n      _id,\n      name,\n      price,\n      includes,\n      variant,\n      featured\n    },\n    \"album\": album->{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"sponsorLevels\": *[_type == \"sponsorLevel\" && scope in [\"gala\", \"org\"]] | order(order asc){\n    _id,\n    name,\n    amount,\n    recognition\n  },\n  \"honorees\": *[_type == \"honoree\" && event->kind == \"gala\"] | order(name asc){\n    _id,\n    name,\n    award,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"eventId\": event._ref\n  },\n  layout{treatment, tiers, emphasis, awards, schedule, past, labels},\n  seo{title, description}\n}": GalaPageQueryResult;
+    "*[_id == \"galaPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  eveningIntro,\n  tiersIntro,\n  sponsorIntro,\n  honoreesIntro,\n  pastIntro,\n  takePart[]{_key, way, title, line, label},\n  \"editions\": *[_type == \"event\" && kind == \"gala\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    doors,\n    venue{name, address, line},\n    dress,\n    ticketsUrl,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    \"tiers\": *[_type == \"ticketTier\" && event._ref == ^._id] | order(order asc){\n      _id,\n      name,\n      price,\n      includes,\n      variant,\n      featured\n    },\n    \"album\": album->{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"sponsorLevels\": *[_type == \"sponsorLevel\" && scope in [\"gala\", \"org\"]] | order(order asc){\n    _id,\n    name,\n    amount,\n    recognition,\n    \"eventId\": event._ref\n  },\n  \"honorees\": *[_type == \"honoree\" && event->kind == \"gala\"] | order(name asc){\n    _id,\n    name,\n    award,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"eventId\": event._ref\n  },\n  layout{treatment, tiers, emphasis, awards, schedule, past, labels},\n  seo{title, description}\n}": GalaPageQueryResult;
     "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"leadEvent\": leadEvent->{_id, kind, title, edition, start, end, \"venueName\": venue.name, summary},\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source, asOf},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  newsIntro,\n  \"news\": *[_type == \"newsPost\"] | order(date desc)[0...3]{\n    _id, title, \"slug\": slug.current, date, kicker{yo, en}, summary,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"tags\": tags[]->{_type, kind, page}\n  },\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_id == \"siteSettings\"][0]{\n  orgName,\n  wordmarkLine2,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  footerBlurb,\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;

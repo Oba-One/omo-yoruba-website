@@ -36,13 +36,13 @@ import { STUDIO_BASE_PATH } from '../lib/paths';
 import { buildGalaPage } from '../lib/sanity/gala-page';
 import { loadQuery } from '../lib/sanity/load-query';
 
-const { data, preview } = await loadQuery(galaPageQuery, {}, { cookies: Astro.cookies });
+const { data, preview, error } = await loadQuery(galaPageQuery, {}, { cookies: Astro.cookies });
 const imageSet = createImageSet({
   projectId: PUBLIC_SANITY_PROJECT_ID,
   dataset: PUBLIC_SANITY_DATASET,
 });
 const page = buildGalaPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
-cachePage(Astro, '/gala', { draft: preview });
+cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
 ---
 
 <SiteLayout title={page.title} description={page.description} root={page.root}>
@@ -51,10 +51,10 @@ cachePage(Astro, '/gala', { draft: preview });
       variant="photo"
       kicker={page.header.kicker}
       title={page.header.title}
-      titlePending="the page heading"
+      titlePending={page.header.titlePending}
       line={page.header.line}
       image={page.header.image}
-      imagePending="the header photograph"
+      imagePending={page.header.imagePending}
       imageEdit={page.header.imageEdit}
       actions={page.header.actions}
       facts={page.header.facts}
@@ -88,6 +88,7 @@ cachePage(Astro, '/gala', { draft: preview });
               slot="aside"
               items={page.evening.schedule.items}
               pending={page.evening.schedule.pending}
+              timePending={page.evening.schedule.timePending}
               edit={page.edit.schedule}
             />
           )

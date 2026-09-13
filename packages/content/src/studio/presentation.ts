@@ -80,11 +80,16 @@ export const presentationOptions: PresentationPluginOptions = {
         select: { kind: 'kind' },
         resolve: (doc) => ({ locations: leadWith('event', editionRoute(doc?.kind)) }),
       }),
+      // The Gala page shows the levels scoped to the Gala or the whole organization (galaPageQuery);
+      // an Odunde-scoped level shows on no page yet, and the banner says so.
       sponsorLevel: defineLocations({
         select: { scope: 'scope' },
-        resolve: (doc) => ({
-          locations: leadWith('sponsorLevel', doc?.scope === 'odunde' ? '/odunde' : '/gala'),
-        }),
+        resolve: (doc) =>
+          doc?.scope === 'odunde'
+            ? unlisted(
+                'Odunde sponsor levels show on no page yet: the Gala page lists Gala and organization levels.',
+              )
+            : { locations: locationsFor('sponsorLevel') },
       }),
       // A program leads with the page it opens: its own, or the Programs hub that describes it. The
       // homepage stays listed for every program: it shows the first three by order, and a resolver

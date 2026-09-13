@@ -16,6 +16,7 @@ import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { galaPageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import { longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
+import { sentence } from '@oy/ui/content/sentence.ts';
 import type { ClientReturn } from '@sanity/client';
 import {
   type BuildOptions,
@@ -63,8 +64,6 @@ export function seatsFrom(tiers: readonly (Tier | null)[] | null | undefined): {
     ...(table ? { note: `Tables of ten from ${table.price?.trim()}` } : {}),
   };
 }
-
-const sentence = (text: string) => (/[.!?]$/.test(text) ? text : `${text}.`);
 
 /**
  * The honorees as the cards show them: this gala's first as "This year", then the ones before it,
@@ -168,6 +167,8 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
     root: { ...layout },
     edition,
     header: {
+      titlePending: pendingWhat('galaPage', 'header.title') ?? 'the page heading',
+      imagePending: pendingWhat('galaPage', 'header.image') ?? 'the header photograph',
       kicker: header?.kicker,
       title: header?.title,
       line: header?.line,
@@ -188,6 +189,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
         shown: layout.schedule !== 'hidden',
         items: (edition?.schedule ?? []).filter((item) => item !== null),
         pending: pending('schedule[]'),
+        timePending: pendingWhat('event', 'schedule', KIND) ?? 'the time',
       },
     },
     seats: {
@@ -206,8 +208,10 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
     },
     sponsor: {
       intro: data?.sponsorIntro ?? undefined,
+      // A level tied to an edition shows only with that edition; an untied level every year.
       levels: (data?.sponsorLevels ?? [])
         .filter((level) => level !== null)
+        .filter((level) => !level.eventId || level.eventId === edition?._id)
         .map((level) => ({ ...level, edit: edit('name', level._id, 'sponsorLevel') })),
       pending: presenceWhat('sponsorLevel')?.what ?? 'level names and amounts',
       amountPending: pendingWhat('sponsorLevel', 'amount') ?? 'the amount',

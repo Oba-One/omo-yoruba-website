@@ -34,12 +34,13 @@ type Story = StoryObj<Args>;
 
 export const Chips: Story = {};
 
-/** A partner with a site: the chip is a link and its border deepens on hover. */
+/** A partner with a site: the chip is a link and its border deepens on hover. A URL with any other scheme stays a plain chip. */
 export const Linked: Story = {
   args: {
     partners: [
       { _id: 'p1', name: '[ Partner name ]', url: 'https://example.org' },
       { _id: 'p2', name: '[ Funder name ]' },
+      { _id: 'p3', name: '[ Sponsor name ]', url: 'javascript:alert(1)' },
     ],
   },
 };

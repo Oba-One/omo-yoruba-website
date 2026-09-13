@@ -36,4 +36,10 @@ describe('cachePage', () => {
     cachePage(draft, '/', { draft: true });
     expect(draft.calls).toEqual([false]);
   });
+
+  it('never caches a render whose Sanity read failed', () => {
+    const failed = record();
+    cachePage(failed, '/gala', { draft: false, failed: true });
+    expect(failed.calls).toEqual([false]);
+  });
 });

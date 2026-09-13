@@ -12,7 +12,7 @@ the edition (ADR 0024).
 
 - [x] `@oy/ui`: `TicketTierCard` (buy-now with and without a link, enquiry, featured, Pending price and includes) and the tiers block; stories and tests
 - [x] `Pages/Gala/Tiers` (columns, rows) and `Pages/Gala/Emphasis` (seats, tables) stories
-- [x] `siteSettings.eventbriteUrl`, its registry row, `siteSettingsQuery` field and `PUBLIC_EVENTBRITE_URL` retired; the seed unsets the field; runbook and `.env.example` updated
+- [x] `siteSettings.eventbriteUrl`, its registry row, `siteSettingsQuery` field and `PUBLIC_EVENTBRITE_URL` retired; the seed unsets the field; runbook updated (the `.env.example` line is the owner's, wayfinder ticket 36)
 - [x] Playwright: seats carry `target="_blank"` and `rel="noopener"` when a link exists; the table tier opens the modal and focus returns
 
 ## Comments

@@ -70,8 +70,8 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
  * extra glance facts, section intros and take-part rows; every gala edition with the facts the page
  * reads (the page picks the next one and the past one, ADR 0024), its running order, its ticket
  * tiers in order and the first eight photographs of its album with the album's credit; the sponsor
- * levels scoped to the Gala or the whole organization, in order; every honoree with the edition it
- * belongs to. Images project the asset reference, the hotspot and the crop (ADR 0022). Layout values
+ * levels scoped to the Gala or the whole organization, in order, with the edition a level is tied to;
+ * every honoree with the edition it belongs to. Images project the asset reference, the hotspot and the crop (ADR 0022). Layout values
  * come back as stored; the page fills the schema defaults (`withLayoutDefaults`).
  */
 export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
@@ -123,7 +123,8 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
     _id,
     name,
     amount,
-    recognition
+    recognition,
+    "eventId": event._ref
   },
   "honorees": *[_type == "honoree" && event->kind == "gala"] | order(name asc){
     _id,

@@ -28,5 +28,9 @@ galas "hidden until set".
 
 - The day an edition ends the page moves to the next one, or to Pending chips if it has not been
   entered; creating the next edition in the Studio is the editor's cue (the content-ops recipe).
+- The calendar is read in Los Angeles (refined in the Phase 5 code review). An edition with a start and
+  no end stays the next one until its start day ends there; an undated edition stays ahead until the
+  last month of its season in its year (June for Odunde, December for the Gala). The band and the page
+  both take the nearest edition still to come.
 - The Gala's honorees block defaults to hidden (ticket 06); shown with no honorees it is a Pending line.
 - The festival page draws four zone cards, named zones first and placeholders for the rest (ticket 05).

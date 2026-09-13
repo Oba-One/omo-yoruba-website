@@ -1,21 +1,13 @@
 import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
-import { expect, type Page, test } from '@playwright/test';
+import { pendingWhat, presenceWhat } from '@oy/content/pending';
+import { expect, test } from '@playwright/test';
+import { expectNoMockWhileOwed, settle } from './helpers';
 
 // The End-of-Year Gala page in the prototype's order (ROUTES section 4), each block present whether
 // the Studio holds its content or renders Pending: CI runs with a placeholder project, where every
 // read answers null. The next gala edition leads (ADR 0024); nothing names a date, price or address
 // the Studio does not hold.
-
-const settle = (page: Page) =>
-  page.evaluate(() =>
-    Promise.all(
-      document
-        .getAnimations()
-        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
-        .map((animation) => animation.finished.catch(() => undefined)),
-    ),
-  );
 
 test.describe('the End-of-Year Gala page', () => {
   test('carries its blocks in order, one h1, the options on the body and nothing open', async ({
@@ -54,10 +46,15 @@ test.describe('the End-of-Year Gala page', () => {
       await expect(page.locator('#glance b', { hasText: new RegExp(`^${label}$`) })).toHaveCount(1);
     }
     await expect(page.locator('#glance .oy-glance > div')).toHaveCount(5);
-    const main = await page.locator('main').innerText();
-    expect(main).not.toMatch(
-      /5 Dec(ember)? 2026|The Ebell|4400 Wilshire|\$\d|black tie|Dinner served|encouraged|within a working day/i,
-    );
+    // The prototype's mock facts (docs/design/design/19 Mock Content Register) never fill a gap.
+    expectNoMockWhileOwed(await page.locator('main').innerText(), [
+      [/5 Dec(ember)? 2026/i, pendingWhat('event', 'start', 'gala')],
+      [/The Ebell|4400 Wilshire/i, pendingWhat('event', 'venue.name', 'gala')],
+      [/black tie|encouraged/i, pendingWhat('event', 'dress', 'gala')],
+      [/Dinner served/i, pendingWhat('event', 'schedule[]', 'gala')],
+      [/\$125|\$1,100/, presenceWhat('ticketTier')?.what],
+      [/within a working day/i, pendingWhat('galaPage', 'takePart[]')],
+    ]);
     await expect(page.locator('#evening h2')).toHaveText('The evening');
   });
 

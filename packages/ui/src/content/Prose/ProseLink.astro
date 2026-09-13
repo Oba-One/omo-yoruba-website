@@ -6,12 +6,12 @@
  * link (docs/research/phase-5-portable-text-renderer.md, Links).
  */
 import type { MarkProps } from 'astro-portabletext/types';
+import { safeHref } from '../../core/ActionButton/action';
 
 type Props = MarkProps<{ href?: string }>;
 
 const { node } = Astro.props;
-const raw = typeof node.markDef.href === 'string' ? node.markDef.href.trim() : '';
-const href = /^(https?:|mailto:|tel:)/i.test(raw) || /^(\/(?!\/)|#|\?)/.test(raw) ? raw : undefined;
+const href = safeHref(typeof node.markDef.href === 'string' ? node.markDef.href : undefined);
 ---
 
 {href ? <a class="oy-prose-link" href={href}><slot /></a> : <slot />}

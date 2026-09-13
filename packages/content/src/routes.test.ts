@@ -89,7 +89,7 @@ describe('TYPE_ROUTES and routesFor', () => {
 
 describe('cacheTagsFor', () => {
   it('returns the type tag and one tag per affected route', () => {
-    expect(cacheTagsFor('zone')).toEqual(['type:zone', 'route:/odunde']);
+    expect(cacheTagsFor('zone')).toEqual(['type:zone', 'route:/odunde', 'route:/gala']);
     expect(cacheTagsFor('album', 'gala-2025')).toEqual([
       'type:album',
       'route:/gallery/gala-2025',

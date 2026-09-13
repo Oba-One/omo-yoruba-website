@@ -202,6 +202,21 @@ describe('buildFestivalPage', () => {
     expect(filled.glance[2]?.note).toBe('Degnan Boulevard');
   });
 
+  it('names the row that owes the hours: the end when it is missing, the date when the start is', () => {
+    const startOnly = {
+      ...seeded,
+      editions: [edition('event-odunde-2027', 2027, { start: '2027-06-12T18:00:00.000Z' })],
+    } as unknown as FestivalPageData;
+    const view = buildFestivalPage(startOnly, options);
+    expect(view.header.facts[1]).toEqual({ pending: 'the hours' });
+    expect(view.glance[1]).toEqual({ label: 'Time', value: undefined, pending: 'the hours' });
+    const endOnly = {
+      ...seeded,
+      editions: [edition('event-odunde-2027', 2027, { end: '2027-06-13T02:00:00.000Z' })],
+    } as unknown as FestivalPageData;
+    expect(buildFestivalPage(endOnly, options).header.facts[1]).toEqual({ pending: 'the date' });
+  });
+
   it('keeps the glance to five facts and the actions to two', () => {
     const many = {
       ...seeded,

@@ -16,8 +16,9 @@ interface Props {
   /** The disclosure the festival's schedule sits in. */
   toggle?: boolean;
   open?: boolean;
-  /** The registry's wording when there are no rows. */
+  /** The registry's wording when there are no rows, and for a row without its time. */
   pending?: string;
+  timePending?: string;
   /** A `data-sanity` attribute, so click-to-edit reaches the schedule option. */
   edit?: string;
   class?: string;
@@ -29,6 +30,7 @@ const {
   toggle = false,
   open = true,
   pending = 'the schedule',
+  timePending,
   edit,
   class: className,
 } = Astro.props;
@@ -47,13 +49,13 @@ const rows = (items ?? []).filter((item) => item !== null);
         <span class="oy-schedule-show">Show the schedule</span>
       </summary>
       <ol class:list={['oy-sched', mode === 'day' && 'oy-sched--day']}>
-        {rows.map((item) => <ScheduleRow item={item} mode={mode} />)}
+        {rows.map((item) => <ScheduleRow item={item} mode={mode} timePending={timePending} />)}
       </ol>
     </details>
   ) : (
     <div class:list={['oy-schedule', className]} data-sanity={edit}>
       <ol class:list={['oy-sched', mode === 'day' && 'oy-sched--day']}>
-        {rows.map((item) => <ScheduleRow item={item} mode={mode} />)}
+        {rows.map((item) => <ScheduleRow item={item} mode={mode} timePending={timePending} />)}
       </ol>
     </div>
   )

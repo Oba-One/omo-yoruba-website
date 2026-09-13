@@ -98,6 +98,14 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Odunde, schedule',
     what: 'the rows, times and content',
   },
+  // A row saved before its time is set: ScheduleRow shows this chip in the time's place.
+  {
+    type: 'event',
+    condition: 'count(schedule[!defined(time) && !defined(day)]) > 0',
+    filter: FESTIVAL,
+    where: 'Odunde, schedule',
+    what: 'the time',
+  },
   {
     type: 'event',
     fields: ['vendorTerms.fees', 'vendorTerms.closeDate', 'vendorTerms.decisionDate'],
@@ -113,9 +121,10 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'the attendance figure',
   },
   { type: 'zone', fields: ['line'], where: 'Odunde, zones', what: 'the zone description' },
+  // The glance holds five facts and the edition fills four, so only the first extra row can show.
   {
     type: 'festivalPage',
-    condition: 'count(extraFacts[!defined(value)]) > 0',
+    condition: 'defined(extraFacts[0]) && !defined(extraFacts[0].value)',
     where: 'Odunde, at a glance',
     what: 'a glance fact',
   },
@@ -179,6 +188,27 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Gala, at a glance',
     what: 'the dress code',
   },
+  // The event pages' headers: the photo band needs its photograph (the Gala always draws it, Odunde by
+  // default), and every page its one heading.
+  {
+    type: 'festivalPage',
+    fields: ['header.title'],
+    where: 'Odunde, header',
+    what: 'the page heading',
+  },
+  {
+    type: 'festivalPage',
+    fields: ['header.image'],
+    where: 'Odunde, header',
+    what: 'the header photograph',
+  },
+  { type: 'galaPage', fields: ['header.title'], where: 'Gala, header', what: 'the page heading' },
+  {
+    type: 'galaPage',
+    fields: ['header.image'],
+    where: 'Gala, header',
+    what: 'the header photograph',
+  },
   {
     type: 'galaPage',
     fields: ['eveningIntro'],
@@ -198,17 +228,18 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'a way in, its title or its button label',
   },
   {
-    type: 'galaPage',
-    condition: 'count(extraFacts[!defined(value)]) > 0',
-    where: 'Gala, at a glance',
-    what: 'a glance fact',
-  },
-  {
     type: 'event',
     fields: ['schedule[]'],
     filter: GALA,
     where: 'Gala, the evening',
     what: 'the running order',
+  },
+  {
+    type: 'event',
+    condition: 'count(schedule[!defined(time) && !defined(day)]) > 0',
+    filter: GALA,
+    where: 'Gala, the evening',
+    what: 'the time',
   },
   {
     type: 'event',
@@ -229,15 +260,18 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Gala, seats and tables',
     what: 'what the ticket includes',
   },
+  // Only the levels a page shows: the Gala page lists scope gala and org (galaPageQuery).
   {
     type: 'sponsorLevel',
     fields: ['amount'],
+    filter: 'scope in ["gala", "org"]',
     where: 'Sponsorship',
     what: 'the amount',
   },
   {
     type: 'sponsorLevel',
     fields: ['recognition[]'],
+    filter: 'scope in ["gala", "org"]',
     where: 'Sponsorship',
     what: 'what the level recognizes',
   },
@@ -419,14 +453,27 @@ export const PENDING: readonly PendingEntry[] = [
 ];
 
 export const PRESENCE: readonly PresenceEntry[] = [
-  { type: 'zone', minimum: 4, where: 'Odunde, zones', what: 'the unnamed zones' },
+  // The page shows active zones only (festivalPageQuery), so the count skips the inactive ones.
+  {
+    type: 'zone',
+    minimum: 4,
+    filter: 'active != false',
+    where: 'Odunde, zones',
+    what: 'the unnamed zones',
+  },
   {
     type: 'ticketTier',
     minimum: 1,
     where: 'Gala, seats and tables',
     what: 'three prices and what each includes',
   },
-  { type: 'sponsorLevel', minimum: 1, where: 'Sponsorship', what: 'level names and amounts' },
+  {
+    type: 'sponsorLevel',
+    minimum: 1,
+    filter: 'scope in ["gala", "org"]',
+    where: 'Sponsorship',
+    what: 'level names and amounts',
+  },
   { type: 'honoree', minimum: 1, where: 'Gala, honorees', what: 'whether awards exist, and who' },
   {
     type: 'testimonial',

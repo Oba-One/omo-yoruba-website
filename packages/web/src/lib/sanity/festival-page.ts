@@ -60,7 +60,10 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
   const past = pastEdition(editions, KIND, { now, hasPhotos });
 
   const date = longDate(edition?.start);
-  const hours = editionHours(edition?.start, edition?.end);
+  // The hours need both ends of the day: a missing end is the registry's "the hours" (its row checks
+  // `end`), a missing start its "the date", so the chip always names the row that lists it.
+  const hours = edition?.end ? editionHours(edition.start, edition.end) : undefined;
+  const hoursPending = edition?.end ? pending('start') : pending('end');
   const cost = cleanText(edition?.cost) ? edition?.cost : undefined;
 
   const header = data?.header;
@@ -72,7 +75,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
   const takePart = (data?.takePart ?? []).filter((row) => row !== null);
   const glance = [
     { label: 'Date', value: shortDate(edition?.start), pending: pending('start') },
-    { label: 'Time', value: hours, pending: pending('end') },
+    { label: 'Time', value: hours, pending: hoursPending },
     {
       label: 'Where',
       value: edition?.venue?.name || undefined,
@@ -97,6 +100,8 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     edition,
     header: {
       variant: layout.phead,
+      titlePending: pendingWhat('festivalPage', 'header.title') ?? 'the page heading',
+      imagePending: pendingWhat('festivalPage', 'header.image') ?? 'the header photograph',
       kicker: header?.kicker,
       title: header?.title,
       line: header?.line,
@@ -105,7 +110,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       actions,
       facts: [
         date ? { text: date } : { pending: pending('start') },
-        hours ? { text: hours } : { pending: pending('end') },
+        hours ? { text: hours } : { pending: hoursPending },
         cost ? { text: cost } : { pending: pending('cost') },
       ],
     },
@@ -127,6 +132,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       open: layout.schedule === 'shown',
       items: (edition?.schedule ?? []).filter((item) => item !== null),
       pending: pending('schedule[]'),
+      timePending: pendingWhat('event', 'schedule', KIND) ?? 'the time',
     },
     plan: {
       facts: (data?.planYourVisit ?? [])

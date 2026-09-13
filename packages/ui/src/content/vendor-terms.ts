@@ -6,6 +6,7 @@
  * the fields the Studio's Pending row checks.
  */
 import { dayMonthYear } from './edition-dates';
+import { withoutClosingPunctuation } from './sentence';
 
 export interface VendorTermsLike {
   /** One line per booth size, as the Studio holds them. */
@@ -17,7 +18,7 @@ export interface VendorTermsLike {
 }
 
 /** A fee line without its closing punctuation, so the lines join into one sentence. */
-const bare = (line: string) => line.trim().replace(/[.,;]+$/, '');
+const bare = (line: string) => withoutClosingPunctuation(line.trim());
 
 export function vendorTermsText(terms: VendorTermsLike | null | undefined): {
   text: string;

@@ -87,7 +87,7 @@ export const PHOTOS = {
   },
   vendorNecklaces: {
     src: vendorNecklaces,
-    alt: 'A vendor shows cowrie necklaces to an elder in white agbada',
+    alt: 'A vendor shows cowrie necklaces to an elder in white agbádá',
   },
   processionDrummer: {
     src: processionDrummer,
@@ -127,7 +127,7 @@ export const PHOTOS = {
   },
   galaGroup: {
     src: galaGroup,
-    alt: 'Six guests in agbada, gèlè and a wide-brimmed hat stand arm in arm',
+    alt: 'Six guests in agbádá, gèlè and a wide-brimmed hat stand arm in arm',
   },
   galaSitting: {
     src: galaSitting,

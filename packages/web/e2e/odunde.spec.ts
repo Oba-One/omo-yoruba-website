@@ -1,21 +1,13 @@
 import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
-import { expect, type Page, test } from '@playwright/test';
+import { pendingWhat } from '@oy/content/pending';
+import { expect, test } from '@playwright/test';
+import { expectNoMockWhileOwed, settle } from './helpers';
 
 // The Odunde Festival page in the prototype's order (ROUTES section 4), each block present whether
 // the Studio holds its content or renders Pending: CI runs with a placeholder project, where every
 // read answers null. The next festival edition leads (ADR 0024); nothing names a date, price or
 // address the Studio does not hold.
-
-const settle = (page: Page) =>
-  page.evaluate(() =>
-    Promise.all(
-      document
-        .getAnimations()
-        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
-        .map((animation) => animation.finished.catch(() => undefined)),
-    ),
-  );
 
 test.describe('the Odunde Festival page', () => {
   test('carries its blocks in order, one h1, the header option on the body and nothing open', async ({
@@ -59,9 +51,16 @@ test.describe('the Odunde Festival page', () => {
     const header = await page.locator('header#top').innerText();
     const seeded = header.includes('Odunde Festival');
     expect(seeded || /pending: the page heading/i.test(header)).toBe(true);
-    // The prototype's invented facts never reach the page.
-    const body = await page.locator('main').innerText();
-    expect(body).not.toMatch(/12 June 2027|11am to 7pm|Free entry|43rd Place|since 2003|\$\d/i);
+    // The prototype's mock facts (docs/design/design/19 Mock Content Register) never fill a gap.
+    expectNoMockWhileOwed(await page.locator('main').innerText(), [
+      [/12 June 2027/i, pendingWhat('event', 'start', 'festival')],
+      [/11am to 7pm/i, pendingWhat('event', 'end', 'festival')],
+      [/Free entry/i, pendingWhat('event', 'cost', 'festival')],
+      [/43rd Place/i, pendingWhat('event', 'venue.line', 'festival')],
+      [/since 2003/i, pendingWhat('festivalPage', 'whatItIs')],
+      [/\$150|\$275|\$325/, pendingWhat('event', 'vendorTerms.fees', 'festival')],
+      [/within a working day|from \$2,500/i, pendingWhat('festivalPage', 'takePart[]')],
+    ]);
     await expect(page.locator('#about-festival h2')).toHaveText('What Odunde is');
   });
 

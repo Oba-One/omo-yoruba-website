@@ -126,7 +126,7 @@ export const festivalPage = definePage({
     facts(
       'extraFacts',
       'Extra glance facts',
-      'Rows beyond date, time, place and cost, which come from the edition.',
+      'The glance holds five facts and the edition fills four (date, time, place and cost), so the first row here shows and later rows wait for a free place.',
     ),
     defineField({
       name: 'whatItIs',
@@ -157,7 +157,7 @@ export const galaPage = definePage({
     facts(
       'extraFacts',
       'Extra glance facts',
-      'Rows beyond date, doors, venue and dress, which come from the edition.',
+      'The glance holds five facts and the edition fills all five (date, doors, venue, dress and seats from), so rows here show only if the page drops one of those.',
     ),
     text('eveningIntro', 'The evening intro'),
     text('tiersIntro', 'Seats and tables intro', 2),
