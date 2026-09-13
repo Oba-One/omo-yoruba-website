@@ -532,6 +532,37 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Donate',
     what: 'which other ways to give you accept',
   },
+  // Fees, the receipt and monthly giving depend on how the owner's Zeffy form is set up (spec Q14).
+  {
+    type: 'donatePage',
+    condition: 'count(giveNow.facts[!defined(value)]) > 0',
+    where: 'Donate, give now',
+    what: 'how your Zeffy form handles this',
+  },
+  {
+    type: 'donatePage',
+    fields: ['largerScale.doors[]'],
+    where: 'Donate, giving at a larger scale',
+    what: 'the doors for organizations',
+  },
+  {
+    type: 'donatePage',
+    fields: ['taxLine'],
+    where: 'Donate, tax-deductible',
+    what: 'the tax-deductible line',
+  },
+  {
+    type: 'givingLevel',
+    fields: ['what'],
+    where: 'Donate, what your gift does',
+    what: 'what the gift does',
+  },
+  {
+    type: 'givingLevel',
+    fields: ['source'],
+    where: 'Donate, what your gift does',
+    what: 'where the cost comes from',
+  },
 
   // Impact and Our Story
   {

@@ -278,3 +278,66 @@ export const STORY_TAKE_PART = [
     label: 'Volunteer',
   },
 ];
+
+// Donate
+
+export const DONATE_HEADER = {
+  kicker: { yo: 'Ẹ ṣe àánú', en: 'Give' },
+  title: 'Give to Omo Yorùbá',
+  line: "Gifts hold up the language lessons, the festival at Leimert Park, and the children's programs.",
+  actions: [
+    { label: 'Give now', kind: 'give' },
+    { label: 'Partner or sponsor', kind: 'enquiry', enquiryKind: 'sponsor' },
+  ],
+};
+
+export const GIVE_NOW = {
+  title: 'Give now',
+  blurb:
+    'Choose an amount, one time or monthly, and pay securely through Zeffy without leaving this page. Your receipt arrives by email straight away.',
+};
+
+/** The give-now facts as the seed writes them: only the Give Dialog's own fallback is ours to state. */
+export const GIVE_FACTS = [
+  { label: 'Fees', pending: owed('donatePage', 'giveNow.facts') },
+  { label: 'Receipt', pending: owed('donatePage', 'giveNow.facts') },
+  { label: 'Monthly', pending: owed('donatePage', 'giveNow.facts') },
+  {
+    label: 'If the form fails',
+    value: 'The dialog offers contact and a mailing address instead.',
+    pending: owed('donatePage', 'giveNow.facts'),
+  },
+];
+
+export const LARGER_SCALE = {
+  title: 'Giving at a larger scale',
+  intro:
+    'Organizations, funders, and civic partners. Named levels, recognition, and a conversation with a person. Four questions and we send the deck.',
+  door: seededDoor('partner'),
+};
+
+/** Giving levels in the bracketed form: the prototype's amounts and what they buy are invented. */
+export const GIVING_LEVEL_PLACEHOLDERS = [
+  {
+    figure: '[ Amount ]',
+    line: '[ What this amount pays for ]',
+    source: '[ Where the cost comes from ]',
+  },
+  { figure: '[ Amount ] a month', line: '[ What this amount pays for ]', source: null },
+  { figure: '[ Amount ]', line: null, source: null },
+];
+
+export const GIFTS_PENDING = {
+  levels: owed('donatePage', 'whatYourGiftDoes[]'),
+  line: owed('givingLevel', 'what'),
+  source: owed('givingLevel', 'source'),
+};
+
+export const OTHER_WAYS_PENDING = owed('donatePage', 'otherWays[]');
+
+export const TRUST_CELLS = [
+  { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+  { label: 'EIN', pending: owed('siteSettings', 'ein') },
+  { label: 'Deductible', value: 'To the extent allowed by law' },
+  { label: 'Receipt', pending: owed('donatePage', 'giveNow.facts') },
+];

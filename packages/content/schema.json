@@ -3260,6 +3260,28 @@
                 "type": "string"
               },
               "optional": true
+            },
+            "facts": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "array",
+                "of": {
+                  "type": "object",
+                  "attributes": {
+                    "_key": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "rest": {
+                    "type": "inline",
+                    "name": "fact"
+                  }
+                }
+              },
+              "optional": true
             }
           }
         },
@@ -3339,6 +3361,35 @@
           "of": {
             "type": "object",
             "attributes": {
+              "kind": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "union",
+                  "of": [
+                    {
+                      "type": "string",
+                      "value": "check"
+                    },
+                    {
+                      "type": "string",
+                      "value": "matching"
+                    },
+                    {
+                      "type": "string",
+                      "value": "inKind"
+                    },
+                    {
+                      "type": "string",
+                      "value": "daf"
+                    },
+                    {
+                      "type": "string",
+                      "value": "other"
+                    }
+                  ]
+                },
+                "optional": true
+              },
               "title": {
                 "type": "objectAttribute",
                 "value": {
@@ -3347,6 +3398,13 @@
                 "optional": true
               },
               "blurb": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "detail": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"

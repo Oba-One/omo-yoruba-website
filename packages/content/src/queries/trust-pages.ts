@@ -141,3 +141,32 @@ export const storyPageQuery = defineQuery(`*[_type == "storyPage" && _id == "sto
   layout{timeline, bios, portraits},
   seo{title, description}
 }`);
+
+/**
+ * Donate in one read (ROUTES section 1, ADR 0034, ADR 0035): the `donatePage` singleton with its header and
+ * its one gold "Give now", the give-now block with its facts, the doors for organizations, the giving levels
+ * in order, the other ways to give, the tax line, and the settings the other ways and the trust block draw
+ * (the legal name, the EIN, the mailing address). Images project the asset reference (ADR 0022). Layout
+ * values come back as stored; the page fills the schema defaults.
+ */
+export const donatePageQuery = defineQuery(`*[_type == "donatePage" && _id == "donatePage"][0]{
+  header{kicker{yo, en}, title, line},
+  primaryAction{label, kind, enquiryKind, href, newTab},
+  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},
+  giveNow{title, blurb, facts[]{_key, label, value, note}},
+  largerScale{
+    title,
+    blurb,
+    "doors": doors[]->{
+      _id, key, title, blurb,
+      action{label, kind, enquiryKind, href, newTab},
+      image{_type, alt, caption, hotspot, crop, asset}
+    }
+  },
+  "levels": whatYourGiftDoes[]->{_id, amount, what, frequency, source},
+  otherWays[]{_key, kind, title, blurb, detail},
+  taxLine,
+  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{orgName, ein, address},
+  layout{impact},
+  seo{title, description}
+}`);

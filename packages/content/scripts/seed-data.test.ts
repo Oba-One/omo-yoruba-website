@@ -685,3 +685,28 @@ describe('Our Story', () => {
     ]);
   });
 });
+
+describe('Donate', () => {
+  const donate = byId.get('donatePage') as unknown as {
+    giveNow: { facts: { label: string; value?: string }[] };
+    taxLine: string;
+    whatYourGiftDoes?: unknown;
+    otherWays?: unknown;
+    primaryAction: { label: string; kind: string };
+  };
+
+  it("seeds the give-now facts with only the dialog's fallback valued, and the tax line", () => {
+    expect(donate.giveNow.facts.map((item) => [item.label, item.value])).toEqual([
+      ['Fees', undefined],
+      ['Receipt', undefined],
+      ['Monthly', undefined],
+      ['If the form fails', 'The dialog offers contact and a mailing address instead.'],
+    ]);
+    expect(donate.taxLine).toBe('To the extent allowed by law');
+    expect(donate.primaryAction).toMatchObject({ label: 'Give now', kind: 'give' });
+    // No giving level or other way: which amounts and ways the owner accepts are theirs to say.
+    expect(donate.whatYourGiftDoes).toBeUndefined();
+    expect(donate.otherWays).toBeUndefined();
+    expect(JSON.stringify(donate)).not.toMatch(/100%|Benevity|Double the Donation|\$25|\$500/);
+  });
+});

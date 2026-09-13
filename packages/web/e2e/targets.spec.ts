@@ -43,6 +43,7 @@ test('every visible control on the event, program and trust pages is at least 44
     '/get-involved',
     '/impact',
     '/our-story',
+    '/donate',
   ]) {
     await page.goto(route);
     expect(await page.evaluate(small), route).toEqual([]);

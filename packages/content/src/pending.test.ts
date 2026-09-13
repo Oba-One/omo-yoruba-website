@@ -454,3 +454,17 @@ describe('Our Story', () => {
     expect(presenceWhat('timelineEntry')?.what).toBe('the dated entries');
   });
 });
+
+describe('Donate', () => {
+  it("names the Zeffy form's facts, the doors, the tax line and a giving level's missing line and source", () => {
+    expect(pendingWhat('donatePage', 'giveNow.facts')).toBe('how your Zeffy form handles this');
+    expect(pendingWhat('donatePage', 'largerScale.doors[]')).toBe('the doors for organizations');
+    expect(pendingWhat('donatePage', 'taxLine')).toBe('the tax-deductible line');
+    expect(pendingWhat('donatePage', 'whatYourGiftDoes[]')).toBe(
+      'the preset amounts and what each buys',
+    );
+    expect(pendingWhat('givingLevel', 'what')).toBe('what the gift does');
+    expect(pendingWhat('givingLevel', 'source')).toBe('where the cost comes from');
+    expect(pendingWhat('donatePage', 'otherWays[]')).toBe('which other ways to give you accept');
+  });
+});

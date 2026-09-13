@@ -1,4 +1,5 @@
 import { defineField } from 'sanity';
+import { OTHER_WAY_KINDS, OTHER_WAY_TITLES } from '../../giving';
 import { PAGE_LAYOUTS } from '../../layout-options';
 import { EVENT_PAGE_NAMES } from '../../routes';
 import { voice } from '../../validation/rules';
@@ -553,6 +554,11 @@ export const donatePage = definePage({
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
         text('blurb', 'Blurb'),
+        facts(
+          'facts',
+          'Facts beside it',
+          'Fees, the receipt, monthly giving and what happens if the form fails. Fees, the receipt and monthly depend on how your Zeffy form is set up; empty values show Pending. The trust block reads the Receipt fact too.',
+        ),
       ],
     }),
     defineField({
@@ -562,19 +568,44 @@ export const donatePage = definePage({
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
         text('blurb', 'Blurb', 2),
-        refs('doors', 'Doors', 'door', 'The partner and sponsor doors.'),
+        refs(
+          'doors',
+          'Doors',
+          'door',
+          'For organizations: one door fills the width, two or more show as cards (ADR 0034).',
+        ),
       ],
     }),
-    refs('whatYourGiftDoes', 'What your gift does', 'givingLevel'),
+    refs(
+      'whatYourGiftDoes',
+      'What your gift does',
+      'givingLevel',
+      'The preset amounts in your Zeffy form, each with what it pays for and the source of that cost.',
+    ),
     defineField({
       name: 'otherWays',
       title: 'Other ways to give',
       type: 'array',
+      description: 'Only the ways you accept.',
       of: [
         {
           type: 'object',
           name: 'otherWay',
           fields: [
+            defineField({
+              name: 'kind',
+              title: 'Kind',
+              type: 'string',
+              description:
+                'A check shows the mailing address, and employer matching and a donor-advised fund show the EIN and the legal name, from the site settings (ADR 0035).',
+              options: {
+                list: OTHER_WAY_KINDS.map((kind) => ({
+                  title: OTHER_WAY_TITLES[kind],
+                  value: kind,
+                })),
+                layout: 'radio',
+              },
+            }),
             defineField({
               name: 'title',
               title: 'Title',
@@ -582,8 +613,15 @@ export const donatePage = definePage({
               validation: voice.requiredHeading,
             }),
             text('blurb', 'Blurb', 2),
+            defineField({
+              name: 'detail',
+              title: 'Detail',
+              type: 'string',
+              description: '"Registered with Benevity." The address or the EIN is added for you.',
+              validation: voice.text,
+            }),
           ],
-          preview: { select: { title: 'title' } },
+          preview: { select: { title: 'title', subtitle: 'kind' } },
         },
       ],
     }),
@@ -591,6 +629,7 @@ export const donatePage = definePage({
       name: 'taxLine',
       title: 'Tax-deductible line',
       type: 'string',
+      description: 'The trust block\'s "Deductible" cell: "To the extent allowed by law".',
       validation: voice.text,
     }),
   ],

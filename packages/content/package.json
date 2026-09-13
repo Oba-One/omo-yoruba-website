@@ -16,7 +16,8 @@
     "./stega": "./src/stega.ts",
     "./api-version": "./src/api-version.ts",
     "./take-part": "./src/take-part.ts",
-    "./doors": "./src/doors.ts"
+    "./doors": "./src/doors.ts",
+    "./giving": "./src/giving.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

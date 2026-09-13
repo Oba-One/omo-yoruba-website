@@ -917,6 +917,13 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Give now',
         blurb:
           'Choose an amount, one time or monthly, and pay securely through Zeffy without leaving this page. Your receipt arrives by email straight away.',
+        // Only the Give Dialog's own fallback is ours to state; the rest depends on the Zeffy form (spec Q14).
+        facts: withKeys('fact', [
+          fact('Fees'),
+          fact('Receipt'),
+          fact('Monthly'),
+          fact('If the form fails', 'The dialog offers contact and a mailing address instead.'),
+        ]),
       },
       largerScale: {
         title: 'Giving at a larger scale',
@@ -924,6 +931,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           'Organizations, funders, and civic partners. Named levels, recognition, and a conversation with a person. Four questions and we send the deck.',
         doors: withKeys('door', [ref('door-partner')]),
       },
+      // The standard wording for a 501(c)(3), from the confirmed status (spec Q17).
+      taxLine: 'To the extent allowed by law',
       primaryAction: cta('Give now', 'give'),
       secondaryActions: withKeys('action', [cta('Partner or sponsor', 'enquiry', 'sponsor')]),
     }),

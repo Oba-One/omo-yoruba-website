@@ -42,3 +42,24 @@ export const LinePending: Story = {
 
 /** No levels in the Studio: the Pending line, as the development dataset stands. */
 export const Pending: Story = { args: { entries: [] } };
+
+/** Donate's other ways to give: each way's line and its detail, the EIN still owed on the fund row. */
+export const WithDetail: Story = {
+  args: {
+    entries: [
+      {
+        _key: 'way-1',
+        title: '[ By check ]',
+        line: '[ Who the check is made out to ]',
+        detail: '[ The mailing address ]',
+      },
+      {
+        _key: 'way-2',
+        title: '[ Donor-advised fund ]',
+        line: '[ What a fund sponsor asks for ]',
+        detail: 'Our legal name is Omo Yorùbá of Southern California.',
+        detailPending: 'EIN',
+      },
+    ],
+  },
+};
