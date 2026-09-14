@@ -41,7 +41,9 @@ rather than duplicates. Ids never contain a period.
   only from what the owner confirms ("[ How far the project has come ]"); `status`, `serves`, `since` and
   `next` are the four facts, each its own chip while empty.
 - **Album**: upload photos, create `album` with a title and slug, the `event` reference for an edition's
-  photographs (its year dates the album; `date` only when there is no edition or the day matters), the cover
+  photographs (its year dates the album; `date` only when there is no edition or the day matters), and on that
+  edition set `album` to this album too, since the event pages' past years and Impact read the edition's link
+  while the gallery reads either (two links until the Studio keeps one, `docs/plans/open-work.md` S9), the cover
   (else the first photograph shows), photos in the order the album page and the Lightbox show them, each with
   `alt` (who, doing what, where) and a caption, the album-level `credit` (a `photographer` document),
   `creditConfirmed` only once the photographer confirms, and a `consentNote` for anything specific to the

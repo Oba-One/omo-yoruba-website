@@ -1,7 +1,7 @@
 # Check the gallery in the Studio and on the preview, then merge the Phase 8 pull request
 
 Type: task
-Status: open
+Status: resolved
 Owner: yes
 Labels: infra
 Phase: 8
@@ -38,3 +38,11 @@ Before merging:
 6. Until this branch deploys, the Studio on `main` still offers the consent policy (`creditsAndConsent`) as rich text;
    write it from this pull request's preview, where it is plain text.
 7. Merge when satisfied. Phase 9 starts from `main` afterwards (`docs/plans/prompt-phase-9.md`).
+
+## Comments
+
+13 September 2026. Merged at the owner's request, with CI green and the preview ready (`docs/plans/open-work.md`,
+D1). Steps 1 to 4 (click-to-edit in Presentation, the comparison with the prototype, the photo
+address by hand, the four calls) are not lost: the deep review (`docs/plans/prompt-deep-review.md`) covers the
+comparison and the behaviour, and week 1 of `docs/plans/four-week-plan.md` walks the Studio with the owner. Step 5's
+reseeding of other datasets waits for D3 (which dataset holds the real content).
