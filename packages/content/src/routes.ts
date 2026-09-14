@@ -43,22 +43,45 @@ export const EVENT_PAGE_NAMES = {
   gala: 'End-of-Year Gala',
 } as const;
 
+export interface EditionPage {
+  route: PublicRoute;
+  /** What a link to the page reads. */
+  name: string;
+}
+
+/** The page each kind of edition opens, with its name: the festival's, the Gala's and the Collective's. */
+const EDITION_PAGES: Readonly<Record<string, EditionPage>> = {
+  festival: {
+    route: ROUTE_SINGLETONS.festivalPage as PublicRoute,
+    name: EVENT_PAGE_NAMES.festival,
+  },
+  gala: { route: ROUTE_SINGLETONS.galaPage as PublicRoute, name: EVENT_PAGE_NAMES.gala },
+  collective: {
+    route: ROUTE_SINGLETONS.collectivePage as PublicRoute,
+    name: 'Yoruba Cultural Collective',
+  },
+};
+
 /**
- * The page an edition opens, by its kind: the festival and the Gala have their own, a Collective
- * event opens the Collective's page, and any other kind has none. The one answer the news cards,
- * the event band and the Presentation tool share.
+ * The page an edition opens, by its kind, with its name: the festival and the Gala have their own, a
+ * Collective event opens the Collective's page, and any other kind has none.
  */
+export function editionPage(kind: string | null | undefined): EditionPage | undefined {
+  return kind && Object.hasOwn(EDITION_PAGES, kind) ? EDITION_PAGES[kind] : undefined;
+}
+
+/** The route alone: the one answer the news cards, the event band and the Presentation tool share. */
 export function editionRoute(kind: string | null | undefined): PublicRoute | undefined {
-  switch (kind) {
-    case 'festival':
-      return ROUTE_SINGLETONS.festivalPage;
-    case 'gala':
-      return ROUTE_SINGLETONS.galaPage;
-    case 'collective':
-      return ROUTE_SINGLETONS.collectivePage;
-    default:
-      return undefined;
-  }
+  return editionPage(kind)?.route;
+}
+
+/**
+ * An album's page, or the photo address of one of its photographs (ADR 0037). The slug and the key arrive
+ * cleaned of stega, since each becomes part of an address.
+ */
+export function albumHref(slug: string, photo?: string): string {
+  const page = `/gallery/${slug}`;
+  return photo ? `${page}?photo=${encodeURIComponent(photo)}` : page;
 }
 
 /** The page a program opens: its own page when it has one, else the Programs hub. */
@@ -94,9 +117,21 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
   // Donate's trust block keeps its promise of a source line under every number only while Impact shows them.
   impactPage: ['/impact', '/donate'],
+  // Every album page closes with the gallery's credit and permissions section and wears its kicker.
+  galleryPage: ['/gallery', '/gallery/[album]'],
   // The year strip names the festival and the Gala by kind, so no edition reaches the Programs hub.
-  // Impact's civic cells read the festival's editions (ADR 0035).
-  event: ['/', '/odunde', '/gala', '/programs/cultural-collective', '/impact', '/news'],
+  // Impact's civic cells read the festival's editions (ADR 0035). An album takes its edition's year, and
+  // its page links to the edition's page (ADR 0039).
+  event: [
+    '/',
+    '/odunde',
+    '/gala',
+    '/programs/cultural-collective',
+    '/impact',
+    '/gallery',
+    '/gallery/[album]',
+    '/news',
+  ],
   // The festival page draws the zones; the Gala's running order names a row's zone too.
   zone: ['/odunde', '/gala'],
   ticketTier: ['/gala'],
@@ -113,7 +148,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   newsPost: ['/news/[slug]', '/news', '/'],
   // Impact's civic cells come from the newest past festival edition whose album has photographs.
   album: ['/gallery/[album]', '/gallery', '/odunde', '/gala', '/impact'],
-  photographer: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],
+  // The credit line under an album and in the Lightbox; the gallery's tiles carry no credit (ADR 0039).
+  photographer: ['/gallery/[album]', '/odunde', '/gala'],
   partner: ['/odunde', '/impact'],
   outcome: ['/impact'],
   // Get Involved's associations block shows the count of hometown associations from its stat.

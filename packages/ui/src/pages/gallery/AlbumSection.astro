@@ -1,0 +1,45 @@
+---
+/**
+ * An album page's body as `/gallery/[album]` composes it, for the `Pages/Gallery` stories: the Lightbox, served
+ * open on the first photograph as `open: viewer` arrives or closed as `grid` does, the way back to the gallery and
+ * to the edition's page with the credit line, and the photographs. Markup, since the slot tree for a grid of links
+ * and a dialog runs deeper than a story's configured slots render (the Programs sections do the same).
+ */
+import { GALA_ALBUM, GALA_ALBUM_PHOTOS, GALLERY_PENDING, photoTiles } from '../../fixtures/gallery';
+import AlbumIntro from '../../media/AlbumIntro/AlbumIntro.astro';
+import Lightbox from '../../media/Lightbox/Lightbox.astro';
+import PhotoGrid from '../../media/PhotoGrid/PhotoGrid.astro';
+import Section from '../../page/Section/Section.astro';
+
+interface Props {
+  /** The Lightbox served open on the first photograph, as a tile under `open: viewer` arrives. */
+  open?: boolean;
+  captions?: 'always' | 'hover';
+}
+
+const { open = false, captions = 'always' } = Astro.props;
+---
+
+<Section id="photographs">
+  <Lightbox
+    id="album-lightbox"
+    label={GALA_ALBUM.title}
+    albumHref="/gallery/gala-2025"
+    album="gala-2025"
+    photos={GALA_ALBUM_PHOTOS}
+    openKey={open ? GALA_ALBUM_PHOTOS[0]?.key : undefined}
+  />
+  <AlbumIntro
+    links={[{ label: 'All albums', href: '/gallery' }, GALA_ALBUM.edition]}
+    credit={GALA_ALBUM.credit}
+    confirmed={GALA_ALBUM.confirmed}
+    pending={GALLERY_PENDING.credit}
+  />
+  <PhotoGrid
+    photos={photoTiles(GALA_ALBUM_PHOTOS)}
+    lightbox="album-lightbox"
+    captions={captions}
+    priority={!open}
+    pending={GALLERY_PENDING.photographs}
+  />
+</Section>

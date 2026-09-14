@@ -471,8 +471,7 @@ export type GalleryPage = {
   _updatedAt: string;
   _rev: string;
   header?: PageHeader;
-  intro?: string;
-  creditsAndConsent?: BlockContent;
+  creditsAndConsent?: string;
   primaryAction?: Cta;
   secondaryActions?: Array<{
     _key: string;
@@ -3061,6 +3060,118 @@ export type GalaPageQueryResult = {
   } | null;
 } | null;
 
+// Source: src/queries/gallery.ts
+// Variable: galleryPageQuery
+// Query: *[_type == "galleryPage" && _id == "galleryPage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  creditsAndConsent,  "albums": *[_type == "album" && defined(slug.current) && count(photos) > 0]{    _id,    title,    "slug": slug.current,    date,    "editionYear": coalesce(event->edition, *[_type == "event" && album._ref == ^._id][0].edition),    cover{_type, alt, caption, hotspot, crop, asset},    "firstPhoto": photos[0]{_key, _type, alt, caption, hotspot, crop, asset},    "count": count(photos)  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{generalEmail},  layout{open, captions, state},  seo{title, description}}
+export type GalleryPageQueryResult = {
+  header: {
+    kicker: {
+      yo: string | null;
+      en: string | null;
+    } | null;
+    title: string | null;
+    line: string | null;
+  } | null;
+  primaryAction: {
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  } | null;
+  secondaryActions: Array<{
+    _key: string;
+    label: string | null;
+    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
+    href: string | null;
+    newTab: boolean | null;
+  }> | null;
+  creditsAndConsent: string | null;
+  albums: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    date: string | null;
+    editionYear: number | null;
+    cover: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+    firstPhoto: {
+      _key: string;
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+    count: number | null;
+  }>;
+  settings: {
+    generalEmail: string | null;
+  } | null;
+  layout: {
+    open: "grid" | "viewer" | null;
+    captions: "always" | "hover" | null;
+    state: "built" | "soon" | null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+} | null;
+
+// Source: src/queries/gallery.ts
+// Variable: albumPageQuery
+// Query: {  "album": *[_type == "album" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    date,    consentNote,    creditConfirmed,    "credit": coalesce(credit->defaultCredit, credit->name),    "edition": coalesce(      event->{"year": edition, kind},      *[_type == "event" && album._ref == ^._id][0]{"year": edition, kind}    ),    "photos": photos[]{      _key,      _type,      alt,      caption,      hotspot,      crop,      asset,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name, creditNote)    }  },  "page": *[_type == "galleryPage" && _id == "galleryPage"][0]{    header{kicker{yo, en}},    creditsAndConsent,    layout{captions}  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{generalEmail}}
+export type AlbumPageQueryResult = {
+  album: {
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    date: string | null;
+    consentNote: string | null;
+    creditConfirmed: boolean | null;
+    credit: string | null;
+    edition: {
+      year: number | null;
+      kind: "collective" | "festival" | "gala" | "other" | null;
+    } | null;
+    photos: Array<{
+      _key: string;
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+      creditConfirmed: boolean | null;
+      credit: string | null;
+    }> | null;
+  } | null;
+  page: {
+    header: {
+      kicker: {
+        yo: string | null;
+        en: string | null;
+      } | null;
+    } | null;
+    creditsAndConsent: string | null;
+    layout: {
+      captions: "always" | "hover" | null;
+    } | null;
+  } | null;
+  settings: {
+    generalEmail: string | null;
+  } | null;
+};
+
 // Source: src/queries/homepage.ts
 // Variable: homepageQuery
 // Query: *[_id == "homepage"][0]{  hero{    kicker{yo, en},    title,    emphasis,    sub,    blessing{yo, en},    image{_type, alt, caption, hotspot, crop, asset},    primaryAction{label, kind, enquiryKind, href, newTab},    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}  },  "leadEvent": leadEvent->{_id, kind, title, edition, start, end, "venueName": venue.name, summary},  "events": *[_type == "event" && kind in ["festival", "gala"]] | order(edition desc){    _id, kind, title, edition, start, end, "venueName": venue.name, summary  },  "stats": stats[]->{_id, value, label, shortLabel, source, asOf},  programsIntro,  "programs": *[_type == "program"] | order(order asc){    _id, name, "slug": slug.current, kicker{yo, en}, blurb,    image{_type, alt, caption, hotspot, crop, asset},    cadence, ages, page,    action{label, kind, enquiryKind, href, newTab}  },  "voices": voices[]->{_id, quote, name, relation, permissionToName, context},  voicesIntro,  voicesProverb{yo, en},  newsIntro,  "news": *[_type == "newsPost"] | order(date desc)[0...3]{    _id, title, "slug": slug.current, date, kicker{yo, en}, summary,    image{_type, alt, caption, hotspot, crop, asset},    "tags": tags[]->{_type, kind, page}  },  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},  raiseYourHand{    title,    blurb,    "doors": doors[]->{      _id, key, title, blurb, bullets,      action{label, kind, enquiryKind, href, newTab},      image{_type, alt, caption, hotspot, crop, asset}    }  },  layout{season, highlight, gallery, involved, newsletter, pattern, motion},  seo{title, description}}
@@ -4364,6 +4475,8 @@ declare global {
   interface SanityQueries {
     "*[_id == \"festivalPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  whatItIs,\n  whatItIsImage{_type, alt, caption, hotspot, crop, asset},\n  zonesIntro,\n  planYourVisit[]{_key, label, value, note},\n  takePart[]{_key, way, chip, title, line, label},\n  pastYearsIntro,\n  partnersIntro,\n  \"editions\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    venue{name, address, line},\n    cost,\n    summary,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    vendorTerms{fees, closeDate, decisionDate, permitNote},\n    attendance{value, label, source, asOf},\n    \"album\": album->{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"zones\": *[_type == \"zone\" && active != false] | order(order asc){\n    _id,\n    name{yo, en},\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"partners\": *[_type == \"partner\" && \"odunde\" in scope] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  layout{phead, zones, schedule, takepart, labels},\n  seo{title, description}\n}": FestivalPageQueryResult;
     "*[_id == \"galaPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  eveningIntro,\n  tiersIntro,\n  sponsorIntro,\n  honoreesIntro,\n  pastIntro,\n  takePart[]{_key, way, chip, title, line, label},\n  \"editions\": *[_type == \"event\" && kind == \"gala\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    doors,\n    venue{name, address, line},\n    dress,\n    ticketsUrl,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    \"tiers\": *[_type == \"ticketTier\" && event._ref == ^._id] | order(order asc){\n      _id,\n      name,\n      price,\n      includes,\n      variant,\n      featured\n    },\n    \"album\": album->{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"sponsorLevels\": *[_type == \"sponsorLevel\" && scope in [\"gala\", \"org\"]] | order(order asc){\n    _id,\n    name,\n    amount,\n    recognition,\n    \"eventId\": event._ref\n  },\n  \"honorees\": *[_type == \"honoree\" && event->kind == \"gala\"] | order(name asc){\n    _id,\n    name,\n    award,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"eventId\": event._ref\n  },\n  layout{treatment, tiers, emphasis, awards, schedule, past, labels},\n  seo{title, description}\n}": GalaPageQueryResult;
+    "*[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  creditsAndConsent,\n  \"albums\": *[_type == \"album\" && defined(slug.current) && count(photos) > 0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    \"editionYear\": coalesce(event->edition, *[_type == \"event\" && album._ref == ^._id][0].edition),\n    cover{_type, alt, caption, hotspot, crop, asset},\n    \"firstPhoto\": photos[0]{_key, _type, alt, caption, hotspot, crop, asset},\n    \"count\": count(photos)\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail},\n  layout{open, captions, state},\n  seo{title, description}\n}": GalleryPageQueryResult;
+    "{\n  \"album\": *[_type == \"album\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    consentNote,\n    creditConfirmed,\n    \"credit\": coalesce(credit->defaultCredit, credit->name),\n    \"edition\": coalesce(\n      event->{\"year\": edition, kind},\n      *[_type == \"event\" && album._ref == ^._id][0]{\"year\": edition, kind}\n    ),\n    \"photos\": photos[]{\n      _key,\n      _type,\n      alt,\n      caption,\n      hotspot,\n      crop,\n      asset,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name, creditNote)\n    }\n  },\n  \"page\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n    header{kicker{yo, en}},\n    creditsAndConsent,\n    layout{captions}\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail}\n}": AlbumPageQueryResult;
     "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"leadEvent\": leadEvent->{_id, kind, title, edition, start, end, \"venueName\": venue.name, summary},\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source, asOf},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  newsIntro,\n  \"news\": *[_type == \"newsPost\"] | order(date desc)[0...3]{\n    _id, title, \"slug\": slug.current, date, kicker{yo, en}, summary,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"tags\": tags[]->{_type, kind, page}\n  },\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_type == \"programsPage\" && _id == \"programsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  takePart[]{_key, way, chip, title, line, label},\n  kidsStem{\n    title,\n    blurb,\n    subprograms[]{\n      _key, name, blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      facts[]{_key, label, value, note},\n      action{label, kind, enquiryKind, href, newTab}\n    }\n  },\n  culturalExchange{\n    title, blurb, cadence, eligibility, howToJoin,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  yearStrip[]{_key, when, kind, note, \"program\": program->name},\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  layout{cards, inline, yearstrip},\n  seo{title, description}\n}": ProgramsPageQueryResult;
     "*[_type == \"lessonsPage\" && _id == \"lessonsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  glance[]{_key, label, value, note},\n  \"teacher\": teacher->{\n    _id, name, role, bioShort,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  teacherIntro,\n  learn,\n  levels[]{_key, name, blurb},\n  oneLesson[]{_key, step, title, detail},\n  faq[]{_key, question, answer},\n  takePart[]{_key, way, chip, title, line, label},\n  \"teacherEmail\": *[_id == \"siteSettings\"][0].contacts[role == \"teacher\"][0].email,\n  layout{lesson, portraits, faq},\n  seo{title, description}\n}": LessonsPageQueryResult;

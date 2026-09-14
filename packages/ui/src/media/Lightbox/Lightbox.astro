@@ -1,0 +1,749 @@
+---
+/**
+ * The Lightbox (`18 Photo Gallery.dc.html`'s viewer; COMPONENT-MAP, Media; spec Q1, Q2, Q3, Q11 and Q12; ADR
+ * 0037, ADR 0038): one photograph of an album at a time over the dark overlay, whole and never cropped, with
+ * × at the top right, previous and next either side, and under it the caption, the photo credit with its chip
+ * while unconfirmed, and the count ("1 of 43", not uppercase). Under 720px the photograph takes the full width
+ * and previous, next and the count sit in a row under the caption.
+ *
+ * A `<dialog>` inside the inline `oy-lightbox` element (ADR 0018, ADR 0020). Every photograph is a frame in the
+ * markup, hidden but the one shown, with its caption and credit, so the script only moves the selection. The
+ * page serves it open for a photo address (`openKey`, from `?photo=<key>`): previous, next and × are links to
+ * the neighbouring addresses and the album's page, so it works without JavaScript, and the script turns the
+ * served dialog modal. With JavaScript a photograph link that names this Lightbox (`data-lightbox`,
+ * `data-photo`) opens it in place and pushes the photo address; Left and Right, the buttons and a sideways swipe
+ * move it and replace the address; ×, Escape and a click on the dark background close it, going back one entry
+ * when the Lightbox pushed it, or replacing the address with the album's when the page arrived open. Back
+ * closes it and Forward reopens it: the site layout's history guard hands a traverse between two addresses of
+ * this album page to the element (`window.oyHistoryGuard`) before the router would fetch the page again, and
+ * without the layout the element hears `popstate` itself. Focus returns to the tile of the photograph on
+ * screen. Each move announces the count and the
+ * caption; a photograph that fails to load shows its caption in the frame; opening announces
+ * `lightbox_opened`, held until the page has parsed when the page arrives open, so the site's listener hears
+ * it. The frame fades in over 0.2s, not at all under reduced motion. Each frame carries its photograph's
+ * `data-sanity` attribute, since a photo address covers the tiles that carry it too.
+ */
+import CreditLine from '../CreditLine/CreditLine.astro';
+import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
+import { altOf, type ImageInput, imgAttributes } from '../image';
+
+export interface LightboxPhoto {
+  /** The photograph's key: its photo address's value. */
+  key: string;
+  image?: ImageInput | null;
+  alt?: string | null;
+  caption?: string | null;
+  /** The photograph's own credit, else the album's. */
+  credit?: string | null;
+  confirmed?: boolean | null;
+  /** The registry's wording while that credit is unconfirmed. */
+  creditPending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the photograph. */
+  edit?: string;
+}
+
+interface Props {
+  photos?: (LightboxPhoto | null)[] | null;
+  /** The element's id, which the photograph links name in `data-lightbox`. */
+  id: string;
+  /** The dialog's name: the album's title. */
+  label: string;
+  /** The album page's address: × without JavaScript, and the address closing writes. */
+  albumHref: string;
+  /** The photograph a photo address names: the Lightbox is served open on it. */
+  openKey?: string | null;
+  /** The album's slug, for the `lightbox_opened` track event. */
+  album?: string;
+  sizes?: string;
+}
+
+const {
+  photos,
+  id,
+  label,
+  albumHref,
+  openKey,
+  album,
+  sizes = '(max-width: 720px) calc(100vw - 24px), min(1080px, calc(100vw - 188px))',
+} = Astro.props;
+
+const list = (photos ?? []).filter((photo): photo is LightboxPhoto => photo !== null);
+const total = list.length;
+const openIndex = openKey ? list.findIndex((photo) => photo.key === openKey) : -1;
+const shown = Math.max(0, openIndex);
+const wrap = (index: number) => ((index % total) + total) % total;
+const addressOf = (index: number) => `?photo=${encodeURIComponent(list[wrap(index)]?.key ?? '')}`;
+// `CreditLine` draws nothing for a confirmed credit that names no one, and the dot then has nothing to sit before.
+const creditShown = (photo: LightboxPhoto) =>
+  Boolean(photo.credit?.trim()) || photo.confirmed !== true;
+---
+
+{
+  total > 0 && (
+    <oy-lightbox id={id} data-album-href={albumHref} data-album={album}>
+      <dialog
+        class="oy-lightbox oy-dark"
+        aria-label={label}
+        open={openIndex >= 0 ? true : undefined}
+      >
+        <a class="oy-lb-btn oy-lb-close" href={albumHref} aria-label="Close" data-close data-astro-reload>
+          ×
+        </a>
+        <div class="oy-lb-stage">
+          {list.map((photo, at) => {
+            const img = imgAttributes(photo.image, sizes);
+            return (
+              <div
+                class="oy-lb-frame"
+                data-key={photo.key}
+                data-position={`${at + 1} of ${total}`}
+                data-sanity={photo.edit}
+                hidden={at !== shown}
+              >
+                {img ? (
+                  <img
+                    {...img}
+                    alt={photo.alt ?? altOf(photo.image, '')}
+                    loading={at === openIndex ? 'eager' : 'lazy'}
+                    fetchpriority={at === openIndex ? 'high' : undefined}
+                    decoding="async"
+                  />
+                ) : (
+                  <ImagePlaceholder what="this photograph" tone="adire" class="oy-lb-placeholder" />
+                )}
+                <p class="oy-lb-failed">{photo.caption || photo.alt}</p>
+              </div>
+            );
+          })}
+        </div>
+        {total > 1 && (
+          <a
+            class="oy-lb-btn oy-lb-prev"
+            href={addressOf(shown - 1)}
+            aria-label="Previous photo"
+            data-prev
+            data-astro-reload
+          >
+            <span class="oy-lb-chevron" aria-hidden="true" />
+          </a>
+        )}
+        {total > 1 && (
+          <a
+            class="oy-lb-btn oy-lb-next"
+            href={addressOf(shown + 1)}
+            aria-label="Next photo"
+            data-next
+            data-astro-reload
+          >
+            <span class="oy-lb-chevron" aria-hidden="true" />
+          </a>
+        )}
+        <div class="oy-lb-cap">
+          {list.map((photo, at) => (
+            <p data-active={at === shown ? 'true' : undefined}>
+              {photo.caption && <span class="oy-lb-caption">{photo.caption}</span>}
+              {photo.caption && creditShown(photo) && (
+                <span class="oy-lb-dot" aria-hidden="true">
+                  {' • '}
+                </span>
+              )}
+              <CreditLine
+                as="span"
+                credit={photo.credit}
+                confirmed={photo.confirmed}
+                pending={photo.creditPending}
+              />
+            </p>
+          ))}
+        </div>
+        <p class="oy-lb-count">{`${shown + 1} of ${total}`}</p>
+        <p class="oy-lb-status" aria-live="polite" aria-atomic="true" />
+      </dialog>
+    </oy-lightbox>
+  )
+}
+
+{/* The element's script ships only where a Lightbox renders; the guard makes a second copy a no-op. */}
+{total > 0 && (
+<script is:inline>
+  if (!customElements.get('oy-lightbox')) {
+    const SWIPE = 40;
+
+    const wireLightbox = (host) => {
+      const dialog = host.querySelector('dialog');
+      if (!dialog || typeof dialog.showModal !== 'function') return null;
+      const stage = dialog.querySelector('.oy-lb-stage');
+      const frames = Array.from(dialog.querySelectorAll('.oy-lb-frame'));
+      if (!stage || frames.length === 0) return null;
+      const captions = Array.from(dialog.querySelectorAll('.oy-lb-cap > p'));
+      const prev = dialog.querySelector('[data-prev]');
+      const next = dialog.querySelector('[data-next]');
+      const count = dialog.querySelector('.oy-lb-count');
+      const status = dialog.querySelector('.oy-lb-status');
+      const keys = frames.map((frame) => frame.dataset.key || '');
+      const albumPath = new URL(host.dataset.albumHref || location.pathname, location.href).pathname;
+      const state = {
+        current: Math.max(
+          0,
+          frames.findIndex((frame) => !frame.hidden),
+        ),
+        // Whether the photo address on screen is an entry the Lightbox pushed above the album page.
+        pushed: false,
+        // A Back the Lightbox asked for is on its way; nothing else closes it meanwhile.
+        leaving: false,
+        // The next close event is the Lightbox's own.
+        closing: false,
+        // The served-open dialog has been made modal.
+        adopted: false,
+        // The address as the Lightbox last knew it: where a Back or Forward comes from.
+        address: location.href,
+      };
+
+      const wrap = (index) => ((index % frames.length) + frames.length) % frames.length;
+      const addressFor = (key) => {
+        const url = new URL(location.href);
+        if (key) url.searchParams.set('photo', key);
+        else url.searchParams.delete('photo');
+        return url.pathname + url.search + url.hash;
+      };
+      const keyInAddress = () => {
+        const key = new URLSearchParams(location.search).get('photo');
+        return key !== null && keys.includes(key) ? key : null;
+      };
+      const track = () => {
+        const report = () =>
+          host.dispatchEvent(
+            new CustomEvent('oy:track', {
+              bubbles: true,
+              detail: { event: 'lightbox_opened', album: host.dataset.album || albumPath },
+            }),
+          );
+        // Served open, the page is still parsing and the site's listener (a module script) not yet running.
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', report, { once: true });
+        } else {
+          report();
+        }
+      };
+      // A plain click of the main button: a held modifier or another button belongs to the browser.
+      const plainClick = (event) =>
+        !event.defaultPrevented &&
+        event.button === 0 &&
+        !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey);
+      const load = (index) => {
+        const img = frames[wrap(index)].querySelector('img');
+        if (img && img.loading === 'lazy') img.loading = 'eager';
+      };
+
+      const show = (index) => {
+        const to = wrap(index);
+        frames.forEach((frame, at) => {
+          if (at === to) {
+            if (frame.hidden) {
+              frame.hidden = false;
+              frame.dataset.fade = '';
+              frame.addEventListener('animationend', () => delete frame.dataset.fade, { once: true });
+            }
+          } else {
+            frame.hidden = true;
+            delete frame.dataset.fade;
+          }
+        });
+        captions.forEach((caption, at) => {
+          if (at === to) caption.dataset.active = 'true';
+          else delete caption.dataset.active;
+        });
+        if (count) count.textContent = frames[to].dataset.position || '';
+        if (prev) prev.setAttribute('href', addressFor(keys[wrap(to - 1)]));
+        if (next) next.setAttribute('href', addressFor(keys[wrap(to + 1)]));
+        load(to);
+        load(to - 1);
+        load(to + 1);
+        state.current = to;
+        return to;
+      };
+
+      const announce = () => {
+        if (!status) return;
+        const caption = captions[state.current]?.querySelector('.oy-lb-caption');
+        const words = caption ? caption.textContent.trim() : '';
+        status.textContent = [frames[state.current].dataset.position, words].filter(Boolean).join('. ');
+      };
+
+      const openAt = (key, push) => {
+        const index = keys.indexOf(key);
+        if (index < 0) return;
+        show(index);
+        if (!dialog.open) {
+          dialog.showModal();
+          track();
+        }
+        if (push) {
+          history.pushState(null, '', addressFor(key));
+          state.pushed = true;
+        }
+        state.address = location.href;
+        announce();
+      };
+
+      const move = (delta) => {
+        if (!dialog.open) return;
+        const to = show(state.current + delta);
+        history.replaceState(history.state, '', addressFor(keys[to]));
+        state.address = location.href;
+        announce();
+      };
+
+      // The dialog closes and focus goes back to the tile of the photograph on screen.
+      const finish = () => {
+        state.pushed = false;
+        state.leaving = false;
+        if (dialog.open) {
+          state.closing = true;
+          dialog.close();
+        }
+        if (status) status.textContent = '';
+        const selector = `a[data-lightbox="${CSS.escape(host.id)}"][data-photo="${CSS.escape(keys[state.current])}"]`;
+        const tile = document.querySelector(selector);
+        if (tile) {
+          tile.focus({ preventScroll: true });
+          tile.scrollIntoView({ block: 'nearest' });
+        }
+      };
+
+      // Leaves the photo address: back one entry when the Lightbox pushed it (the Back closes it), else the
+      // album's own address in place. True while that Back is on its way.
+      const leaveAddress = () => {
+        if (state.pushed) {
+          state.leaving = true;
+          history.back();
+          return true;
+        }
+        if (keyInAddress()) history.replaceState(history.state, '', addressFor(null));
+        state.address = location.href;
+        return false;
+      };
+
+      const dismiss = () => {
+        if (!dialog.open || state.leaving) return;
+        if (!leaveAddress()) finish();
+      };
+
+      // Back or Forward: the address decides. A photo address this Lightbox pushed (its state is null)
+      // opens on its photograph; the album's own address closes it.
+      const onHistory = () => {
+        state.leaving = false;
+        state.address = location.href;
+        const key = keyInAddress();
+        if (key) {
+          show(keys.indexOf(key));
+          if (!dialog.open) {
+            dialog.showModal();
+            track();
+            state.pushed = history.state === null;
+          }
+          announce();
+        } else if (dialog.open) {
+          finish();
+        }
+      };
+
+      dialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        dismiss();
+      });
+      // Closed by the browser itself (a second Escape it would not hold back): keep the address in step.
+      dialog.addEventListener('close', () => {
+        if (state.closing) {
+          state.closing = false;
+          return;
+        }
+        if (!state.leaving) leaveAddress();
+        finish();
+      });
+
+      dialog.addEventListener('click', (event) => {
+        if (!plainClick(event)) return;
+        const target = event.target instanceof Element ? event.target : null;
+        const control = target && target.closest('[data-prev], [data-next], [data-close]');
+        if (control) {
+          event.preventDefault();
+          if (control.hasAttribute('data-prev')) move(-1);
+          else if (control.hasAttribute('data-next')) move(1);
+          else dismiss();
+          return;
+        }
+        if (target === dialog || target === stage || (target && target.classList.contains('oy-lb-frame'))) {
+          dismiss();
+        }
+      });
+
+      // Escape is handled here too: a key the page sends (a story's play function) never fires `cancel`.
+      dialog.addEventListener('keydown', (event) => {
+        if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+          return;
+        }
+        if (event.key === 'ArrowLeft') move(-1);
+        else if (event.key === 'ArrowRight') move(1);
+        else if (event.key === 'Escape') dismiss();
+        else return;
+        event.preventDefault();
+      });
+
+      // One touch that travels far enough sideways, never while the page is pinch-zoomed (ADR 0038).
+      let touch = null;
+      stage.addEventListener(
+        'touchstart',
+        (event) => {
+          touch =
+            event.touches.length === 1
+              ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+              : null;
+        },
+        { passive: true },
+      );
+      stage.addEventListener(
+        'touchmove',
+        (event) => {
+          if (event.touches.length > 1) touch = null;
+        },
+        { passive: true },
+      );
+      stage.addEventListener('touchcancel', () => {
+        touch = null;
+      });
+      stage.addEventListener(
+        'touchend',
+        (event) => {
+          const from = touch;
+          touch = null;
+          const end = event.changedTouches[0];
+          if (!from || !end || event.touches.length > 0) return;
+          if (window.visualViewport && window.visualViewport.scale > 1.01) return;
+          const dx = end.clientX - from.x;
+          const dy = end.clientY - from.y;
+          if (Math.abs(dx) < SWIPE || Math.abs(dx) <= Math.abs(dy)) return;
+          move(dx < 0 ? 1 : -1);
+        },
+        { passive: true },
+      );
+
+      // A photograph that fails to load shows its caption in the frame.
+      for (const frame of frames) {
+        const img = frame.querySelector('img');
+        if (!img) continue;
+        const failed = () => {
+          frame.dataset.failed = 'true';
+        };
+        img.addEventListener('error', failed);
+        if (img.complete && img.naturalWidth === 0 && img.currentSrc) failed();
+      }
+
+      return {
+        state,
+        onHistory,
+        // A photograph link that names this Lightbox opens it in place.
+        onClick(event) {
+          if (!plainClick(event)) return;
+          const target = event.target instanceof Element ? event.target : null;
+          const link = target && target.closest('a[data-lightbox][data-photo]');
+          if (!link || link.dataset.lightbox !== host.id || !keys.includes(link.dataset.photo || '')) return;
+          event.preventDefault();
+          openAt(link.dataset.photo, !dialog.open);
+        },
+        // Back and Forward between two addresses of this album page need no new page (ADR 0037). The
+        // layout's history guard asks before the router hears of it; true keeps the router out.
+        claims() {
+          const from = new URL(state.address, location.href).pathname;
+          if (from !== albumPath || location.pathname !== albumPath) {
+            state.address = location.href;
+            return false;
+          }
+          onHistory();
+          return true;
+        },
+        // A page served with the Lightbox open (a photo address) turns it modal once scripts run, once.
+        adoptServedOpen() {
+          if (state.adopted) return;
+          state.adopted = true;
+          if (!dialog.hasAttribute('open')) return;
+          dialog.removeAttribute('open');
+          dialog.showModal();
+          state.pushed = false;
+          track();
+          announce();
+        },
+      };
+    };
+
+    customElements.define(
+      'oy-lightbox',
+      class extends HTMLElement {
+        connectedCallback() {
+          if (!this.oyApi) this.oyApi = wireLightbox(this);
+          const api = this.oyApi;
+          if (!api) {
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', () => this.connectedCallback(), {
+                once: true,
+              });
+            }
+            return;
+          }
+          if (this.oyListeners) this.oyListeners.abort();
+          this.oyListeners = new AbortController();
+          const { signal } = this.oyListeners;
+          document.addEventListener('click', api.onClick, { signal });
+          // Without the site's layout (a story) no guard answers first, so the element listens itself.
+          window.addEventListener('popstate', api.onHistory, { signal });
+          api.state.address = location.href;
+          window.oyHistoryGuard = api.claims;
+          api.adoptServedOpen();
+          this.dataset.ready = 'true';
+        }
+
+        disconnectedCallback() {
+          if (this.oyListeners) this.oyListeners.abort();
+          this.oyListeners = null;
+          if (this.oyApi && window.oyHistoryGuard === this.oyApi.claims) window.oyHistoryGuard = null;
+          delete this.dataset.ready;
+        }
+      },
+    );
+  }
+</script>
+)}
+
+<style>
+  oy-lightbox {
+    display: contents;
+  }
+
+  /* The port's `.oy-lightbox` overlay, as a native dialog: the whole viewport, a grid of the stage between the
+     two buttons over the caption and the count. The closed dialog stays closed whatever the port displays. */
+  .oy-lightbox {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--white);
+    display: grid;
+    /* The prototype's centred row: the photograph up to 1080px, each button 18px beside it. */
+    grid-template-columns: minmax(94px, 1fr) minmax(0, 1080px) minmax(94px, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'prev stage next'
+      'cap cap count';
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+  .oy-lightbox:not([open]) {
+    display: none;
+  }
+  .oy-lightbox::backdrop {
+    background: transparent;
+  }
+
+  .oy-lb-stage {
+    grid-area: stage;
+    display: grid;
+    min-height: 0;
+    padding: 24px 0;
+    gap: 0;
+  }
+  .oy-lb-frame {
+    grid-area: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    width: 100%;
+    max-width: 1080px;
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: auto;
+    overflow: visible;
+    border-radius: 0;
+  }
+  .oy-lb-frame[hidden] {
+    display: none;
+  }
+  .oy-lb-frame img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+  .oy-lb-frame :global(.oy-lb-placeholder) {
+    width: min(100%, 720px);
+    aspect-ratio: 3 / 2;
+  }
+  .oy-lb-frame[data-fade] {
+    animation: oy-lb-fade 0.2s ease;
+  }
+  @keyframes oy-lb-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .oy-lb-frame[data-fade] {
+      animation: none;
+    }
+  }
+  .oy-lb-failed {
+    display: none;
+  }
+  .oy-lb-frame[data-failed] img {
+    display: none;
+  }
+  .oy-lb-frame[data-failed] .oy-lb-failed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: min(100%, 720px);
+    aspect-ratio: 3 / 2;
+    margin: 0;
+    padding: 24px;
+    border: 1px solid var(--border-on-dark);
+    border-radius: 6px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-on-dark-soft);
+  }
+
+  /* The buttons: the port's round outline, drawn chevrons (the glyph rule, ADR 0027), the press settle. */
+  .oy-lb-btn {
+    display: grid;
+    place-items: center;
+    padding: 0;
+    color: var(--white);
+    text-decoration: none;
+    transition:
+      background-color 0.18s ease,
+      scale 0.12s ease;
+  }
+  .oy-lb-btn:active {
+    scale: 0.985;
+  }
+  .oy-lb-btn:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .oy-lb-prev {
+    grid-area: prev;
+    align-self: center;
+    justify-self: end;
+    margin-right: 18px;
+  }
+  .oy-lb-next {
+    grid-area: next;
+    align-self: center;
+    justify-self: start;
+    margin-left: 18px;
+  }
+  .oy-lb-chevron {
+    width: 11px;
+    height: 11px;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+  }
+  .oy-lb-prev .oy-lb-chevron {
+    transform: translateX(2px) rotate(-135deg);
+  }
+  .oy-lb-next .oy-lb-chevron {
+    transform: translateX(-2px) rotate(45deg);
+  }
+
+  /* Every caption in one cell, the shown one visible: the bar keeps the longest caption's height. */
+  .oy-lb-cap {
+    grid-area: cap;
+    display: grid;
+    min-width: 0;
+    max-width: none;
+    padding: 0 18px 26px 26px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-on-dark-soft);
+  }
+  .oy-lb-cap > p {
+    grid-area: 1 / 1;
+    max-width: 64ch;
+    margin: 0;
+    visibility: hidden;
+  }
+  .oy-lb-cap > p[data-active='true'] {
+    visibility: visible;
+  }
+  .oy-lb-dot {
+    color: var(--gold-300);
+  }
+
+  /* Uppercase is for kickers and path chips only. */
+  .oy-lb-count {
+    grid-area: count;
+    align-self: start;
+    justify-self: end;
+    margin: 0;
+    padding: 2px 26px 26px 0;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    white-space: nowrap;
+    color: var(--text-on-dark-soft);
+  }
+
+  .oy-lb-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 720px) {
+    .oy-lightbox {
+      grid-template-columns: 44px minmax(0, 1fr) 44px;
+      grid-template-rows: minmax(0, 1fr) auto auto;
+      grid-template-areas:
+        'stage stage stage'
+        'cap cap cap'
+        'prev count next';
+      column-gap: 12px;
+      padding: 0 12px 16px;
+    }
+    .oy-lb-stage {
+      padding: 76px 0 14px;
+    }
+    .oy-lb-prev,
+    .oy-lb-next {
+      justify-self: center;
+      margin: 0;
+    }
+    .oy-lb-cap {
+      padding: 0 0 12px;
+    }
+    .oy-lb-count {
+      align-self: center;
+      justify-self: center;
+      padding: 0;
+    }
+    .oy-lb-close {
+      top: 16px;
+      right: 12px;
+    }
+  }
+</style>

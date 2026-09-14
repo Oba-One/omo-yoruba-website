@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
+import { swipe } from './helpers';
 
 // The past years carousel (docs/research/phase-5-photo-carousel-custom-element.md, ADR 0027): an
 // inline custom element that upgrades the server-rendered first photograph. CI builds with a
@@ -85,6 +86,23 @@ for (const route of ROUTES) {
         return el.querySelectorAll('.oy-carousel-slide:not([hidden])').length;
       });
       expect(shown).toBe(1);
+    });
+
+    test('a sideways swipe on touch moves the photograph; a short or mostly vertical one does not', async ({
+      page,
+      isMobile,
+    }) => {
+      test.skip(!isMobile, 'Touch runs in the mobile project.');
+      const host = await carouselOn(page, route);
+      const stage = host.locator('.oy-carousel-stage');
+      const total = await host.getByRole('tab').count();
+      await swipe(stage, -120, 12);
+      await expect(host.locator('.oy-carousel-count')).toHaveText(`2 of ${total}`);
+      await swipe(stage, 120, -6);
+      await expect(host.locator('.oy-carousel-count')).toHaveText(`1 of ${total}`);
+      await swipe(stage, -30, 0);
+      await swipe(stage, -50, 120);
+      await expect(host.locator('.oy-carousel-count')).toHaveText(`1 of ${total}`);
     });
 
     test('is clean for axe on the second photograph', async ({ page }) => {

@@ -732,6 +732,43 @@ describe('Our Story', () => {
   });
 });
 
+describe('the gallery', () => {
+  const PROTOTYPE_LINE =
+    'Odunde, the Gala, the lessons, and the Collective, year by year. Open an album and start looking.';
+  const LINE = 'Odunde, the Gala and the summer camp. Open an album and start looking.';
+
+  it('seeds a header line naming only the albums that exist, and no intro, policy or album date', () => {
+    const gallery = byId.get('galleryPage') as unknown as {
+      header: { title: string; line: string; kicker: { yo: string; en: string } };
+      intro?: unknown;
+      creditsAndConsent?: unknown;
+    };
+    expect(gallery.header).toEqual({
+      kicker: { yo: 'Àwòrán', en: 'Photographs' },
+      title: 'Photographs',
+      line: LINE,
+    });
+    expect(gallery.intro).toBeUndefined();
+    expect(gallery.creditsAndConsent).toBeUndefined();
+    for (const album of docs.filter((doc) => doc._type === 'album')) {
+      expect(album.date, album._id).toBeUndefined();
+      expect(album.creditConfirmed, album._id).toBe(false);
+    }
+  });
+
+  it('revises the header line only while it reads as the earlier seed wrote it, and retires the intro', () => {
+    const revisions = buildRevisions(assets);
+    expect(revisedFields('galleryPage', { header: { line: PROTOTYPE_LINE } }, revisions)).toEqual({
+      set: { 'header.line': LINE },
+      unset: [],
+    });
+    expect(
+      revisedFields('galleryPage', { header: { line: 'The owner’s own line.' } }, revisions),
+    ).toEqual({ set: {}, unset: [] });
+    expect(retiredFields('galleryPage', { intro: 'An old intro' })).toEqual(['intro']);
+  });
+});
+
 describe('Donate', () => {
   const donate = byId.get('donatePage') as unknown as {
     giveNow: { facts: { label: string; value?: string }[] };

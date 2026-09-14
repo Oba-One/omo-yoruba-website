@@ -99,10 +99,29 @@ export const PAGE_LAYOUTS = {
     { name: 'portraits', title: 'Portraits', options: ['shown', 'hidden'] },
   ],
   donatePage: [{ name: 'impact', title: 'What your gift does', options: ['shown', 'hidden'] }],
+  // The prototype names the Lightbox "viewer"; the value keeps the prototype's name (ADR 0006, ADR 0039).
   galleryPage: [
-    { name: 'open', title: 'Opening an album', options: ['viewer', 'grid'] },
-    { name: 'captions', title: 'Captions', options: ['always', 'hover'] },
-    { name: 'state', title: 'State', options: ['built', 'soon'] },
+    {
+      name: 'open',
+      title: 'Opening an album',
+      options: ['viewer', 'grid'],
+      description:
+        "Viewer opens the Lightbox on the album's first photograph; grid opens the album's page of photographs.",
+    },
+    {
+      name: 'captions',
+      title: 'Captions',
+      options: ['always', 'hover'],
+      description:
+        'Album titles on the gallery and photograph captions on album pages: always shown, or on hover where a mouse can hover (a phone always shows them).',
+    },
+    {
+      name: 'state',
+      title: 'State',
+      options: ['built', 'soon'],
+      description:
+        'Soon hides the albums behind one sentence pointing to the Odunde and Gala pages while the albums are prepared.',
+    },
   ],
   newsPage: [
     { name: 'order', title: 'Order', options: ['events-led', 'feed-led'] },

@@ -1,0 +1,141 @@
+---
+/**
+ * An album on the gallery (`18 Photo Gallery.dc.html`'s mosaic; COMPONENT-MAP, Cards; ADR 0039): one link
+ * holding the cover, framed by its hotspot, and over the scrim the title and one line, the year and the count
+ * ("2026 • 43 photographs"), or the count and the registry's chip where the year is owed. The border turns
+ * gold on hover; nothing lifts or zooms. The title is a heading, so a reader can move from album to album, and
+ * the cover's alt stays empty: the link is the album, named by its title and its line. `size` sets the title
+ * of a tile two rows tall (`lead`); `AlbumGrid` lays the tiles out and gives each its size. The port's
+ * `.oy-album` classes keep the prototype's scrim and border.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
+import { type ImageInput, imgAttributes, positionOf } from '../image';
+
+export interface AlbumTileData {
+  title: string;
+  /** The album's page, or its first photograph's address under `open: viewer`. */
+  href: string;
+  /** The cover, else the album's first photograph. */
+  image?: ImageInput | null;
+  /** The year, when the line shows it: left out when the title already names it. */
+  year?: string | null;
+  /** "43 photographs". */
+  count: string;
+  /** The registry's wording where the album has no year. */
+  yearPending?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the album's cover. */
+  edit?: string;
+}
+
+interface Props extends AlbumTileData {
+  /** A tile two rows tall takes the larger title. */
+  size?: 'lead' | 'tile';
+  heading?: 'h2' | 'h3';
+  sizes?: string;
+  /** The page's largest paint (the gallery's first album): fetched at once and first. */
+  priority?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  href,
+  image,
+  year,
+  count,
+  yearPending,
+  edit,
+  size = 'tile',
+  heading: Heading = 'h2',
+  sizes = '(max-width: 560px) calc(100vw - 48px), (max-width: 900px) calc(50vw - 32px), 340px',
+  priority = false,
+  class: className,
+} = Astro.props;
+
+const img = imgAttributes(image, sizes);
+const position = positionOf(image);
+const shownYear = year?.trim() || undefined;
+---
+
+<a class:list={['oy-album', 'oy-album-tile', className]} href={href} data-size={size} data-sanity={edit}>
+  <div class="oy-album-media">
+    {
+      img ? (
+        <img
+          {...img}
+          alt=""
+          loading={priority ? 'eager' : 'lazy'}
+          fetchpriority={priority ? 'high' : undefined}
+          decoding="async"
+          style={position ? `object-position: ${position}` : undefined}
+        />
+      ) : (
+        <ImagePlaceholder what="the album cover" tone="adire" class="oy-album-placeholder" />
+      )
+    }
+  </div>
+  <div class="oy-album-meta oy-dark">
+    <Heading class="oy-album-title">{title}</Heading>
+    <p class="oy-album-line">
+      {shownYear && <span>{shownYear}</span>}
+      {shownYear && (
+        <span class="oy-album-dot" aria-hidden="true">
+          {' • '}
+        </span>
+      )}
+      <span>{count}</span>
+      {!shownYear && yearPending && ' '}
+      {!shownYear && yearPending && <Pending what={yearPending} />}
+    </p>
+  </div>
+</a>
+
+<style>
+  .oy-album-tile {
+    height: 100%;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .oy-album-tile:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .oy-album-tile :global(.oy-album-placeholder) {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  .oy-album-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.2;
+    color: var(--white);
+    text-wrap: balance;
+  }
+  .oy-album-tile[data-size='lead'] .oy-album-title {
+    font-size: 26px;
+  }
+  .oy-album-line {
+    margin: 3px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-on-dark-soft);
+  }
+  /* The port sets every span in the meta as its own block line; this line's parts sit on one. */
+  .oy-album-line span {
+    display: inline;
+    margin: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+  .oy-album-dot {
+    color: var(--gold-300);
+  }
+  /* The chip keeps its own type (the tokens' chip rule) and its on-dark colours; it sits beside the count. */
+  .oy-album-line :global(span.oy-pend) {
+    display: inline-flex;
+    margin: 6px 0 0 8px;
+  }
+</style>

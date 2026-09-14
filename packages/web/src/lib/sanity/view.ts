@@ -35,9 +35,14 @@ export function cleanText(value: string | null | undefined): string | undefined 
   return value ? stegaClean(value).trim() || undefined : undefined;
 }
 
+/** The Studio's text when it holds any, its stega kept for click-to-edit; else undefined. */
+export function studioText(value: string | null | undefined): string | undefined {
+  return cleanText(value) ? (value ?? undefined) : undefined;
+}
+
 /** The Studio's text when it holds any, its stega kept for click-to-edit; else the page's own words. */
 export function textOr(value: string | null | undefined, fallback: string): string {
-  return cleanText(value) ? (value ?? fallback) : fallback;
+  return studioText(value) ?? fallback;
 }
 
 /** A multi-line value (the mailing address) on one line, its lines joined by commas, or undefined. */

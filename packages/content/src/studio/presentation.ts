@@ -145,6 +145,12 @@ export const presentationOptions: PresentationPluginOptions = {
           ],
         }),
       }),
+      // A photographer has no page of its own, and the resolver's selection cannot look up the albums that
+      // credit one, so the banner says where the credit also shows.
+      photographer: {
+        message: 'Also credited on the page of every album that names this photographer.',
+        locations: locationsFor('photographer'),
+      },
       enquiry: unlisted('Enquiries are not shown on the site.'),
       subscriber: unlisted('Subscribers are not shown on the site.'),
       lintReport: unlisted('Lint reports are not shown on the site.'),

@@ -32,6 +32,7 @@ import vendorNecklaces from '../../../../docs/design/design/images/w2/odunde-202
 import vendorSuya from '../../../../docs/design/design/images/w2/odunde-2026-vendor-selling-suya.jpg?url';
 import teachingSession from '../../../../docs/design/design/images/w2/odunde-2026-yoruba-language-teaching-session.jpg?url';
 import summerCampArt from '../../../../docs/design/design/images/w2/summer-camp-kids-art.jpg?url';
+import summerCampArtClass from '../../../../docs/design/design/images/w2/summer-camp-kids-art-class.jpg?url';
 
 export interface FixturePhoto {
   src: string;
@@ -146,5 +147,9 @@ export const PHOTOS = {
   galaGettingFood: {
     src: galaGettingFood,
     alt: 'Guests seated at round tables in the hall, chandeliers above',
+  },
+  summerCampArtClass: {
+    src: summerCampArtClass,
+    alt: 'An elder in gèlè sits among a dozen children holding up their coloured drawings in front of the banner',
   },
 } as const satisfies Record<string, FixturePhoto>;

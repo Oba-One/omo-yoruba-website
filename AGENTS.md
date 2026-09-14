@@ -70,7 +70,7 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   volunteer, enrol, vendor, contact.
 - Yoruba Language Lessons (never "School"): one teacher, live online, times and fees agreed
   with her directly. No terms, no Saturdays, no venue.
-- Gallery: album mosaic, no filters, opening an album opens the viewer, credits per album.
+- Gallery: album mosaic, no filters, opening an album opens the Lightbox (the brief's viewer), credits per album.
 - News & Events (page 17) is wireframed but not built; schema ships, page waits for cadence.
 - Full diacritics on every Yoruba word. The type must render the test string cleanly at
   every size: "Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun."
@@ -87,7 +87,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   happens next. Errors are sentences naming the field, never colour alone, and never clear
   what was typed. Every form shows a human fallback beside it.
 - Nothing opens on load: no entry pop-up, no scroll-triggered newsletter, no exit intent.
-  `#give` is the one URL-driven exception.
+  The URL-driven exceptions are `#give` and a photo address (`?photo=<key>` on an album page opens
+  the Lightbox on that photograph, ADR 0037).
 - Type: Source Serif 4 (headings 600 and 700), Source Sans 3 (body 400, 600, 700), fallback
   through Noto Serif and Noto Sans, then Georgia and system-ui. Hero 44 to 64px, H2 32 to 40,
   H3 20 to 24, body 17 to 18, kicker 12px uppercase 0.15em tracking bold. Line-height 1.15

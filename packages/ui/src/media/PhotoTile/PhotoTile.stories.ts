@@ -60,3 +60,6 @@ export const FigureShort: Story = {
   args: { ...Figure.args, height: 280 },
   decorators: [wrap('sb-oy-medium')],
 };
+
+/** An album page's first photograph, the page's largest paint: loaded at once, and first. */
+export const LargestPaint: Story = { args: { priority: true } };

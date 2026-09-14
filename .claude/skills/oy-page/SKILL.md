@@ -43,4 +43,5 @@ Copy comes from the prototype and the Studio, never from memory.
 ## Never
 
 Invent copy, dates, prices or names; add a section the wireframe does not have; restyle a
-library part locally; open anything on load except `#give`.
+library part locally; open anything on load except the URL-driven exceptions in AGENTS.md (`#give` and a
+photo address, ADR 0037).

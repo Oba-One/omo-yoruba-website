@@ -133,6 +133,14 @@ const IMPACT_STATS = ['stat-years', 'stat-community', 'stat-associations', 'stat
 /** The associations figure's full label as Impact reads it; the homepage strip keeps the short one. */
 const ASSOCIATIONS_LABEL = 'hometown associations in the community';
 
+/**
+ * The gallery's header line (spec Q15 of Phase 8): the prototype's line promised lessons and Collective albums
+ * and a year for every album, so the seed names the three albums that exist until the owner writes their own.
+ */
+const GALLERY_PROTOTYPE_LINE =
+  'Odunde, the Gala, the lessons, and the Collective, year by year. Open an album and start looking.';
+const GALLERY_LINE = 'Odunde, the Gala and the summer camp. Open an album and start looking.';
+
 function page(name: string, fields: Record<string, unknown>): SeedDocument {
   const layout = layoutDefaults(name);
   return { _id: name, _type: name, ...fields, ...(layout ? { layout } : {}) };
@@ -953,7 +961,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       header: {
         kicker: bilingual('Àwòrán', 'Photographs'),
         title: 'Photographs',
-        line: 'Odunde, the Gala, the lessons, and the Collective, year by year. Open an album and start looking.',
+        line: GALLERY_LINE,
       },
     }),
   );
@@ -985,6 +993,8 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   lessonsPage: ['voices'],
   // The closing band's line names the partnerships lead instead (ADR 0035).
   impactPage: ['nextYear.blurb'],
+  // The header line says what the intro would (ADR 0039).
+  galleryPage: ['intro'],
 };
 
 /**
@@ -1053,6 +1063,8 @@ export function buildRevisions(assets: SeedAssets): SeedRevision[] {
       was: 'hometown associations',
       now: ASSOCIATIONS_LABEL,
     },
+    // The gallery (spec Q15 of Phase 8): the header line names only the albums that exist.
+    { type: 'galleryPage', path: 'header.line', was: GALLERY_PROTOTYPE_LINE, now: GALLERY_LINE },
   ];
 }
 

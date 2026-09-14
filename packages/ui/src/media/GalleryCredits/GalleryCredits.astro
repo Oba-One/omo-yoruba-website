@@ -1,0 +1,47 @@
+---
+/**
+ * Photography credit and permissions, the section `/gallery` and every album page close with (`18 Photo
+ * Gallery.dc.html`, spec Q13 of Phase 8, ADR 0039): the prototype's split on the alternate ground, the heading and
+ * its lead on the left; on the right the rows (how the site credits, the owner's consent policy or its chip, where
+ * removal requests go or its chip) and a quiet action, so a reader can ask while the inbox is owed. Arranged from
+ * library parts with no styling of its own; the site builds the rows from the Studio.
+ */
+import FactList, { type FactLike } from '../../content/FactList/FactList.astro';
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+import ButtonRow from '../../page/ButtonRow/ButtonRow.astro';
+import Section from '../../page/Section/Section.astro';
+import SectionHead from '../../page/SectionHead/SectionHead.astro';
+import Split from '../../page/Split/Split.astro';
+
+export interface GalleryCreditsData {
+  title: string;
+  lead?: string;
+  /** Credits, the consent policy and removal requests, each the Studio's value or the registry's chip. */
+  rows?: (FactLike | null)[] | null;
+  /** The quiet way to ask, beside the rows. */
+  action?: ActionLike | null;
+}
+
+interface Props {
+  credits: GalleryCreditsData;
+}
+
+const { credits } = Astro.props;
+---
+
+<Section id="credit" ground="alt" labelledby="credit-heading">
+  <Split>
+    <SectionHead title={credits.title} intro={credits.lead} id="credit-heading" />
+    <Fragment slot="aside">
+      <FactList facts={credits.rows} columns={1} />
+      {
+        credits.action && (
+          <ButtonRow>
+            <ActionButton action={credits.action} variant="quiet" arrow />
+          </ButtonRow>
+        )
+      }
+    </Fragment>
+  </Split>
+</Section>

@@ -109,6 +109,20 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {/* Before the router: a classic script runs while the head parses, ahead of the router's module. */}
+    <script is:inline>
+      // Back and Forward reach a page element that owns them before the router: the Lightbox's photo
+      // addresses (ADR 0037), which the router would otherwise fetch as a new page. The element sets
+      // `oyHistoryGuard` and answers true for a traverse it handled.
+      if (!window.oyHistoryGuardInstalled) {
+        window.oyHistoryGuardInstalled = true;
+        window.addEventListener('popstate', (event) => {
+          if (typeof window.oyHistoryGuard === 'function' && window.oyHistoryGuard(event)) {
+            event.stopImmediatePropagation();
+          }
+        });
+      }
+    </script>
     <ClientRouter />
     {analyticsOn && <Analytics />}
   </head>

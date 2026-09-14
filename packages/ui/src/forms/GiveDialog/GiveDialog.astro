@@ -194,8 +194,17 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
       let timer = 0;
       let poll = 0;
       let mounted = false;
-      const track = (event) =>
-        host.dispatchEvent(new CustomEvent('oy:track', { bubbles: true, detail: { event } }));
+      const track = (event) => {
+        const report = () =>
+          host.dispatchEvent(new CustomEvent('oy:track', { bubbles: true, detail: { event } }));
+        // Opened while the page parses (served open, or `#give`), the site's listener, a module script, is
+        // not running yet: the event waits for it, as the Lightbox's does.
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', report, { once: true });
+        } else {
+          report();
+        }
+      };
       const stop = () => {
         window.clearTimeout(timer);
         window.clearInterval(poll);

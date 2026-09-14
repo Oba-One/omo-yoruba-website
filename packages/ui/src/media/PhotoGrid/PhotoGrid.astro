@@ -1,0 +1,148 @@
+---
+/**
+ * An album's photographs on its page (`18 Photo Gallery.dc.html`'s album view; spec Q10, ADR 0037): a list of
+ * `PhotoTile`s three across at 200px, two under 900px and one under 600px, each the whole tile a link to its
+ * photo address. A link names the `Lightbox` it opens (`data-lightbox`) and the photograph (`data-photo`); the
+ * Lightbox's script opens it in place, and without JavaScript the address itself serves the Lightbox open.
+ * Router transitions skip the links (`data-astro-reload`), since the Lightbox, not a page swap, answers them.
+ * The border draws gold inside the tile on hover; nothing lifts or zooms. `captions: hover` hides the captions
+ * until hover or keyboard focus where a pointer hovers. The first photograph is the page's largest paint,
+ * fetched at once and first, unless the page serves the Lightbox open over the grid (`priority={false}`);
+ * every other photograph loads lazily, which the browser starts at once for those in view. No photographs
+ * shows the Pending line.
+ */
+import Pending from '../../core/Pending/Pending.astro';
+import type { ImageInput } from '../image';
+import PhotoTile from '../PhotoTile/PhotoTile.astro';
+
+export interface PhotoGridItem {
+  /** The photograph's key, its photo address's value. */
+  key: string;
+  href: string;
+  /** The tile's image; its alt stays empty beside a caption that says the same. */
+  image?: ImageInput | null;
+  alt?: string;
+  caption?: string | null;
+  /** A `data-sanity` attribute, so click-to-edit reaches the photograph. */
+  edit?: string;
+}
+
+interface Props {
+  photos?: (PhotoGridItem | null)[] | null;
+  /** The id of the `Lightbox` the photographs open. */
+  lightbox: string;
+  captions?: 'always' | 'hover';
+  /** The first photograph is the page's largest paint: false when a Lightbox served open covers the grid. */
+  priority?: boolean;
+  pending?: string;
+  sizes?: string;
+  /** A `data-sanity` attribute, so click-to-edit reaches the captions option. */
+  edit?: string;
+  class?: string;
+}
+
+const {
+  photos,
+  lightbox,
+  captions = 'always',
+  priority = true,
+  pending = 'the photographs',
+  sizes = '(max-width: 600px) calc(100vw - 48px), (max-width: 900px) calc(50vw - 34px), 340px',
+  edit,
+  class: className,
+} = Astro.props;
+
+const list = (photos ?? []).filter((photo): photo is PhotoGridItem => photo !== null);
+---
+
+{
+  list.length === 0 ? (
+    <Pending variant="line" what={pending} />
+  ) : (
+    <ul class:list={['oy-photo-grid', className]} data-captions={captions} data-sanity={edit}>
+      {list.map((photo, at) => (
+        <li>
+          <a
+            class="oy-photo-link"
+            href={photo.href}
+            data-lightbox={lightbox}
+            data-photo={photo.key}
+            data-astro-reload
+          >
+            <PhotoTile
+              image={photo.image}
+              alt={photo.alt}
+              caption={photo.caption}
+              what="this photograph"
+              sizes={sizes}
+              edit={photo.edit}
+              priority={priority && at === 0}
+            />
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .oy-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .oy-photo-link {
+    position: relative;
+    display: block;
+    height: 200px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface-dark);
+    color: var(--white);
+    text-decoration: none;
+  }
+  .oy-photo-link :global(.oy-photo-tile) {
+    height: 100%;
+    min-height: 0;
+  }
+  /* The gold edge draws over the photograph, which would cover a border or an inset shadow on the link. */
+  .oy-photo-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 2px transparent;
+    transition: box-shadow 0.2s ease;
+    pointer-events: none;
+  }
+  .oy-photo-link:hover::after {
+    box-shadow: inset 0 0 0 2px var(--gold-500);
+  }
+  .oy-photo-link:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  @media (max-width: 900px) {
+    .oy-photo-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 600px) {
+    .oy-photo-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (hover: hover) {
+    .oy-photo-grid[data-captions='hover'] :global(figcaption) {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .oy-photo-grid[data-captions='hover'] .oy-photo-link:hover :global(figcaption),
+    .oy-photo-grid[data-captions='hover'] .oy-photo-link:focus-visible :global(figcaption) {
+      opacity: 1;
+    }
+  }
+</style>

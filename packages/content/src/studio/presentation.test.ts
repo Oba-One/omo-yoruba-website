@@ -69,10 +69,12 @@ describe('locations follow the route map', () => {
     expect(event.resolve({ kind: 'collective' }).locations?.[0]?.href).toBe(
       '/programs/cultural-collective',
     );
-    // An edition of another kind has no page of its own, as the news cards read it: the map's order.
+    // An edition of another kind has no page of its own, as the news cards read it: the map's order, less
+    // the album pages (an edition's album page is listed on the album, which knows its slug).
+    const staticRoutes = (TYPE_ROUTES.event ?? []).filter((route) => !route.includes('['));
     const other = event.resolve({ kind: 'other' }).locations?.map((l) => l.href);
-    expect(other).toEqual(TYPE_ROUTES.event);
-    expect(event.resolve(null).locations?.map((l) => l.href)).toEqual(TYPE_ROUTES.event);
+    expect(other).toEqual(staticRoutes);
+    expect(event.resolve(null).locations?.map((l) => l.href)).toEqual(staticRoutes);
   });
 
   it('sends a Gala or organization sponsor level to the Gala page and says an Odunde one shows nowhere', () => {

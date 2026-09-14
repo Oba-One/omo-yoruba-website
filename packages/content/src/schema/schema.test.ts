@@ -107,6 +107,15 @@ describe('singletons and documents', () => {
     );
   });
 
+  it("keeps the gallery's policy as plain text in the owner's words, and no intro beside the header line", () => {
+    const gallery = schemaTypes.find((t) => t.name === 'galleryPage') as {
+      fields: { name: string; type: string }[];
+    };
+    const names = gallery.fields.map((f) => f.name);
+    expect(names).not.toContain('intro');
+    expect(gallery.fields.find((f) => f.name === 'creditsAndConsent')?.type).toBe('text');
+  });
+
   it('gives every page singleton a layout object whose options start with the prototype default', () => {
     for (const name of SINGLETON_NAMES) {
       if (name === 'siteSettings') continue;

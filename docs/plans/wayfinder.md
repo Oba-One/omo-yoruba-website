@@ -126,6 +126,17 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   a placeholder for the earliest photograph, one gold action per view on all four pages, the prototypes'
   section lead on every section head, Impact's six photographs as equal tiles, and the People and History
   prototype's paper grounds read as its runtime, not intent (Phase 7).
+- [A photo address opens the Lightbox, and Back closes it](../adr/0037-a-photo-address-opens-the-lightbox-and-back-closes-it.md):
+  `?photo=<key>` is the second URL-driven open beside `#give`, served open without JavaScript; one history entry
+  per visit, and a guard in the layout's head keeps Astro's router from reloading the page on Back (Phase 8 grill,
+  owner's answers in `docs/tickets/phase-8/spec.md`).
+- [Photographs swipe on touch](../adr/0038-photographs-swipe-on-touch.md), answering ticket 37's swipe question for
+  the Lightbox and the carousel together, and [the gallery's content model](../adr/0039-gallery-content-model.md):
+  an album's year from its edition, albums shown only with a photograph, one `captions` option for both pages,
+  `soon` beside the Pending line, and the consent policy in the owner's words (Phase 8).
+- [The gallery follows its prototype under the repo rules](../adr/0040-gallery-follows-its-prototype-under-the-repo-rules.md):
+  the mosaic's geometry to the pixel, the whole photograph in the Lightbox, the register's captions and chips in
+  place of the prototype's inventions, and the prototype runtime's shrunken titles read as its runtime (Phase 8).
 - [The homepage under the mobile performance budget](../tickets/wayfinder/issues/33-homepage-mobile-lighthouse-budget.md):
   right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
   0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).
@@ -162,6 +173,8 @@ Owner decisions that gate a phase, in phase order. Details in each ticket.
 | 40 | The program pages' owed facts (the teacher, the Lessons answers, the initiatives, the Collective's argument and voice) | Launch |
 | 41 | Check the trust pages in the Studio and on the preview, merge pull request 8 | Phase 8 branch |
 | 42 | The trust pages' owed facts (the EIN and contacts, sources, outcomes, governance, people, the Zeffy form, giving levels) | Launch |
+| 43 | Check the gallery in the Studio and on the preview, merge pull request 9 | Phase 9 branch |
+| 44 | The gallery's owed facts (the consent policy, the general inbox, the credits, the summer camp's year, consent for faces, captions) | Launch |
 | 07 | Our Story timeline shown by default | Phase 7 |
 | 10 | Old site URLs for redirects | Phase 9 |
 | 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | Phase 9 |

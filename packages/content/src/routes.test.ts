@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  albumHref,
   cacheTagsFor,
   EVENT_PAGE_NAMES,
+  editionPage,
   editionRoute,
   PUBLIC_ROUTES,
   programRoute,
@@ -19,6 +21,17 @@ describe('editionRoute and programRoute', () => {
     expect(editionRoute('other')).toBeUndefined();
     expect(editionRoute(null)).toBeUndefined();
     expect(editionRoute(undefined)).toBeUndefined();
+  });
+
+  it('names the page an edition opens, for a link to it, and nothing for a key that is not a kind', () => {
+    expect(editionPage('festival')).toEqual({ route: '/odunde', name: 'Odunde Festival' });
+    expect(editionPage('gala')).toEqual({ route: '/gala', name: 'End-of-Year Gala' });
+    expect(editionPage('collective')).toEqual({
+      route: '/programs/cultural-collective',
+      name: 'Yoruba Cultural Collective',
+    });
+    expect(editionPage('other')).toBeUndefined();
+    expect(editionPage('constructor')).toBeUndefined();
   });
 
   it('opens a program on its own page, or on the Programs hub without one', () => {
@@ -131,6 +144,46 @@ describe('tagsForRoute', () => {
       const type = tag.replace('type:', '');
       expect(cacheTagsFor(type)[0]).toBe(tag);
     }
+  });
+});
+
+describe('the gallery routes', () => {
+  it('purges every album page with the gallery singleton and with an edition, whose year and page it shows', () => {
+    expect(TYPE_ROUTES.galleryPage).toEqual(['/gallery', '/gallery/[album]']);
+    expect(TYPE_ROUTES.event).toEqual(expect.arrayContaining(['/gallery', '/gallery/[album]']));
+    expect(tagsForRoute('/gallery/[album]')).toEqual([
+      'type:siteSettings',
+      'type:galleryPage',
+      'type:event',
+      'type:album',
+      'type:photographer',
+    ]);
+  });
+
+  it("writes an album's page and a photograph's address, the key encoded", () => {
+    expect(albumHref('gala-2025')).toBe('/gallery/gala-2025');
+    expect(albumHref('gala-2025', 'gala-2025-group-photo')).toBe(
+      '/gallery/gala-2025?photo=gala-2025-group-photo',
+    );
+    expect(albumHref('summer-camp', 'a key&more')).toBe(
+      '/gallery/summer-camp?photo=a%20key%26more',
+    );
+  });
+
+  it('tags the gallery with what its tiles read, and no photographer: a tile carries no credit', () => {
+    expect(tagsForRoute('/gallery')).toEqual([
+      'type:siteSettings',
+      'type:galleryPage',
+      'type:event',
+      'type:album',
+    ]);
+    // A photographer has no slug of its own: its publish purges its type tag, which every album page carries,
+    // and the event pages the credit line sits on.
+    expect(cacheTagsFor('photographer')).toEqual([
+      'type:photographer',
+      'route:/odunde',
+      'route:/gala',
+    ]);
   });
 });
 

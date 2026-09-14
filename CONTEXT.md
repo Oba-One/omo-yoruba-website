@@ -175,6 +175,18 @@ The 380ms fade between pages, with the 2px gold progress bar while the next page
 under reduced motion. The only page-level motion.
 _Avoid_: page transition, view transition (the mechanism), animation
 
+**Lightbox**:
+The full-screen dialog on an album page that shows one photograph at a time: the whole photograph, its
+caption and photo credit, the count, previous and next, and a close. Opened from a photograph or a photo
+address; Back closes it.
+_Avoid_: viewer (except as the value of the gallery's `open` option), modal, slideshow, carousel (that is
+the event pages' framed carousel)
+
+**Photo address**:
+An album page's address with `?photo=<key>`, naming one of its photographs. It opens the Lightbox on that
+photograph, on load too, so it can be shared.
+_Avoid_: deep link in copy, permalink, share link
+
 **Track event**:
 A named analytics event a component announces (enquiry_opened, give_opened, newsletter_submitted)
 for the site to forward; components never talk to the analytics service themselves.
@@ -304,6 +316,25 @@ _Avoid_: offline donation, alternative payment
 One of the nine family and town networks inside the community. Listing their names is optional;
 the page describes them in prose until the owner adds them.
 _Avoid_: HTA in copy, chapter, club
+
+**Album**:
+The photographs of one occasion, an edition or an occasion with no edition such as the summer camp, with
+its own page on the gallery, one photo credit and its consent note. Its year is its own date's, else its
+edition's.
+_Avoid_: set, collection, gallery (the page of every album)
+
+**Cover**:
+The photograph an album shows on its tile on the gallery; the album's first photograph when none is chosen.
+_Avoid_: thumbnail, hero image
+
+**Photo credit**:
+Who took an album's photographs, printed as "Photographs:" and the name, with its chip until the photographer
+confirms it. A photograph carries its own only where it differs from the album's.
+_Avoid_: attribution, byline, copyright line
+
+**Consent note**:
+What one album says about faces and permission beyond the gallery's own policy, shown under its photo credit.
+_Avoid_: disclaimer, release, waiver
 
 **Confirmed fact**:
 Content the client has supplied (list in `docs/design/CONTENT-MODEL.md` section 1).

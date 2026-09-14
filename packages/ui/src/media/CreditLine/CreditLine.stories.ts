@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'astro/types';
 import { GALA_ALBUM_CREDIT, ODUNDE_ALBUM_CREDIT } from '../../fixtures/event-pages';
-import type { Meta, StoryArgs, StoryObj } from '../../storybook';
+import { type Meta, onDark, type StoryArgs, type StoryObj } from '../../storybook';
 import CreditLine from './CreditLine.astro';
 
 type Args = StoryArgs<ComponentProps<typeof CreditLine>>;
@@ -35,3 +35,9 @@ export const Pending: Story = { args: { credit: null } };
 
 /** Confirmed with no photographer named: no line. */
 export const ConfirmedWithoutName: Story = { args: { credit: null, confirmed: true } };
+
+/** Inside a line of text, as the Lightbox sets it after the caption: a span in the text's size and colour. */
+export const Inline: Story = { args: { as: 'span' } };
+
+/** The inline form in the dark scope, as the Lightbox's bar shows it: the chip in its on-dark colours. */
+export const OnDark: Story = { ...onDark, args: { as: 'span' } };

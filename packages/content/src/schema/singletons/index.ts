@@ -641,13 +641,12 @@ export const galleryPage = definePage({
   name: 'galleryPage',
   title: 'Photo Gallery page',
   fields: [
-    text('intro', 'Intro', 2),
-    defineField({
-      name: 'creditsAndConsent',
-      title: 'Photography credit and permissions',
-      type: 'blockContent',
-      description: 'This wording must be yours. Empty shows Pending.',
-    }),
+    text(
+      'creditsAndConsent',
+      'Consent policy',
+      4,
+      'How you ask permission to photograph people, children most of all, and how a photograph comes down. This wording must be yours; the gallery and every album page show it, and empty shows Pending (ADR 0039).',
+    ),
   ],
   layout: PAGE_LAYOUTS.galleryPage,
 });

@@ -82,6 +82,11 @@ describe('PhotoCarousel', () => {
     const script = (await renderToBody(Default)).querySelector('script');
     expect(script?.textContent).toContain("customElements.define(\n      'oy-photo-carousel'");
     expect(script?.textContent).toContain("document.readyState === 'loading'");
+    // The Lightbox's swipe (ADR 0038): one touch, 40px sideways and more than down, never while zoomed.
+    expect(script?.textContent).toContain('const SWIPE = 40;');
+    expect(script?.textContent).toContain('Math.abs(dx) < SWIPE || Math.abs(dx) <= Math.abs(dy)');
+    expect(script?.textContent).toContain('window.visualViewport.scale > 1.01');
+    expect(script?.textContent).toContain('{ passive: true }');
     expect((await renderToBody(OnePhoto)).querySelector('script')).toBeNull();
     expect((await renderToBody(Pending)).querySelector('script')).toBeNull();
   });

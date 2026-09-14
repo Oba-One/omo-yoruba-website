@@ -6,9 +6,9 @@
  * (`docs/research/phase-5-photo-carousel-custom-element.md`; ADR 0018, ADR 0027): a group named by
  * the section heading, the slides as tab panels inside a polite live region, the dots as 44px tabs
  * with one tab stop, Left and Right on the tabs and the buttons, Home and End on the tabs, no
- * rotation, no swipe, nothing on load. The chevrons are drawn, not glyphs, and the count is not
- * uppercase (AGENTS.md outranks the prototype on both). The incoming photograph fades in over 0.2s,
- * not at all under reduced motion.
+ * rotation, nothing on load, and the Lightbox's swipe on touch (ADR 0038). The chevrons are drawn,
+ * not glyphs, and the count is not uppercase (AGENTS.md outranks the prototype on both). The
+ * incoming photograph fades in over 0.2s, not at all under reduced motion.
  *
  * Without JavaScript the first photograph and its caption show; the controls keep their boxes but
  * stay invisible until `oy-photo-carousel` marks itself ready, so the upgrade moves nothing. One
@@ -162,6 +162,8 @@ const imageOf = (slide: CarouselSlide) => ({
 {total > 1 && (
 <script is:inline>
   if (!customElements.get('oy-photo-carousel')) {
+    const SWIPE = 40;
+
     const wireCarousel = (host) => {
       const slides = Array.from(host.querySelectorAll('.oy-carousel-slide'));
       if (slides.length < 2) return null;
@@ -237,6 +239,47 @@ const imageOf = (slide: CarouselSlide) => ({
         event.preventDefault();
         show(to, onTab);
       });
+      // One touch that travels far enough sideways, never while the page is pinch-zoomed: the Lightbox's
+      // gesture, the same thresholds (ADR 0038).
+      const stage = host.querySelector('.oy-carousel-stage');
+      let touch = null;
+      if (stage) {
+        stage.addEventListener(
+          'touchstart',
+          (event) => {
+            touch =
+              event.touches.length === 1
+                ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+                : null;
+          },
+          { passive: true },
+        );
+        stage.addEventListener(
+          'touchmove',
+          (event) => {
+            if (event.touches.length > 1) touch = null;
+          },
+          { passive: true },
+        );
+        stage.addEventListener('touchcancel', () => {
+          touch = null;
+        });
+        stage.addEventListener(
+          'touchend',
+          (event) => {
+            const from = touch;
+            touch = null;
+            const end = event.changedTouches[0];
+            if (!from || !end || event.touches.length > 0) return;
+            if (window.visualViewport && window.visualViewport.scale > 1.01) return;
+            const dx = end.clientX - from.x;
+            const dy = end.clientY - from.y;
+            if (Math.abs(dx) < SWIPE || Math.abs(dx) <= Math.abs(dy)) return;
+            show(current() + (dx < 0 ? 1 : -1), false);
+          },
+          { passive: true },
+        );
+      }
       return { warm, current };
     };
 

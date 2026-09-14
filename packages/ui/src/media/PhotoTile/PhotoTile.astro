@@ -7,7 +7,9 @@
  * missing photo. The `figure` shape is the framed photograph beside an event page's prose (`08
  * Odunde Festival.dc.html`): 360px tall with the card's 6px corners, or the `height` a page's split draws
  * (280px beside the Collective's argument, 340px beside an initiative). The first half of a caption is
- * marked as Yoruba only when it carries Yoruba letters ("Festival day • Leimert Park" has none).
+ * marked as Yoruba only when it carries Yoruba letters ("Festival day • Leimert Park" has none). The page's
+ * largest paint (`priority`, an album page's first photograph) is fetched at once and first; every other tile
+ * loads lazily.
  */
 import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
 import { altOf, type ImageInput, imgAttributes, positionOf } from '../image';
@@ -26,6 +28,8 @@ interface Props {
   shape?: 'tile' | 'figure';
   /** The figure's height in pixels where a prototype draws it shorter than 360px. */
   height?: number;
+  /** The page's largest paint: fetched at once and first. */
+  priority?: boolean;
   class?: string;
 }
 
@@ -38,6 +42,7 @@ const {
   edit,
   shape = 'tile',
   height,
+  priority = false,
   class: className,
   ...rest
 } = Astro.props;
@@ -61,7 +66,8 @@ const yoruba = /[\u00c0-\u024f\u1e00-\u1eff]|\p{Mn}/u.test(yo ?? '');
       <img
         {...img}
         alt={altOf(image, alt ?? '')}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
         decoding="async"
         style={position ? `object-position: ${position}` : undefined}
       />

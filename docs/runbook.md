@@ -297,8 +297,8 @@ Without the secret, audit the production build locally: `bun run build`, serve
 `.vercel/output` (static files plus the render function's `fetch`, as Phase 4 did), then run the
 command above with `LIGHTHOUSE_BASE_URL=http://localhost:<port>` and no secret. It measures the
 application, not Vercel's CDN. The routes are `/`, `/odunde`, `/gala`, `/programs`,
-`/programs/yoruba-lessons` and `/programs/cultural-collective` since Phase 6, and `/get-involved`,
-`/impact`, `/our-story` and `/donate` since Phase 7.
+`/programs/yoruba-lessons` and `/programs/cultural-collective` since Phase 6, `/get-involved`,
+`/impact`, `/our-story` and `/donate` since Phase 7, and `/gallery` and `/gallery/odunde-2026` since Phase 8.
 
 ## Comparing a page with its prototype
 
@@ -312,7 +312,10 @@ prototype's runtime can draw its sections outside `.oy-home`, so its theme never
 (`12 Yoruba Cultural Collective.dc.html` and `15 People and History.dc.html` read paper where the `adire`
 tint belongs): check a surprising ground with `getComputedStyle` before matching it. A prototype's inline
 style can also override the tokens' mobile rules (`16 Donate.dc.html`'s give-now split runs off the screen
-at 375), so read its markup before copying a mobile layout. A page whose option hides a block (Our Story's
+at 375), so read its markup before copying a mobile layout. The prototypes' runtime also wraps every
+interpolated string in `span.sc-interp`, so a port rule on a container's spans restyles the text it interpolates
+(`18 Photo Gallery.dc.html`'s album titles render at the meta line's 13px): read `getComputedStyle` on the span,
+not its parent. A page whose option hides a block (Our Story's
 timeline) is compared through its page-section story, with the prototype's section forced visible. An edited `@oy/ui` component's scoped stylesheet can stay stale in `astro dev` until the
 server restarts.
 
