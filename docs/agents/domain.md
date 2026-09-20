@@ -32,3 +32,25 @@ silently overriding:
 
 Some conflicts are the owner's to settle: see the Storybook pivot rule in
 `CLAUDE.md`.
+
+<!-- shared-engineering:begin -->
+## Applying shared engineering guidance
+
+Use `pragmatic-programming` for coding work and `domain-driven-design` for semantic
+or behavioral changes, following discovery and fallback instructions in root
+`AGENTS.md`. Preserve this repo's single-context layout. A new field or form does
+not require a new bounded context, service, aggregate hierarchy, or event store.
+
+For the affected behavior, identify its canonical terms, owner, and a concrete
+success or rejection example. Follow `oy-content-model` for schema and query changes:
+edition-specific facts belong to the edition, required launch facts use the Pending
+registry, and enquiry shapes derive from the one enquiry-kinds specification.
+Distinguish an enquiry from a subscriber and a money handoff from a locally confirmed
+payment. Preserve the existing next-edition and confirmed-fact rules.
+
+Keep shared knowledge in its existing source, use typed functions and schemas where
+sufficient, and test the actual changed rule or integration boundary. Update glossary
+terms and consequential ADRs through the existing domain workflow; regenerate types
+or other projections only through their owning commands. Routine visual changes
+that preserve meaning continue through their normal UI workflow.
+<!-- shared-engineering:end -->

@@ -59,3 +59,13 @@ After any schema or query change: `bun typegen`, commit `packages/content/schema
 `packages/content/src/sanity.types.ts`. The CI job `TypeGen drift` fails on a difference.
 Validation, Pending and locations are checked in the Studio: open `/admin` and confirm the new
 field warns, lists and locates.
+
+<!-- shared-engineering:begin -->
+## Semantic changes
+
+When schema or query work changes meaning, identity, edition selection, Pending
+behavior, or enquiry rules, follow `docs/agents/domain.md` and use the shared
+`domain-driven-design` skill. Establish the affected rule and an example before
+changing its representation. Preserve the existing canonical sources and generation
+steps above; a new DDD model must not become a competing content schema.
+<!-- shared-engineering:end -->

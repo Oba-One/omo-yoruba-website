@@ -116,6 +116,22 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
 
 ## Agent skills
 
+### Shared engineering guidance
+
+Use the personal `pragmatic-programming` skill for coding work and
+`domain-driven-design` when changing domain meaning, behavior, identity, lifecycle,
+consistency, or integration contracts. If not discovered, read the relevant
+`~/.agents/skills/<skill-name>/SKILL.md` when available. On an environment without
+these personal skills, follow this repository's guidance and report the missing
+shared guidance; do not install or duplicate it automatically. Load only relevant
+references. Existing repository rules and explicit user decisions govern the work.
+
+Apply these methods through [Domain docs](docs/agents/domain.md) and the existing
+`oy-content-model`, `oy-component`, and `oy-page` skills. Keep definitions, content
+ownership, generation, and validation in their current authorities. Use the Commands
+and Working rules above for applicable checks and session completion; report the
+changed behavior and actual proof without inventing a new gate for routine edits.
+
 ### Issue tracker
 
 Local Markdown files under `docs/tickets/`, labels bug, content, design, infra, later.
