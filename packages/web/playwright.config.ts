@@ -3,8 +3,9 @@ import { defineConfig, devices } from '@playwright/test';
 // Playwright against its own dev server on 4322 (the Vercel adapter has no preview command, and
 // a `bun dev` on 4321 keeps its toolbar and stays untouched) or against a deployed URL when
 // PLAYWRIGHT_TEST_BASE_URL is set. Two projects: desktop Chromium at 1440 and a 375 wide mobile
-// Chromium (the iPhone descriptors default to WebKit, which CI does not install). Facts and
-// sources: docs/research/phase-3-playwright-and-axe.md.
+// Chromium (the iPhone descriptors default to WebKit, which CI does not install); a third, WebKit
+// at 1440, joins when PLAYWRIGHT_WEBKIT is set. Facts and sources:
+// docs/research/phase-3-playwright-and-axe.md.
 const deployed = process.env.PLAYWRIGHT_TEST_BASE_URL;
 const baseURL = deployed ?? 'http://localhost:4322';
 
@@ -32,6 +33,16 @@ export default defineConfig({
         hasTouch: true,
       },
     },
+    // Local only, after `bunx playwright install webkit`: the engine whose persisted elements
+    // leave the top layer on a swap (ADR 0041). CI installs Chromium alone.
+    ...(process.env.PLAYWRIGHT_WEBKIT === '1'
+      ? [
+          {
+            name: 'webkit',
+            use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } },
+          },
+        ]
+      : []),
   ],
   webServer: deployed
     ? undefined
