@@ -134,6 +134,7 @@ take-part order, the lead event and the gold button; whether members stage editi
 | E20 | Normalise Yoruba text to NFC on save | none | Later | HP1 | open |
 | E21 | Storybook accessibility checks in CI (a new dependency) | owner's yes | Later | phase 1 ticket 05 | open |
 | E22 | Review leftovers kept on purpose: the mosaic's spans, two caption rules, the Lightbox's closing flags, duplicated swipe code (PR 9); outcome kinds, program anchors, unused ContactBlock variants (HP7); `rowKinds` parsing GROQ, TypeGen unions on four queries (HP6) | none | Later | PR 9, HP6, HP7 | open |
+| E23 | The navigation defect: in draft mode the overlay drew a card 6266px below the footer after a client-side arrival (the white gap and the flashing); a footer or door trigger after such an arrival navigated as well as opening its dialog, and Safari and Firefox left it open but not modal; closing a dialog wiped the router's history state; the overlay never mounted under `astro dev` | none | Now | ADR 0041 | doing |
 
 ## 5. Housekeeping
 
