@@ -18,8 +18,10 @@ amended by ADR 0013 and ADR 0042. Which inputs each kind of event shows:
 2. Fill what the form shows for that kind: the title, the edition year, start and end (Los Angeles
    time), the venue and the summary. The festival adds the cost, the schedule and the vendor terms; the
    Gala adds the doors, the dress, the tickets link (Eventbrite) and the running order.
-3. Gala: `ticketTier` documents for the edition (buy-now and enquiry variants, one featured) and
-   `sponsorLevel` documents, each naming the edition; `honoree` documents name it too. Whether the
+3. Gala: `ticketTier` documents for the edition (buy-now and enquiry variants, one featured) in the
+   order the page shows them (`order`: the table tier shows where its order puts it) and `sponsorLevel`
+   documents (the Gala's own or the organization's), each naming the edition; `honoree` documents name
+   it too. Whether the
    honorees show is the awards switch, which only an administrator changes.
 4. Festival: the zones (`zone`) when they change, and the page's one extra glance fact if needed.
 5. Run the voice check on every new string (no em dash, marks on Yoruba words, sentence case). Every

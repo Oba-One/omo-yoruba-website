@@ -23,10 +23,16 @@ nothing, help text with ADR numbers, and personal data one query away.
   levels and initiatives are lists on the one page that shows each, not documents in the sidebar.
 - **One control per decision.** Take-part order is the rows' own order, the homepage's lead event is the `season`
   option, the gold button is the hero's own button, and the Gala's tiers follow their order and `featured` flag.
-  Odunde's `takepart`, the homepage's `leadEvent` and the Gala's `emphasis` are retired.
+  Odunde's `takepart`, the homepage's `leadEvent` and the Gala's `emphasis` are retired; their migration moves a
+  take-part lead into the rows' order and leaves any other difference to the owner, so each page renders as before.
+  The one visible change is the owner's: a highlight on Lessons or the Collective no longer takes the hero's gold
+  button, and the migration's dry run says so where it applies.
 - **Inputs that change nothing** are hidden, then deleted by migration, except the sharing image (Phase 9), the
-  news post body and author (a later News page) and the fields on shared objects, which stay hidden. Scope values that show
-  nothing are removed. A Collective event needs no edition year, and the `other` kind is retired.
+  news post body and author (a later News page) and the fields on shared objects, which stay hidden. One plain
+  module (`hidden-inputs.ts`) names the inputs the form hides, for good or by an event's kind: the content-lint
+  function skips them, so the wording to check never names an input nobody can open, the schema reads its
+  page-dependent rules, and a test holds the schema's fixed ones to it. Scope values that show nothing are
+  removed. A Collective event needs no edition year, and the `other` kind is retired.
 - **A hidden input blocks nothing.** Sanity checks hidden inputs too, so a member could meet an error they cannot
   see. Every check, Sanity's built-in ones included (a reference must be published, a link must be a URL), skips
   an input the form hides (`skipValidationWhenHidden`, applied where the schema is assembled). An image asks for alt
@@ -68,9 +74,11 @@ nothing, help text with ADR numbers, and personal data one query away.
   the private dataset keeps the public out, not members. Custom roles (an Enterprise plan) or an
   administrators-only dataset would be the lock (D3). The member guide says what is off limits and why.
 - Amends ADR 0006 (three options are administrators' only), ADR 0013 (giving levels, outcomes, timeline entries
-  and initiatives are page lists; governance documents stay documents, one per filing), ADR 0014 (the To do view,
-  the edition an event row asks about, and the list a list row names), ADR 0025 (take-part order is the rows' order, with no option over it) and
-  ADR 0039 (the album's link only).
+  and initiatives are page lists; governance documents stay documents, one per filing; the Gala page has no extra
+  glance facts), ADR 0014 (the To do view, the edition an event row asks about, and the list a list row names),
+  ADR 0023 (the highlight moves its program card; the hero keeps its own gold button), ADR 0024 (the season option
+  alone leads the homepage band), ADR 0025 (take-part order is the rows' order, with no option over it), ADR 0029
+  (`keepsOwnList` is gone) and ADR 0039 (the album's link only).
 - Stored content moves only by migration after a dataset export (the runner in part 5, ADR 0035's rule); nothing
   is moved by hand. Every page renders the same content before and after, proved in both data modes.
 - The member guide (`docs/content-ops.md`, week 3) describes the Studio as simplified.

@@ -383,9 +383,9 @@ The body's data attributes that carry a page's layout options (`data-highlight`,
 _Avoid_: theme wrapper, page state
 
 **Lead event**:
-The one edition the homepage's event band shows: the editor's explicit choice, else the season
-rule's pick (the nearest dated upcoming festival or gala, else the calendar: festival January to
-June, Gala July to December). A past edition never leads.
+The one edition the homepage's event band shows, by the Leading event option (ADR 0042): the Gala's
+or the festival's nearest edition still to come, or by date the nearest dated upcoming festival or
+gala, else the calendar (festival January to June, Gala July to December). A past edition never leads.
 _Avoid_: next event, featured event, current event
 
 **Draft mode**:
