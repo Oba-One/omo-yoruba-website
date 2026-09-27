@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { PLACEHOLDER_PROJECT } from './helpers';
 
 // Forms work without JavaScript first (ADR 0019): the query opens the modal, a POST with errors
 // re-renders the page with status 400, the values kept and the sentences in place. The success
@@ -42,6 +43,29 @@ test('a posted newsletter error re-renders the footer with the sentence', async 
     email.press('Enter'),
   ]);
   expect(response.status()).toBe(400);
+  const again = page.locator('oy-newsletter');
+  await expect(again.getByRole('alert')).toHaveText(
+    'That email address does not look right. Check it and send again.',
+  );
+  await expect(again.getByLabel('Email address')).toHaveValue('ade@example');
+});
+
+test('a posted error on the 404 page of an unknown album re-renders with the sentence', async ({
+  page,
+}) => {
+  // The album route answers an empty 404 and Astro renders the 404 page with no cache object; the
+  // layout must still re-render the error. The placeholder project answers the album page with a 503.
+  test.skip(PLACEHOLDER_PROJECT, 'the placeholder project cannot tell a missing album');
+  await page.goto('/gallery/no-such-album');
+  const email = page.locator('oy-newsletter').getByLabel('Email address');
+  await email.fill('ade@example');
+  const [response] = await Promise.all([
+    page.waitForResponse((r) => r.request().method() === 'POST'),
+    email.press('Enter'),
+  ]);
+  // The unknown address keeps its 404 whatever was posted; the error still re-renders in place.
+  expect(response.status()).toBe(404);
+  await expect(page.locator('h1')).toHaveText('This page is not here');
   const again = page.locator('oy-newsletter');
   await expect(again.getByRole('alert')).toHaveText(
     'That email address does not look right. Check it and send again.',

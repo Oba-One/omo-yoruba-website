@@ -94,7 +94,8 @@ const newsletter = newsletterStateFrom(Astro.url, newsletterOutcome, site);
 // and the CDN never stores it.
 if (modal.state === 'error' || newsletter.state === 'error') {
   Astro.response.status = 400;
-  Astro.cache.set(false);
+  // The error render Astro gives an empty 404 has no cache object (lib/cache.ts).
+  Astro.cache?.set(false);
 }
 
 const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';

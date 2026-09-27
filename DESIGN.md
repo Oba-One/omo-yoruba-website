@@ -237,8 +237,8 @@ The hero and H2 sizes are an open question. `AGENTS.md` and the brief say hero 4
 - **Width.** `.oy-wrap` centres a 1100px column (`--content-width`) with 24px gutters (`--gutter`).
 - **Sections.** `--section-pad` is clamp(48px, 8vw, 88px): 48px on phones, 72px at 900px wide, 88px from 1100px. That sits inside the rule of 72 to 96px on desktop and 48px on mobile.
 - **Rhythm.** A dark hero opens the page and the indigo 700 footer closes it. Between them, white sections alternate with the theme's alternate ground, and dark bands (`.oy-dark`) carry the signature events and the newsletter.
-- **Grids.** Cards run three to a row with 22px gaps, one column under 820px. Stat strips run four across, two under 720px. Albums run three across (two or four as options), two under 860px. Take-part rows stack 14px apart.
-- **Breakpoints, as built.** 1060px: the wordmark's second line hides. 880px: the nav links fold into the burger. 820px: the card grid goes to one column. 760px: the nav bar's Donate hides and the photo hero's scrim turns vertical. 720px: the Enquiry Modal becomes a bottom sheet, path rows wrap with a full-width button, and the Lightbox restacks.
+- **Grids.** Card grids (`page/CardGrid`) run two to five across with 22px gaps: three and two columns fold to one under 860px, four and five to two under 1000px, and four to one under 600px. Stat strips run four across, two under 720px. The gallery's album mosaic runs four columns with a two-by-two lead, two under 900px and one under 560px. Take-part rows stack 14px apart.
+- **Breakpoints, as built.** 1060px: the wordmark's second line hides. 880px: the nav links fold into the burger. 1000px and 860px: the card grids fold (four and five columns to two, three and two to one). 900px and 560px: the album mosaic goes to two columns, then one. 760px: the nav bar's Donate hides and the photo hero's scrim turns vertical. 720px: the Enquiry Modal becomes a bottom sheet, path rows wrap with a full-width button, and the Lightbox restacks.
 
 ## Elevation
 
@@ -250,7 +250,7 @@ Shadows belong only to layers that float over the page:
 - the nav dropdown: `0 14px 34px rgba(20, 29, 64, 0.16)`;
 - the dialogs: `0 26px 64px rgba(20, 29, 64, 0.34)`, and for the bottom sheet `0 -12px 40px` at 30 percent.
 
-`--shadow-menu` (`0 20px 50px rgba(20, 29, 64, 0.3)`) is kept for menus, though the built dropdown and dialogs set their own; `--shadow-hover` has been unused since polish pass 2 and stays for the record. Scrims: dialogs sit over indigo 900 at 62 percent, the Lightbox over `rgba(10, 15, 34, 0.95)`, and the photo hero's copy over an indigo 900 gradient from 95 to 25 percent. Layers stack as nav 50, mobile menu 60, dropdown 70, progress bar 100, dialogs 200, Lightbox 300.
+`--shadow-menu` (`0 20px 50px rgba(20, 29, 64, 0.3)`) is kept for menus, though the built dropdown and dialogs set their own; `--shadow-hover` has been unused since polish pass 2 and stays for the record. Scrims: dialogs sit over indigo 900 at 62 percent, the Lightbox over `rgba(10, 15, 34, 0.95)`, and the photo hero's copy over an indigo 900 gradient from 95 to 25 percent. The nav (z-index 50), the dropdown (70) and the progress bar (100) stack in the page; the mobile menu, the dialogs and the Lightbox open with `showModal()` into the browser's top layer, above everything, in the order they open.
 
 ## Shapes
 
