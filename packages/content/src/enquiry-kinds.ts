@@ -180,7 +180,7 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     kind: 'performer',
     title: 'Ask about performing',
     blurb:
-      'Drummers, dancers, and cultural groups. Five questions, and the program committee sees every one.',
+      'Drummers, dancers, and cultural groups. Six questions, and the program committee sees every one.',
     submit: 'Send enquiry',
     ok: 'Ẹ ṣé! ✓ We have your details.',
     okBody:
