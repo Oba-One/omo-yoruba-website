@@ -127,14 +127,14 @@ describe('buildDonatePage', () => {
     });
     const levels = [
       {
-        _id: 'level-1',
+        _key: 'level-1',
         amount: '[ Amount ]',
         what: '[ What it pays for ]',
         frequency: 'once',
         source: null,
       },
       {
-        _id: 'level-2',
+        _key: 'level-2',
         amount: '[ Amount ]',
         what: null,
         frequency: 'monthly',
@@ -251,10 +251,12 @@ describe('buildDonatePage', () => {
   it('puts the edit attributes on the option and the levels in draft mode only', () => {
     expect(buildDonatePage(seeded, options).edit.impact).toBeUndefined();
     const levels = [
-      { _id: 'level-1', amount: '[ Amount ]', what: null, frequency: null, source: null },
+      { _key: 'level-1', amount: '[ Amount ]', what: null, frequency: null, source: null },
     ];
     const draft = buildDonatePage(withData({ levels }), { ...options, draft: true });
     expect(draft.edit.impact).toContain('path=layout.impact');
-    expect(draft.gifts.levels[0]?.edit).toContain('id=level-1;type=givingLevel');
+    expect(draft.gifts.levels[0]?.edit).toContain(
+      'id=donatePage;type=donatePage;path=whatYourGiftDoes:level-1.amount',
+    );
   });
 });

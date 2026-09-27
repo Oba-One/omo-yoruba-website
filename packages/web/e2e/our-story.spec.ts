@@ -76,13 +76,13 @@ test.describe('the Our Story page', () => {
     await expect(section.locator('h2')).toHaveText('1997 to now');
     if ((await section.locator('ol.oy-timeline li').count()) === 0) {
       await expect(section.locator('.oy-pend-line')).toContainText(
-        presenceWhat('timelineEntry')?.what ?? '',
+        pendingWhat('storyPage', 'timeline[]') ?? '',
       );
     }
     expectNoMockWhileOwed(await section.innerText(), [
       [
         /\b(2003|2009|2014|2024)\b|Citrus College|three hundred people/,
-        presenceWhat('timelineEntry')?.what,
+        pendingWhat('storyPage', 'timeline[]'),
       ],
     ]);
   });

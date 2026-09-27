@@ -13,8 +13,14 @@ export interface PendingEntry {
   fields?: readonly string[];
   /** A raw GROQ condition instead of `fields`, for anything a defined check cannot say. */
   condition?: string;
-  /** Narrows the type: `kind == "festival"`. */
+  /** Narrows the type: `kind == "festival"`. For a list row, narrows the items. */
   filter?: string;
+  /**
+   * For an item of a page's own list (ADR 0042): the page and the list that hold it. The row keeps the
+   * item's type, so the site asks for its chip as before (`pendingWhat('initiative', 'status')`), and
+   * the To do asks the page whether any item lacks the field.
+   */
+  list?: { page: string; field: string };
   /**
    * The edition the row asks about: the one its page shows next (the festival's and the Gala's next
    * edition, the Collective's listed events) or the one past years show. An event row asks that
@@ -58,6 +64,11 @@ const TRUST_PAGE_NAMES = {
 const FESTIVAL = 'kind == "festival"';
 const GALA = 'kind == "gala"';
 const COLLECTIVE = 'kind == "collective"';
+/** The page lists that hold what were documents (ADR 0042, ticket 10). */
+const INITIATIVES = { page: 'collectivePage', field: 'initiatives' };
+const OUTCOMES = { page: 'impactPage', field: 'outcomes' };
+const GIVING_LEVELS = { page: 'donatePage', field: 'whatYourGiftDoes' };
+
 /** An edition past years can show: an album names it and holds a photograph (ADR 0042). */
 const HAS_PHOTOS = 'count(*[_type == "album" && event._ref == ^._id && count(photos) > 0]) > 0';
 
@@ -66,7 +77,9 @@ const fieldRows = (
   type: string,
   where: string,
   rows: readonly (readonly [field: string, what: string])[],
-): PendingEntry[] => rows.map(([field, what]) => ({ type, fields: [field], where, what }));
+  list?: PendingEntry['list'],
+): PendingEntry[] =>
+  rows.map(([field, what]) => ({ type, fields: [field], where, what, ...(list ? { list } : {}) }));
 
 /**
  * The chip for the teacher's own address beside the enrol form. The registry row is a condition on
@@ -531,18 +544,24 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'initiative',
+    list: INITIATIVES,
     fields: ['blurb'],
     where: 'Collective, initiatives',
     what: 'what the initiative is',
   },
-  ...fieldRows('initiative', 'Collective, initiatives', [
-    ['status', 'the status'],
-    ['statusLine', 'the status line'],
-    ['serves', 'who it serves'],
-    ['since', 'when it started'],
-    ['next', 'what comes next'],
-    ['image', 'a photograph of the project'],
-  ]),
+  ...fieldRows(
+    'initiative',
+    'Collective, initiatives',
+    [
+      ['status', 'the status'],
+      ['statusLine', 'the status line'],
+      ['serves', 'who it serves'],
+      ['since', 'when it started'],
+      ['next', 'what comes next'],
+      ['image', 'a photograph of the project'],
+    ],
+    INITIATIVES,
+  ),
 
   // Get Involved and Donate
   {
@@ -622,12 +641,14 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'givingLevel',
+    list: GIVING_LEVELS,
     fields: ['what'],
     where: 'Donate, what your gift does',
     what: 'what the gift does',
   },
   {
     type: 'givingLevel',
+    list: GIVING_LEVELS,
     fields: ['source'],
     where: 'Donate, what your gift does',
     what: 'where the cost comes from',
@@ -673,12 +694,14 @@ export const PENDING: readonly PendingEntry[] = [
   },
   {
     type: 'outcome',
+    list: OUTCOMES,
     condition: '!defined(figure) && !defined(plainStatement)',
     where: 'Impact, outcomes',
     what: OUTCOME_PENDING,
   },
   {
     type: 'outcome',
+    list: OUTCOMES,
     fields: ['figure.source'],
     filter: 'defined(figure)',
     where: 'Impact, outcomes',
@@ -722,6 +745,13 @@ export const PENDING: readonly PendingEntry[] = [
     fields: ['founding'],
     where: 'Our Story, how it began',
     what: 'the 1997 story, in your words',
+  },
+  // The timeline is Our Story's own list (ADR 0042); its option keeps it hidden until confirmed.
+  {
+    type: 'storyPage',
+    fields: ['timeline[]'],
+    where: 'Our Story, timeline',
+    what: 'the dated entries',
   },
   {
     type: 'storyPage',
@@ -877,12 +907,6 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Gallery; Odunde and Gala, past years',
     what: 'the photo albums',
   },
-  {
-    type: 'outcome',
-    minimum: 1,
-    where: 'Impact, outcomes',
-    what: 'participation figures per program',
-  },
   // Governance names each kind of document it waits for, the newest of each shown when it exists.
   {
     type: 'governanceDoc',
@@ -905,13 +929,6 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Impact, governance',
     what: 'the audit position',
   },
-  { type: 'timelineEntry', minimum: 1, where: 'Our Story, timeline', what: 'the dated entries' },
-  {
-    type: 'givingLevel',
-    minimum: 1,
-    where: 'Donate, what your gift does',
-    what: 'the preset amounts and what each buys',
-  },
   // Still to come as GROQ reads it (ADR 0030): dated, with an end ahead, or no end and a start within the
   // last day.
   // The site reads the Los Angeles day, so on the day of an event without an end the two can differ.
@@ -932,11 +949,18 @@ function fieldCondition(field: string): string {
   return `!defined(${field})`;
 }
 
-/** The GROQ filter of the documents this entry lists. */
+/** The document type a row finds: the page for a list row, else the row's own type. */
+export const rowDocumentType = (entry: PendingEntry) => entry.list?.page ?? entry.type;
+
+/** The GROQ filter of the documents this entry lists: for a list row, the page one of whose items owes it. */
 export function pendingFilter(entry: PendingEntry): string {
+  const inner = entry.condition ?? (entry.fields ?? []).map(fieldCondition).join(' || ');
+  if (entry.list) {
+    const item = entry.filter ? `${entry.filter} && (${inner})` : inner;
+    return `_type == "${entry.list.page}" && count(${entry.list.field}[${item}]) > 0`;
+  }
   const parts = [`_type == "${entry.type}"`];
   if (entry.filter) parts.push(entry.filter);
-  const inner = entry.condition ?? (entry.fields ?? []).map(fieldCondition).join(' || ');
   parts.push(`(${inner})`);
   return parts.join(' && ');
 }

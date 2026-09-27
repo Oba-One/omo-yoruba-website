@@ -267,21 +267,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
   });
 
   docs.push({
-    _id: 'initiative-solar-hub',
-    _type: 'initiative',
-    name: 'Solar Hub',
-    memberLed: true,
-    order: 1,
-  });
-  docs.push({
-    _id: 'initiative-green-goods',
-    _type: 'initiative',
-    name: 'Green Goods',
-    memberLed: true,
-    order: 2,
-  });
-
-  docs.push({
     _id: 'zone-oja-balogun',
     _type: 'zone',
     name: bilingual('Ọjà Balógun', 'The market'),
@@ -797,9 +782,10 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Yoruba Cultural Collective',
         line: 'Culture put to work. A circle of members who meet, host events through the year, and run two member-led projects, the Solar Hub and Green Goods.',
       },
+      // The Collective's own list (ADR 0042), under the keys the earlier references had.
       initiatives: withKeys('initiative', [
-        ref('initiative-solar-hub'),
-        ref('initiative-green-goods'),
+        { _type: 'initiative', name: 'Solar Hub', memberLed: true },
+        { _type: 'initiative', name: 'Green Goods', memberLed: true },
       ]),
       keepsOwnList: false,
       // The skills the projects need are invented; the Updates row points at the newsletter form.

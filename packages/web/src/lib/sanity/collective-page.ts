@@ -101,7 +101,7 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
         const id = sectionId(cleanText(initiative.name), index);
         const status = cleanText(initiative.status);
         return {
-          _id: initiative._id,
+          _key: initiative._key,
           id,
           headingId: `${id}-heading`,
           // The prototype alternates the grounds from white, whether or not the events show.
@@ -139,7 +139,8 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
           ],
           statusPending: initiativePending('statusLine'),
           blurbPending: initiativePending('blurb'),
-          imageEdit: edit('image', initiative._id, 'initiative'),
+          // An item of the page's own list (ADR 0042): its path by key on the page.
+          imageEdit: edit(`initiatives[_key=="${initiative._key}"].image`),
         };
       }),
     },

@@ -23,7 +23,7 @@ export default defineBlueprint({
       event: {
         on: ['create', 'update'],
         filter:
-          '_type in ["siteSettings", "homepage", "festivalPage", "galaPage", "programsPage", "lessonsPage", "collectivePage", "getInvolvedPage", "impactPage", "storyPage", "donatePage", "galleryPage", "newsPage", "event", "zone", "ticketTier", "sponsorLevel", "honoree", "program", "initiative", "person", "timelineEntry", "testimonial", "newsPost", "album", "photographer", "partner", "outcome", "stat", "door", "hometownAssociation", "givingLevel", "governanceDoc"]',
+          '_type in ["siteSettings", "homepage", "festivalPage", "galaPage", "programsPage", "lessonsPage", "collectivePage", "getInvolvedPage", "impactPage", "storyPage", "donatePage", "galleryPage", "newsPage", "event", "zone", "ticketTier", "sponsorLevel", "honoree", "program", "person", "testimonial", "newsPost", "album", "photographer", "partner", "stat", "door", "hometownAssociation", "governanceDoc"]',
       },
     }),
   ],

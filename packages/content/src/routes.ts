@@ -139,10 +139,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   honoree: ['/gala'],
   // The Collective's page shows the Collective program's photograph (wayfinder ticket 31, ADR 0031).
   program: ['/', '/programs', '/programs/cultural-collective', '/impact'],
-  initiative: ['/programs/cultural-collective'],
   // Impact's governance cell counts the board.
   person: ['/our-story', '/programs/yoruba-lessons', '/impact'],
-  timelineEntry: ['/our-story'],
   // The slimmed Lessons page has no voices; a lessons testimonial fills the homepage's parent slot.
   testimonial: ['/', '/impact', '/programs/cultural-collective'],
   newsPost: ['/news/[slug]', '/news', '/'],
@@ -151,12 +149,10 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   // The credit line under an album and in the Lightbox; the gallery's tiles carry no credit (ADR 0039).
   photographer: ['/gallery/[album]', '/odunde', '/gala'],
   partner: ['/odunde', '/impact'],
-  outcome: ['/impact'],
   // Get Involved's associations block shows the count of hometown associations from its stat.
   stat: ['/', '/get-involved', '/impact'],
   door: ['/', '/get-involved', '/donate'],
   hometownAssociation: ['/get-involved'],
-  givingLevel: ['/donate'],
   governanceDoc: ['/impact'],
   enquiry: [],
   subscriber: [],

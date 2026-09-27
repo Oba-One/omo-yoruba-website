@@ -10,13 +10,13 @@ Blocked by: 09, 11
 | --- | --- |
 | `event.heroImage` | Deleted; two editions hold one today |
 | `collectivePage.keepsOwnList` | Deleted |
-| `initiative.proceedsReturn` | Deleted |
+| `initiative.proceedsReturn` | Gone with the page lists (ticket 10): `inline-lists` leaves it behind |
 | `door.order` | Deleted |
 | `galaPage.extraFacts` | Deleted; the edition fills all five glance facts |
 | `siteSettings.logo`, `siteSettings.wordmarkLine2`, `siteSettings.footerBlurb` | Deleted |
 | `photographer.url` | Deleted |
 | `stat.asOf` | Deleted |
-| `initiative.order`, `timelineEntry.order`, `outcome.order`, `givingLevel.order` | Go with the page lists (ticket 10): the list's own order replaces them |
+| `initiative.order`, `timelineEntry.order`, `outcome.order`, `givingLevel.order` | Gone with the page lists (ticket 10): the list's own order replaces them |
 | `seo.ogImage` | Stays hidden until link previews (Phase 9) |
 | `newsPost.body`, `newsPost.author` | Stay hidden for a later News page (D22) |
 | `pageHeader.image` outside the Odunde and Gala pages, the `oyImage` credit fields outside album photographs, `sourcedFigure.asOf` | Stay hidden: fields of shared objects, which other places use |

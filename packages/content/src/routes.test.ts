@@ -44,7 +44,7 @@ describe('editionRoute and programRoute', () => {
   it("lets a program reach the Collective's page, which shows the Collective program's photograph", () => {
     expect(TYPE_ROUTES.program).toContain('/programs/cultural-collective');
     expect(tagsForRoute('/programs/cultural-collective')).toEqual(
-      expect.arrayContaining(['type:program', 'type:initiative', 'type:testimonial', 'type:event']),
+      expect.arrayContaining(['type:program', 'type:testimonial', 'type:event']),
     );
   });
 

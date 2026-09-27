@@ -21,6 +21,7 @@ import {
   pendingWhat,
   presenceFilter,
   presenceWhat,
+  rowDocumentType,
   TEACHER_EMAIL_PENDING,
 } from './pending';
 import { schemaTypes } from './schema';
@@ -62,13 +63,37 @@ function hasPath(typeName: string, path: string): boolean {
 describe('PENDING', () => {
   it('names only document types the schema has, and only their fields', () => {
     for (const entry of PENDING) {
-      const type = typeByName(entry.type);
+      const type = typeByName(rowDocumentType(entry));
       expect(type?.type, entry.type).toBe('document');
+      // A list row names the page's list and the item's own fields (ADR 0042).
+      if (entry.list) {
+        expect(hasPath(entry.list.page, `${entry.list.field}[]`), entry.list.field).toBe(true);
+        expect(typeByName(entry.type)?.type, entry.type).toBe('object');
+      }
       for (const field of entry.fields ?? []) {
         expect(hasPath(entry.type, field), `${entry.type}.${field}`).toBe(true);
       }
       if (!entry.fields) expect(entry.condition, `${entry.type}: ${entry.what}`).toBeTruthy();
     }
+  });
+
+  it("asks a page whether any item of its own list owes a field, keeping the item's chip", () => {
+    const status = PENDING.find(
+      (entry) => entry.type === 'initiative' && entry.fields?.includes('status'),
+    );
+    if (!status) throw new Error('no initiative status row');
+    expect(pendingFilter(status)).toBe(
+      '_type == "collectivePage" && count(initiatives[!defined(status)]) > 0',
+    );
+    const source = PENDING.find(
+      (entry) => entry.type === 'outcome' && entry.fields?.includes('figure.source'),
+    );
+    if (!source) throw new Error('no outcome source row');
+    expect(pendingFilter(source)).toBe(
+      '_type == "impactPage" && count(outcomes[defined(figure) && (!defined(figure.source))]) > 0',
+    );
+    expect(pendingWhat('initiative', 'status')).toBe('the status');
+    expect(rowDocumentType(status)).toBe('collectivePage');
   });
 
   it('has one row per what, worded for the chip', () => {
@@ -118,10 +143,7 @@ describe('PRESENCE', () => {
       'ticketTier',
       'sponsorLevel',
       'honoree',
-      'givingLevel',
-      'timelineEntry',
       'governanceDoc',
-      'outcome',
       'zone',
     ]) {
       expect(typeByName(type)?.type, type).toBe('document');
@@ -460,7 +482,9 @@ describe('Our Story', () => {
     expect(pendingWhat('person', 'role', 'staff')).toBe('the role');
     expect(pendingWhat('person', 'role', 'teacher')).toBeUndefined();
     expect(pendingWhat('storyPage', 'takePart[]')).toBe('the ways in');
-    expect(presenceWhat('timelineEntry')?.what).toBe('the dated entries');
+    // The timeline is the page's own list (ADR 0042): its row asks the page for entries.
+    expect(presenceWhat('timelineEntry')).toBeUndefined();
+    expect(pendingWhat('storyPage', 'timeline[]')).toBe('the dated entries');
   });
 });
 

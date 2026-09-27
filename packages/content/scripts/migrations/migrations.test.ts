@@ -3,6 +3,7 @@ import { buildSeed, RETIRED_FIELDS, type SeedAssets } from '../seed-data';
 import { albumLinkMigration } from './album-link';
 import { applyMutations, isDraft, type StoredDocument } from './core';
 import { MIGRATIONS } from './index';
+import { inlineListsMigration } from './inline-lists';
 import { retiredFieldsMigration } from './retired-fields';
 import { teacherGroupMigration } from './teacher-group';
 
@@ -146,5 +147,80 @@ describe('album-link', () => {
     const plan = retiredFieldsMigration.plan([odunde]);
     expect(plan.mutations).toEqual([]);
     expect(plan.conflicts).toEqual(['event-odunde-2026 still holds album: run album-link first.']);
+  });
+});
+
+describe('inline-lists', () => {
+  const reference = (key: string, id: string) => ({ _key: key, _type: 'reference', _ref: id });
+  const collective = {
+    _id: 'collectivePage',
+    _type: 'collectivePage',
+    _rev: 'c1',
+    initiatives: [
+      reference('initiative-1', 'initiative-solar-hub'),
+      reference('initiative-2', 'initiative-green-goods'),
+    ],
+  };
+  const solar = {
+    _id: 'initiative-solar-hub',
+    _type: 'initiative',
+    _rev: 'i1',
+    _createdAt: '2026-09-01T00:00:00Z',
+    name: 'Solar Hub',
+    memberLed: true,
+    order: 1,
+    proceedsReturn: true,
+  };
+  const green = {
+    _id: 'initiative-green-goods',
+    _type: 'initiative',
+    _rev: 'i2',
+    name: 'Green Goods',
+    order: 2,
+  };
+
+  it('moves each listed document into its page list, in place and under the same key, then deletes it', () => {
+    const plan = inlineListsMigration.plan([collective, solar, green]);
+    expect(plan.conflicts).toEqual([]);
+    expect(plan.mutations).toEqual([
+      {
+        patch: {
+          id: 'collectivePage',
+          ifRevisionID: 'c1',
+          set: {
+            initiatives: [
+              { _key: 'initiative-1', _type: 'initiative', name: 'Solar Hub', memberLed: true },
+              { _key: 'initiative-2', _type: 'initiative', name: 'Green Goods' },
+            ],
+          },
+        },
+      },
+      { delete: { id: 'initiative-solar-hub' } },
+      { delete: { id: 'initiative-green-goods' } },
+    ]);
+    const after = applyMutations([collective, solar, green], plan.mutations);
+    expect(after.map(({ _id }) => _id)).toEqual(['collectivePage']);
+    expect(inlineListsMigration.plan(after).mutations).toEqual([]);
+  });
+
+  it('leaves a document no page lists, or a listed one that is missing, to the owner', () => {
+    const lonely = { _id: 'outcome-1', _type: 'outcome', figure: { value: '120' } };
+    expect(inlineListsMigration.plan([collective, solar, green, lonely]).conflicts).toEqual([
+      'outcome-1 is on no page: add it to the impactPage list, or delete it.',
+    ]);
+    const plan = inlineListsMigration.plan([collective, solar]);
+    expect(plan.conflicts).toEqual([
+      'collectivePage lists initiative-green-goods, which is not a published initiative: publish it, or take it off the list.',
+    ]);
+    expect(plan.mutations).toEqual([]);
+  });
+
+  it('reads the pages and every type that moves', () => {
+    for (const name of ['collectivePage', 'impactPage', 'storyPage', 'donatePage']) {
+      expect(inlineListsMigration.filter).toContain(`"${name}"`);
+    }
+    for (const type of ['initiative', 'outcome', 'timelineEntry', 'givingLevel']) {
+      expect(inlineListsMigration.filter).toContain(`"${type}"`);
+    }
   });
 });

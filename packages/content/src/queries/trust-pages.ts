@@ -37,8 +37,9 @@ export const getInvolvedPageQuery =
 
 /**
  * Impact in one read (ROUTES section 1, ADR 0035): the `impactPage` singleton with its header and actions,
- * the headline figures in order with their sources, how we work with its photograph, the outcomes with
- * their subjects (a program or an event page's kind) and every program's name for the slots, the civic
+ * the headline figures in order with their sources, how we work with its photograph, the outcomes (the
+ * page's own list, read as references too until the `inline-lists` migration, ADR 0042) with their subjects
+ * (a program or an event page's kind) and every program's name for the slots, the civic
  * prose and every festival edition (the newest past one with photographs gives the attendance and the
  * vendors hosted, the next one the cost), the count of the festival page's partners, the voices, the six
  * photographs, the newest governance document of each kind with its file's URL (a dated one first, since
@@ -53,12 +54,14 @@ export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "i
   "stats": stats[]->{_id, value, label, source},
   howWeWork,
   howWeWorkImage{_type, alt, caption, hotspot, crop, asset},
-  "outcomes": outcomes[]->{
-    _id,
-    kind,
-    plainStatement,
-    figure{value, label, source},
-    "program": program->{_id, name, page, "slug": slug.current}
+  "outcomes": outcomes[]{
+    _key,
+    ...coalesce(@->, @){
+      kind,
+      plainStatement,
+      figure{value, label, source},
+      "program": program->{_id, name, page, "slug": slug.current}
+    }
   },
   "programs": *[_type == "program"] | order(order asc){_id, name, page, "slug": slug.current},
   civicInfra,
@@ -108,7 +111,8 @@ export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "i
 
 /**
  * Our Story in one read (ROUTES section 1, ADR 0035): the `storyPage` singleton with its header and
- * actions, how it began with its facts and its earliest photograph, the timeline entries in order, the
+ * actions, how it began with its facts and its earliest photograph, the timeline entries (the page's own list,
+ * as the outcomes are on Impact), the
  * board and the staff and volunteers by group and order (the teacher is listed on the Lessons page only),
  * Reach us, the take-part rows, and the settings the contact block draws. Images project the asset
  * reference (ADR 0022). Layout values come back as stored; the page fills the schema defaults.
@@ -120,7 +124,7 @@ export const storyPageQuery = defineQuery(`*[_type == "storyPage" && _id == "sto
   founding,
   foundingFacts[]{_key, label, value, note},
   foundingImage{_type, alt, caption, hotspot, crop, asset},
-  "timeline": timeline[]->{_id, year, blurb, milestone},
+  "timeline": timeline[]{_key, ...coalesce(@->, @){year, blurb, milestone}},
   boardIntro,
   staffIntro,
   "board": *[_type == "person" && group == "board"] | order(order asc, name asc){
@@ -146,7 +150,7 @@ export const storyPageQuery = defineQuery(`*[_type == "storyPage" && _id == "sto
 /**
  * Donate in one read (ROUTES section 1, ADR 0034, ADR 0035): the `donatePage` singleton with its header and
  * its one gold "Give now", the give-now block with its facts, the doors for organizations, the giving levels
- * in order, the other ways to give, the tax line, and the settings the other ways and the trust block draw
+ * (the page's own list, as the outcomes are on Impact), the other ways to give, the tax line, and the settings the other ways and the trust block draw
  * (the legal name, the EIN, the mailing address), and whether Impact shows its source lines, which the trust
  * block's box promises. Images project the asset reference (ADR 0022). Layout values come back as stored;
  * the page fills the schema defaults.
@@ -165,7 +169,7 @@ export const donatePageQuery = defineQuery(`*[_type == "donatePage" && _id == "d
       image{_type, alt, caption, hotspot, crop, asset}
     }
   },
-  "levels": whatYourGiftDoes[]->{_id, amount, what, frequency, source},
+  "levels": whatYourGiftDoes[]{_key, ...coalesce(@->, @){amount, what, frequency, source}},
   otherWays[]{_key, kind, title, blurb, detail},
   taxLine,
   "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{orgName, ein, address},

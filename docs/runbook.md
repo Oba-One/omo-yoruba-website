@@ -73,8 +73,9 @@ http://localhost:4321/admin and log in with the Sanity account that belongs to t
 project's CORS origins must include `http://localhost:4321` with credentials and the production
 origin (wizard stage 1), or the login loop never ends. The sidebar follows the site (ADR 0042): To
 do, News posts, Events (Odunde Festival with its editions and zones, the End-of-Year Gala with its
-editions, tiers, levels and honorees, Collective events), Photos, People, Pages (each page, with the
-documents only it lists beside it), Used on several pages, and for administrators Site settings and
+editions, tiers, levels and honorees, Collective events), Photos, People, Pages (each page; its own
+lists, such as Impact's outcomes and the Collective's initiatives, are in its form, and Impact's
+governance filings open beside it), Used on several pages, and for administrators Site settings and
 the Inbox (enquiries by kind, unhandled first, and subscribers). The To do (`studio/todo.ts`, ADR
 0042) groups the registry's rows by the page that shows them, with counts, listing only what is owed:
 site settings rows gather under Organization details (administrators only), a row bound to an edition

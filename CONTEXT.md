@@ -73,7 +73,7 @@ _Avoid_: YCC in copy, sustainability program
 
 **Initiative**:
 One of the Collective's member-led projects, Solar Hub or Green Goods, with its status line, who
-it serves, when it started and what comes next.
+it serves, when it started and what comes next. An item of the Collective page's own list (ADR 0042).
 _Avoid_: venture, program (a program is one of the four)
 
 **Status line**:
@@ -286,7 +286,7 @@ _Avoid_: citation, footnote, reference
 
 **Outcome**:
 What one program or event (the festival, the Gala) produced: a figure with its source line, or a
-plain statement of what is being measured. Shown on Impact, one subject each.
+plain statement of what is being measured. An item of Impact's own list, one subject each (ADR 0042).
 _Avoid_: result, impact metric, KPI
 
 **Slot**:
@@ -300,12 +300,13 @@ request". Impact shows the newest of each kind and names a missing one.
 _Avoid_: financials, filing, paperwork
 
 **Timeline entry**:
-A year or a span of years and one line on Our Story's timeline; a milestone (the founding, today)
-is drawn apart from the rest.
+A year or a span of years and one line on Our Story's timeline, an item of the page's own list (ADR
+0042); a milestone (the founding, today) is drawn apart from the rest.
 _Avoid_: event (that is an edition), history item
 
 **Giving level**:
-An amount and what it pays for, with the source of the cost. Donate shows each as an outcome card.
+An amount and what it pays for, with the source of the cost: an item of Donate's own list (ADR 0042),
+each shown as an outcome card.
 _Avoid_: donation tier, preset, amount selector
 
 **Other way to give**:

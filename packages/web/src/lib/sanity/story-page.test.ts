@@ -122,8 +122,8 @@ describe('buildStoryPage', () => {
       pending: 'the dated entries',
     });
     const timeline = [
-      { _id: 'entry-1', year: '[ Year ]', blurb: '[ The founding ]', milestone: true },
-      { _id: 'entry-2', year: '[ Year ]', blurb: '[ A later year ]', milestone: null },
+      { _key: 'entry-1', year: '[ Year ]', blurb: '[ The founding ]', milestone: true },
+      { _key: 'entry-2', year: '[ Year ]', blurb: '[ A later year ]', milestone: null },
     ];
     const shown = buildStoryPage(
       withData({ timeline, layout: { timeline: 'shown' } }),
@@ -131,8 +131,8 @@ describe('buildStoryPage', () => {
     ).timeline;
     expect(shown.shown).toBe(true);
     expect(shown.entries).toEqual([
-      { _id: 'entry-1', year: '[ Year ]', line: '[ The founding ]', milestone: true },
-      { _id: 'entry-2', year: '[ Year ]', line: '[ A later year ]', milestone: false },
+      { _key: 'entry-1', year: '[ Year ]', line: '[ The founding ]', milestone: true },
+      { _key: 'entry-2', year: '[ Year ]', line: '[ A later year ]', milestone: false },
     ]);
   });
 

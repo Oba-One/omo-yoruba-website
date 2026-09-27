@@ -5,7 +5,7 @@ import { PAGE_LAYOUTS } from '../../layout-options';
 import { EVENT_PAGE_NAMES } from '../../routes';
 import { forMembers } from '../../studio/roles';
 import { voice } from '../../validation/rules';
-import { facts, refs, text } from '../helpers';
+import { facts, itemList, refs, text } from '../helpers';
 import { definePage } from './page';
 import { siteSettings } from './siteSettings';
 
@@ -394,7 +394,7 @@ export const collectivePage = definePage({
       type: 'blockContent',
       description: 'Must be in your words. Empty shows Pending.',
     }),
-    refs('initiatives', 'Initiatives', 'initiative', 'Solar Hub and Green Goods, in order.'),
+    itemList('initiatives', 'Initiatives', 'initiative', 'Solar Hub and Green Goods, in order.'),
     defineField({
       name: 'voice',
       title: 'One voice',
@@ -472,7 +472,7 @@ export const impactPage = definePage({
       description:
         'Its caption shows over it ("Àjọṣe • Partners and friends at the table"). Empty shows Pending.',
     }),
-    refs(
+    itemList(
       'outcomes',
       'What each program produced',
       'outcome',
@@ -527,7 +527,7 @@ export const storyPage = definePage({
       description:
         'The earliest photograph you have, even a poor one: an early gathering, or the founders. Empty shows Pending.',
     }),
-    refs(
+    itemList(
       'timeline',
       'Timeline',
       'timelineEntry',
@@ -582,7 +582,7 @@ export const donatePage = definePage({
         ),
       ],
     }),
-    refs(
+    itemList(
       'whatYourGiftDoes',
       'What your gift does',
       'givingLevel',

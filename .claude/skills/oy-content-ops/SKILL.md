@@ -39,8 +39,8 @@ rather than duplicates. Ids never contain a period.
   ends, or with no end until its start day ends in Los Angeles, nearest first, with "Ask to join" opening
   the contact form. An event without a start never lists, so enter it once the date is set. The venue's
   chip shows until `venue.name` is filled; the To do's Still to add counts the events still to come.
-- **Initiative**: Solar Hub and Green Goods are `initiative` documents the Collective page lists in the
-  order of `collectivePage.initiatives`. The status line is the pill in the Collective's own words, set
+- **Initiative**: Solar Hub and Green Goods are items of the Collective page's own list,
+  `collectivePage.initiatives`, in the order the page shows them (ADR 0042). The status line is the pill in the Collective's own words, set
   only from what the owner confirms ("[ How far the project has come ]"); `status`, `serves`, `since` and
   `next` are the four facts, each its own chip while empty.
 - **Album**: upload photos, create `album` with a title and slug, the `event` reference for an edition's
@@ -62,24 +62,23 @@ rather than duplicates. Ids never contain a period.
   the staff and volunteers together; Impact's board cell counts the board. The teacher is the `person`
   `lessonsPage.teacher` picks, in no group and listed on the Lessons page only; her email there is the
   `teacher` routing contact's.
-- **Outcome**: an `outcome` for a `program` or for an event page (`kind` festival or gala), never both, with
-  the `figure` (the number, what it counts and its source) once something is measured, or the plain
-  statement of what is being measured this year; add it to `impactPage.outcomes` in order. Impact shows
+- **Outcome**: an item of Impact's own list, `impactPage.outcomes`, in order (ADR 0042): a `program` or an
+  event page (`kind` festival or gala), never both, with the `figure` (the number, what it counts and its
+  source) once something is measured, or the plain statement of what is being measured this year. Impact shows
   the four subjects its prototype names (Language Lessons, the festival, Kids & STEM, the Collective) and
   keeps a chip in each one no outcome fills. A figure without its source shows the source chip.
 - **Governance document**: a `governanceDoc` with its `kind` (Form 990, annual report, audit), the `year`
   and the `file`, or with no file a `note` saying when it comes ("Copies on request"). Impact reads the
   newest of each kind; the EIN and the mailing address come from `siteSettings`.
-- **Giving level**: a `givingLevel` with the `amount` as shown ("$25"), `what` it pays for (it gets
-  checked, so it must be true), `frequency` (once or monthly, which adds "a month") and the `source` of
-  the cost; Donate shows the levels `donatePage.whatYourGiftDoes` references, in order, under its
-  `impact` option. Only amounts the owner's Zeffy form offers.
+- **Giving level**: an item of Donate's own list, `donatePage.whatYourGiftDoes`, in order (ADR 0042), with the
+  `amount` as shown ("$25"), `what` it pays for (it gets checked, so it must be true), `frequency` (once or
+  monthly, which adds "a month") and the `source` of the cost; Donate shows them under its `impact` option. Only amounts the owner's Zeffy form offers.
 - **Other way to give**: a row in `donatePage.otherWays` with its `kind` (by check, employer matching,
   in-kind goods, donor-advised fund, another way), its `title`, one line (`blurb`) and a practical `detail`.
   A check row adds the mailing address and the matching and fund rows the EIN and legal name from
   `siteSettings`, each the chip while the settings hold nothing; add only the ways the owner accepts.
-- **Timeline entry**: a `timelineEntry` with the `year` ("2003", "1998 to 2002", "Today"), one line and
-  `milestone` for the founding and today, referenced from `storyPage.timeline` in order. The page's
+- **Timeline entry**: an item of Our Story's own list, `storyPage.timeline`, in order (ADR 0042), with the
+  `year` ("2003", "1998 to 2002", "Today"), one line and `milestone` for the founding and today. The page's
   `timeline` switch stays hidden until the owner confirms the entries; only an administrator changes it.
 - **Routing contact** (administrators): `siteSettings.contacts[]`, one entry per role with name, email, phone and
   the response line the success copy uses ("within five working days"). The `general` contact answers

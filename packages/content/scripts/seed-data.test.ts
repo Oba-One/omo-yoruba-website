@@ -111,7 +111,15 @@ describe('buildSeed', () => {
     ]);
     for (const event of events) expect(event.start).toBeUndefined();
     expect(docs.filter((d) => d._type === 'program')).toHaveLength(4);
-    expect(docs.filter((d) => d._type === 'initiative')).toHaveLength(2);
+    // The Collective's two initiatives are items of its own list (ADR 0042), not documents.
+    expect(docs.filter((d) => d._type === 'initiative')).toHaveLength(0);
+    const collective = docs.find((d) => d._id === 'collectivePage') as
+      | { initiatives?: { _key: string; name: string }[] }
+      | undefined;
+    expect(collective?.initiatives?.map(({ _key, name }) => [_key, name])).toEqual([
+      ['initiative-1', 'Solar Hub'],
+      ['initiative-2', 'Green Goods'],
+    ]);
     expect(docs.filter((d) => d._type === 'newsPost')).toHaveLength(3);
     expect(docs.filter((d) => d._type === 'photographer')).toHaveLength(3);
     expect(docs.filter((d) => d._type === 'door')).toHaveLength(5);

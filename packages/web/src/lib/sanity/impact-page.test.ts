@@ -196,20 +196,26 @@ describe('buildImpactPage', () => {
   it('heads an outcome by its subject, a figure with its source or a statement, and fills the rest with slots', () => {
     const outcomes = [
       {
-        _id: 'outcome-festival',
+        _key: 'outcome-festival',
         kind: 'festival',
         plainStatement: null,
         figure: { value: '[ Figure ]', label: '[ What it counts ]', source: null },
         program: null,
       },
       {
-        _id: 'outcome-gala',
+        _key: 'outcome-gala',
         kind: 'gala',
         plainStatement: '[ What is being measured this year ]',
         figure: null,
         program: null,
       },
-      { _id: 'outcome-bare', kind: null, plainStatement: null, figure: null, program: PROGRAMS[2] },
+      {
+        _key: 'outcome-bare',
+        kind: null,
+        plainStatement: null,
+        figure: null,
+        program: PROGRAMS[2],
+      },
     ];
     const view = buildImpactPage(withData({ outcomes }), options).outcomes;
     expect(view.cards.map((card) => [card.title, card.figure, card.line, card.pending])).toEqual([

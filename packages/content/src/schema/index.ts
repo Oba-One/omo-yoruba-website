@@ -2,7 +2,13 @@
 // to 4 as amended by ADR 0013 to 0017). Order: shared objects, then documents.
 import type { SchemaTypeDefinition } from 'sanity';
 import { skipValidationWhenHidden } from '../validation/rules';
-import { contentDocumentTypes, enquiry, enquiryFieldTypes, subscriber } from './documents';
+import {
+  contentDocumentTypes,
+  enquiry,
+  enquiryFieldTypes,
+  pageListTypes,
+  subscriber,
+} from './documents';
 import {
   bilingual,
   blockContent,
@@ -34,6 +40,7 @@ export const objectTypes: SchemaTypeDefinition[] = [
   blockContent,
   pageHeader,
   takePartRow,
+  ...pageListTypes,
   ...enquiryFieldTypes,
 ];
 
