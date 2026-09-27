@@ -101,12 +101,6 @@ export default defineConfig({
         optional: true,
         default: 'https://us.i.posthog.com',
       }),
-      PUBLIC_ZEFFY_EMBED_URL: envField.string({
-        context: 'client',
-        access: 'public',
-        optional: true,
-        default: '',
-      }),
       // A second hostname of the same deployment for the Presentation tool, never cached, so an
       // editor's draft view never meets the public CDN copy (ADR 0021). Empty means the Studio
       // previews on its own origin, which is right locally and until the domain exists.
