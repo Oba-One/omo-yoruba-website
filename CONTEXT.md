@@ -52,8 +52,9 @@ A named level of sponsorship with its amount and what it is recognised with.
 _Avoid_: sponsorship tier, sponsor package
 
 **Honoree**:
-A person or organization the Gala recognises in an edition. The block stays hidden until the owner
-says the Gala gives awards.
+A person or organization the Gala recognises in an edition, which the honoree always names (ADR
+0042). The block stays hidden until the owner says the Gala gives awards; that switch is an
+administrator's.
 _Avoid_: awardee, honouree (spelling)
 
 **Lessons**:
@@ -82,7 +83,8 @@ _Avoid_: badge, tag, progress
 
 **Collective event**:
 A one-off gathering the Collective hosts, listed on its page while it is dated and still to
-come. Never an edition: it has no season and no year before or after it.
+come. Never an edition: it has no season and no year before or after it, and the Studio asks for
+no edition year (ADR 0042).
 _Avoid_: edition, meetup, class
 
 **Program**:
@@ -269,7 +271,7 @@ _Avoid_: empty state, missing content, zero results
 
 **Lint report**:
 The document the `content-lint` function writes for a published document whose text breaks
-the voice rules. Listed in the Pending view; empty when the document is clean.
+the voice rules. Listed as wording to check; empty when the document is clean.
 _Avoid_: validation error, warning email, lint failure
 
 **Stat**:
@@ -340,6 +342,38 @@ _Avoid_: disclaimer, release, waiver
 Content the client has supplied (list in `docs/design/CONTENT-MODEL.md` section 1).
 Everything else is pending.
 _Avoid_: assumed, approximate, sample
+
+**Member**:
+Someone from the organization who edits the site in the Studio, with Sanity's Editor role. Edits details and
+facts; the settings with drastic effects are an administrator's (ADR 0042).
+_Avoid_: user, editor (the role's name), volunteer (a person group)
+
+**Administrator**:
+The owner and whoever they trust with site settings, the News page, the Inbox, the Vision tool and the held-back
+switches.
+_Avoid_: admin user, superuser, owner (one person; there may be more administrators)
+
+**Held-back switch**:
+A layout option that publishes content waiting for an owner decision (the gallery's coming-soon state, Our Story's
+timeline, the Gala's awards). Read-only for members.
+_Avoid_: feature flag, lock, admin option
+
+**To do**:
+The Studio view listing what the site still owes, by page, with counts: only rows that match something, the types
+still to add, and wording to check. It replaces the Pending view in the second part of the Studio simplification
+(ADR 0042); until then the Pending view does its job.
+_Avoid_: backlog, task list
+
+**Used on several pages**:
+The sidebar group for documents more than one page reads: programs, headline figures, doors, partners. It arrives
+with the sidebar's regrouping in the second part of the Studio simplification (ADR 0042); until then those
+documents sit under Programs, Impact and People.
+_Avoid_: shared content, globals, library
+
+**Wording to check**:
+The list of lint reports with something to fix: published text that breaks the voice rules. A list in the Pending
+view, then a section of the To do view.
+_Avoid_: lint errors, validation warnings, voice findings
 
 **Layout option**:
 A Studio field mirroring a design tweak prop, with the same name across pages.
