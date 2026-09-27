@@ -1,6 +1,6 @@
 ---
 name: oy-content-model
-description: Conventions for changing the Sanity schema in @oy/content. Use for a new or changed type, field, validation rule, the Pending view, Presentation locations, TypeGen, or webhook cache tags.
+description: Conventions for changing the Sanity schema in @oy/content. Use for a new or changed type, field, validation rule, the Pending registry and the To do, Presentation locations, TypeGen, or webhook cache tags.
 ---
 
 # Changing the content model
@@ -39,12 +39,19 @@ and button labels take `voice.heading`; `blockContent` takes `voice.blocks`. Req
 `voice.requiredText`, `voice.requiredHeading`. The checks reuse `@oy/lint` (em dash error, marks
 warning, sentence case warning) and import the word lists as JSON; never copy a list.
 
-## Pending view
+## Pending registry and the To do
 
 A required-for-launch field gets an entry in `PENDING` in `src/pending.ts` (type, fields, the
 register's Where and What wording) in the same change; `pending.test.ts` fails on a field the
 schema does not define. A document type the site needs before launch gets a `PRESENCE` entry
 with its minimum. The site renders `<Pending what={pendingWhat(type, field)} />`.
+
+The Studio's To do (`src/studio/todo.ts`) groups the rows by the page their Where names: the
+words before its first comma must be one of the page labels in `REGISTER_PAGES` (`todo.test.ts`
+fails otherwise), and site settings rows go under Organization details. A row bound to an edition
+says which one it asks about (`edition: 'next'` or `'past'`): an event row asks the edition itself,
+a ticket tier or sponsor level row the documents that name it in `event` (`everyEdition` when a
+document naming none shows every year), so the To do counts only what the page shows.
 
 ## Presentation and routes
 

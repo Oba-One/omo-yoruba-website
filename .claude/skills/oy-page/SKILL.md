@@ -23,7 +23,7 @@ Copy comes from the prototype and the Studio, never from memory.
 4. Read every layout option from the page singleton's `layout` object (same names as the
    tweak table) and pass it down. Add a page-section story per option.
 5. Pending: any required-for-launch field that is empty renders `<Pending what="..." />`.
-   Register the field in the Studio Pending view (see `oy-content-model`).
+   Register the field in the Pending registry, which the Studio's To do reads (see `oy-content-model`).
 6. Visual Editing: stega is on in the loader in draft mode, so text carries its edit link;
    images and option containers take an edit attribute (`dataAttribute` in
    `packages/web/src/lib/sanity/`) rendered in draft mode only; the route's Presentation

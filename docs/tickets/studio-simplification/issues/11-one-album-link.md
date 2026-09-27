@@ -8,6 +8,7 @@ Blocked by: 09
 
 - [ ] Queries find an edition's album through the album's link: the first made that holds a photograph
 - [ ] The registry rows; `event.album` in `RETIRED_FIELDS`; the seed
+- [ ] The To do's editions query (`studio/todo.ts`, `"photos": count(album->photos)`) reads the album that names the edition, as the site does, so past years' rows keep counting
 - [ ] Migrations `album-link` and a generic `retired-fields`
 - [ ] `bun check` green; Playwright unchanged in both data modes
 

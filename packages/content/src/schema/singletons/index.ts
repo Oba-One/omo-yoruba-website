@@ -126,7 +126,7 @@ export const homepage = definePage({
 export const festivalPage = definePage({
   name: 'festivalPage',
   title: 'Odunde Festival page',
-  pointer: `The date, hours, venue, cost, schedule and vendor terms belong to the edition: Events, then ${EVENT_LIST_TITLES.festival}.`,
+  pointer: `The date, hours, venue, cost, schedule and vendor terms belong to the edition: Events, then ${EVENT_PAGE_NAMES.festival}, then Editions.`,
   fields: [
     facts(
       'extraFacts',
@@ -158,7 +158,7 @@ export const festivalPage = definePage({
 export const galaPage = definePage({
   name: 'galaPage',
   title: 'End-of-Year Gala page',
-  pointer: `The date, doors, venue, dress, tickets and running order belong to the edition: Events, then ${EVENT_LIST_TITLES.gala}, beside its ticket tiers, sponsor levels and honorees.`,
+  pointer: `The date, doors, venue, dress, tickets and running order belong to the edition: Events, then ${EVENT_PAGE_NAMES.gala}, then Editions; the ticket tiers, sponsor levels and honorees sit beside them.`,
   fields: [
     // The edition fills all five glance facts, so no extra fact can show (ADR 0042).
     {

@@ -45,7 +45,8 @@ ticket holds the detail, the row links it and stays one line. New work goes into
 
 ## 2. Content the organization owes
 
-Every empty fact shows a Pending chip on the site and a row in the Studio's Pending view. The launch gate
+Every empty fact shows a Pending chip on the site until its fix is published, and a row in the Studio's
+To do until it is filled (the To do reads drafts). The launch gate
 (QUALITY section 6) is every chip filled or accepted as visible. The owed-facts tickets hold the full lists.
 
 | # | Page | What is owed | Priority | Source | Status |
@@ -67,8 +68,8 @@ Every empty fact shows a Pending chip on the site and a row in the Studio's Pend
 ## 3. The Studio, simplified for members
 
 From the Studio review of 13 September 2026, which read the structure, the schema and the dataset as an
-organization member would meet them. Today a member sees 36 document types, 44 layout options and a Pending view of
-135 rows, where 66 open an empty list and 11 are settings rows an editor cannot publish. Facts often live somewhere
+organization member would meet them. A member then saw 36 document types, 44 layout options and a Pending view of
+135 rows, where 66 opened an empty list and 11 were settings rows a member cannot publish. Facts often live somewhere
 other than the page that shows them, some inputs change nothing, and the sidebar follows the code rather than the
 site. The four-week plan works through these (weeks 1 and 2). Quick wins need no decision; the rest need D6.
 Decided with the owner on 26 September 2026: `docs/tickets/studio-simplification/spec.md` holds the answers and
@@ -89,8 +90,8 @@ ADR 0042 the decisions; the tickets in that folder build them.
 
 | # | Change | What a member gains | What changes in code | Size | Status |
 | --- | --- | --- | --- | --- | --- |
-| S7 | Regroup the sidebar as the site: To do, News posts, Events (Odunde, the Gala with its tiers, levels and honorees, Collective events), Photos, People, Pages with the lists only they show, Used on several pages; settings, the Inbox and the held-back switches for administrators | Things are where the site shows them | The structure only, with a structure test | M | open: part 5, ticket 08 |
-| S8 | A To do view: Pending grouped by page, with counts, only what is owed | A short, true to-do list | A counting pane; the registry and the site's chips unchanged | M | open: part 5, ticket 07 |
+| S7 | Regroup the sidebar as the site: To do, News posts, Events (Odunde, the Gala with its tiers, levels and honorees, Collective events), Photos, People, Pages with the lists only they show, Used on several pages; settings, the Inbox and the held-back switches for administrators | Things are where the site shows them | The structure only, with a structure test | M | done: pull request 12 (ticket 08), awaiting the owner's word to merge |
+| S8 | A To do view: Pending grouped by page, with counts, only what is owed | A short, true to-do list | Sanity's own lists fed by one live query; event rows name their edition; the site's chips unchanged | M | done: pull request 12 (ticket 07), awaiting the owner's word to merge |
 | S9 | One link between an album and its edition: keep the album's, retire the edition's | Links photographs once; an album reaches its event page's past years | Three queries, three registry rows, a migration, TypeGen, tests | M | open: part 5, ticket 11 |
 | S10 | Design-only layout options for administrators (patterns, motion, treatments) | About 21 choices instead of 44 | A design flag per option and a role check | S to M | decided: only the three held-back switches go to administrators; built with S4 |
 | S11 | One control per decision: take-part order (the rows' order or the `takepart` option), the homepage's lead event (the reference or the season), the hero's gold button (its action or the highlight) | One place for each choice | Options, two components, a seed revision, tests | M | open: part 5, ticket 15; the Gala's `emphasis` joins it |

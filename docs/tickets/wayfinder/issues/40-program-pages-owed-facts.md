@@ -10,7 +10,7 @@ Blocked by: 31
 ## Question
 
 `/programs`, `/programs/yoruba-lessons` and `/programs/cultural-collective` render every fact the Studio
-does not hold as its Pending chip or line; the Studio's Pending view lists each one by page. The register
+does not hold as its Pending chip or line; the Studio's To do lists each one by page. The register
 (`19 Mock Content Register.dc.html`) marks the prototypes' versions invented, so none of them stands in.
 Before launch they need, in the Studio:
 

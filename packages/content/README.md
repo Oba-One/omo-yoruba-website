@@ -85,8 +85,10 @@ Decided with the owner on 11 September 2026; each has its ADR.
 - `siteSettings.contacts[]` has eight roles (membership, volunteers, partnerships, vendors,
   performers, tables, teacher, general) with a response line, and the success copy is a template
   (ADR 0016).
-- The Pending view is driven by `src/pending.ts`, adds presence rows for missing document types
-  and lists the `lintReport` documents the content-lint function writes (ADR 0014).
+- The Studio's To do (`src/studio/todo.ts`, ADR 0042) reads `src/pending.ts`: the rows by the
+  page that shows them (site settings rows under Organization details, for administrators), the
+  presence rows and a missing next festival or Gala edition as Still to add, and the `lintReport`
+  documents with findings as Wording to check (ADR 0014).
 - `stat` stores its figure flat (`value`, `label`, `source`, `asOf`); `outcome.figure` is a
   `sourcedFigure` object.
 - Fields the prototypes carry beyond the spec's tables: `event.attendance` (the past-years

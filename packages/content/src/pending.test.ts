@@ -19,7 +19,7 @@ import {
   pendingFilter,
   pendingTitle,
   pendingWhat,
-  presenceCountQuery,
+  presenceFilter,
   presenceWhat,
   TEACHER_EMAIL_PENDING,
 } from './pending';
@@ -359,20 +359,20 @@ describe('a row narrowed by group', () => {
   });
 });
 
-describe('presenceCountQuery', () => {
-  it('counts the type, narrowed by the filter when there is one', () => {
-    expect(presenceCountQuery({ type: 'zone', minimum: 4, where: 'Odunde', what: 'zones' })).toBe(
-      'count(*[_type == "zone"])',
+describe('presenceFilter', () => {
+  it('names the type, narrowed by the filter when there is one', () => {
+    expect(presenceFilter({ type: 'zone', minimum: 4, where: 'Odunde', what: 'zones' })).toBe(
+      '_type == "zone"',
     );
     expect(
-      presenceCountQuery({
+      presenceFilter({
         type: 'event',
         minimum: 1,
         filter: 'kind == "gala"',
         where: 'Gala',
         what: 'an edition',
       }),
-    ).toBe('count(*[_type == "event" && kind == "gala"])');
+    ).toBe('_type == "event" && kind == "gala"');
   });
 });
 
@@ -502,8 +502,8 @@ describe('the gallery', () => {
     );
     const albums = PRESENCE.find((entry) => entry.type === 'album');
     expect(albums?.filter).toBe('count(photos) > 0');
-    expect(presenceCountQuery(albums as (typeof PRESENCE)[number])).toBe(
-      'count(*[_type == "album" && count(photos) > 0])',
+    expect(presenceFilter(albums as (typeof PRESENCE)[number])).toBe(
+      '_type == "album" && count(photos) > 0',
     );
     expect(presenceWhat('album')).toEqual({ what: 'the photo albums', minimum: 1 });
   });
@@ -551,7 +551,7 @@ describe('the to-do list after the Studio decisions (ADR 0042)', () => {
   it('counts only honorees tied to a Gala edition', () => {
     const honorees = PRESENCE.find((row) => row.type === 'honoree');
     expect(honorees?.filter).toBe('event->kind == "gala"');
-    expect(presenceCountQuery(honorees as (typeof PRESENCE)[number])).toContain(
+    expect(presenceFilter(honorees as (typeof PRESENCE)[number])).toContain(
       'event->kind == "gala"',
     );
   });

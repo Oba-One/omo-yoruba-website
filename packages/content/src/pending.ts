@@ -1,8 +1,9 @@
 /**
  * The Pending registry (ADR 0014): every required-for-launch field, mirroring the rows of
- * docs/design/design/19 Mock Content Register.dc.html. The Studio's Pending group builds one
- * GROQ list per entry, and a site component renders `<Pending what={pendingWhat(type, field)} />`
- * when it finds the field empty, so the chip and the row never disagree.
+ * docs/design/design/19 Mock Content Register.dc.html. The Studio's To do view counts every entry
+ * the site still owes (`studio/todo.ts`, ADR 0042), and a site component renders
+ * `<Pending what={pendingWhat(type, field)} />` when it finds the field empty, so the chip and the
+ * row never disagree.
  */
 
 export interface PendingEntry {
@@ -14,11 +15,23 @@ export interface PendingEntry {
   condition?: string;
   /** Narrows the type: `kind == "festival"`. */
   filter?: string;
+  /**
+   * The edition the row asks about: the one its page shows next (the festival's and the Gala's next
+   * edition, the Collective's listed events) or the one past years show. An event row asks that
+   * edition itself; a ticket tier or sponsor level row asks the documents that name it (`event`).
+   * The site shows no other, so the To do counts only those (ADR 0042); the filter still names the kind.
+   */
+  edition?: Edition;
+  /** A document that names no edition shows with every edition (an untied sponsor level). */
+  everyEdition?: boolean;
   /** The register's Where column: the page or block. */
   where: string;
   /** The register's What column, in chip wording: "2027 date and hours". */
   what: string;
 }
+
+/** Which edition an edition-bound row asks about (`PendingEntry.edition`). */
+export type Edition = 'next' | 'past';
 
 export interface PresenceEntry {
   /** The document type. */
@@ -27,6 +40,9 @@ export interface PresenceEntry {
   minimum: number;
   /** Narrows the count: `kind == "festival"`. */
   filter?: string;
+  /** Counts only the documents of this edition, as `PendingEntry.edition` does. */
+  edition?: Edition;
+  everyEdition?: boolean;
   where: string;
   what: string;
 }
@@ -128,6 +144,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['start'],
     filter: FESTIVAL,
+    edition: 'next',
     where: 'Odunde, at a glance',
     what: 'the date',
   },
@@ -135,6 +152,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['end'],
     filter: FESTIVAL,
+    edition: 'next',
     where: 'Odunde, at a glance',
     what: 'the hours',
   },
@@ -142,6 +160,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['cost'],
     filter: FESTIVAL,
+    edition: 'next',
     where: 'Odunde, at a glance',
     what: 'the cost',
   },
@@ -149,6 +168,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['venue.name'],
     filter: FESTIVAL,
+    edition: 'next',
     where: 'Odunde, at a glance',
     what: 'the venue',
   },
@@ -156,6 +176,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['venue.line'],
     filter: FESTIVAL,
+    edition: 'next',
     where: 'Odunde, at a glance',
     what: 'the exact venue line',
   },
@@ -163,6 +184,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['schedule[]'],
     filter: FESTIVAL,
+    edition: 'next',
     where: 'Odunde, schedule',
     what: 'the rows, times and content',
   },
@@ -171,6 +193,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     condition: 'count(schedule[!defined(time) && !defined(day)]) > 0',
     filter: FESTIVAL,
+    edition: 'next',
     where: 'Odunde, schedule',
     what: 'the time',
   },
@@ -178,6 +201,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['vendorTerms.fees', 'vendorTerms.closeDate', 'vendorTerms.decisionDate'],
     filter: FESTIVAL,
+    edition: 'next',
     where: 'Odunde, vendor dialog',
     what: 'fees, deadline and permit rules',
   },
@@ -185,6 +209,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['attendance'],
     filter: `${FESTIVAL} && defined(album)`,
+    edition: 'past',
     where: 'Odunde, past years',
     what: 'the attendance figure',
   },
@@ -223,11 +248,19 @@ export const PENDING: readonly PendingEntry[] = [
   },
 
   // End-of-Year Gala
-  { type: 'event', fields: ['start'], filter: GALA, where: 'Gala, at a glance', what: 'the date' },
+  {
+    type: 'event',
+    fields: ['start'],
+    filter: GALA,
+    edition: 'next',
+    where: 'Gala, at a glance',
+    what: 'the date',
+  },
   {
     type: 'event',
     fields: ['doors'],
     filter: GALA,
+    edition: 'next',
     where: 'Gala, at a glance',
     what: 'the doors time',
   },
@@ -235,6 +268,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['venue.name'],
     filter: GALA,
+    edition: 'next',
     where: 'Gala, at a glance',
     what: 'the venue',
   },
@@ -242,6 +276,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['dress'],
     filter: GALA,
+    edition: 'next',
     where: 'Gala, at a glance',
     what: 'the dress code',
   },
@@ -302,6 +337,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['schedule[]'],
     filter: GALA,
+    edition: 'next',
     where: 'Gala, the evening',
     what: 'the running order',
   },
@@ -309,6 +345,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     condition: 'count(schedule[!defined(time) && !defined(day)]) > 0',
     filter: GALA,
+    edition: 'next',
     where: 'Gala, the evening',
     what: 'the time',
   },
@@ -316,26 +353,33 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['ticketsUrl'],
     filter: GALA,
+    edition: 'next',
     where: 'Gala, tickets',
     what: 'the Eventbrite link',
   },
+  // The Gala page shows the next edition's tiers only.
   {
     type: 'ticketTier',
     fields: ['price'],
+    edition: 'next',
     where: 'Gala, seats and tables',
     what: 'the price',
   },
   {
     type: 'ticketTier',
     fields: ['includes[]'],
+    edition: 'next',
     where: 'Gala, seats and tables',
     what: 'what the ticket includes',
   },
-  // Only the levels a page shows: the Gala page lists scope gala and org (galaPageQuery).
+  // Only the levels a page shows: the Gala page lists scope gala and org (galaPageQuery), each tied to
+  // the next edition or to none, which shows every year.
   {
     type: 'sponsorLevel',
     fields: ['amount'],
     filter: 'scope in ["gala", "org"]',
+    edition: 'next',
+    everyEdition: true,
     where: 'Sponsorship',
     what: 'the amount',
   },
@@ -343,6 +387,8 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'sponsorLevel',
     fields: ['recognition[]'],
     filter: 'scope in ["gala", "org"]',
+    edition: 'next',
+    everyEdition: true,
     where: 'Sponsorship',
     what: 'what the level recognizes',
   },
@@ -477,6 +523,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['venue.name'],
     filter: COLLECTIVE,
+    edition: 'next',
     where: 'Collective, events',
     what: 'the venue',
   },
@@ -646,6 +693,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'event',
     fields: ['vendorsHosted'],
     filter: `${FESTIVAL} && defined(album)`,
+    edition: 'past',
     where: 'Impact, Odunde as civic infrastructure',
     what: 'the number of vendors hosted',
   },
@@ -777,6 +825,7 @@ export const PRESENCE: readonly PresenceEntry[] = [
   {
     type: 'ticketTier',
     minimum: 1,
+    edition: 'next',
     where: 'Gala, seats and tables',
     what: 'three prices and what each includes',
   },
@@ -784,6 +833,8 @@ export const PRESENCE: readonly PresenceEntry[] = [
     type: 'sponsorLevel',
     minimum: 1,
     filter: 'scope in ["gala", "org"]',
+    edition: 'next',
+    everyEdition: true,
     where: 'Sponsorship',
     what: 'level names and amounts',
   },
@@ -1029,8 +1080,7 @@ export function presenceWhat(
   return entry ? { what: entry.what, minimum: entry.minimum } : undefined;
 }
 
-/** The GROQ count of a presence entry; run it with the `drafts` perspective so a draft counts once. */
-export function presenceCountQuery(entry: PresenceEntry): string {
-  const filter = entry.filter ? ` && ${entry.filter}` : '';
-  return `count(*[_type == "${entry.type}"${filter}])`;
+/** The GROQ filter of the documents a presence entry counts. */
+export function presenceFilter(entry: PresenceEntry): string {
+  return entry.filter ? `_type == "${entry.type}" && ${entry.filter}` : `_type == "${entry.type}"`;
 }

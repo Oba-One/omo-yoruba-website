@@ -11,8 +11,8 @@ there are no Content Releases (ADR 0042). Shapes: `docs/design/CONTENT-MODEL.md`
 amended by ADR 0013 and ADR 0042. Which inputs each kind of event shows:
 `packages/content/src/edition-fields.ts`. Content comes from the owner; nothing here is guessed.
 
-1. Create the edition as a draft from its list (Events, then Odunde Festival editions or End-of-Year
-   Gala editions), so its kind is already set. Through the Sanity MCP server, set `kind` yourself
+1. Create the edition as a draft from its list (Events, then Odunde Festival or End-of-Year Gala,
+   then Editions), so its kind is already set. Through the Sanity MCP server, set `kind` yourself
    (`festival` or `gala`; only the Studio's lists set it), use the seed's id pattern
    (`event-odunde-2027`, `event-gala-2026`) and leave the document unpublished.
 2. Fill what the form shows for that kind: the title, the edition year, start and end (Los Angeles
@@ -26,7 +26,8 @@ amended by ADR 0013 and ADR 0042. Which inputs each kind of event shows:
    image has alt text and a caption.
 6. Check the drafts in Presentation on `/odunde` or `/gala` and in the homepage event band.
 7. On the announce day, publish the edition first, then its tiers, levels and honorees.
-8. Verify: the pages update within a minute (the webhook purges by tag), and the Pending view shows
-   nothing new for the edition. There is no status to flip: which edition is next and which is past
+8. Verify on the site: the pages update within a minute (the webhook purges by tag) and show no
+   Pending chip for what the edition holds. The To do reads drafts, so it clears as the drafts are
+   filled, before the announce day. There is no status to flip: which edition is next and which is past
    comes from the dates. After the event, link its album (on both ends until the Studio keeps one link,
    open-work S9); after the festival, also fill the attendance with its source (the Gala shows none).
