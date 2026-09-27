@@ -20,7 +20,11 @@ export interface Patch {
   unset?: string[];
 }
 
-export type Mutation = { create: StoredDocument } | { delete: { id: string } } | { patch: Patch };
+export type Mutation =
+  | { create: StoredDocument }
+  | { createOrReplace: StoredDocument }
+  | { delete: { id: string } }
+  | { patch: Patch };
 
 export interface MigrationPlan {
   mutations: Mutation[];
@@ -38,18 +42,68 @@ export interface Migration {
   plan(documents: readonly StoredDocument[]): MigrationPlan;
 }
 
-export const isDraft = (id: string) => id.startsWith('drafts.');
+/** Not published: a draft, or a version in a release. A migration writes neither, and either blocks it. */
+export const isDraft = (id: string) => id.startsWith('drafts.') || id.startsWith('versions.');
+
+/** The published document a draft or a release version stands for. */
+export function publishedIdOf(id: string): string {
+  if (id.startsWith('drafts.')) return id.slice('drafts.'.length);
+  if (id.startsWith('versions.')) return id.split('.').slice(2).join('.');
+  return id;
+}
+
+/** The field a revision guard unsets: no document holds it, so the guard changes nothing. */
+export const REVISION_GUARD = 'revisionGuard';
+
+/**
+ * A patch that changes nothing but fails if the document changed since the plan read it: set before a
+ * delete or a replacement, which carry no revision of their own.
+ */
+export const revisionGuard = ({ _id, _rev }: { _id: string; _rev?: string }): Mutation => ({
+  patch: { id: _id, ifRevisionID: _rev, unset: [REVISION_GUARD] },
+});
 
 /** The document a mutation writes. */
 export function mutationId(mutation: Mutation): string {
   if ('create' in mutation) return mutation.create._id;
+  if ('createOrReplace' in mutation) return mutation.createOrReplace._id;
   if ('delete' in mutation) return mutation.delete.id;
   return mutation.patch.id;
 }
 
 /**
- * What stops a plan from being applied: its conflicts, and any draft among the documents it reads,
- * since a draft published later would carry the old shape back. Publish or discard those first.
+ * What a plan must wait for: every draft or release version it reads that still holds what the migration
+ * moves (planned alone, as the document it stands for, it gives work), and any of a document the plan
+ * writes, which its filter may not read. A draft the migration would leave alone, such as next year's
+ * edition prepared for its announce day, waits for nothing. `candidates` are the dataset's drafts and
+ * versions, or the whole export.
+ */
+export function unpublished(
+  migration: Migration,
+  read: readonly StoredDocument[],
+  candidates: readonly StoredDocument[],
+  plan: MigrationPlan,
+): StoredDocument[] {
+  const written = new Set(plan.mutations.map(mutationId));
+  const found = new Map<string, StoredDocument>();
+  for (const document of read) {
+    if (!isDraft(document._id)) continue;
+    const alone = migration.plan([{ ...document, _id: publishedIdOf(document._id) }]);
+    if (alone.mutations.length > 0 || alone.conflicts.length > 0) {
+      found.set(document._id, document);
+    }
+  }
+  for (const document of candidates) {
+    if (isDraft(document._id) && written.has(publishedIdOf(document._id))) {
+      found.set(document._id, document);
+    }
+  }
+  return [...found.values()];
+}
+
+/**
+ * What stops a plan from being applied: its conflicts, and any draft or release version it waits for,
+ * since publishing one later would carry the old shape back. Publish or discard those first.
  */
 export function blockers(plan: MigrationPlan, drafts: readonly StoredDocument[]): string[] {
   return [
@@ -61,8 +115,14 @@ export function blockers(plan: MigrationPlan, drafts: readonly StoredDocument[])
 /** A plan's mutations in words, one line each, for the dry run. */
 export function describeMutation(mutation: Mutation): string {
   if ('create' in mutation) return `create ${mutation.create._type} ${mutation.create._id}`;
+  if ('createOrReplace' in mutation) {
+    return `put back ${mutation.createOrReplace._type} ${mutation.createOrReplace._id}`;
+  }
   if ('delete' in mutation) return `delete ${mutation.delete.id}`;
   const { id, set, unset } = mutation.patch;
+  if (!set && unset?.length === 1 && unset[0] === REVISION_GUARD) {
+    return `check ${id} has not changed since it was read`;
+  }
   const parts = [
     ...Object.entries(set ?? {}).map(([path, value]) => `set ${path} = ${JSON.stringify(value)}`),
     ...(unset ?? []).map((path) => `unset ${path}`),
@@ -150,6 +210,8 @@ export function applyMutations(
         throw new Error(`create ${mutation.create._id}: the document already exists`);
       }
       byId.set(mutation.create._id, structuredClone(mutation.create));
+    } else if ('createOrReplace' in mutation) {
+      byId.set(mutation.createOrReplace._id, structuredClone(mutation.createOrReplace));
     } else if ('delete' in mutation) {
       byId.delete(mutation.delete.id);
     } else {

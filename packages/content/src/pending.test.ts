@@ -67,8 +67,14 @@ describe('PENDING', () => {
       expect(type?.type, entry.type).toBe('document');
       // A list row names the page's list and the item's own fields (ADR 0042).
       if (entry.list) {
-        expect(hasPath(entry.list.page, `${entry.list.field}[]`), entry.list.field).toBe(true);
+        const { page, field: list } = entry.list;
         expect(typeByName(entry.type)?.type, entry.type).toBe('object');
+        // The page's list holds the row's item type, and each item holds the row's fields.
+        const items = typeByName(page)?.fields?.find((candidate) => candidate.name === list);
+        expect(items?.of?.[0]?.type, `${page}.${list}`).toBe(entry.type);
+        for (const field of entry.fields ?? []) {
+          expect(hasPath(page, `${list}[].${field}`), `${page}.${list}[].${field}`).toBe(true);
+        }
       }
       for (const field of entry.fields ?? []) {
         expect(hasPath(entry.type, field), `${entry.type}.${field}`).toBe(true);

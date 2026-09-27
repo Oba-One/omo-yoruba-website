@@ -1,4 +1,4 @@
-import type { Migration, Mutation, StoredDocument } from './core';
+import { type Migration, type Mutation, revisionGuard, type StoredDocument } from './core';
 
 /** The documents that become items of the one page that shows them (ticket 10, S14, ADR 0042). */
 export const PAGE_LISTS = [
@@ -16,18 +16,19 @@ const LEFT_BEHIND = new Set([
   '_createdAt',
   '_updatedAt',
   '_originalId',
+  '_system',
   'order',
   'proceedsReturn',
 ]);
 
 type Item = { _key?: string; _type?: string; _ref?: string; [field: string]: unknown };
 
-/** A document as an item of its page's list: its own fields, under the list item's key. */
+/** A document as an item of its page's list: its own fields, under the list item's key (else its id). */
 function asItem(document: StoredDocument, key: string | undefined, type: string): Item {
   const fields = Object.fromEntries(
     Object.entries(document).filter(([field]) => !LEFT_BEHIND.has(field)),
   );
-  return { ...fields, _key: key, _type: type };
+  return { ...fields, _key: key ?? document._id, _type: type };
 }
 
 /**
@@ -38,9 +39,10 @@ export const inlineListsMigration: Migration = {
   name: 'inline-lists',
   description:
     'Move initiatives, outcomes, timeline entries and giving levels into the lists of the page that shows them.',
-  filter: `_id in ${JSON.stringify(PAGE_LISTS.map(({ page }) => page))} || _type in ${JSON.stringify(
+  // Pages by type, not id: a singleton's type is its id, and its draft is read too.
+  filter: `_type in ${JSON.stringify(PAGE_LISTS.map(({ page }) => page))} || _type in ${JSON.stringify(
     PAGE_LISTS.map(({ type }) => type),
-  )}`,
+  )} || (_type == "lintReport" && documentType in ${JSON.stringify(PAGE_LISTS.map(({ type }) => type))})`,
   plan: (documents) => {
     const byId = new Map(documents.map((document) => [document._id, document]));
     const mutations: Mutation[] = [];
@@ -76,7 +78,16 @@ export const inlineListsMigration: Migration = {
       mutations.push({
         patch: { id: page, ifRevisionID: holder._rev, set: { [field]: next } },
       });
-      for (const id of listed) deletes.push({ delete: { id } });
+      for (const id of listed) {
+        const document = byId.get(id) as StoredDocument;
+        // A delete carries no revision, so a guard first: a document changed since it was read stops it.
+        deletes.push(revisionGuard(document), { delete: { id } });
+        // The content-lint function's report on it would otherwise stay in the wording to check.
+        const report = documents.find(
+          (candidate) => candidate._type === 'lintReport' && candidate.documentId === id,
+        );
+        if (report) deletes.push({ delete: { id: report._id } });
+      }
     }
     // The pages stop naming the documents before the documents go, in the same transaction.
     return { mutations: [...mutations, ...deletes], conflicts };

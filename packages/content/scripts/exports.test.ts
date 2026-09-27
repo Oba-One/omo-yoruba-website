@@ -18,6 +18,10 @@ describe('where exports go', () => {
     expect(() => exportDirectory({ OY_EXPORT_DIR: join(repo, 'packages', 'exports') })).toThrow(
       'outside the repository',
     );
+    // A folder inside the repo whose name starts with two dots is still inside it.
+    expect(() => exportDirectory({ OY_EXPORT_DIR: join(repo, '..exports') })).toThrow(
+      'outside the repository',
+    );
   });
 
   it('writes and reads NDJSON, and stamps files without colons', () => {

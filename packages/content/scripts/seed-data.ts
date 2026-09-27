@@ -984,6 +984,12 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
 };
 
 /**
+ * Retired fields a migration moves before they go (`scripts/migrations`), by `type.field`: the seed
+ * and `retired-fields` leave them to that migration, so a link is never dropped before it is moved.
+ */
+export const MOVED_FIELDS: Readonly<Record<string, string>> = { 'event.album': 'album-link' };
+
+/**
  * A value an earlier seed wrote that this seed writes differently (ADR 0035): the header actions no
  * prototype draws, a list that gained an item, a caption that became short. `path` is the patch path
  * (`primaryAction`, `photos[_key=="photo-1"].caption`); `now` undefined unsets the field. `id` narrows it to
@@ -1104,7 +1110,7 @@ export function revisedFields(
   return { set, unset };
 }
 
-/** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`. */
+/** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`; null counts as empty. */
 function storedPaths(value: unknown, steps: readonly string[], prefix: string): string[] {
   const [step, ...rest] = steps;
   // A retired path names a field, never a whole array item.
@@ -1122,17 +1128,30 @@ function storedPaths(value: unknown, steps: readonly string[], prefix: string): 
   }
   const next = value[step];
   return rest.length === 0
-    ? next === undefined
+    ? next === undefined || next === null
       ? []
       : [`${prefix}${step}`]
     : storedPaths(next, rest, `${prefix}${step}.`);
 }
 
-/** The retired fields a stored document still carries, as paths the seed can unset. */
+/** The retired fields a stored document still carries, as paths the seed can unset; moved fields wait. */
 export function retiredFields(type: string, current: Record<string, unknown>): string[] {
-  return (RETIRED_FIELDS[type] ?? []).flatMap((field) =>
-    storedPaths(current, field.split('.'), ''),
-  );
+  return (RETIRED_FIELDS[type] ?? [])
+    .filter((field) => !MOVED_FIELDS[`${type}.${field}`])
+    .flatMap((field) => storedPaths(current, field.split('.'), ''));
+}
+
+/** The retired fields a stored document still carries that a migration moves first, with its name. */
+export function movedFields(
+  type: string,
+  current: Record<string, unknown>,
+): { path: string; migration: string }[] {
+  return (RETIRED_FIELDS[type] ?? []).flatMap((field) => {
+    const migration = MOVED_FIELDS[`${type}.${field}`];
+    return migration
+      ? storedPaths(current, field.split('.'), '').map((path) => ({ path, migration }))
+      : [];
+  });
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

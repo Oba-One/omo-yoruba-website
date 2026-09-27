@@ -1,5 +1,5 @@
 import { homedir } from 'node:os';
-import { isAbsolute, join, relative, resolve } from 'node:path';
+import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 
 const REPO = resolve(import.meta.dirname, '../../..');
 
@@ -10,7 +10,8 @@ const REPO = resolve(import.meta.dirname, '../../..');
 export function exportDirectory(env: Record<string, string | undefined> = process.env): string {
   const directory = resolve(env.OY_EXPORT_DIR ?? join(homedir(), 'omo-yoruba-exports'));
   const inside = relative(REPO, directory);
-  if (inside === '' || (!inside.startsWith('..') && !isAbsolute(inside))) {
+  const outside = isAbsolute(inside) || inside === '..' || inside.startsWith(`..${sep}`);
+  if (!outside) {
     throw new Error(
       `exports go outside the repository, and ${directory} is inside it; set OY_EXPORT_DIR elsewhere.`,
     );

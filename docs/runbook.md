@@ -195,19 +195,28 @@ the owner stays out of the Studio for the hour:
 2. `bun run migrate -- <name> --from <export>` rehearses on the export in memory: the plan, then the
    check that applying it leaves nothing to do.
 3. `bun run migrate -- <name>` is the dry run on the live dataset: every mutation, and what blocks it.
-   A conflict (stored content the plan cannot move without the owner's word) or an unpublished draft
-   of a document it reads blocks it: publish or discard the draft first. The Presentation tool keeps
-   its preview secret under a draft id (`sanity.previewUrlSecret`); no migration reads it.
-4. Merge the pull request and wait for its deploy, so the site already reads the new shape.
+   A conflict (stored content the plan cannot move without the owner's word) blocks it, and so does a
+   draft or release version that still holds what the migration moves, or one of a document it writes:
+   publish or discard it first. A draft the migration would leave alone (next year's edition prepared
+   for its announce day) blocks nothing, and no migration reads the Presentation tool's preview secret,
+   which it keeps under a draft id (`sanity.previewUrlSecret`).
+4. Merge the pull request and wait for its deploy, so the site already reads the new shape. Apply
+   right away: until `inline-lists` runs, the Studio shows the old items of the Collective's, Impact's,
+   Our Story's and Donate's lists as items it cannot use, and those pages cannot be published, so nobody
+   edits them in between (the site keeps showing them).
 5. `bun run migrate -- <name> --apply` saves the documents it will write as they are
-   (`<dataset>-<name>-<time>.before.ndjson` beside the exports), writes everything in one transaction
-   that fails if any of them changed since it was read, and plans again: anything left is reported as a
-   failure. `bun run migrate -- restore <file>.before.ndjson` puts those documents back.
+   (`<dataset>-<name>-<time>.before.ndjson` beside the exports, with the dataset it ran on), writes
+   everything in one transaction that fails if any of them changed since it was read (a failed
+   transaction writes nothing, and its snapshot is removed), records the revisions it left, and plans
+   again: anything left is reported as a failure. `bun run migrate -- restore <file>.before.ndjson`
+   puts those documents back on that dataset, and refuses while any of them has changed since.
 6. `bun seed -- --dry-run` reports nothing due, and the pages render the same content.
 
 All of it runs on the Editor token the seed uses (`SANITY_API_WRITE_TOKEN`), against `development`
 unless `--dataset` names another. `retired-fields` unsets the fields in `RETIRED_FIELDS` on every
-document, not only the seed's.
+document, not only the seed's; a retired field another migration moves first (`MOVED_FIELDS`: the
+edition's album link, which `album-link` hands to the album) waits for it, in the seed too. The order
+for pull request B's migrations: `album-link`, `inline-lists`, `teacher-group`, then `retired-fields`.
 
 ## Functions
 

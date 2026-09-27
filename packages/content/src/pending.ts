@@ -7,7 +7,7 @@
  */
 
 export interface PendingEntry {
-  /** The document type. */
+  /** The document type; for a list row (`list`), the type of the list's items. */
   type: string;
   /** Fields that must be defined; a trailing `[]` means the array must not be empty. */
   fields?: readonly string[];

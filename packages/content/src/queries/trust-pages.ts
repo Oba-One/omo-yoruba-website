@@ -54,7 +54,7 @@ export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "i
   "stats": stats[]->{_id, value, label, source},
   howWeWork,
   howWeWorkImage{_type, alt, caption, hotspot, crop, asset},
-  "outcomes": outcomes[]{
+  "outcomes": outcomes[_type != "reference" || defined(@->)]{
     _key,
     ...coalesce(@->, @){
       kind,
@@ -124,7 +124,10 @@ export const storyPageQuery = defineQuery(`*[_type == "storyPage" && _id == "sto
   founding,
   foundingFacts[]{_key, label, value, note},
   foundingImage{_type, alt, caption, hotspot, crop, asset},
-  "timeline": timeline[]{_key, ...coalesce(@->, @){year, blurb, milestone}},
+  "timeline": timeline[_type != "reference" || defined(@->)]{
+    _key,
+    ...coalesce(@->, @){year, blurb, milestone}
+  },
   boardIntro,
   staffIntro,
   "board": *[_type == "person" && group == "board"] | order(order asc, name asc){
@@ -169,7 +172,10 @@ export const donatePageQuery = defineQuery(`*[_type == "donatePage" && _id == "d
       image{_type, alt, caption, hotspot, crop, asset}
     }
   },
-  "levels": whatYourGiftDoes[]{_key, ...coalesce(@->, @){amount, what, frequency, source}},
+  "levels": whatYourGiftDoes[_type != "reference" || defined(@->)]{
+    _key,
+    ...coalesce(@->, @){amount, what, frequency, source}
+  },
   otherWays[]{_key, kind, title, blurb, detail},
   taxLine,
   "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{orgName, ein, address},

@@ -15,9 +15,9 @@ export const albumLinkMigration: Migration = {
     const albums = new Map(
       documents.filter(({ _type }) => _type === 'album').map((album) => [album._id, album]),
     );
-    const editions = documents.filter(
-      (document): document is StoredDocument =>
-        document._type === 'event' && referenceTo(document.album) !== undefined,
+    const events = documents.filter(({ _type }) => _type === 'event');
+    const editions = events.filter(
+      (document): document is StoredDocument => referenceTo(document.album) !== undefined,
     );
     const claimants = (albumId: string) =>
       editions.filter((edition) => referenceTo(edition.album) === albumId).map(({ _id }) => _id);
@@ -50,6 +50,16 @@ export const albumLinkMigration: Migration = {
         });
       }
       mutations.push({ patch: { id: edition._id, ifRevisionID: edition._rev, unset: ['album'] } });
+    }
+    // A link that names no album holds nothing to move; it goes too.
+    for (const event of events) {
+      if (
+        event.album !== undefined &&
+        event.album !== null &&
+        referenceTo(event.album) === undefined
+      ) {
+        mutations.push({ patch: { id: event._id, ifRevisionID: event._rev, unset: ['album'] } });
+      }
     }
     return { mutations, conflicts };
   },

@@ -88,7 +88,7 @@ export const collectivePageQuery =
     name,
     image{_type, alt, caption, hotspot, crop, asset}
   },
-  "initiatives": initiatives[]{
+  "initiatives": initiatives[_type != "reference" || defined(@->)]{
     _key,
     ...coalesce(@->, @){
       name,

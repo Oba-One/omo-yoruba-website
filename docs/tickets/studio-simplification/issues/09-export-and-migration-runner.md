@@ -27,3 +27,22 @@ runner share one write access check (`scripts/dataset.ts`). The first migration 
 holds 129 documents, one of them the Presentation tool's preview secret under a draft id, and the dry
 run and the rehearsal of `retired-fields` find nothing to do. Every migration's test applies its plan
 to the seed and requires nothing left.
+
+27 September 2026, from the pull request B review (two reviewers: the runner and the migrations; the schema,
+site and docs):
+
+- A draft or release version blocks a plan when it still holds what the migration moves (planned alone,
+  under the id it stands for, it gives work) or when it belongs to a document the plan writes; the runner
+  reads the drafts and versions of every document it writes, since a page read by id is not read by its
+  draft's id. Next year's edition prepared as a draft blocks nothing. `inline-lists` and `teacher-group`
+  read their pages by type, so their drafts are read too.
+- A snapshot names its dataset and, once applied, the revision each document was left with: `restore`
+  refuses another dataset and anything changed since, and guards each replacement and delete by that
+  revision. A failed transaction wrote nothing, says so, and its snapshot is removed.
+- Deletes are guarded by the revision the plan read (`revisionGuard`, a patch that changes nothing).
+- The seed and `retired-fields` share `MOVED_FIELDS`: the edition's album link waits for `album-link`,
+  which also drops a link that names no album; a null field counts as empty.
+- `inline-lists` removes the lint reports of the documents it moves, leaves `_system` behind and keys an
+  item that had none by its document's id; the export refuses a stream that ends in an error line; the
+  folder guard refuses a folder inside the repository whose name starts with two dots.
+- The four list queries drop a reference that no longer resolves, as `[]->` did.

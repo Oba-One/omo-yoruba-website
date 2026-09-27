@@ -143,6 +143,16 @@ describe('album-link', () => {
     expect(albumLinkMigration.plan([odunde, twice, shared]).conflicts).toHaveLength(2);
   });
 
+  it('drops a link that names no album, which retired-fields would otherwise wait on forever', () => {
+    const empty = { _id: 'event-x', _type: 'event', _rev: 'e9', album: {} };
+    expect(albumLinkMigration.plan([empty]).mutations).toEqual([
+      { patch: { id: 'event-x', ifRevisionID: 'e9', unset: ['album'] } },
+    ]);
+    const nothing = { _id: 'event-y', _type: 'event', album: null };
+    expect(albumLinkMigration.plan([nothing]).mutations).toEqual([]);
+    expect(retiredFieldsMigration.plan([nothing]).conflicts).toEqual([]);
+  });
+
   it('keeps retired-fields off the link until album-link has moved it', () => {
     const plan = retiredFieldsMigration.plan([odunde]);
     expect(plan.mutations).toEqual([]);
@@ -195,12 +205,39 @@ describe('inline-lists', () => {
           },
         },
       },
+      { patch: { id: 'initiative-solar-hub', ifRevisionID: 'i1', unset: ['revisionGuard'] } },
       { delete: { id: 'initiative-solar-hub' } },
+      { patch: { id: 'initiative-green-goods', ifRevisionID: 'i2', unset: ['revisionGuard'] } },
       { delete: { id: 'initiative-green-goods' } },
     ]);
     const after = applyMutations([collective, solar, green], plan.mutations);
     expect(after.map(({ _id }) => _id)).toEqual(['collectivePage']);
+    // What only the system or the retired order held stays behind.
+    expect(JSON.stringify(after)).not.toMatch(/_createdAt|"order"|proceedsReturn/);
     expect(inlineListsMigration.plan(after).mutations).toEqual([]);
+  });
+
+  it("removes the lint report of a document it moves, and keys an item that had no key by the document's id", () => {
+    const report = {
+      _id: 'lint-initiative-solar-hub',
+      _type: 'lintReport',
+      documentId: 'initiative-solar-hub',
+    };
+    const keyless = {
+      ...collective,
+      initiatives: [
+        { _type: 'reference', _ref: 'initiative-solar-hub' },
+        collective.initiatives[1],
+      ],
+    };
+    const plan = inlineListsMigration.plan([keyless, solar, green, report]);
+    expect(plan.mutations).toContainEqual({ delete: { id: 'lint-initiative-solar-hub' } });
+    const [first] = plan.mutations;
+    const set = (first && 'patch' in first ? first.patch.set?.initiatives : []) as {
+      _key: string;
+    }[];
+    expect(set.map(({ _key }) => _key)).toEqual(['initiative-solar-hub', 'initiative-2']);
+    expect(inlineListsMigration.filter).toContain('_type == "lintReport"');
   });
 
   it('leaves a document no page lists, or a listed one that is missing, to the owner', () => {

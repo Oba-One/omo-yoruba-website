@@ -1,4 +1,5 @@
 import { type ConditionalPropertyCallback, defineField, defineType } from 'sanity';
+import { STUDIO_API_VERSION } from '../../api-version';
 import { DOOR_CHIPS, DOOR_KEYS } from '../../doors';
 import {
   type EditionField,
@@ -503,6 +504,20 @@ export const person = defineType({
         layout: 'radio',
         direction: 'horizontal',
       },
+      // Empty is right only for the teacher the Lessons page picks; anyone else would show nowhere.
+      validation: (rule) =>
+        rule
+          .custom(async (group, context) => {
+            if (group) return true;
+            const id = context.document?._id?.replace(/^drafts\./, '');
+            const picked = await context
+              .getClient({ apiVersion: STUDIO_API_VERSION })
+              .fetch<string | null>('*[_id == "lessonsPage"][0].teacher._ref');
+            return picked === id
+              ? true
+              : 'Our Story lists no one without a group. Leave it empty only for the teacher the Lessons page picks.';
+          })
+          .warning(),
     }),
     defineField({
       name: 'portrait',

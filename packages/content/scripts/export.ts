@@ -24,7 +24,19 @@ async function main(): Promise<void> {
   });
   if (!response.ok) fail('export', `the export answered ${response.status}; nothing was saved.`);
   const text = await response.text();
-  const documents = readNdjson<{ _id: string; _type: string }>(text);
+  const documents = readNdjson<{
+    _id: string;
+    _type: string;
+    error?: unknown;
+    statusCode?: number;
+  }>(text);
+  // The export can answer 200 and then report a failure as its last line: never save a partial file.
+  const failure = documents.find((line) => line.error !== undefined && line._id === undefined);
+  if (failure)
+    fail(
+      'export',
+      `the export stopped partway (${JSON.stringify(failure.error)}); nothing was saved.`,
+    );
   // Sanity keeps some of its own documents under draft ids (the preview secret); they are not content.
   const drafts = documents.filter(
     ({ _id, _type }) => _id.startsWith('drafts.') && !_type.startsWith('sanity.'),

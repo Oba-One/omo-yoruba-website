@@ -133,5 +133,11 @@ Decided with the owner on 11 September 2026; each has its ADR.
   counts only albums holding a photograph. The route map sends `galleryPage` and `event` to both gallery routes
   and keeps `photographer` off `/gallery`. The seed revises the gallery's header line to name the three albums
   that exist.
+- The Studio simplification (ADR 0042): initiatives, outcomes, timeline entries and giving levels are object
+  types held in their pages' own lists (`collectivePage.initiatives`, `impactPage.outcomes`,
+  `storyPage.timeline`, `donatePage.whatYourGiftDoes`), read as references too until the `inline-lists`
+  migration; their registry rows keep the item type and name the list (`list`). The `other` event kind and
+  the `teacher` person group are retired, and `event.album` gives way to the album's own `event`.
+  `scripts/migrations/` holds the reviewed migrations the runner applies (`bun run migrate`).
 - The seed accepts `SANITY_WRITE_TOKEN` as an alias of `SANITY_API_WRITE_TOKEN` with a warning,
   because the owner's `packages/web/.env` predates the wizard's names.

@@ -3,9 +3,13 @@ import {
   applyMutations,
   blockers,
   describeMutation,
+  isDraft,
   type MigrationPlan,
   mutationId,
+  publishedIdOf,
+  revisionGuard,
   type StoredDocument,
+  unpublished,
 } from './core';
 
 // The migration runner's pure half: the in-memory apply the rehearsal and the tests rely on, and what
@@ -92,5 +96,68 @@ describe('what stops an apply', () => {
     expect(mutationId(patch)).toBe('programsPage');
     expect(describeMutation(patch)).toBe('patch programsPage: unset kidsStem.image');
     expect(describeMutation({ delete: { id: 'x' } })).toBe('delete x');
+  });
+});
+
+describe('what a plan waits for', () => {
+  const plan: MigrationPlan = {
+    mutations: [{ patch: { id: 'collectivePage', set: { initiatives: [] } } }],
+    conflicts: [],
+  };
+
+  it('counts drafts and release versions as unpublished, each standing for its published document', () => {
+    expect(isDraft('drafts.collectivePage')).toBe(true);
+    expect(isDraft('versions.rAbc.collectivePage')).toBe(true);
+    expect(isDraft('collectivePage')).toBe(false);
+    expect(publishedIdOf('drafts.collectivePage')).toBe('collectivePage');
+    expect(publishedIdOf('versions.rAbc.initiative-solar-hub')).toBe('initiative-solar-hub');
+  });
+
+  // A stand-in migration: it unsets `old` wherever a document holds it.
+  const migration = {
+    name: 'unset-old',
+    description: 'Unset old.',
+    filter: 'defined(old)',
+    plan: (documents: readonly StoredDocument[]): MigrationPlan => ({
+      mutations: documents
+        .filter((document) => document.old !== undefined)
+        .map((document) => ({ patch: { id: document._id, unset: ['old'] } })),
+      conflicts: [],
+    }),
+  };
+
+  it('waits for a draft of a document it writes, though its filter reads the page by id', () => {
+    const read = [{ _id: 'collectivePage', _type: 'collectivePage' }];
+    const candidates = [
+      { _id: 'drafts.collectivePage', _type: 'collectivePage' },
+      { _id: 'versions.rAbc.collectivePage', _type: 'collectivePage' },
+      { _id: 'drafts.sanity-preview-url-secret', _type: 'sanity.previewUrlSecret' },
+      { _id: 'drafts.homepage', _type: 'homepage' },
+    ];
+    expect(unpublished(migration, read, candidates, plan).map(({ _id }) => _id)).toEqual([
+      'drafts.collectivePage',
+      'versions.rAbc.collectivePage',
+    ]);
+  });
+
+  it('waits for a draft it reads only while the draft still holds what the migration moves', () => {
+    const read = [
+      { _id: 'drafts.event-odunde-2027', _type: 'event', old: 'yes' },
+      { _id: 'drafts.event-gala-2027', _type: 'event' },
+    ];
+    const none: MigrationPlan = { mutations: [], conflicts: [] };
+    expect(unpublished(migration, read, [], none).map(({ _id }) => _id)).toEqual([
+      'drafts.event-odunde-2027',
+    ]);
+  });
+
+  it('guards a delete with the revision it read, changing nothing', () => {
+    const guard = revisionGuard({ _id: 'initiative-x', _rev: 'r4' });
+    expect(describeMutation(guard)).toBe('check initiative-x has not changed since it was read');
+    const [after] = applyMutations(
+      [{ _id: 'initiative-x', _type: 'initiative', name: 'X' }],
+      [guard],
+    );
+    expect(after).toEqual({ _id: 'initiative-x', _type: 'initiative', name: 'X' });
   });
 });

@@ -5,6 +5,7 @@ import {
   buildRevisions,
   buildSeed,
   missingFields,
+  movedFields,
   retiredFields,
   revisedFields,
   type SeedAssets,
@@ -799,5 +800,13 @@ describe('Donate', () => {
     expect(donate.whatYourGiftDoes).toBeUndefined();
     expect(donate.otherWays).toBeUndefined();
     expect(JSON.stringify(donate)).not.toMatch(/100%|Benevity|Double the Donation|\$25|\$500/);
+  });
+});
+
+describe('fields a migration moves before they go', () => {
+  it('are left to that migration by the seed', () => {
+    const edition = { _id: 'event-odunde-2026', album: { _ref: 'album-odunde-2026' } };
+    expect(retiredFields('event', edition)).toEqual([]);
+    expect(movedFields('event', edition)).toEqual([{ path: 'album', migration: 'album-link' }]);
   });
 });

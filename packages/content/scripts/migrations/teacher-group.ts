@@ -8,7 +8,8 @@ import type { Migration, StoredDocument } from './core';
 export const teacherGroupMigration: Migration = {
   name: 'teacher-group',
   description: 'Take the teacher the Lessons page picks out of the person groups.',
-  filter: '(_type == "person" && group == "teacher") || _id == "lessonsPage"',
+  // The page by type, not id, so its draft is read too.
+  filter: '(_type == "person" && group == "teacher") || _type == "lessonsPage"',
   plan: (documents) => {
     const lessons = documents.find(({ _id }) => _id === 'lessonsPage');
     const picked = (lessons?.teacher as { _ref?: string } | undefined)?._ref;
