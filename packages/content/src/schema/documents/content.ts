@@ -5,7 +5,6 @@ import {
   EVENT_KIND_TITLES,
   EVENT_KINDS,
   editionFieldShown,
-  RETIRED_EVENT_KINDS,
 } from '../../edition-fields';
 import { EVENT_PAGE_NAMES } from '../../routes';
 import { hideRetired } from '../../studio/retired-choices';
@@ -46,7 +45,6 @@ export const event = defineType({
         layout: 'radio',
         direction: 'horizontal',
       },
-      components: { input: hideRetired(RETIRED_EVENT_KINDS) },
       group: 'edition',
       validation: (rule) => rule.required(),
     }),

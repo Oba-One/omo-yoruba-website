@@ -1000,7 +1000,7 @@ export type Event = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  kind?: "festival" | "gala" | "collective" | "other";
+  kind?: "festival" | "gala" | "collective";
   title?: string;
   edition?: number;
   start?: string;
@@ -3141,7 +3141,7 @@ export type AlbumPageQueryResult = {
     credit: string | null;
     edition: {
       year: number | null;
-      kind: "collective" | "festival" | "gala" | "other" | null;
+      kind: "collective" | "festival" | "gala" | null;
     } | null;
     photos: Array<{
       _key: string;
@@ -3180,7 +3180,7 @@ export type HomepageQueryResult = {
   leadEvent: null;
   events: Array<{
     _id: string;
-    kind: "collective" | "festival" | "gala" | "other" | null;
+    kind: "collective" | "festival" | "gala" | null;
     title: string | null;
     edition: number | null;
     start: string | null;
@@ -3242,7 +3242,7 @@ export type HomepageQueryResult = {
     } | null;
     tags: Array<{
       _type: "event";
-      kind: "collective" | "festival" | "gala" | "other" | null;
+      kind: "collective" | "festival" | "gala" | null;
       page: null;
     } | {
       _type: "program";
@@ -3259,7 +3259,7 @@ export type HomepageQueryResult = {
   leadEvent: null;
   events: Array<{
     _id: string;
-    kind: "collective" | "festival" | "gala" | "other" | null;
+    kind: "collective" | "festival" | "gala" | null;
     title: string | null;
     edition: number | null;
     start: string | null;
@@ -3321,7 +3321,7 @@ export type HomepageQueryResult = {
     } | null;
     tags: Array<{
       _type: "event";
-      kind: "collective" | "festival" | "gala" | "other" | null;
+      kind: "collective" | "festival" | "gala" | null;
       page: null;
     } | {
       _type: "program";
@@ -3349,7 +3349,7 @@ export type HomepageQueryResult = {
   leadEvent: null;
   events: Array<{
     _id: string;
-    kind: "collective" | "festival" | "gala" | "other" | null;
+    kind: "collective" | "festival" | "gala" | null;
     title: string | null;
     edition: number | null;
     start: string | null;
@@ -3425,7 +3425,7 @@ export type HomepageQueryResult = {
     } | null;
     tags: Array<{
       _type: "event";
-      kind: "collective" | "festival" | "gala" | "other" | null;
+      kind: "collective" | "festival" | "gala" | null;
       page: null;
     } | {
       _type: "program";
@@ -3487,7 +3487,7 @@ export type HomepageQueryResult = {
   } | null;
   leadEvent: {
     _id: string;
-    kind: "collective" | "festival" | "gala" | "other" | null;
+    kind: "collective" | "festival" | "gala" | null;
     title: string | null;
     edition: number | null;
     start: string | null;
@@ -3497,7 +3497,7 @@ export type HomepageQueryResult = {
   } | null;
   events: Array<{
     _id: string;
-    kind: "collective" | "festival" | "gala" | "other" | null;
+    kind: "collective" | "festival" | "gala" | null;
     title: string | null;
     edition: number | null;
     start: string | null;
@@ -3576,7 +3576,7 @@ export type HomepageQueryResult = {
     } | null;
     tags: Array<{
       _type: "event";
-      kind: "collective" | "festival" | "gala" | "other" | null;
+      kind: "collective" | "festival" | "gala" | null;
       page: null;
     } | {
       _type: "program";

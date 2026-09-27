@@ -6842,10 +6842,6 @@
             {
               "type": "string",
               "value": "collective"
-            },
-            {
-              "type": "string",
-              "value": "other"
             }
           ]
         },
