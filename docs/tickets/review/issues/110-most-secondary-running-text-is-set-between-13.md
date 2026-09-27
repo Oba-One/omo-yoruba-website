@@ -1,0 +1,16 @@
+# 110: Most secondary running text is set between 13 and 16px, under the 17px body floor
+
+Labels: bug
+Status: open
+Blocked by: none
+
+**Finding** (R110 in `docs/plans/review-alignment-and-quality.md`; packages/tokens, packages/ui (running text); major; a11y-perf): AGENTS.md and DESIGN.md set 17px as the minimum for body text (the elder test), but the ported design system and the library set card blurbs, path row lines, bios, schedule and list lines, outcome lines, fact values, the form's error sentences, the error summary, the human fallback and the footer's contact details at 13 to 16px. Only prose, section leads and header leads reach 17px. ADR 0027 argued captions and counts are not body copy; no ADR covers these, and the errors and the fallback are exactly what an elder must read.
+
+**Evidence:** packages/tokens/src/components.css:327 (.oy-card-body p 14.5px), :361 (.oy-door p 15px), :405 (.oy-path-body p 14.5px), :537-545 (.oy-field-hint and .oy-field-error 13.5px), :746-751 (footer 14px); oy-components.css:1364 (.oy-person-bio 14.5px), :1446 (.oy-sched-what p), :1536 (.oy-zone-line), :1630 (.oy-lrow-body p), :2142 (.oy-outcome p), all 14.5px; :2021 (.oy-form-help, the human fallback, 14px), :2049 (.oy-errsum 14.5px), :2458 (.oy-fact span 15.5px); ui: FactList.astro:82-87 (15.5px), EnquiryModal.astro:225-230 (14px), NewsletterForm.astro:113-118 (13.5px), SiteFooter.astro:200-204 (address 13px), ButtonRow.astro:24-27, CardGrid.astro:30-35, CreditLine.astro:42-46, AlbumIntro.astro:88-94, EnquiryCard.astro:92-96 (14.5px) Also: Measured at 375 and 1440 (/private/tmp/claude-501/-Users-afo-Code-omo-yoruba/452b50c5-d114-459b-9fb8-3a0945241754/scratchpad/lr/rules/*.json): .oy-card-body p 14.5px (/, /programs, /programs/yoruba-lessons, /our-story), .oy-door p 15px (/, /get-involved, /donate, /programs), .oy-path-body p 14.5px (take-part rows on /odunde, /gala, /programs, /programs/yoruba-lessons, /programs/cultural-collective, /our-story), .oy-handoff-say 15.5px, .oy-fact dd 15.5px, .oy-pend-line 15px, .oy-outcome p 14.5px, .oy-credit-line 14.5px, .oy-door-bullets li 15px, .oy-year span 13.5px and .oy-year b 11.5px. Sources: packages/tokens/src/components.css:327-328, 361-362, 405-406; packages/ui/src/content/FactList/FactList.astro:82-84. The canvas sets the same sizes (program card p 14.5px, door p 15px, path row p 14.5px, pending line 15px). Also: Measured on the site and matching the prototype: modal and Give leads 15px (.oy-modal-head p), success and fallback sentences 15.5px (.oy-ok p), the error summary 14.5px (.oy-errsum), the human fallback 14px (.oy-form-help); packages/tokens/src/oy-components.css:1967-1971, 2021-2025, 2044-2048, 2049-2058. DESIGN.md gives 17px as running text 'and the minimum for it' and 13.5px captions only for stat labels and meta lines.
+
+**What to build:** Decide with the owner whether 17px applies to every sentence a reader must read (card blurbs, bios, lines, form errors and the human fallback) or to paragraphs only; then raise those rules as documented port edits, or record the exception in an ADR and in DESIGN.md. Size M. Needs the owner's decision first.
+
+- [ ] The fix, with a test that fails before it where the behaviour can be tested
+- [ ] `bun check` green; Playwright in both data modes where a page changes
+
+## Comments

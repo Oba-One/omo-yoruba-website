@@ -117,7 +117,7 @@ Answered on 26 September 2026; the spec lists each answer.
 | # | Work | Needs first | Priority | Source | Status |
 | --- | --- | --- | --- | --- | --- |
 | E1 | Create the publish webhook on the chosen host, so an edit shows within a minute instead of up to a day | D2 | Now | T25 | doing: a webhook, `purge-site-cache`, sends `development` publishes to khaki since 13 Sep (checked 27 Sep); left: prove a publish purges a page, and move it with D2 or D3 |
-| E2 | Run the deep review of design alignment and code quality | D1 | Now | `docs/plans/prompt-deep-review.md` | open |
+| E2 | Run the deep review of design alignment and code quality | D1 | Now | `docs/plans/prompt-deep-review.md` | done: 27 Sep, `docs/plans/review-alignment-and-quality.md` with 165 tickets under `docs/tickets/review/issues/` (3 blockers, 19 major); the owner triages |
 | E3 | The favicon files | D7 | Now | T32 | open |
 | E4 | A 404 page in the site chrome | none | Now | ROUTES section 1, Phase 9 | done: pull request 15; `404.astro` in the chrome with three doors home (`NotFound` in `@oy/ui`), and the album route's empty 404 renders it; the doors are for the owner to confirm |
 | E5 | The performer form's blurb says "Five questions" and asks six | none | Now | `enquiry-kinds.ts` | done: pull request 15; "Six questions", and a test holds every counted blurb to its form |
