@@ -61,6 +61,15 @@ export default defineConfig({
   // shadow DOM would otherwise add headings and controls the specs and axe can see.
   devToolbar: { enabled: process.env.PLAYWRIGHT !== '1' },
 
+  // Under `astro dev`, the Visual Editing island never mounted: @sanity/astro's own dev plugin lists
+  // `react-compiler-runtime` (CommonJS) for pre-bundling but keeps only what resolves from the project
+  // root, which Bun's isolated linker does not offer, so Vite served it raw and its named import failed
+  // ("does not provide an export named 'c'"). Pre-bundling the overlay's React entry, reached through
+  // @sanity/astro, converts it (ADR 0041). A build never had the problem.
+  vite: {
+    optimizeDeps: { include: ['@sanity/astro > @sanity/visual-editing/react'] },
+  },
+
   // Astro's built-in CSP renders a <meta> tag, has no report-only mode, and is not
   // supported alongside <ClientRouter />. Until Phase 9 the policy is delivered as a
   // Content-Security-Policy-Report-Only header from src/middleware.ts, built from the

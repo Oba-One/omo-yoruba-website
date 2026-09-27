@@ -92,7 +92,16 @@ Draft mode is the `sanity-preview-perspective` cookie. The Presentation tool ope
 `/api/preview/enable` with its secret; the route validates it with the Viewer token
 (`validatePreviewUrl`), sets the cookie (`SameSite=None; Secure`, partitioned inside a cross-site
 iframe) and redirects. `/api/preview/disable` expires the cookie and goes home. A value that is
-not `drafts`, `published` or a release stack reads as published.
+not `drafts`, `published` or a release stack reads as published. The cookie belongs to the
+origin, not to the Presentation tool: after a preview from `/admin`, every tab of that browser on
+the same origin reads drafts, uncached, with the overlay and without the router (pages load in
+full, ADR 0041), until `/api/preview/disable` is visited; the Studio never clears it. On the public
+host a cached page still comes back as the public copy, router and all, because the CDN's key
+ignores cookies (below). Under `astro dev` the overlay's React entry is pre-bundled
+(`vite.optimizeDeps.include` in `astro.config.ts`): `@sanity/astro`'s own dev plugin lists
+`react-compiler-runtime` (CommonJS) for pre-bundling but keeps only what resolves from the project
+root, which Bun's isolated linker does not offer, so Vite served it raw and the island failed to
+hydrate with "does not provide an export named 'c'"; a build never had the problem (ADR 0041).
 
 Since Phase 4 (ADR 0021, ADR 0022, `docs/research/phase-4-sanity-visual-editing.md`): with the
 cookie, `loadQuery` reads the perspective it names with stega and the source map, the layout
@@ -215,7 +224,11 @@ Functions run on Node 24 in production and on this machine's Node 22 locally.
 Since Phase 3 (`docs/research/phase-3-playwright-and-axe.md`). `bun e2e` runs the suite in
 `packages/web/e2e` with `@playwright/test` against its own `astro dev` on port 4322 (the Vercel
 adapter has no `astro preview`; a `bun dev` on 4321 stays untouched), in Chromium at 1440 and at
-a 375 wide mobile project. Install the browser once per machine, with Node 22 on `PATH`:
+a 375 wide mobile project. `PLAYWRIGHT_WEBKIT=1` adds a WebKit project at 1440 locally, after
+`bunx playwright install webkit`: the engine whose persisted elements leave the top layer on a page
+swap (ADR 0041); CI installs Chromium alone. `navigation.spec.ts` sets the perspective cookie for its
+draft-mode case, which skips without `SANITY_API_READ_TOKEN` in `packages/web/.env` (CI's
+placeholder project has none). Install the browser once per machine, with Node 22 on `PATH`:
 
 ```bash
 bunx playwright install chromium

@@ -244,9 +244,11 @@ const isOpen = (k: EnquiryKind) => k === kind;
 
 <script is:inline>
   if (!customElements.get('oy-enquiry-modal')) {
-    // The element is persisted across navigations, so it can be disconnected and connected
-    // again: the internal wiring happens once and the document listeners are added per
-    // connection with an AbortController that a disconnection aborts.
+    // The element is persisted across navigations, and a persisted element is disconnected and
+    // connected again on every swap (moveBefore included: it defines no connectedMoveCallback).
+    // The internal wiring happens once per element; the document listener registers once, when
+    // this script first runs while the page parses, so it stays ahead of the router's own click
+    // listener, which would otherwise navigate to the trigger's href as well (ADR 0041).
     const wireEnquiryModal = (host) => {
       const dialog = host.querySelector('dialog');
       if (!dialog || typeof dialog.showModal !== 'function') return null;
@@ -417,7 +419,8 @@ const isOpen = (k: EnquiryKind) => k === kind;
           const url = new URL(window.location.href);
           url.searchParams.delete('enquiry');
           url.searchParams.delete('sent');
-          window.history.replaceState(null, '', url.pathname + url.search);
+          // Keep the router's entry state (its index and scroll position), only drop the opener.
+          window.history.replaceState(window.history.state, '', url.pathname + url.search);
         }
         const back = api.trigger;
         if (back && back.isConnected && typeof back.focus === 'function') back.focus();
@@ -485,35 +488,53 @@ const isOpen = (k: EnquiryKind) => k === kind;
       return api;
     };
 
+    /** The wired element on this page: one per page, persisted across navigations. */
+    const liveEnquiryModal = () => {
+      const host = document.querySelector('oy-enquiry-modal');
+      return host && host.oyApi ? { host, api: host.oyApi } : null;
+    };
+    /** A dialog moved with appendChild (Safari, Firefox) leaves the top layer but keeps `open`. */
+    const restoreModal = (dialog) => {
+      let lost = false;
+      try {
+        lost = dialog.open && !dialog.matches(':modal');
+      } catch {
+        lost = false;
+      }
+      if (!lost) return;
+      dialog.removeAttribute('open');
+      dialog.showModal();
+    };
+
+    document.addEventListener('click', (event) => {
+      const live = liveEnquiryModal();
+      if (!live) return;
+      const target =
+        event.target && event.target.closest && event.target.closest('[data-enquiry]');
+      if (!target || live.host.contains(target)) return;
+      const kind = target.getAttribute('data-enquiry');
+      if (!live.api.has(kind)) return;
+      event.preventDefault();
+      // A trigger inside another dialog (the Give Dialog's Contact us) closes with it:
+      // focus goes back to what opened that dialog instead.
+      const from = target.closest('dialog');
+      live.api.open(
+        kind,
+        from && from !== live.api.dialog && from.oyTrigger ? from.oyTrigger : target,
+      );
+    });
+
     customElements.define(
       'oy-enquiry-modal',
       class extends HTMLElement {
         connectedCallback() {
           if (!this.oyApi) this.oyApi = wireEnquiryModal(this);
-          const api = this.oyApi;
-          if (!api) return;
-          this.oyListeners = new AbortController();
-          document.addEventListener(
-            'click',
-            (event) => {
-              const target =
-                event.target && event.target.closest && event.target.closest('[data-enquiry]');
-              if (!target || this.contains(target)) return;
-              const kind = target.getAttribute('data-enquiry');
-              if (!api.has(kind)) return;
-              event.preventDefault();
-              // A trigger inside another dialog (the Give Dialog's Contact us) closes with it:
-              // focus goes back to what opened that dialog instead.
-              const from = target.closest('dialog');
-              api.open(kind, from && from !== api.dialog && from.oyTrigger ? from.oyTrigger : target);
-            },
-            { signal: this.oyListeners.signal },
-          );
+          if (!this.oyApi) return;
+          restoreModal(this.oyApi.dialog);
           this.dataset.ready = 'true';
         }
 
         disconnectedCallback() {
-          if (this.oyListeners) this.oyListeners.abort();
           delete this.dataset.ready;
         }
       },
