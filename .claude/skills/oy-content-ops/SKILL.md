@@ -8,9 +8,10 @@ description: Recipes for adding or changing site content through the Sanity MCP 
 The owner adds content from a Claude Code session through the Sanity MCP server in
 `.mcp.json` (OAuth on first use). Shapes come from the schema in `@oy/content`; the decisions
 that shaped it are ADR 0013 to ADR 0017. Editor-facing version: `docs/content-ops.md`
-(Phase 10). Copy rules: the `oy-voice` skill. Datasets: `production` for the site,
-`development` for trying things; the seed (`bun seed`) fills `development` with the confirmed
-facts and the photographs.
+(Phase 10). Copy rules: the `oy-voice` skill. The site and the Studio read `development` until
+the owner settles the datasets (open-work D3); the seed (`bun seed`) fills it with the confirmed
+facts and the photographs. Members edit details and facts; administrators keep site settings, the
+Inbox, the Vision tool and the three held-back switches (ADR 0042).
 
 ## Before writing
 
@@ -22,17 +23,19 @@ rather than duplicates. Ids never contain a period.
 ## Recipes
 
 - **News post**: `newsPost` draft with title, slug, date (the first of the month when only the
-  month is known), bilingual kicker (Yoruba with marks, English), summary, body, image from an
-  existing asset or a new upload with `alt` and credit, tags. Run the voice check. Publish, or
-  leave as a draft for review.
-- **Event edition**: a Content Release named for the edition ("Odunde 2027", "Gala 2026").
-  Inside it: the `event` with its dates, venue, cost, dress, schedule rows, vendor terms
-  (festival) and tickets URL (gala), plus `ticketTier`, `sponsorLevel` and `honoree` documents
-  for a gala. The page singletons rarely change. Publish the release on the announce date.
-  Checklist: `/oy-release`.
-- **Collective event**: an `event` with `kind` `collective`, its title, `start` (and `end` when it
-  has one), the one-line summary and `venue.name`; no edition year to think about, since a collective
-  event is a one-off (ADR 0030). The Collective page lists it from the moment it is published until it
+  month is known), bilingual kicker (Yoruba with marks, English), summary, image from an existing
+  asset or a new upload with `alt`, and tags. No body or author: there is no News page before
+  launch, so the Studio hides both (ADR 0042). Run the voice check. Publish, or leave as a draft
+  for review.
+- **Event edition**: drafts, published on the announce day; no Content Release (ADR 0042). The
+  `event` with its kind, dates, venue and what its kind's form shows (`edition-fields.ts`): cost,
+  schedule rows and vendor terms for the festival; doors, dress, tickets link and running order for
+  the Gala, plus `ticketTier`, `sponsorLevel` and `honoree` documents that each name the Gala
+  edition. The page singletons rarely change. Checklist: `/oy-release`.
+- **Collective event**: start it from Events, then Collective events, so the kind is set (through the
+  Sanity MCP server, set `kind` to `collective` yourself): its title,
+  `start` (and `end` when it has one), the one-line summary and `venue.name`. It needs no edition year
+  (ADR 0030, ADR 0042), and the form shows nothing else. The Collective page lists it from the moment it is published until it
   ends, or with no end until its start day ends in Los Angeles, nearest first, with "Ask to join" opening
   the contact form. An event without a start never lists, so enter it once the date is set. The venue's
   chip shows until `venue.name` is filled; the Pending view counts the events still to come.
@@ -53,7 +56,7 @@ rather than duplicates. Ids never contain a period.
   neither a date nor an edition shows the year's chip.
 - **Gallery policy**: `galleryPage.creditsAndConsent` is the owner's own consent and removal policy in plain
   text; the page never drafts it. Removal requests go to `siteSettings.generalEmail`.
-- **Person**: `person` with `group` (board, staff, volunteer, teacher) and `order`, the `role`, the short
+- **Person**: `person` with `group` (board, staff, volunteer, teacher; part 5 removes teacher, open-work S13) and `order`, the `role`, the short
   bio and, for Our Story's `bios` option, the full bio; portrait optional (the no-portrait card is a real
   design, and a photograph never stands in for someone named). Our Story lists the board by order, then
   the staff and volunteers together; Impact's board cell counts the board. The teacher is the `person`
@@ -77,14 +80,16 @@ rather than duplicates. Ids never contain a period.
   `siteSettings`, each the chip while the settings hold nothing; add only the ways the owner accepts.
 - **Timeline entry**: a `timelineEntry` with the `year` ("2003", "1998 to 2002", "Today"), one line and
   `milestone` for the founding and today, referenced from `storyPage.timeline` in order. The page's
-  `timeline` option stays hidden until the owner confirms the entries (wayfinder ticket 07).
-- **Routing contact**: `siteSettings.contacts[]`, one entry per role with name, email, phone and
+  `timeline` switch stays hidden until the owner confirms the entries; only an administrator changes it.
+- **Routing contact** (administrators): `siteSettings.contacts[]`, one entry per role with name, email, phone and
   the response line the success copy uses ("within five working days"). The `general` contact answers
   on Get Involved and Our Story; `partnerships` closes Impact.
-- **Clear pending**: open Pending in the Studio (rows come from `packages/content/src/pending.ts`),
-  fill the field, publish, confirm the chip is gone on the site after the purge. "Missing
-  entirely" rows clear when the documents exist.
-- **Enquiries**: Inbox lists them by kind, unhandled first; tick `handled` and add notes. A row
+- **Clear pending**: open Pending in the Studio (rows come from `packages/content/src/pending.ts`;
+  members see only the rows they can act on; the site settings and News page rows are an
+  administrator's), fill
+  the field, publish, confirm the chip is gone on the site after the purge. "Missing entirely" rows
+  clear when the documents exist.
+- **Enquiries** (administrators): the Inbox lists them by kind, unhandled first; tick `handled` and add notes. They hold personal data and stay out of search. A row
   with `notifyError` did not reach its email; fix the routing contact and the function retries
   on the next create only, so forward it by hand.
 
@@ -92,7 +97,9 @@ rather than duplicates. Ids never contain a period.
 
 - Never invent a figure, price, date, name or quote. If the owner asks for copy, draft it in
   the voice and leave the document as a draft for their review.
-- Every image gets `alt`, a caption and a credit; mark `creditConfirmed` only on the owner's word.
+- Every image with a picture gets `alt` and a caption. Credits live on albums: the album's `credit`,
+  and a photograph's own only where it differs (no other image shows one). Mark `creditConfirmed`
+  only on the owner's word.
 - Agent Actions (Generate, Transform) are opt-in and owner-triggered; use them for alt text
   drafts and Yoruba kicker suggestions only, never on publish.
 - After publishing, the webhook purges the cache (Phase 4); confirm the change on the site
