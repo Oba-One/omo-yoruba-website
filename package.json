@@ -25,6 +25,8 @@
     "typecheck": "bun run --filter '*' typecheck",
     "typegen": "bun run --filter @oy/content typegen",
     "seed": "bun run --filter @oy/content seed",
+    "export": "bun run --filter @oy/content export",
+    "migrate": "bun run --filter @oy/content migrate",
     "check": "bun run typecheck && bun run lint && bun run test && bun run check:toolchain",
     "check:toolchain": "bash scripts/check-toolchain-pins.sh",
     "check:commits": "bash scripts/check-commits.sh",

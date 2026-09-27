@@ -16,8 +16,8 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ClientError, createClient, type SanityClient } from '@sanity/client';
-import { STUDIO_API_VERSION } from '../src/studio/config';
+import { ClientError, type SanityClient } from '@sanity/client';
+import { fail, writeClient } from './dataset';
 import { PHOTOS_DIR, REGISTER_PATH, type RegisterPhoto, registerPhotos } from './register';
 import {
   buildRevisions,
@@ -46,61 +46,6 @@ function parseArgs(argv: string[]): Options {
     else if (arg?.startsWith('--dataset=')) options.dataset = arg.slice('--dataset='.length);
   }
   return options;
-}
-
-function fail(message: string): never {
-  console.error(`seed: ${message}`);
-  process.exit(1);
-}
-
-function env(): { projectId: string; token: string } {
-  const projectId = process.env.PUBLIC_SANITY_PROJECT_ID;
-  let token = process.env.SANITY_API_WRITE_TOKEN;
-  if (!token && process.env.SANITY_WRITE_TOKEN) {
-    token = process.env.SANITY_WRITE_TOKEN;
-    console.warn(
-      'seed: using SANITY_WRITE_TOKEN; the wizard, the runbook and the site expect SANITY_API_WRITE_TOKEN, so rename it in packages/web/.env.',
-    );
-  }
-  if (!projectId)
-    fail(
-      'PUBLIC_SANITY_PROJECT_ID is missing. Run `bash scripts/setup-wizard.sh` (wayfinder ticket 17); nothing was created.',
-    );
-  if (!token)
-    fail(
-      'SANITY_API_WRITE_TOKEN is missing. Run stage 2 of `bash scripts/setup-wizard.sh`; nothing was created.',
-    );
-  return { projectId, token };
-}
-
-/** Roles that may create published documents; a Contributor token writes drafts only. */
-const WRITE_ROLES = new Set(['administrator', 'editor', 'developer']);
-
-async function preflight(client: SanityClient, dataset: string): Promise<void> {
-  try {
-    const me = (await client.users.getById('me')) as { roles?: { name: string }[] } | null;
-    const roles = (me?.roles ?? []).map((role) => role.name);
-    if (!roles.some((role) => WRITE_ROLES.has(role))) {
-      fail(
-        `the token's role is "${roles.join(', ') || 'unknown'}", which cannot create published documents. Create an Editor token (wizard stage 2) and put it in SANITY_API_WRITE_TOKEN; nothing was created.`,
-      );
-    }
-    await client.fetch<number>('count(*[_type == "siteSettings"])');
-  } catch (cause) {
-    if (cause instanceof ClientError) {
-      if (cause.statusCode === 401)
-        fail(
-          'the write token was refused (401). Check SANITY_API_WRITE_TOKEN; nothing was created.',
-        );
-      if (cause.statusCode === 403)
-        fail('the token has no access to this dataset (403); nothing was created.');
-      if (cause.statusCode === 404)
-        fail(
-          `dataset "${dataset}" does not exist on this project; create it at sanity.io/manage (wizard stage 1); nothing was created.`,
-        );
-    }
-    throw cause;
-  }
 }
 
 function sha1(bytes: Buffer): string {
@@ -228,6 +173,7 @@ async function writeDocuments(
     } catch (cause) {
       if (cause instanceof ClientError && cause.statusCode === 403) {
         fail(
+          'seed',
           `the token may not write published documents (${cause.message}). Use an Editor token (wizard stage 2).`,
         );
       }
@@ -241,20 +187,12 @@ async function writeDocuments(
 
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2));
-  const { projectId, token } = env();
-  const client = createClient({
-    projectId,
-    dataset: options.dataset,
-    apiVersion: STUDIO_API_VERSION,
-    useCdn: false,
-    token,
-    perspective: 'published',
-    maxRetries: 2,
-  });
-  console.log(
-    `seed: project ${projectId}, dataset ${options.dataset}${options.dryRun ? ', dry run' : ''}${options.replace ? ', replacing' : ''}`,
-  );
-  await preflight(client, options.dataset);
+  const client = await writeClient('seed', options.dataset);
+  if (options.dryRun || options.replace) {
+    console.log(
+      `seed: ${[options.dryRun && 'dry run', options.replace && 'replacing'].filter(Boolean).join(', ')}`,
+    );
+  }
 
   const photos = registerPhotos(readFileSync(REGISTER_PATH, 'utf8'));
   const assets = await ensureAssets(client, photos, options.dryRun);

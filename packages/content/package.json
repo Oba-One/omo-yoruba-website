@@ -26,6 +26,8 @@
     "sanity": "bash scripts/sanity.sh",
     "typegen": "bash scripts/sanity.sh schema extract --path ./schema.json --force && bash scripts/sanity.sh typegen generate",
     "seed": "bun --env-file=../web/.env scripts/seed.ts",
+    "export": "bun --env-file=../web/.env scripts/export.ts",
+    "migrate": "bun --env-file=../web/.env scripts/migrate.ts",
     "query": "bun --env-file=../web/.env scripts/query.ts"
   },
   "dependencies": {

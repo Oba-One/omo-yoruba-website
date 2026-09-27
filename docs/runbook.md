@@ -180,6 +180,34 @@ matched by SHA-1 and documents by id. A field a schema change retired is unset w
 stored (`RETIRED_FIELDS` in `scripts/seed-data.ts`: `takePartOrder` on both event singletons and
 `siteSettings.eventbriteUrl` since Phase 5); nothing else is ever removed.
 
+## Migrations
+
+Stored content changes shape only through a reviewed migration (`packages/content/scripts/migrations/`,
+ADR 0042), never by hand in the Studio. Each migration is a plan: given the published documents its
+filter reads, the mutations that move them; `bun run migrate -- list` names them. On a migration day
+the owner stays out of the Studio for the hour:
+
+1. `bun run export` saves the whole dataset, drafts included, as NDJSON in `OY_EXPORT_DIR` (else
+   `~/omo-yoruba-exports`). The file holds every enquiry, subscriber and the preview secret: the script
+   refuses a folder inside the repository, `*.ndjson` is ignored by git, and the file is deleted once
+   the day is over.
+2. `bun run migrate -- <name> --from <export>` rehearses on the export in memory: the plan, then the
+   check that applying it leaves nothing to do.
+3. `bun run migrate -- <name>` is the dry run on the live dataset: every mutation, and what blocks it.
+   A conflict (stored content the plan cannot move without the owner's word) or an unpublished draft
+   of a document it reads blocks it: publish or discard the draft first. The Presentation tool keeps
+   its preview secret under a draft id (`sanity.previewUrlSecret`); no migration reads it.
+4. Merge the pull request and wait for its deploy, so the site already reads the new shape.
+5. `bun run migrate -- <name> --apply` saves the documents it will write as they are
+   (`<dataset>-<name>-<time>.before.ndjson` beside the exports), writes everything in one transaction
+   that fails if any of them changed since it was read, and plans again: anything left is reported as a
+   failure. `bun run migrate -- restore <file>.before.ndjson` puts those documents back.
+6. `bun seed -- --dry-run` reports nothing due, and the pages render the same content.
+
+All of it runs on the Editor token the seed uses (`SANITY_API_WRITE_TOKEN`), against `development`
+unless `--dataset` names another. `retired-fields` unsets the fields in `RETIRED_FIELDS` on every
+document, not only the seed's.
+
 ## Functions
 
 Two Sanity Functions (ADR 0004, ADR 0014) declared in `sanity.blueprint.ts` at the repo root,
