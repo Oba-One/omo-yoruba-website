@@ -63,9 +63,7 @@ export function PendingPresencePane() {
         <div key={`${entry.type}:${entry.what}`} style={styles.row}>
           <strong>{pendingTitle(entry)}</strong>
           <div style={styles.muted}>
-            {count === undefined
-              ? 'Counting...'
-              : `${count} of ${entry.minimum} ${entry.type} document${entry.minimum === 1 ? '' : 's'}`}
+            {count === undefined ? 'Counting...' : `${count} of ${entry.minimum} so far`}
           </div>
         </div>
       ))}

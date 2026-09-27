@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity';
 import { voice } from '../../validation/rules';
+import { US_DATE } from '../format';
 
 /** A number the site shows with where it comes from. Empty source means Pending. */
 export const sourcedFigure = defineType({
@@ -22,7 +23,8 @@ export const sourcedFigure = defineType({
       description: 'How it was counted and for which year ("Gate count by volunteers, 2026").',
       validation: voice.text,
     }),
-    defineField({ name: 'asOf', title: 'As of', type: 'date' }),
+    // No page shows the date a figure was counted (ADR 0042).
+    defineField({ name: 'asOf', title: 'As of', type: 'date', options: US_DATE, hidden: true }),
   ],
   preview: {
     select: { value: 'value', label: 'label', source: 'source' },

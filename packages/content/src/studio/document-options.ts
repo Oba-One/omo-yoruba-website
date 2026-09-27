@@ -1,5 +1,11 @@
-import type { ConfigContext, DocumentActionsResolver, NewDocumentOptionsResolver } from 'sanity';
+import type {
+  ConfigContext,
+  DocumentActionsResolver,
+  NewDocumentOptionsResolver,
+  Tool,
+} from 'sanity';
 import { SINGLETON_NAMES } from '../schema/singletons';
+import { ADMIN_ONLY_TYPES, ADMIN_TOOLS, HELD_BACK_PAGES, isAdministrator } from './roles';
 
 /** Types the Studio never creates: singletons (they exist), and the documents the site or a function writes. */
 export const NO_CREATE = new Set<string>([
@@ -15,24 +21,30 @@ export const STUDIO_HIDDEN_TYPES = NO_CREATE;
 /** Singletons cannot be deleted or duplicated either. */
 const NO_DELETE = new Set<string>(SINGLETON_NAMES);
 
-/**
- * Only the owner touches site settings and the inbox (CONTENT-MODEL section 5). Sanity's roles
- * depend on the plan (wayfinder ticket 22), so until a custom role exists the fallback is
- * structure visibility plus document actions: an editor can open these documents but cannot
- * publish, delete or duplicate them.
- */
-export const OWNER_ONLY = new Set<string>(['siteSettings', 'enquiry', 'subscriber']);
-
-export function isAdministrator(context: Pick<ConfigContext, 'currentUser'>): boolean {
-  return context.currentUser?.roles.some((role) => role.name === 'administrator') ?? false;
-}
-
 export const newDocumentOptions: NewDocumentOptionsResolver = (prev) =>
   prev.filter((item) => !NO_CREATE.has(item.templateId));
 
+/**
+ * Sanity's custom roles need an Enterprise plan, so members are held back by the sidebar, read-only
+ * documents and these actions (ADR 0042): nothing on an administrator's documents, and no Restore
+ * on a page whose held-back switch an old version could flip.
+ */
 export const documentActions: DocumentActionsResolver = (prev, context) => {
-  if (OWNER_ONLY.has(context.schemaType) && !isAdministrator(context)) return [];
+  const administrator = isAdministrator(context.currentUser);
+  if (ADMIN_ONLY_TYPES.has(context.schemaType) && !administrator) return [];
+  if (HELD_BACK_PAGES.has(context.schemaType) && !administrator) {
+    prev = prev.filter((action) => action.action !== 'restore');
+  }
+  // The content-lint function writes lint reports: members change nothing, and an administrator
+  // may only delete one whose document is gone (the function never removes it).
+  if (context.schemaType === 'lintReport') {
+    return administrator ? prev.filter((action) => action.action === 'delete') : [];
+  }
   return NO_DELETE.has(context.schemaType)
     ? prev.filter((action) => action.action !== 'delete' && action.action !== 'duplicate')
     : prev;
 };
+
+/** The Vision tool is for administrators only; members get the structure and Presentation. */
+export const studioTools = (prev: Tool[], context: ConfigContext): Tool[] =>
+  isAdministrator(context.currentUser) ? prev : prev.filter((tool) => !ADMIN_TOOLS.has(tool.name));

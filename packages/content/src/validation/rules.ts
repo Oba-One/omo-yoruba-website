@@ -3,7 +3,7 @@
  * `voice.text`; headings and button labels take `voice.heading`; Portable Text takes
  * `voice.blocks`. Errors block publishing, warnings show in the Studio (ADR 0010).
  */
-import type { ArrayRule, StringRule, TextRule, UrlRule } from 'sanity';
+import type { ArrayRule, StringRule, TextRule, UrlRule, ValidationContext } from 'sanity';
 import { emDashMessage, marksMessage, sentenceCaseMessage, voiceMessages } from './checks';
 
 type StringOrText = StringRule | TextRule | UrlRule;
@@ -43,3 +43,48 @@ export const voice = {
       .warning(),
   ],
 };
+
+interface Definition {
+  name?: string;
+  type?: string;
+  validation?: unknown;
+  fields?: Definition[];
+  of?: Definition[];
+  marks?: { annotations?: Definition[] };
+}
+
+type Validation = (rule: unknown, context?: ValidationContext) => unknown;
+
+/**
+ * A hidden input blocks nothing: nobody can fix what the form does not show (ADR 0042). Sanity
+ * checks hidden inputs too, its built-in checks included (a reference must be published, a link
+ * must be a URL), and hands the context, with its `hidden` flag, only to rules that declare it. So
+ * every definition gets a rule that declares it and, where the input shows, runs the definition's
+ * own rule or the built-in check. A field of one of this schema's own types with no rule of its
+ * own keeps inheriting that type's rule, which is wrapped where the type is defined.
+ */
+export function skipValidationWhenHidden<T>(types: T[]): T[] {
+  const named = new Set(types.map((type) => (type as Definition).name));
+  const wrap = (definition: Definition): Definition => {
+    const { type, validation, fields, of, marks } = definition;
+    const inherits = validation === undefined && type !== undefined && named.has(type);
+    return {
+      ...definition,
+      ...(!inherits && {
+        validation: (rule: unknown, context?: ValidationContext) => {
+          if (context?.hidden) return [];
+          if (validation === undefined) return rule;
+          return typeof validation === 'function'
+            ? (validation as Validation)(rule, context)
+            : validation;
+        },
+      }),
+      ...(fields && { fields: fields.map(wrap) }),
+      ...(of && { of: of.map(wrap) }),
+      ...(marks?.annotations && {
+        marks: { ...marks, annotations: marks.annotations.map(wrap) },
+      }),
+    };
+  };
+  return types.map((type) => wrap(type as Definition) as T);
+}

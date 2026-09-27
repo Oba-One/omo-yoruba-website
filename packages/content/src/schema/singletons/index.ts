@@ -1,7 +1,9 @@
 import { defineField } from 'sanity';
+import { EVENT_LIST_TITLES } from '../../edition-fields';
 import { OTHER_WAY_KINDS, OTHER_WAY_TITLES } from '../../giving';
 import { PAGE_LAYOUTS } from '../../layout-options';
 import { EVENT_PAGE_NAMES } from '../../routes';
+import { forMembers } from '../../studio/roles';
 import { voice } from '../../validation/rules';
 import { facts, refs, text } from '../helpers';
 import { definePage } from './page';
@@ -88,7 +90,7 @@ export const homepage = definePage({
       to: [{ type: 'event' }],
       description: 'Empty picks the next upcoming edition by date.',
     }),
-    refs('stats', 'Stat strip', 'stat', 'Four figures, in order.'),
+    refs('stats', 'Headline figures', 'stat', 'Four, in order.'),
     text('programsIntro', 'Programs intro', 2),
     text('voicesIntro', 'Member voices intro', 2),
     refs('voices', 'Member voices', 'testimonial'),
@@ -124,6 +126,7 @@ export const homepage = definePage({
 export const festivalPage = definePage({
   name: 'festivalPage',
   title: 'Odunde Festival page',
+  pointer: `The date, hours, venue, cost, schedule and vendor terms belong to the edition: Events, then ${EVENT_LIST_TITLES.festival}.`,
   fields: [
     facts(
       'extraFacts',
@@ -155,12 +158,13 @@ export const festivalPage = definePage({
 export const galaPage = definePage({
   name: 'galaPage',
   title: 'End-of-Year Gala page',
+  pointer: `The date, doors, venue, dress, tickets and running order belong to the edition: Events, then ${EVENT_LIST_TITLES.gala}, beside its ticket tiers, sponsor levels and honorees.`,
   fields: [
-    facts(
-      'extraFacts',
-      'Extra glance facts',
-      'The glance holds five facts and the edition fills all five (date, doors, venue, dress and seats from), so rows here show only if the page drops one of those.',
-    ),
+    // The edition fills all five glance facts, so no extra fact can show (ADR 0042).
+    {
+      ...facts('extraFacts', 'Extra glance facts'),
+      hidden: true,
+    },
     text('eveningIntro', 'The evening intro'),
     text('tiersIntro', 'Seats and tables intro', 2),
     text('sponsorIntro', 'Sponsor intro', 2),
@@ -381,6 +385,7 @@ export const lessonsPage = definePage({
 
 export const collectivePage = definePage({
   name: 'collectivePage',
+  pointer: `Each Collective event, with its date and venue, lives under Events, then ${EVENT_LIST_TITLES.collective}.`,
   title: 'Yoruba Cultural Collective page',
   fields: [
     defineField({
@@ -396,12 +401,13 @@ export const collectivePage = definePage({
       type: 'reference',
       to: [{ type: 'testimonial' }],
     }),
+    // No page reads it: the updates row always points at the newsletter (ADR 0042).
     defineField({
       name: 'keepsOwnList',
       title: 'The Collective keeps its own mailing list',
       type: 'boolean',
-      description: 'Off points the updates row at the footer newsletter.',
       initialValue: false,
+      hidden: true,
     }),
     takePart,
   ],
@@ -416,7 +422,7 @@ export const getInvolvedPage = definePage({
       'doors',
       'Doors',
       'door',
-      'The ways in, in order: the member, volunteer, vendor and partner doors show as cards, and the give door closes the page as a box (ADR 0034).',
+      'The ways in, in order: the member, volunteer, vendor and partner doors show as cards, and the give door closes the page as a box.',
     ),
     defineField({
       name: 'hometownAssociations',
@@ -427,7 +433,7 @@ export const getInvolvedPage = definePage({
         defineField({ name: 'prose', title: 'Prose', type: 'blockContent' }),
         defineField({
           name: 'stat',
-          title: 'The count',
+          title: 'Headline figure',
           type: 'reference',
           to: [{ type: 'stat' }],
           description:
@@ -454,7 +460,7 @@ export const impactPage = definePage({
   fields: [
     refs(
       'stats',
-      'Headline numbers',
+      'Headline figures',
       'stat',
       'Four or six, in order; each shows its source line under the figure.',
     ),
@@ -525,7 +531,7 @@ export const storyPage = definePage({
       'timeline',
       'Timeline',
       'timelineEntry',
-      'In order. The layout option keeps the timeline hidden until you confirm you want one (wayfinder ticket 07).',
+      'In order. An administrator shows the timeline once its entries are confirmed.',
     ),
     text('boardIntro', 'Board intro', 2),
     text('staffIntro', 'Staff and volunteers intro', 2),
@@ -557,7 +563,7 @@ export const donatePage = definePage({
         facts(
           'facts',
           'Facts beside it',
-          'Fees, the receipt, monthly giving and what happens if the form fails. Fees, the receipt and monthly depend on how your Zeffy form is set up; empty values show Pending. The trust block reads the Receipt fact too.',
+          'Fees, the receipt, monthly giving and what happens if the form fails. Fees, the receipt and monthly depend on how your Zeffy form is set up; empty values show Pending. "Tax-deductible, and where it goes" reads the receipt fact too.',
         ),
       ],
     }),
@@ -572,7 +578,7 @@ export const donatePage = definePage({
           'doors',
           'Doors',
           'door',
-          'For organizations: one door fills the width, two or more show as cards (ADR 0034).',
+          'For organizations: one door fills the width, two or more show as cards.',
         ),
       ],
     }),
@@ -597,7 +603,7 @@ export const donatePage = definePage({
               title: 'Kind',
               type: 'string',
               description:
-                'A check shows the mailing address, and employer matching and a donor-advised fund show the EIN and the legal name, from the site settings (ADR 0035).',
+                'A check shows the mailing address, and employer matching and a donor-advised fund show the EIN and the legal name, from the site settings.',
               options: {
                 list: OTHER_WAY_KINDS.map((kind) => ({
                   title: OTHER_WAY_TITLES[kind],
@@ -630,7 +636,8 @@ export const donatePage = definePage({
       name: 'taxLine',
       title: 'Tax-deductible line',
       type: 'string',
-      description: 'The trust block\'s "Deductible" cell: "To the extent allowed by law".',
+      description:
+        'The "Deductible" line under "Tax-deductible, and where it goes": "To the extent allowed by law".',
       validation: voice.text,
     }),
   ],
@@ -645,18 +652,20 @@ export const galleryPage = definePage({
       'creditsAndConsent',
       'Consent policy',
       4,
-      'How you ask permission to photograph people, children most of all, and how a photograph comes down. This wording must be yours; the gallery and every album page show it, and empty shows Pending (ADR 0039).',
+      'How you ask permission to photograph people, children most of all, and how a photograph comes down. This wording must be yours; the gallery and every album page show it, and empty shows Pending.',
     ),
   ],
   layout: PAGE_LAYOUTS.galleryPage,
 });
 
+// No News page before launch (D22), so only an administrator changes it (studio/roles.ts).
 export const newsPage = definePage({
   name: 'newsPage',
   title: 'News & Events page',
   actions: false,
   fields: [],
   layout: PAGE_LAYOUTS.newsPage,
+  readOnly: forMembers,
 });
 
 export const singletonTypes = [

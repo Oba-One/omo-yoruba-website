@@ -1,10 +1,22 @@
 import { defineField, defineType } from 'sanity';
 import { ENQUIRY_KINDS, KIND_TITLES } from '../../enquiry-kinds';
 import { voice } from '../../validation/rules';
+import { titled } from '../helpers';
 
 export const CTA_KINDS = ['enquiry', 'give', 'url', 'anchor'] as const;
 
-/** A button: an enquiry kind, the Give Dialog, a link or an anchor on the page. */
+const OPENS: Record<(typeof CTA_KINDS)[number], string> = {
+  enquiry: 'An enquiry form',
+  give: 'The donation form',
+  url: 'A link',
+  anchor: 'A section on this page',
+};
+
+/**
+ * A button: an enquiry kind, the Give Dialog, a link or an anchor on the page. No field has a
+ * default: Sanity would then create a button on every new document that can hold one, and its
+ * missing label would block Publish.
+ */
 export const cta = defineType({
   name: 'cta',
   title: 'Action',
@@ -21,16 +33,7 @@ export const cta = defineType({
       name: 'kind',
       title: 'Opens',
       type: 'string',
-      options: {
-        list: [
-          { title: 'An enquiry form', value: 'enquiry' },
-          { title: 'The Give Dialog', value: 'give' },
-          { title: 'A link', value: 'url' },
-          { title: 'A section on this page', value: 'anchor' },
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'enquiry',
+      options: { list: titled(CTA_KINDS, OPENS), layout: 'radio' },
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -65,7 +68,6 @@ export const cta = defineType({
       name: 'newTab',
       title: 'Open in a new tab',
       type: 'boolean',
-      initialValue: false,
       hidden: ({ parent }) => parent?.kind !== 'url',
     }),
   ],
@@ -73,7 +75,10 @@ export const cta = defineType({
     select: { label: 'label', kind: 'kind', enquiryKind: 'enquiryKind', href: 'href' },
     prepare: ({ label, kind, enquiryKind, href }) => ({
       title: label,
-      subtitle: kind === 'enquiry' ? `Form: ${enquiryKind ?? 'not chosen'}` : (href ?? kind),
+      subtitle:
+        kind === 'enquiry'
+          ? `Form: ${KIND_TITLES[enquiryKind as keyof typeof KIND_TITLES] ?? 'not chosen'}`
+          : (href ?? OPENS[kind as keyof typeof OPENS] ?? kind),
     }),
   },
 });

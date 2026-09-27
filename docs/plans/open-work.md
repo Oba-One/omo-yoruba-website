@@ -21,9 +21,9 @@ ticket holds the detail, the row links it and stays one line. New work goes into
 | D1 | Check the gallery and merge pull request 9 | Built as the PR describes | The gallery exists only on its branch | Now | T43 | done: merged 13 Sep at the owner's request; the Studio and preview checks move into E2 and week 1 |
 | D2 | The public host until the domain works, and fixing `omoyorubasocal.org` | `omo-yoruba-khaki.vercel.app` stands in | Sets the webhook, the Studio's CORS, the preview host, email sending and canonical links | Now | the 13 September hosting session (H7); runbook "Deploy" | open |
 | D3 | Which dataset holds the real content, and make `production` private | Site and Studio read `development`; `production` is empty with a public ACL | Decide before members type facts; a public dataset would expose enquiries | Now | the 13 September hosting session (H7) | open |
-| D4 | Roles for organization members on the Sanity plan | Only the owner is a member; settings and the Inbox are hidden by structure only | Needed before inviting anyone to the Studio | Now | T22 | open |
+| D4 | Roles for organization members on the Sanity plan | Only the owner is a member; settings and the Inbox are hidden by structure only | Needed before inviting anyone to the Studio | Now | T22 | done: members are Editors; administrators keep site settings, the Inbox, the Vision tool and three held-back switches (26 Sep, ADR 0042) |
 | D5 | Consent for identifiable faces, children included, in every album and on the pages | Unconfirmed; the site is public | The gallery can stay `state: soon` until it is settled | Now | T09, T44 | open |
-| D6 | The Studio's simplification: which changes in section 3 to make | As built | Members manage the content after the meeting | Now | section 3 | open |
+| D6 | The Studio's simplification: which changes in section 3 to make | As built | Members manage the content after the meeting | Now | section 3 | done: every S row decided on 26 Sep (`docs/tickets/studio-simplification/spec.md`, ADR 0042) |
 | D7 | The favicon | None; best practices sits at 0.93 on every route | Shows in every tab and bookmark | Now | T32 | open |
 | D8 | Confirm two lines of copy: the Give Dialog's text while Zeffy is not set up, and the "too many messages" refusal | As written | Every Donate click shows the first until T03 | Launch | HP3 | open |
 | D9 | Gala tables: an enquiry or a purchase | An enquiry, invoiced by hand | The tables block and its copy | Launch | T04 | open |
@@ -39,7 +39,7 @@ ticket holds the detail, the row links it and stays one line. New work goes into
 | D19 | The photo carousel's remaining answers (dots as tabs, drawn chevrons, the count's case, eight photographs) | The rules' answers | Styling only | Later | T37, ADR 0027 | open |
 | D20 | Storybook hosting | A separate Vercel project | A shareable component library | Later | T11 | open |
 | D21 | Our Story's timeline shown by default | Hidden until its entries are confirmed | The timeline block | Later | T07 | open |
-| D22 | News: a feed or a single kept list | Not built | Page 17 | Later | T08 | open |
+| D22 | News: a feed or a single kept list | Not built | Page 17 | Later | T08 | open: no News page before launch (26 Sep); the feed or list question waits |
 | D23 | Accept the em dash lint exemption for `docs/design/` | Exempt | Tooling only | Later | T18 | open |
 | D24 | A second Donate door for organizations beside "Partner or sponsor" | One door | Larger gifts | Later | T42, ADR 0034 | open |
 
@@ -51,7 +51,7 @@ Every empty fact shows a Pending chip on the site and a row in the Studio's Pend
 | # | Page | What is owed | Priority | Source | Status |
 | --- | --- | --- | --- | --- | --- |
 | C1 | Everywhere | The EIN, the mailing address and the phone; the general inbox; each role's contact (membership, volunteers, partnerships, vendors, performers, tables, teacher, general) with an email and a response line; the Zeffy link; social links | Now | T02, T03 | open |
-| C2 | Homepage | Put the recap post's title back to "Odunde 2026: the recap"; three named voices; a Collective photograph; the news posts' bodies; confirm the posts' dates | Now | T27, T31, `pending.ts` | open |
+| C2 | Homepage | Put the recap post's title back to "Odunde 2026: the recap"; three named voices; a Collective photograph; confirm the posts' dates | Now | T27, T31, `pending.ts` | open |
 | C3 | Gallery | The consent and removal policy in your words; consent per album; confirm the three photographers' credits; the summer camp's year; captions; the header line | Now | T44, T09 | open |
 | C4 | Odunde | The 2027 edition (date, hours, cost, venue line, schedule, vendor fees and dates, permit note); the two unnamed zones and each zone's line; plan-your-visit facts; 2026 attendance; partners; "What Odunde is"; confirm six captions' marks | Launch | T38, T05 | open |
 | C5 | Gala | The 2026 edition: date, doors, venue, dress, running order, ticket tiers with prices and what each includes, the Eventbrite link, sponsor levels, honorees | Launch | T38, T03, T06 | open |
@@ -71,42 +71,45 @@ organization member would meet them. Today a member sees 36 document types, 44 l
 135 rows, where 66 open an empty list and 11 are settings rows an editor cannot publish. Facts often live somewhere
 other than the page that shows them, some inputs change nothing, and the sidebar follows the code rather than the
 site. The four-week plan works through these (weeks 1 and 2). Quick wins need no decision; the rest need D6.
+Decided with the owner on 26 September 2026: `docs/tickets/studio-simplification/spec.md` holds the answers and
+ADR 0042 the decisions; the tickets in that folder build them.
 
 **Quick wins** (no owner decision; nothing stored changes)
 
 | # | Change | What a member gains | Size | Status |
 | --- | --- | --- | --- | --- |
-| S1 | The edition form: the summary moves into the Edition tab (today it shows only under All fields); a kind's form hides what that kind's page never reads; a starting template per kind | Finds the summary the homepage band shows; a Collective event takes about six inputs | S | open |
-| S2 | Hide inputs that change nothing: the event hero image, the slim pages' header photo, the sharing image (until Phase 9 uses it), photo credits outside albums, five unread `order` fields, the News page, `keepsOwnList`, `proceedsReturn`, the Gala's extra glance facts | No work without a visible result | S | open |
-| S3 | Labels in the site's words: titles on every option value, US dates, descriptions written for members (no ADR or ticket numbers), one name for the headline figure (it has four), a pointer on each event page to where its edition's facts live | Reads the Studio without the codebase | S to M | open |
-| S4 | Administrator-only: the Vision tool, the News page, and the settings rows in Pending | Sees only what they can act on | S | open |
-| S5 | An honoree must name its edition; tier, level and honoree previews show the edition | No silent no-shows | S | open |
-| S6 | Correct the recipes that drifted: `oy-release` asks for fields that do not exist; the album recipe now links both ends (done 13 Sep) | The editor guide starts from true recipes | S | doing |
+| S1 | The edition form: the summary moves into the Edition tab (today it shows only under All fields); a kind's form hides what that kind's page never reads; a starting template per kind | Finds the summary the homepage band shows; a Collective event takes about six inputs | S | done: pull request 11 (ticket 02), awaiting the owner's word to merge; no year for a Collective event, `other` retired from new events |
+| S2 | Hide inputs that change nothing: the event hero image, the slim pages' header photo, the sharing image (until Phase 9 uses it), photo credits outside albums, five unread `order` fields, the News page, `keepsOwnList`, `proceedsReturn`, the Gala's extra glance facts | No work without a visible result | S | hidden: pull request 11 (ticket 03); deleted in part 5 (ticket 16) |
+| S3 | Labels in the site's words: titles on every option value, US dates, descriptions written for members (no ADR or ticket numbers), one name for the headline figure (it has four), a pointer on each event page to where its edition's facts live | Reads the Studio without the codebase | S to M | done: pull request 11 (ticket 05), awaiting the owner's word to merge |
+| S4 | Administrator-only: the Vision tool, the News page, and the settings rows in Pending | Sees only what they can act on | S | done: pull request 11 (ticket 01), awaiting the owner's word to merge |
+| S5 | An honoree must name its edition; tier, level and honoree previews show the edition | No silent no-shows | S | done: pull request 11 (ticket 04), awaiting the owner's word to merge |
+| S6 | Correct the recipes that drifted: `oy-release` asks for fields that do not exist; the album recipe now links both ends (done 13 Sep) | The editor guide starts from true recipes | S | done: pull request 11 (ticket 06), awaiting the owner's word to merge |
 
 **Medium** (each needs the owner's yes)
 
 | # | Change | What a member gains | What changes in code | Size | Status |
 | --- | --- | --- | --- | --- | --- |
-| S7 | Regroup the sidebar as the site: To do, News posts, Events (Odunde, the Gala with its tiers, levels and honorees, Collective events), Photos, People, Pages with the lists only they show, Used on several pages; settings, the Inbox and design options for administrators | Things are where the site shows them | The structure only, with a structure test | M | open |
-| S8 | A To do view: Pending grouped by page, with counts, only what is owed | A short, true to-do list | A counting pane; the registry and the site's chips unchanged | M | open |
-| S9 | One link between an album and its edition: keep the album's, retire the edition's | Links photographs once; an album reaches its event page's past years | Three queries, three registry rows, a migration, TypeGen, tests | M | open |
-| S10 | Design-only layout options for administrators (patterns, motion, treatments) | About 21 choices instead of 44 | A design flag per option and a role check | S to M | open |
-| S11 | One control per decision: take-part order (the rows' order or the `takepart` option), the homepage's lead event (the reference or the season), the hero's gold button (its action or the highlight) | One place for each choice | Options, two components, a seed revision, tests | M | open |
-| S12 | Scopes that show nothing (the Odunde sponsor scope, partner scopes beyond Odunde): remove them or show them | Every option has an effect | Option lists, or queries and components | S to M | open |
-| S13 | The teacher from one source, the person in the teacher group | The teacher is added once | The Lessons query, a registry row, the seed | M | open |
+| S7 | Regroup the sidebar as the site: To do, News posts, Events (Odunde, the Gala with its tiers, levels and honorees, Collective events), Photos, People, Pages with the lists only they show, Used on several pages; settings, the Inbox and the held-back switches for administrators | Things are where the site shows them | The structure only, with a structure test | M | open: part 5, ticket 08 |
+| S8 | A To do view: Pending grouped by page, with counts, only what is owed | A short, true to-do list | A counting pane; the registry and the site's chips unchanged | M | open: part 5, ticket 07 |
+| S9 | One link between an album and its edition: keep the album's, retire the edition's | Links photographs once; an album reaches its event page's past years | Three queries, three registry rows, a migration, TypeGen, tests | M | open: part 5, ticket 11 |
+| S10 | Design-only layout options for administrators (patterns, motion, treatments) | About 21 choices instead of 44 | A design flag per option and a role check | S to M | decided: only the three held-back switches go to administrators; built with S4 |
+| S11 | One control per decision: take-part order (the rows' order or the `takepart` option), the homepage's lead event (the reference or the season), the hero's gold button (its action or the highlight) | One place for each choice | Options, two components, a seed revision, tests | M | open: part 5, ticket 15; the Gala's `emphasis` joins it |
+| S12 | Scopes that show nothing (the Odunde sponsor scope, partner scopes beyond Odunde): remove them or show them | Every option has an effect | Option lists, or queries and components | S to M | open: removed in part 5, ticket 14 |
+| S13 | The teacher from one source: the Lessons page's pick (decided 26 Sep; the review proposed the teacher group) | The teacher is added once | The person groups and a migration | S | open: part 5, ticket 12 |
 
 **Larger** (each needs the owner's yes; the cheapest time is now, while the dataset holds almost none of these)
 
 | # | Change | What a member gains | What changes in code | Size | Status |
 | --- | --- | --- | --- | --- | --- |
-| S14 | Outcomes, timeline entries, giving levels and initiatives become lists on the one page that shows each | Adds them where they show, in order; four types leave the sidebar | Four types become objects; queries, registry and presence rows, routes, Presentation, cache tags, seed, TypeGen, tests | L | open |
-| S15 | Split site settings: the organization's public facts members may change (address, phone, general inbox, social links, footer copy) apart from configuration (routing contacts, Zeffy, analytics, theme) | Clears the to-do rows they are shown | A new singleton; nine reads and the email function; registry; routes; a migration; tests | L | open |
+| S14 | Outcomes, timeline entries, giving levels and initiatives become lists on the one page that shows each | Adds them where they show, in order; four types leave the sidebar | Four types become objects; queries, registry and presence rows, routes, Presentation, cache tags, seed, TypeGen, tests | L | open: part 5, ticket 10 |
+| S15 | Split site settings: the organization's public facts members may change (address, phone, general inbox, social links, footer copy) apart from configuration (routing contacts, Zeffy, analytics, theme) | Clears the to-do rows they are shown | A new singleton; nine reads and the email function; registry; routes; a migration; tests | L | dropped: the public facts stay with administrators (ADR 0042) |
 
 **Questions the owner answers first** (week 1): the Sanity plan and whether members may change the public
 organization facts (T22); whether design options are for members at all (ADR 0006); which album link stays; whether
 unread fields are deleted or kept hidden for planned use; whether news posts get their own page soon (T08);
 whether a Collective event may drop the required year, and whether the "Other" kind stays; which control wins for
 take-part order, the lead event and the gold button; whether members stage editions in Content Releases.
+Answered on 26 September 2026; the spec lists each answer.
 
 ## 4. Engineering and polish
 
@@ -134,7 +137,7 @@ take-part order, the lead event and the gold button; whether members stage editi
 | E20 | Normalise Yoruba text to NFC on save | none | Later | HP1 | open |
 | E21 | Storybook accessibility checks in CI (a new dependency) | owner's yes | Later | phase 1 ticket 05 | open |
 | E22 | Review leftovers kept on purpose: the mosaic's spans, two caption rules, the Lightbox's closing flags, duplicated swipe code (PR 9); outcome kinds, program anchors, unused ContactBlock variants (HP7); `rowKinds` parsing GROQ, TypeGen unions on four queries (HP6) | none | Later | PR 9, HP6, HP7 | open |
-| E23 | The navigation defect: in draft mode the overlay drew a card 6266px below the footer after a client-side arrival (the white gap and the flashing); a footer or door trigger after such an arrival navigated as well as opening its dialog, and Safari and Firefox left it open but not modal; closing a dialog wiped the router's history state; the overlay never mounted under `astro dev` | none | Now | ADR 0041 | done: pull request 10, awaiting the owner's word to merge |
+| E23 | The navigation defect: in draft mode the overlay drew a card 6266px below the footer after a client-side arrival (the white gap and the flashing); a footer or door trigger after such an arrival navigated as well as opening its dialog, and Safari and Firefox left it open but not modal; closing a dialog wiped the router's history state; the overlay never mounted under `astro dev` | none | Now | ADR 0041 | done: pull request 10, merged 27 September |
 
 ## 5. Housekeeping
 

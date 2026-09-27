@@ -4,48 +4,98 @@ import type { LayoutValue } from './schema/objects/layoutOption';
  * The layout options of every page singleton (ROUTES section 5, ADR 0006): the same names and
  * values as the prototype's tweak props, the first value the default. A plain module with no
  * Sanity import, so the site reads the defaults (`layoutDefaults`) without pulling the Studio
- * into a page's bundle; the schema builds its `layout` object from the same list.
+ * into a page's bundle; the schema builds its `layout` object from the same list. A plain value
+ * shows in sentence case; a titled value keeps the stored value while the Studio shows the site's
+ * words (ADR 0042). `heldBack` marks a held-back switch: read-only for members.
  */
 export interface LayoutSpec {
   name: string;
   title: string;
   options: readonly LayoutValue[];
   description?: string;
+  /** A held-back switch: it publishes content that waits for an owner decision (ADR 0042). */
+  heldBack?: boolean;
 }
 
 export const PAGE_LAYOUTS = {
   homepage: [
     {
       name: 'season',
-      title: 'Season',
-      options: ['auto', 'gala', 'odunde'],
-      description: 'Which event leads; auto picks by date.',
+      title: 'Leading event',
+      options: [
+        { value: 'auto', title: 'By date' },
+        { value: 'gala', title: 'End-of-Year Gala' },
+        { value: 'odunde', title: 'Odunde Festival' },
+      ],
+      description: 'Which event leads the homepage. By date picks the nearest one still to come.',
     },
     // The prototype's value is "school"; the Studio shows the repo's word for it (AGENTS.md: never "School").
     {
       name: 'highlight',
       title: 'Highlight',
-      options: ['festival', { value: 'school', title: 'lessons' }, 'collective'],
+      options: ['festival', { value: 'school', title: 'Lessons' }, 'collective'],
       description:
         "The program the homepage leans on: its card moves first with the gold ring, and its card action becomes the hero's gold button. Festival keeps the hero's own button.",
     },
-    { name: 'gallery', title: 'Gallery tiles', options: ['7', '5', '3'] },
-    { name: 'involved', title: 'Get involved', options: ['doors', 'rows'] },
-    { name: 'newsletter', title: 'Newsletter', options: ['footer', 'band'] },
+    {
+      name: 'gallery',
+      title: 'Gallery tiles',
+      options: [
+        { value: '7', title: '7 photographs' },
+        { value: '5', title: '5 photographs' },
+        { value: '3', title: '3 photographs' },
+      ],
+    },
+    {
+      name: 'involved',
+      title: 'Get involved',
+      options: [{ value: 'doors', title: 'Door cards' }, 'rows'],
+    },
+    {
+      name: 'newsletter',
+      title: 'Newsletter',
+      options: [
+        { value: 'footer', title: 'In the footer' },
+        { value: 'band', title: 'As a band before the footer' },
+      ],
+    },
     { name: 'pattern', title: 'Pattern', options: ['rich', 'subtle'] },
     {
       name: 'motion',
       title: 'Motion',
       options: ['on', 'off'],
-      description: 'The hero photo breathe.',
+      description: 'The hero photograph breathes slowly.',
     },
   ],
   festivalPage: [
-    { name: 'phead', title: 'Header', options: ['photo', 'slim'] },
-    { name: 'zones', title: 'Zones', options: ['mosaic', 'five', 'grid', 'list'] },
+    {
+      name: 'phead',
+      title: 'Header',
+      options: [{ value: 'photo', title: 'With a photograph' }, 'slim'],
+    },
+    {
+      name: 'zones',
+      title: 'Zones',
+      options: ['mosaic', { value: 'five', title: 'Five tiles' }, 'grid', 'list'],
+    },
     { name: 'schedule', title: 'Schedule', options: ['shown', 'collapsed', 'hidden'] },
-    { name: 'takepart', title: 'Take part first row', options: ['vendor', 'sponsor'] },
-    { name: 'labels', title: 'Take-part labels', options: ['column', 'none', 'kicker'] },
+    {
+      name: 'takepart',
+      title: 'Take part first row',
+      options: [
+        { value: 'vendor', title: 'Vendors first' },
+        { value: 'sponsor', title: 'Sponsors first' },
+      ],
+    },
+    {
+      name: 'labels',
+      title: 'Take-part labels',
+      options: [
+        { value: 'column', title: 'In a column' },
+        'none',
+        { value: 'kicker', title: 'As kickers' },
+      ],
+    },
   ],
   galaPage: [
     { name: 'treatment', title: 'Treatment', options: ['formal', 'warm'] },
@@ -56,14 +106,31 @@ export const PAGE_LAYOUTS = {
       title: 'Awards',
       options: ['hidden', 'shown'],
       description:
-        'Hidden until the Gala names honorees; shown with none gives the Pending line (ADR 0024).',
+        'Shows the honorees. Held back until the owner decides the Gala gives awards; shown with no honoree yet gives the Pending line.',
+      heldBack: true,
     },
     { name: 'schedule', title: 'Running order', options: ['shown', 'hidden'] },
     { name: 'past', title: 'Past galas', options: ['shown', 'hidden'] },
-    { name: 'labels', title: 'Take-part labels', options: ['column', 'none', 'kicker'] },
+    {
+      name: 'labels',
+      title: 'Take-part labels',
+      options: [
+        { value: 'column', title: 'In a column' },
+        'none',
+        { value: 'kicker', title: 'As kickers' },
+      ],
+    },
   ],
   programsPage: [
-    { name: 'cards', title: 'Cards', options: ['four', 'three', 'pairs'] },
+    {
+      name: 'cards',
+      title: 'Cards',
+      options: [
+        { value: 'four', title: 'Four cards' },
+        { value: 'three', title: 'Three cards' },
+        { value: 'pairs', title: 'In pairs' },
+      ],
+    },
     { name: 'inline', title: 'Inline programs', options: ['expanded', 'collapsed'] },
     { name: 'yearstrip', title: 'Year strip', options: ['shown', 'hidden'] },
   ],
@@ -73,8 +140,16 @@ export const PAGE_LAYOUTS = {
     { name: 'faq', title: 'Questions', options: ['closed', 'open'] },
   ],
   collectivePage: [
-    { name: 'initiatives', title: 'Initiatives', options: ['side', 'stacked'] },
-    { name: 'green', title: 'Green', options: ['signal', 'strong'] },
+    {
+      name: 'initiatives',
+      title: 'Initiatives',
+      options: [{ value: 'side', title: 'Side by side' }, 'stacked'],
+    },
+    {
+      name: 'green',
+      title: 'Green',
+      options: [{ value: 'signal', title: 'A signal' }, 'strong'],
+    },
     { name: 'status', title: 'Status lines', options: ['shown', 'hidden'] },
     { name: 'events', title: 'Events', options: ['shown', 'hidden'] },
   ],
@@ -83,7 +158,7 @@ export const PAGE_LAYOUTS = {
     { name: 'hta', title: 'Hometown associations', options: ['shown', 'hidden'] },
   ],
   impactPage: [
-    { name: 'stats', title: 'Headline numbers', options: ['four', 'six'] },
+    { name: 'stats', title: 'Headline figures', options: ['four', 'six'] },
     { name: 'outcomes', title: 'Outcomes', options: ['cards', 'rows'] },
     { name: 'sources', title: 'Source lines', options: ['shown', 'hidden'] },
     { name: 'funders', title: 'Funders', options: ['shown', 'hidden'] },
@@ -93,34 +168,42 @@ export const PAGE_LAYOUTS = {
       name: 'timeline',
       title: 'Timeline',
       options: ['hidden', 'shown'],
-      description: 'Hidden until the owner confirms the entries (wayfinder ticket 07).',
+      description: 'Shows the timeline. Held back until the owner confirms its entries.',
+      heldBack: true,
     },
     { name: 'bios', title: 'Bios', options: ['short', 'full'] },
     { name: 'portraits', title: 'Portraits', options: ['shown', 'hidden'] },
   ],
   donatePage: [{ name: 'impact', title: 'What your gift does', options: ['shown', 'hidden'] }],
-  // The prototype names the Lightbox "viewer"; the value keeps the prototype's name (ADR 0006, ADR 0039).
+  // The prototype names the photo viewer "viewer"; the value keeps the prototype's name (ADR 0006, ADR 0039).
   galleryPage: [
     {
       name: 'open',
       title: 'Opening an album',
-      options: ['viewer', 'grid'],
+      options: [
+        { value: 'viewer', title: 'In the photo viewer' },
+        { value: 'grid', title: 'As a page of photographs' },
+      ],
       description:
-        "Viewer opens the Lightbox on the album's first photograph; grid opens the album's page of photographs.",
+        "The photo viewer opens on the album's first photograph; a page of photographs lists them all.",
     },
     {
       name: 'captions',
       title: 'Captions',
-      options: ['always', 'hover'],
+      options: ['always', { value: 'hover', title: 'On hover' }],
       description:
         'Album titles on the gallery and photograph captions on album pages: always shown, or on hover where a mouse can hover (a phone always shows them).',
     },
     {
       name: 'state',
-      title: 'State',
-      options: ['built', 'soon'],
+      title: 'Albums',
+      options: [
+        { value: 'built', title: 'Shown' },
+        { value: 'soon', title: 'Coming soon' },
+      ],
       description:
-        'Soon hides the albums behind one sentence pointing to the Odunde and Gala pages while the albums are prepared.',
+        'Coming soon hides the albums behind one sentence pointing to the Odunde and Gala pages, while photo consent is settled.',
+      heldBack: true,
     },
   ],
   newsPage: [

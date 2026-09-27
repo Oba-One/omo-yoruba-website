@@ -155,3 +155,6 @@ playwright-report/
 
 # Sanity Functions: local transpile output of `sanity functions test`
 .build/
+
+# Claude Code: each person's own permissions (the shared settings are .claude/settings.json)
+.claude/settings.local.json

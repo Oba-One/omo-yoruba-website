@@ -74,7 +74,19 @@ project's CORS origins must include `http://localhost:4321` with credentials and
 origin (wizard stage 1), or the login loop never ends. The sidebar: Pages (the singletons),
 Events, Programs, People, Impact, News, Gallery, Inbox (enquiries by kind, unhandled first, and
 subscribers) and Pending (one row per required-for-launch field, a "Missing entirely" pane for
-document types with no documents yet, and the voice findings the content-lint function writes).
+document types with no documents yet, and the wording to check that the content-lint function
+writes). Members (Sanity Editors) see everything but site settings, the News page, the Inbox and
+the Vision tool (ADR 0042, `packages/content/src/studio/roles.ts`); those documents open read-only
+for them wherever else they turn up, and enquiries and subscribers stay out of search. The three
+held-back switches (the gallery's albums, Our Story's timeline, the Gala's awards) are read-only for
+members, who also cannot restore an old version of those three pages. Events list by kind (Odunde
+Festival editions, End-of-Year Gala editions, Collective events), each starting new events of its
+kind, and an edition's form shows only what its page reads; an input the form hides never blocks
+Publish. The Sanity CLI's config (`packages/content/sanity.config.ts`, `cli: true`) registers the rules
+as written, so a deployed schema (`sanity schema deploy`) tells agents what each field requires. Content Releases and scheduling are switched off: an edition is prepared as drafts and
+published by hand on the announce day. Hiding and locking are not access control: through the API (a
+script, the CLI or the Sanity MCP server) an Editor can still read and change every document, enquiries,
+site settings and the held-back switches included.
 
 Draft mode is the `sanity-preview-perspective` cookie. The Presentation tool opens
 `/api/preview/enable` with its secret; the route validates it with the Viewer token
@@ -180,7 +192,7 @@ with their code under `packages/content/functions/`:
   for the kind's role (`siteSettings.contacts`, then the general entry, then `generalEmail`)
   through Resend and patches `notifiedAt`, or `notifyError` when nothing routed or the send failed.
 - `content-lint`: on `create` or `update` of a content document, writes one `lintReport`
-  (empty when clean) that the Studio's Pending view lists under "Voice findings".
+  (empty when clean) that the Studio's Pending view lists under "Wording to check".
 
 Local test, from the repo root (the wrapper loads `packages/web/.env`):
 

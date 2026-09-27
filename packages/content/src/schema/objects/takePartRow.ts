@@ -1,6 +1,8 @@
 import { defineField, defineType } from 'sanity';
+import { KIND_TITLES } from '../../enquiry-kinds';
 import { WAY_INS } from '../../take-part';
 import { voice } from '../../validation/rules';
+import { titled } from '../helpers';
 
 /**
  * One row of a take-part band (ADR 0025, ADR 0029): the way in, which decides the accent and what the
@@ -17,9 +19,12 @@ export const takePartRow = defineType({
       name: 'way',
       title: 'Way in',
       type: 'string',
-      options: { list: WAY_INS.map((way) => ({ title: way, value: way })), layout: 'radio' },
+      options: {
+        list: titled(WAY_INS, KIND_TITLES),
+        layout: 'radio',
+      },
       description:
-        'Vendor, sponsor, performer, volunteer, table, enrol and member open their form; give opens the Give Dialog; updates goes to the newsletter form on the page.',
+        'Each way in opens its own form. Give opens the donation form; Updates goes to the newsletter signup on the page.',
       validation: (rule) => rule.required(),
     }),
     defineField({
