@@ -321,8 +321,8 @@ _Avoid_: HTA in copy, chapter, club
 
 **Album**:
 The photographs of one occasion, an edition or an occasion with no edition such as the summer camp, with
-its own page on the gallery, one photo credit and its consent note. Its year is its own date's, else its
-edition's.
+its own page on the gallery, one photo credit and its consent note. It names its edition, the one link between
+them (ADR 0042), and its year is its own date's, else its edition's.
 _Avoid_: set, collection, gallery (the page of every album)
 
 **Cover**:

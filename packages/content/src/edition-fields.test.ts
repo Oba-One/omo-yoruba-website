@@ -14,7 +14,7 @@ describe('the edition form by kind (ADR 0042)', () => {
   });
 
   it('asks a Collective event for no year, schedule or venue line', () => {
-    for (const field of ['edition', 'album', 'schedule', 'venue.line', 'cost'] as const) {
+    for (const field of ['edition', 'schedule', 'venue.line', 'cost'] as const) {
       expect(editionFieldShown('collective', field), field).toBe(false);
     }
   });

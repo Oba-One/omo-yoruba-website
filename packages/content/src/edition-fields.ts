@@ -24,7 +24,6 @@ export const EVENT_LIST_TITLES: Record<EventKind, string> = {
 /** Every event input beyond kind, title, start, end, the venue's name and the summary, which all kinds read. */
 export const EDITION_FIELDS = [
   'edition',
-  'album',
   'venue.line',
   'venue.address',
   'doors',
@@ -41,7 +40,6 @@ export type EditionField = (typeof EDITION_FIELDS)[number];
 const SHOWN: Record<EventKind, ReadonlySet<EditionField>> = {
   festival: new Set([
     'edition',
-    'album',
     'venue.line',
     'cost',
     'attendance',
@@ -51,7 +49,6 @@ const SHOWN: Record<EventKind, ReadonlySet<EditionField>> = {
   ]),
   gala: new Set([
     'edition',
-    'album',
     'venue.line',
     'venue.address',
     'doors',
@@ -59,8 +56,8 @@ const SHOWN: Record<EventKind, ReadonlySet<EditionField>> = {
     'ticketsUrl',
     'schedule',
   ]),
-  // A Collective event lists its date, venue and summary. Its photographs are dated and linked on
-  // the album itself, whose own date wins in the gallery.
+  // A Collective event lists its date, venue and summary; its photographs' album names it and carries
+  // their date.
   collective: new Set([]),
 };
 

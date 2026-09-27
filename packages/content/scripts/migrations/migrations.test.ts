@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildSeed, RETIRED_FIELDS, type SeedAssets } from '../seed-data';
+import { albumLinkMigration } from './album-link';
 import { applyMutations, isDraft, type StoredDocument } from './core';
 import { MIGRATIONS } from './index';
 import { retiredFieldsMigration } from './retired-fields';
@@ -97,5 +98,53 @@ describe('teacher-group', () => {
     expect(plan.conflicts).toEqual([
       'person-bisi (Bisi) is in the teacher group, but the Lessons page does not pick her: pick her there, or give her a group Our Story lists.',
     ]);
+  });
+});
+
+describe('album-link', () => {
+  const ref = (id: string) => ({ _type: 'reference', _ref: id });
+  const odunde = {
+    _id: 'event-odunde-2026',
+    _type: 'event',
+    _rev: 'e1',
+    album: ref('album-odunde'),
+  };
+  const gala = { _id: 'event-gala-2025', _type: 'event', _rev: 'e2', album: ref('album-gala') };
+
+  it("drops the edition's link where the album already names it, and moves it where the album names none", () => {
+    const named = { _id: 'album-odunde', _type: 'album', _rev: 'a1', event: ref(odunde._id) };
+    const unnamed = { _id: 'album-gala', _type: 'album', _rev: 'a2' };
+    const documents = [odunde, gala, named, unnamed];
+    const plan = albumLinkMigration.plan(documents);
+    expect(plan).toEqual({
+      mutations: [
+        { patch: { id: odunde._id, ifRevisionID: 'e1', unset: ['album'] } },
+        { patch: { id: 'album-gala', ifRevisionID: 'a2', set: { event: ref(gala._id) } } },
+        { patch: { id: gala._id, ifRevisionID: 'e2', unset: ['album'] } },
+      ],
+      conflicts: [],
+    });
+    const after = applyMutations(documents, plan.mutations);
+    expect(after.find(({ _id }) => _id === 'album-gala')?.event).toEqual(ref(gala._id));
+    expect(albumLinkMigration.plan(after).mutations).toEqual([]);
+  });
+
+  it('leaves an album naming another edition, or named by two, to the owner', () => {
+    const elsewhere = { _id: 'album-odunde', _type: 'album', event: ref('event-odunde-2025') };
+    expect(albumLinkMigration.plan([odunde, elsewhere])).toEqual({
+      mutations: [],
+      conflicts: [
+        'album-odunde names event-odunde-2025, but event-odunde-2026 names album-odunde: settle which.',
+      ],
+    });
+    const twice = { ...gala, album: ref('album-odunde') };
+    const shared = { _id: 'album-odunde', _type: 'album' };
+    expect(albumLinkMigration.plan([odunde, twice, shared]).conflicts).toHaveLength(2);
+  });
+
+  it('keeps retired-fields off the link until album-link has moved it', () => {
+    const plan = retiredFieldsMigration.plan([odunde]);
+    expect(plan.mutations).toEqual([]);
+    expect(plan.conflicts).toEqual(['event-odunde-2026 still holds album: run album-link first.']);
   });
 });

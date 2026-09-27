@@ -51,12 +51,13 @@ describe('a hidden input blocks nothing', () => {
     kind,
     title: 'An edition',
     schedule: [scheduleRow],
-    album: reference('album-unpublished'),
+    // Sanity's own check on a link input: it must be a URL. Only the Gala's form shows it.
+    ticketsUrl: 'not a link',
   });
 
   it('checks a Collective event for nothing its form hides, built-in checks included', async () => {
     const found = await problems(edition('collective'), UNPUBLISHED);
-    expect(found.filter((line) => /^(edition|schedule|album)/.test(line))).toEqual([]);
+    expect(found.filter((line) => /^(edition|schedule|ticketsUrl)/.test(line))).toEqual([]);
   });
 
   it('still checks those inputs where the form shows them', async () => {
@@ -64,7 +65,9 @@ describe('a hidden input blocks nothing', () => {
     expect(found.some((line) => line.startsWith('edition:'))).toBe(true);
     expect(found.some((line) => line.startsWith('schedule.[].title'))).toBe(true);
     expect(found.some((line) => line.startsWith('schedule.[].detail'))).toBe(true);
-    expect(found).toContain('album: validation:object.reference-not-published');
+    expect(found.some((line) => line.startsWith('ticketsUrl'))).toBe(false);
+    const gala = await problems(edition('gala'), UNPUBLISHED);
+    expect(gala.some((line) => line.startsWith('ticketsUrl'))).toBe(true);
   });
 
   it('checks a photo credit only on an album photograph, where it shows', async () => {

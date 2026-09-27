@@ -469,10 +469,8 @@ describe('the gallery', () => {
     const row = PENDING.find(
       (entry) => entry.type === 'album' && entry.what === ALBUM_YEAR_PENDING,
     );
-    // The edition either link names: the album's `event`, or an edition whose `album` is this one.
-    expect(row?.condition).toBe(
-      '!defined(date) && !defined(event->edition) && count(*[_type == "event" && album._ref == ^._id && defined(edition)]) == 0',
-    );
+    // The edition the album names, the one link between them (ADR 0042).
+    expect(row?.condition).toBe('!defined(date) && !defined(event->edition)');
     expect(row?.fields).toBeUndefined();
     expect(ALBUM_YEAR_PENDING).toBe('the year of the album');
     // The field alone no longer answers: the site reads the named constant.

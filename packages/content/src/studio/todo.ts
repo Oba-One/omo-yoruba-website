@@ -219,7 +219,7 @@ export function todoQuery(plan: TodoPlan): string {
     presence ? [`"${id}": ${found(presenceFilter(presence))}`] : [],
   );
   return `{
-  "editions": *[_type == "event"]{_id, kind, edition, start, end, "photos": count(album->photos)},
+  "editions": *[_type == "event"]{_id, kind, edition, start, end, "photos": count(*[_type == "album" && event._ref == ^._id].photos[])},
   "rows": {${rows.join(', ')}},
   "presence": {${presence.join(', ')}},
   "wording": count(*[${wordingFilter(plan)}])

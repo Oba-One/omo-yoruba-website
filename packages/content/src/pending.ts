@@ -58,6 +58,8 @@ const TRUST_PAGE_NAMES = {
 const FESTIVAL = 'kind == "festival"';
 const GALA = 'kind == "gala"';
 const COLLECTIVE = 'kind == "collective"';
+/** An edition past years can show: an album names it and holds a photograph (ADR 0042). */
+const HAS_PHOTOS = 'count(*[_type == "album" && event._ref == ^._id && count(photos) > 0]) > 0';
 
 /** One row per field of a type, each fact naming itself where the page shows it. */
 const fieldRows = (
@@ -208,7 +210,7 @@ export const PENDING: readonly PendingEntry[] = [
   {
     type: 'event',
     fields: ['attendance'],
-    filter: `${FESTIVAL} && defined(album)`,
+    filter: `${FESTIVAL} && ${HAS_PHOTOS}`,
     edition: 'past',
     where: 'Odunde, past years',
     what: 'the attendance figure',
@@ -692,7 +694,7 @@ export const PENDING: readonly PendingEntry[] = [
   {
     type: 'event',
     fields: ['vendorsHosted'],
-    filter: `${FESTIVAL} && defined(album)`,
+    filter: `${FESTIVAL} && ${HAS_PHOTOS}`,
     edition: 'past',
     where: 'Impact, Odunde as civic infrastructure',
     what: 'the number of vendors hosted',
@@ -772,12 +774,10 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Gallery, photographs',
     what: PHOTO_CREDIT_PENDING,
   },
-  // An edition's album takes the edition's year, so only an album with neither asks (ADR 0039). The edition is
-  // the one the album names, else one that names the album, as the gallery's queries read it.
+  // An album takes the year of the edition it names, so only an album with neither asks (ADR 0039, ADR 0042).
   {
     type: 'album',
-    condition:
-      '!defined(date) && !defined(event->edition) && count(*[_type == "event" && album._ref == ^._id && defined(edition)]) == 0',
+    condition: '!defined(date) && !defined(event->edition)',
     where: 'Gallery, albums',
     what: ALBUM_YEAR_PENDING,
   },

@@ -125,9 +125,10 @@ Decided with the owner on 11 September 2026; each has its ADR.
 - Phase 8 (ADR 0037, ADR 0039): `galleryPage.creditsAndConsent` is plain text and `intro` is retired;
   `@oy/content/albums` holds an album's year (its own date, else its edition's), its tile line and the
   gallery's order; `galleryPageQuery` and `albumPageQuery` (by slug) read the two routes, taking an album's
-  edition from its `event`, else from the edition whose `album` names it. The registry's three condition rows
+  edition from its `event`, the one link between them (ADR 0042); an edition's page shows the first album
+  made that names it and holds a photograph. The registry's three condition rows
   read their wordings from constants: the album's credit (`ALBUM_CREDIT_PENDING`), a photograph's own credit
-  (`PHOTO_CREDIT_PENDING`) and the album's year where neither the date nor either link gives one
+  (`PHOTO_CREDIT_PENDING`) and the album's year where neither the date nor its edition gives one
   (`ALBUM_YEAR_PENDING`); an album without photographs is a field row (`photos[]`), and the presence row
   counts only albums holding a photograph. The route map sends `galleryPage` and `event` to both gallery routes
   and keeps `photographer` off `/gallery`. The seed revises the gallery's header line to name the three albums

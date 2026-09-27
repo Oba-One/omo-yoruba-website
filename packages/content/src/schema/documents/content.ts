@@ -159,14 +159,6 @@ export const event = defineType({
       hidden: editionHidden('ticketsUrl'),
     }),
     defineField({
-      name: 'album',
-      title: 'Album',
-      type: 'reference',
-      to: [{ type: 'album' }],
-      group: 'edition',
-      hidden: editionHidden('album'),
-    }),
-    defineField({
       name: 'attendance',
       title: 'Attendance',
       type: 'sourcedFigure',
@@ -698,7 +690,7 @@ export const album = defineType({
       type: 'reference',
       to: [{ type: 'event' }],
       description:
-        "The edition the photographs come from: its year dates the album, and the album page links to the edition's page.",
+        "The edition the photographs come from: its year dates the album, the album page links to the edition's page, and the edition's page shows the first album that names it under past years.",
     }),
     defineField({ name: 'cover', title: 'Cover', type: 'oyImage' }),
     defineField({

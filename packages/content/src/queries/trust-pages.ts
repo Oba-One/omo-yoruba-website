@@ -71,7 +71,7 @@ export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "i
     cost,
     attendance{value, label, source},
     vendorsHosted{value, label, source},
-    "album": album->{_id, "photos": count(photos)}
+    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{_id, "photos": count(photos)}
   },
   "festivalPartners": count(*[_type == "partner" && "odunde" in scope]),
   "voices": voices[]->{_id, quote, name, relation, permissionToName, context},

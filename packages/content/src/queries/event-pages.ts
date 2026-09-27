@@ -4,8 +4,9 @@ import { defineQuery } from 'groq';
  * The festival page in one read (ROUTES section 1): the `festivalPage` singleton with its header,
  * actions, glance facts, Portable Text, plan-your-visit facts and take-part rows; every festival edition with the
  * facts the page reads (the page picks the next one and the past one, ADR 0024), its schedule with
- * the zone names, its vendor terms and attendance, and the first eight photographs of its album
- * with the album's credit; the zones in order; the partners scoped to Odunde. Images project the
+ * the zone names, its vendor terms and attendance, and the first eight photographs of its album (the
+ * first album made that names the edition and holds a photograph, ADR 0042) with the album's credit;
+ * the zones in order; the partners scoped to Odunde. Images project the
  * asset reference, the hotspot and the crop, never a URL string (ADR 0022). Layout values come back
  * as stored; the page fills the schema defaults (`withLayoutDefaults`).
  */
@@ -39,7 +40,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
     schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},
     vendorTerms{fees, closeDate, decisionDate, permitNote},
     attendance{value, label, source, asOf},
-    "album": album->{
+    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{
       _id,
       title,
       "slug": slug.current,
@@ -69,7 +70,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
  * The Gala page in one read (ROUTES section 1): the `galaPage` singleton with its header, actions,
  * extra glance facts, section intros and take-part rows; every gala edition with the facts the page
  * reads (the page picks the next one and the past one, ADR 0024), its running order, its ticket
- * tiers in order and the first eight photographs of its album with the album's credit; the sponsor
+ * tiers in order and the first eight photographs of its album (as the festival's) with the album's credit; the sponsor
  * levels scoped to the Gala or the whole organization, in order, with the edition a level is tied to;
  * every honoree with the edition it belongs to. Images project the asset reference, the hotspot and the crop (ADR 0022). Layout values
  * come back as stored; the page fills the schema defaults (`withLayoutDefaults`).
@@ -110,7 +111,7 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
       variant,
       featured
     },
-    "album": album->{
+    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{
       _id,
       title,
       "slug": slug.current,

@@ -323,7 +323,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     edition: 2026,
     venue: { name: 'Leimert Park' },
     heroImage: image(assets, 'odunde-2026-procession-with-drummer.jpg'),
-    album: ref('album-odunde-2026'),
   });
   docs.push({
     _id: 'event-gala-2025',
@@ -332,7 +331,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     title: 'End-of-Year Gala 2025',
     edition: 2025,
     heroImage: image(assets, 'gala-2025-attendees-sitting.jpg'),
-    album: ref('album-gala-2025'),
   });
 
   const posts = [
@@ -995,6 +993,8 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   impactPage: ['nextYear.blurb'],
   // The header line says what the intro would (ADR 0039).
   galleryPage: ['intro'],
+  // The album names its edition, the one link between them (ADR 0042); `album-link` moves it first.
+  event: ['album'],
 };
 
 /**
