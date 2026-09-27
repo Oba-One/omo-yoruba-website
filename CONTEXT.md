@@ -389,7 +389,8 @@ _Avoid_: next event, featured event, current event
 
 **Draft mode**:
 A request carrying the perspective cookie the Presentation tool set: reads come back as drafts
-with stega, the overlay mounts, and the response is never cached.
+with stega, the overlay mounts, the response is never cached, and the page has no router (every
+navigation is a full load, ADR 0041).
 _Avoid_: preview mode, visual editing mode, the draft cookie (the mechanism)
 
 **Preview host**:

@@ -38,7 +38,12 @@ data attributes, and sets `data-ready` on the host once wired (ADR 0018,
 `docs/research/phase-3-storybook-play-functions.md`). The framework serves a hoisted `<script>`
 untransformed in dev and emits nothing for it in a static build, so this is the one form that
 runs in the canvas, in the static build and on the site alike; `<ClientRouter />` leaves inline
-scripts alone on navigation and custom elements upgrade on insertion. Phase 3 wrote four such elements (`oy-site-nav`, `oy-newsletter`, `oy-enquiry-modal`, `oy-give-dialog`);
+scripts alone on navigation and custom elements upgrade on insertion. Since ADR 0041 a
+document-level listener that claims a click registers once, at definition, and finds its element
+when the click comes: every page swap disconnects and connects a persisted element again
+(`moveBefore` included), and a listener added per connection would then run after the router's.
+A history write keeps `history.state`, and nothing initialises only on `astro:page-load`, since
+draft mode has no router. Phase 3 wrote four such elements (`oy-site-nav`, `oy-newsletter`, `oy-enquiry-modal`, `oy-give-dialog`);
 since Phase 5 `media/PhotoCarousel` is the fifth (`oy-photo-carousel`, ADR 0027): its four
 play stories drive the buttons and the tablist keys. Since Phase 8 `media/Lightbox` is the sixth
 (`oy-lightbox`, ADR 0037): a dialog served open for a photo address with link controls, which its play stories
