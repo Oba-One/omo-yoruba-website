@@ -38,7 +38,12 @@ nothing, help text with ADR numbers, and personal data one query away.
   Releases, scheduled drafts and scheduled publishing are switched off.
 - **The sidebar and the To do view.** The sidebar is arranged the way the site is (the spec draws it), and a To do
   view grouped by page, with counts and only what is owed, replaces the Pending list. The registry (ADR 0014)
-  gains a page per row and a way to name a field inside a list item; the site's chips keep their wording.
+  keeps its rows and wording, so the site's chips read as before: the To do takes each row's page from the
+  register's Where label, a row bound to an edition (an event's facts, the Gala's ticket tiers and sponsor
+  levels) says which edition it asks about (the next one or the past one) and counts only the edition the site's
+  own rules pick, and the page lists add a way to name a field inside a list item. The To do is Sanity's own lists
+  fed by one live query, not a custom pane; it opens on a counting line, so opening a document from search never
+  waits for the count, and a failed count tries again by itself.
 
 ## Considered options
 
@@ -63,8 +68,8 @@ nothing, help text with ADR numbers, and personal data one query away.
   the private dataset keeps the public out, not members. Custom roles (an Enterprise plan) or an
   administrators-only dataset would be the lock (D3). The member guide says what is off limits and why.
 - Amends ADR 0006 (three options are administrators' only), ADR 0013 (giving levels, outcomes, timeline entries
-  and initiatives are page lists; governance documents stay documents, one per filing), ADR 0014 (page keys,
-  list-item paths and the To do view), ADR 0025 (take-part order is the rows' order, with no option over it) and
+  and initiatives are page lists; governance documents stay documents, one per filing), ADR 0014 (the To do view,
+  the edition an event row asks about, and list-item paths), ADR 0025 (take-part order is the rows' order, with no option over it) and
   ADR 0039 (the album's link only).
 - Stored content moves only by migration after a dataset export (the runner in part 5, ADR 0035's rule); nothing
   is moved by hand. Every page renders the same content before and after, proved in both data modes.

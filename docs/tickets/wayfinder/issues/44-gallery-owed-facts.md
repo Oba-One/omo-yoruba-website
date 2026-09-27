@@ -10,7 +10,7 @@ Blocked by: 02, 09
 ## Question
 
 `/gallery` and every album page render each fact the Studio does not hold as its Pending chip or line; the
-Studio's Pending view lists them under Gallery. The register (`19 Mock Content Register.dc.html`) marks the
+Studio's To do lists them under Photo Gallery. The register (`19 Mock Content Register.dc.html`) marks the
 prototype's consent rows, soon sentence, "Citrus College" and inbox invented, so none of them stands in. These
 pages show real people, children included, so the consent facts come before launch. In the Studio (the album
 recipe and the gallery policy are in `oy-content-ops`):

@@ -10,7 +10,7 @@ Blocked by: 02, 03, 05, 06, 09
 ## Question
 
 `/odunde` and `/gala` render every fact the Studio does not hold as its Pending chip or line; the
-Studio's Pending view lists each one by page. Before launch they need, in the Studio:
+Studio's To do lists each one by page. Before launch they need, in the Studio:
 
 - Odunde 2027 (create the edition when the date is set): the date and hours, the cost, the venue line,
   the schedule rows, the vendor terms (fees, the two dates, the permit note); the two unnamed zones and
