@@ -3,7 +3,7 @@
  * The End-of-Year Gala page (`09 End-of-Year Gala.dc.html`, ROUTES sections 1, 4 and 5): composed from
  * the one Gala query through `loadQuery`, showing the next gala edition (ADR 0024) with the registry's
  * Pending chips for every fact the Studio does not hold, "Seats from" derived from the edition's tiers,
- * and the seven layout options read from the singleton with the schema defaults filled. The page
+ * and the six layout options read from the singleton with the schema defaults filled. The page
  * arranges library parts and owns its copy (the section kickers and headings the prototype carries,
  * "Odunde" unmarked in display text, ADR 0009) and its layout; the warm treatment lives in the tokens.
  */
@@ -98,7 +98,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
 
     <Divider kind="seam" />
 
-    <Section id="seats" ground="alt" labelledby="seats-heading" data-sanity={page.edit.emphasis}>
+    <Section id="seats" ground="alt" labelledby="seats-heading">
       <SectionHead
         kicker={{ yo: 'Ìjókòó', en: 'Seats' }}
         title="Seats and tables"
@@ -108,7 +108,6 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
       <TicketTiers
         tiers={page.seats.tiers}
         layout={page.seats.layout}
-        emphasis={page.seats.emphasis}
         ticketsUrl={page.seats.ticketsUrl}
         pending={page.seats.pending}
         ticketsPending={page.seats.ticketsPending}

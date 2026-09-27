@@ -4,7 +4,9 @@ import { albumLinkMigration } from './album-link';
 import { applyMutations, isDraft, type StoredDocument } from './core';
 import { MIGRATIONS } from './index';
 import { inlineListsMigration } from './inline-lists';
+import { oneControlMigration } from './one-control';
 import { retiredFieldsMigration } from './retired-fields';
+import { scopesMigration } from './scopes';
 import { teacherGroupMigration } from './teacher-group';
 
 // Every migration (ADR 0042): its plan on the seed, applied, leaves nothing to do, and the names are
@@ -259,5 +261,219 @@ describe('inline-lists', () => {
     for (const type of ['initiative', 'outcome', 'timelineEntry', 'givingLevel']) {
       expect(inlineListsMigration.filter).toContain(`"${type}"`);
     }
+  });
+});
+
+describe('one-control', () => {
+  const row = (way: string) => ({ _key: way, _type: 'takePartRow', way });
+  const festival = (takepart: unknown) => ({
+    _id: 'festivalPage',
+    _type: 'festivalPage',
+    _rev: 'f1',
+    takePart: [row('vendor'), row('sponsor'), row('performer')],
+    layout: { phead: 'photo', takepart },
+  });
+
+  it("moves the take-part lead's row to the top, as the band drew it, then drops the option", () => {
+    const page = festival('sponsor');
+    const plan = oneControlMigration.plan([page]);
+    expect(plan).toEqual({
+      mutations: [
+        {
+          patch: {
+            id: 'festivalPage',
+            ifRevisionID: 'f1',
+            set: { takePart: [row('sponsor'), row('vendor'), row('performer')] },
+            unset: ['layout.takepart'],
+          },
+        },
+      ],
+      conflicts: [],
+      notes: [],
+    });
+    const [after] = applyMutations([page], plan.mutations);
+    expect(after?.layout).toEqual({ phead: 'photo' });
+    expect(oneControlMigration.plan(after ? [after] : []).mutations).toEqual([]);
+  });
+
+  it('only drops a lead the rows already follow', () => {
+    expect(oneControlMigration.plan([festival('vendor')]).mutations).toEqual([
+      { patch: { id: 'festivalPage', ifRevisionID: 'f1', unset: ['layout.takepart'] } },
+    ]);
+  });
+
+  it('reads an empty or unknown lead as the site did, as vendor first', () => {
+    for (const takepart of [null, '', 'performer']) {
+      const page = { ...festival(takepart), takePart: [row('sponsor'), row('vendor')] };
+      expect(oneControlMigration.plan([page]).mutations, String(takepart)).toEqual([
+        {
+          patch: {
+            id: 'festivalPage',
+            ifRevisionID: 'f1',
+            set: { takePart: [row('vendor'), row('sponsor')] },
+            unset: ['layout.takepart'],
+          },
+        },
+      ]);
+    }
+    // A page holding no lead has been migrated already: its rows keep their order.
+    const migrated = { ...festival('sponsor'), layout: { phead: 'photo' } };
+    expect(oneControlMigration.plan([migrated]).mutations).toEqual([]);
+  });
+
+  const gala = (emphasis: string) => ({
+    _id: 'galaPage',
+    _type: 'galaPage',
+    _rev: 'g1',
+    layout: { tiers: 'columns', emphasis },
+  });
+  const tier = (id: string, variant: string, order?: number, edition = 'event-gala-2026') => ({
+    _id: id,
+    _type: 'ticketTier',
+    variant,
+    ...(order === undefined ? {} : { order }),
+    event: { _type: 'reference', _ref: edition },
+  });
+
+  it("drops the Gala's emphasis where the tiers' order already shows what it did", () => {
+    const drop = [{ patch: { id: 'galaPage', ifRevisionID: 'g1', unset: ['layout.emphasis'] } }];
+    expect(oneControlMigration.plan([gala('seats'), tier('a', 'buyNow', 1)]).mutations).toEqual(
+      drop,
+    );
+    const tablesFirst = [tier('t', 'enquiry', 1), tier('a', 'buyNow', 2), tier('b', 'buyNow', 3)];
+    expect(oneControlMigration.plan([gala('tables'), ...tablesFirst])).toEqual({
+      mutations: drop,
+      conflicts: [],
+      notes: [],
+    });
+  });
+
+  it("leaves tables emphasised against the tiers' order to the owner", () => {
+    for (const tiers of [
+      [tier('a', 'buyNow', 1), tier('t', 'enquiry', 2)],
+      [tier('t', 'enquiry', 1), tier('a', 'buyNow', 1)],
+      [tier('t', 'enquiry'), tier('a', 'buyNow', 2)],
+    ]) {
+      const plan = oneControlMigration.plan([gala('tables'), ...tiers]);
+      expect(plan.mutations).toEqual([]);
+      expect(plan.conflicts).toEqual([
+        'galaPage puts the table tiers first (emphasis: tables), but the tiers of event-gala-2026 do not come in that order: give the table tiers the lowest order, then run again.',
+      ]);
+    }
+    // Another edition's tiers, each kind alone, reorder nothing.
+    const apart = [tier('t', 'enquiry', 2, 'event-gala-2025'), tier('a', 'buyNow', 1)];
+    expect(oneControlMigration.plan([gala('tables'), ...apart]).conflicts).toEqual([]);
+  });
+
+  it('drops an empty event pick and leaves a chosen one to the owner', () => {
+    const home = (leadEvent: unknown) => ({
+      _id: 'homepage',
+      _type: 'homepage',
+      _rev: 'h1',
+      leadEvent,
+    });
+    expect(oneControlMigration.plan([home(null)]).mutations).toEqual([
+      { patch: { id: 'homepage', ifRevisionID: 'h1', unset: ['leadEvent'] } },
+    ]);
+    const chosen = oneControlMigration.plan([
+      home({ _type: 'reference', _ref: 'event-gala-2026' }),
+    ]);
+    expect(chosen.mutations).toEqual([]);
+    expect(chosen.conflicts).toEqual([
+      'homepage picks its event band by hand (event-gala-2026): choose the Leading event option instead, remove the pick, then run again.',
+    ]);
+  });
+
+  it("notes that a highlight leaning on a program no longer takes the hero's gold button", () => {
+    const home = (highlight: string) => ({
+      _id: 'homepage',
+      _type: 'homepage',
+      layout: { highlight },
+    });
+    expect(oneControlMigration.plan([home('school')])).toEqual({
+      mutations: [],
+      conflicts: [],
+      notes: [
+        "homepage highlights Language Lessons: the hero shows its own gold button now, no longer that card's action (ADR 0042).",
+      ],
+    });
+    expect(oneControlMigration.plan([home('festival')]).notes).toEqual([]);
+  });
+
+  it('keeps retired-fields off the three options until one-control has run', () => {
+    const home = { _id: 'homepage', _type: 'homepage', leadEvent: { _ref: 'event-gala-2026' } };
+    const plan = retiredFieldsMigration.plan([festival('vendor'), gala('seats'), home]);
+    expect(plan.mutations).toEqual([]);
+    expect(plan.conflicts).toEqual([
+      'festivalPage still holds layout.takepart: run one-control first.',
+      'galaPage still holds layout.emphasis: run one-control first.',
+      'homepage still holds leadEvent: run one-control first.',
+    ]);
+  });
+
+  it('turns a dataset seeded before this change into the seed of today, with retired-fields', () => {
+    const before = SEED.map((document): StoredDocument => {
+      const layout = document.layout as Record<string, unknown> | undefined;
+      switch (document._type) {
+        case 'festivalPage':
+          return { ...document, layout: { ...layout, takepart: 'vendor' } };
+        case 'galaPage':
+          return { ...document, layout: { ...layout, emphasis: 'seats' } };
+        case 'siteSettings':
+          return { ...document, wordmarkLine2: 'of Southern California' };
+        case 'collectivePage':
+          return { ...document, keepsOwnList: false };
+        case 'door':
+          return { ...document, order: 1 };
+        case 'event':
+          return document._id === 'event-gala-2025'
+            ? { ...document, heroImage: { _type: 'oyImage', alt: 'Guests at their tables' } }
+            : document;
+        default:
+          return document;
+      }
+    });
+    const blocked = retiredFieldsMigration.plan(before);
+    expect(blocked.conflicts).toHaveLength(2);
+    const controlled = oneControlMigration.plan(before);
+    expect(controlled.conflicts).toEqual([]);
+    const afterControl = applyMutations(before, controlled.mutations);
+    const retired = retiredFieldsMigration.plan(afterControl);
+    expect(retired.conflicts).toEqual([]);
+    const after = applyMutations(afterControl, retired.mutations);
+    expect(after).toEqual(SEED);
+    for (const migration of MIGRATIONS) expect(migration.plan(after).mutations).toEqual([]);
+  });
+});
+
+describe('scopes', () => {
+  const partner = (scope: unknown) => ({ _id: 'partner-x', _type: 'partner', _rev: 'p1', scope });
+
+  it("keeps a partner's Odunde scope and drops the ones no page shows", () => {
+    const plan = scopesMigration.plan([partner(['odunde', 'gala', 'org'])]);
+    expect(plan).toEqual({
+      mutations: [{ patch: { id: 'partner-x', ifRevisionID: 'p1', set: { scope: ['odunde'] } } }],
+      conflicts: [],
+    });
+    const after = applyMutations([partner(['odunde', 'gala', 'org'])], plan.mutations);
+    expect(scopesMigration.plan(after).mutations).toEqual([]);
+    expect(scopesMigration.plan([partner(['collective'])]).mutations).toEqual([
+      { patch: { id: 'partner-x', ifRevisionID: 'p1', unset: ['scope'] } },
+    ]);
+    expect(scopesMigration.plan([partner(['odunde']), partner(undefined)]).mutations).toEqual([]);
+  });
+
+  it('leaves an Odunde sponsor level to the owner', () => {
+    const level = (scope: string) => ({
+      _id: `level-${scope}`,
+      _type: 'sponsorLevel',
+      name: 'Friend',
+      scope,
+    });
+    const plan = scopesMigration.plan([level('odunde'), level('gala'), level('org')]);
+    expect(plan.mutations).toEqual([]);
+    expect(plan.conflicts).toEqual([
+      'level-odunde (Friend) is scoped to odunde, which no page shows: make it a Gala or organization level, or delete it.',
+    ]);
   });
 });

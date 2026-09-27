@@ -1,8 +1,10 @@
 /**
  * The pure half of content-lint (ADR 0010, ADR 0014): walk every string of a document, run the
- * em dash and diacritics checks, and shape one lintReport per document. Imports stay relative
- * so the deploy bundle carries the checks and the word list.
+ * em dash and diacritics checks, and shape one lintReport per document. The inputs the Studio hides
+ * are skipped (`hiddenOn`, ADR 0042), so the wording to check never names one nobody can open.
+ * Imports stay relative so the deploy bundle carries the checks and the word list.
  */
+import { hiddenOn } from '../../src/hidden-inputs';
 import { emDashMessage, marksMessage } from '../../src/validation/checks';
 
 export type FindingKind = 'em-dash' | 'marks';
@@ -95,7 +97,15 @@ function isBlock(value: Record<string, unknown>): boolean {
   return value._type === 'block' && Array.isArray(value.children);
 }
 
-function walk(value: unknown, path: string, findings: Finding[]): void {
+/** Where the walk is: the document, the report's path, and the field names along it for `hiddenOn`. */
+interface Place {
+  document: LintedDocument;
+  path: string;
+  fields: readonly string[];
+}
+
+function walk(value: unknown, place: Place, findings: Finding[]): void {
+  const { path } = place;
   if (typeof value === 'string') {
     check(path, value, findings);
     return;
@@ -106,7 +116,7 @@ function walk(value: unknown, path: string, findings: Finding[]): void {
         item && typeof item === 'object' && typeof (item as { _key?: unknown })._key === 'string'
           ? (item as { _key: string })._key
           : String(index);
-      walk(item, `${path}[${key}]`, findings);
+      walk(item, { ...place, path: `${path}[${key}]` }, findings);
     });
     return;
   }
@@ -122,15 +132,17 @@ function walk(value: unknown, path: string, findings: Finding[]): void {
     }
     for (const [key, child] of Object.entries(record)) {
       if (key.startsWith('_')) continue;
-      walk(child, path ? `${path}.${key}` : key, findings);
+      const fields = [...place.fields, key];
+      if (hiddenOn(place.document, fields)) continue;
+      walk(child, { ...place, path: path ? `${path}.${key}` : key, fields }, findings);
     }
   }
 }
 
-/** Every voice finding in the document, in field order. */
+/** Every voice finding in the document, in field order, outside the inputs hidden for good. */
 export function lintDocument(doc: LintedDocument): Finding[] {
   const findings: Finding[] = [];
-  walk(doc, '', findings);
+  walk(doc, { document: doc, path: '', fields: [] }, findings);
   return findings;
 }
 

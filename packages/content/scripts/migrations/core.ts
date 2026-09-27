@@ -30,6 +30,8 @@ export interface MigrationPlan {
   mutations: Mutation[];
   /** What stops the plan: stored content it cannot move without the owner's word. */
   conflicts: string[];
+  /** What the owner should know and nothing stops: a change the site makes that the owner decided. */
+  notes?: string[];
 }
 
 export interface Migration {

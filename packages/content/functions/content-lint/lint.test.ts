@@ -56,6 +56,53 @@ describe('lintDocument', () => {
     expect(lintDocument(doc)).toEqual([]);
   });
 
+  it('skips the inputs the Studio hides for good, and checks the same inputs where they show', () => {
+    const image = { alt: `Elders ${dash} dancing`, creditNote: `Photo ${dash} Ade` };
+    const post = {
+      _id: 'news-1',
+      _type: 'newsPost',
+      body: [
+        {
+          _type: 'block',
+          _key: 'b1',
+          children: [{ _type: 'span', _key: 's1', text: `a ${dash} b` }],
+        },
+      ],
+      seo: { ogImage: image },
+    };
+    expect(lintDocument(post)).toEqual([]);
+    const impact = { _id: 'impactPage', _type: 'impactPage', header: { image } };
+    expect(lintDocument(impact)).toEqual([]);
+    const festival = { _id: 'festivalPage', _type: 'festivalPage', header: { image } };
+    expect(lintDocument(festival).map(({ path }) => path)).toEqual(['header.image.alt']);
+    const album = {
+      _id: 'album-1',
+      _type: 'album',
+      cover: image,
+      photos: [{ _key: 'p1', ...image }],
+    };
+    expect(lintDocument(album).map(({ path }) => path)).toEqual([
+      'cover.alt',
+      'photos[p1].alt',
+      'photos[p1].creditNote',
+    ]);
+  });
+
+  it("skips an event's inputs its kind never shows, and checks the same inputs where the kind shows them", () => {
+    const edition = (kind: string) => ({
+      _id: `event-${kind}`,
+      _type: 'event',
+      kind,
+      dress: `[ dress ] ${dash} [ note ]`,
+      venue: { name: '[ venue ]', address: `[ street ] ${dash} [ city ]` },
+    });
+    expect(lintDocument(edition('festival'))).toEqual([]);
+    expect(lintDocument(edition('gala')).map(({ path }) => path)).toEqual([
+      'dress',
+      'venue.address',
+    ]);
+  });
+
   it('shortens a long excerpt around the finding', () => {
     const long = `${'Words '.repeat(30)}${dash}${' words'.repeat(30)}`;
     const [finding] = lintDocument({ _id: 'x', _type: 'newsPost', summary: long });

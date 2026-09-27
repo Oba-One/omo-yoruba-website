@@ -23,9 +23,9 @@ export default meta;
 type Story = StoryObj<Args>;
 
 export const Columns: Story = {
-  args: { options: { tiers: 'columns' }, slots: { default: [seam, seats('columns', 'seats')] } },
+  args: { options: { tiers: 'columns' }, slots: { default: [seam, seats('columns')] } },
 };
 
 export const Rows: Story = {
-  args: { options: { tiers: 'rows' }, slots: { default: [seam, seats('rows', 'seats')] } },
+  args: { options: { tiers: 'rows' }, slots: { default: [seam, seats('rows')] } },
 };

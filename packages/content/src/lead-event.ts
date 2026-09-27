@@ -5,9 +5,9 @@
  * reading, with no season for an undated one (`collectiveEvents`, ADR 0030).
  *
  * Which edition leads the homepage's event band (ROUTES sections 1 and 5): the `season` option
- * with its automatic default by date. An explicit `leadEvent` reference wins while it is still
- * to come. `gala` or `odunde` picks that kind's nearest edition still to come, the same edition its
- * event page shows. `auto` picks the nearest dated upcoming edition of either kind; when nothing is
+ * with its automatic default by date, the one control for it (ADR 0042). `gala` or `odunde` picks
+ * that kind's nearest edition still to come, the same edition its event page shows. `auto` picks
+ * the nearest dated upcoming edition of either kind; when nothing is
  * dated it follows the calendar (the festival leads from January to June, the Gala from July to
  * December). A past edition never leads. A dated edition is still to come until it ends, or, with
  * no end, until the end of the day it starts. Undated editions are read against the calendar: "Odunde
@@ -26,10 +26,8 @@ export interface LeadCandidate {
   end?: string | null;
 }
 
-export interface LeadEventOptions<T> {
+export interface LeadEventOptions {
   season?: string | null;
-  /** The `leadEvent` reference from the singleton, when the editor chose one. */
-  explicit?: T | null;
   now?: Date;
 }
 
@@ -183,9 +181,8 @@ export function pastEdition<T extends LeadCandidate & { album?: unknown }>(
 
 export function leadEvent<T extends LeadCandidate>(
   events: readonly T[],
-  { season, explicit, now = new Date() }: LeadEventOptions<T> = {},
+  { season, now = new Date() }: LeadEventOptions = {},
 ): T | undefined {
-  if (explicit && upcoming(explicit, now)) return explicit;
   const ahead = events.filter((event) => upcoming(event, now));
   if (season === 'gala' || season === 'odunde') {
     const chosen = leadOfKind(ahead, KIND_FOR_SEASON[season]);

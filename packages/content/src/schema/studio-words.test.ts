@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { RETIRED_FIELDS } from '../../scripts/seed-data';
+import { hiddenForGood } from '../hidden-inputs';
 import { PENDING } from '../pending';
 import { ADMIN_ONLY_TYPES } from '../studio/roles';
 import { schemaTypes } from './index';
@@ -116,33 +118,82 @@ describe("the Studio in the site's words", () => {
   });
 });
 
-describe('inputs that change nothing are hidden (ADR 0042)', () => {
+describe('inputs that change nothing are hidden, or gone (ADR 0042)', () => {
   const find = (path: string) => FIELDS.get(path);
+
+  it.each(['seo.ogImage', 'newsPost.body', 'newsPost.author', 'sourcedFigure.asOf'])(
+    '%s is hidden from everyone',
+    (path) => {
+      expect(find(path)?.hidden, path).toBe(true);
+    },
+  );
 
   it.each([
     'event.heroImage',
-    'seo.ogImage',
     'collectivePage.keepsOwnList',
     'door.order',
     'galaPage.extraFacts',
     'siteSettings.logo',
     'siteSettings.wordmarkLine2',
     'siteSettings.footerBlurb',
-    'newsPost.body',
-    'newsPost.author',
     'photographer.url',
     'stat.asOf',
-    'sourcedFigure.asOf',
-  ])('%s is hidden from everyone', (path) => {
-    expect(find(path)?.hidden, path).toBe(true);
+    'festivalPage.layout.takepart',
+    'galaPage.layout.emphasis',
+    'homepage.leadEvent',
+  ])('%s is gone from the schema and retired', (path) => {
+    expect(find(path), path).toBeUndefined();
+    const [type, ...field] = path.split('.');
+    expect(RETIRED_FIELDS[type as string], path).toContain(field.join('.'));
   });
 
   it('reads a path as the form shows it on each page', () => {
     expect(hiddenAlong('festivalPage', 'header.image')).toBe(false);
     expect(hiddenAlong('impactPage', 'header.image')).toBe(true);
     expect(hiddenAlong('homepage', 'seo.ogImage')).toBe(true);
-    expect(hiddenAlong('galaPage', 'extraFacts[].label')).toBe(true);
     expect(hiddenAlong('album', 'photos[].credit')).toBe(false);
+  });
+
+  // The content-lint function skips what the form hides for good (hidden-inputs.ts), so the wording to
+  // check never names an input nobody can open. An input hidden with a fixed `hidden: true` must be
+  // one the module names; this list fails first when one is added on one side only.
+  it('hides with a fixed rule only the inputs hidden-inputs.ts names', () => {
+    const fixed = matching((field) => field.hidden === true);
+    expect(fixed.sort()).toEqual([
+      'newsPost.author',
+      'newsPost.body',
+      'seo.ogImage',
+      'sourcedFigure.asOf',
+    ]);
+    for (const [type, fields] of [
+      ['newsPost', ['author']],
+      ['newsPost', ['body']],
+      ['homepage', ['seo', 'ogImage']],
+      ['event', ['attendance', 'asOf']],
+    ] as const) {
+      expect(hiddenForGood(type, fields), fields.join('.')).toBe(true);
+    }
+  });
+
+  it.each([
+    ['festivalPage', 'header.image.alt'],
+    ['galaPage', 'header.image.caption'],
+    ['impactPage', 'header.image.alt'],
+    ['storyPage', 'header.image.creditNote'],
+    ['homepage', 'seo.ogImage.alt'],
+    ['newsPost', 'body'],
+    ['newsPost', 'author'],
+    ['newsPost', 'summary'],
+    ['album', 'photos[].creditNote'],
+    ['album', 'cover.creditNote'],
+    ['album', 'cover.alt'],
+    ['program', 'image.creditNote'],
+    ['album', 'credit'],
+    ['event', 'attendance.asOf'],
+    ['event', 'attendance.value'],
+  ])('the lint and the form agree on %s %s', (type, path) => {
+    const fields = path.split('.').map((step) => step.replace(/\[\]$/, ''));
+    expect(hiddenForGood(type, fields)).toBe(hiddenAlong(type, path));
   });
 
   // Rows with a GROQ condition name no field; pending.test.ts checks each of those. An event's

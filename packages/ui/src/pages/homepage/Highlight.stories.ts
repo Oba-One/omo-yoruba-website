@@ -14,7 +14,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The `highlight` option: which program the homepage leans on. The highlighted card moves first and takes the gold ring, and the hero's gold button becomes that program's own action, as the prototype swaps it; `festival` keeps the hero's own button.",
+          "The `highlight` option: which program the homepage leans on. The highlighted card moves first and takes the gold ring; the hero keeps its own gold button whatever the highlight (ADR 0042), where the prototype swapped it for the program's action.",
       },
     },
   },
@@ -27,9 +27,9 @@ export const Festival: Story = { args: { highlight: 'festival' } };
 
 /** The Studio names this value "lessons"; the stored value keeps the prototype's word. */
 export const Lessons: Story = {
-  args: { highlight: 'school', slots: { default: [hero(false, 'school'), programs] } },
+  args: { highlight: 'school' },
 };
 
 export const Collective: Story = {
-  args: { highlight: 'collective', slots: { default: [hero(false, 'collective'), programs] } },
+  args: { highlight: 'collective' },
 };

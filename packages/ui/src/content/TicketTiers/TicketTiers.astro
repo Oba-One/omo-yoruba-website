@@ -1,10 +1,9 @@
 ---
 /**
  * The seats and tables block (`09 End-of-Year Gala.dc.html`): the next edition's ticket tiers as cards
- * in columns or rows by the page's `tiers` option, in the Studio's order, the table tier moved to the
- * front in the markup when `emphasis` is tables (so reading and tab order follow what is seen, as
- * ADR 0025 does for the take-part rows). The first featured tier carries the block's gold button; every
- * featured tier keeps its ring. No tiers renders the registry's Pending line.
+ * in columns or rows by the page's `tiers` option, in the Studio's order, the one control for which
+ * tier leads (ADR 0042). The first featured tier carries the block's gold button; every featured tier
+ * keeps its ring. No tiers renders the registry's Pending line.
  */
 import TicketTierCard, { type TierLike } from '../../cards/TicketTierCard/TicketTierCard.astro';
 import Pending from '../../core/Pending/Pending.astro';
@@ -12,7 +11,6 @@ import Pending from '../../core/Pending/Pending.astro';
 interface Props {
   tiers?: ((TierLike & { edit?: string }) | null)[] | null;
   layout?: 'columns' | 'rows';
-  emphasis?: 'seats' | 'tables';
   ticketsUrl?: string | null;
   /** The registry's wording for no tiers. */
   pending?: string;
@@ -27,7 +25,6 @@ interface Props {
 const {
   tiers,
   layout = 'columns',
-  emphasis = 'seats',
   ticketsUrl,
   pending = 'the ticket tiers',
   ticketsPending,
@@ -37,10 +34,7 @@ const {
   class: className,
 } = Astro.props;
 
-const list = (tiers ?? []).filter((tier) => tier !== null);
-const table = (tier: TierLike) => tier.variant === 'enquiry';
-const ordered =
-  emphasis === 'tables' ? [...list.filter(table), ...list.filter((tier) => !table(tier))] : list;
+const ordered = (tiers ?? []).filter((tier) => tier !== null);
 const goldAt = ordered.findIndex((tier) => tier.featured);
 ---
 

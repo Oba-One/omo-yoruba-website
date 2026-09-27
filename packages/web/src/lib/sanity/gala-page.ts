@@ -18,13 +18,7 @@ import { countWord } from '@oy/ui/content/count-word.ts';
 import { longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { sentence } from '@oy/ui/content/sentence.ts';
 import type { ClientReturn } from '@sanity/client';
-import {
-  GLANCE_MAX,
-  type GlanceFactView,
-  glanceFacts,
-  pageSkeleton,
-  pastYears,
-} from './page-skeleton';
+import { GLANCE_MAX, type GlanceFactView, pageSkeleton, pastYears } from './page-skeleton';
 import { type BuildOptions, cleanText, resolveImage } from './view';
 
 export type GalaPageData = NonNullable<ClientReturn<typeof galaPageQuery, unknown>>;
@@ -34,7 +28,6 @@ type Honoree = NonNullable<GalaPageData['honorees']>[number];
 export interface GalaLayout extends Record<string, string> {
   treatment: 'formal' | 'warm';
   tiers: 'columns' | 'rows';
-  emphasis: 'seats' | 'tables';
   awards: 'shown' | 'hidden';
   schedule: 'shown' | 'hidden';
   past: 'shown' | 'hidden';
@@ -142,7 +135,6 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
     },
     { label: 'Dress', value: edition?.dress || undefined, pending: pending('dress') },
     { label: 'Seats from', value: seats.value, pending: tiersPending, note: seats.note },
-    ...glanceFacts('galaPage', 'extraFacts', data?.extraFacts),
   ].slice(0, GLANCE_MAX);
 
   return {
@@ -176,7 +168,6 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
         .filter((tier) => tier !== null)
         .map((tier) => ({ ...tier, edit: edit('name', tier._id, 'ticketTier') })),
       layout: layout.tiers,
-      emphasis: layout.emphasis,
       // The edition's own Eventbrite event, the one source for seats (ADR 0024).
       ticketsUrl: cleanText(edition?.ticketsUrl),
       pending: tiersPending,

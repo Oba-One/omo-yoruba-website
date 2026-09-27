@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './TicketTiers.stories';
 
-const { Columns, Rows, TablesFirst, NoLink, Pending } = composeStories(stories);
+const { Columns, Rows, NoLink, Pending } = composeStories(stories);
 
 const variants = (body: HTMLElement) =>
   [...body.querySelectorAll('.oy-tiers > article')].map((card) =>
@@ -22,12 +22,6 @@ describe('TicketTiers', () => {
   it('takes the rows layout', async () => {
     const body = await renderToBody(Rows);
     expect(body.querySelector('.oy-tiers')?.getAttribute('data-layout')).toBe('rows');
-  });
-
-  it('moves the table tier to the front of the markup when tables lead', async () => {
-    const body = await renderToBody(TablesFirst);
-    expect(variants(body)).toEqual(['enquiry', 'buyNow', 'buyNow']);
-    expect(body.querySelector('.oy-tier--featured .oy-btn--primary')).not.toBeNull();
   });
 
   it('shows the link chip on every buy-now tier while the edition holds no link', async () => {

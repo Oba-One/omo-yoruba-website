@@ -2,7 +2,6 @@ import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as awards from './Awards.stories';
-import * as emphasis from './Emphasis.stories';
 import * as labels from './Labels.stories';
 import * as past from './Past.stories';
 import * as schedule from './Schedule.stories';
@@ -13,7 +12,6 @@ const Treatment = composeStories(treatment);
 const Schedule = composeStories(schedule);
 const Labels = composeStories(labels);
 const Tiers = composeStories(tiers);
-const Emphasis = composeStories(emphasis);
 const Awards = composeStories(awards);
 const Past = composeStories(past);
 
@@ -74,13 +72,11 @@ describe('the Gala page-section stories', () => {
     }
   });
 
-  it('emphasis: the table tier leads in the markup only when tables are emphasised', async () => {
-    const first = async (story: typeof Emphasis.Seats) =>
-      (await renderToBody(story))
-        .querySelector('#seats .oy-tiers > article')
-        ?.getAttribute('data-variant');
-    expect(await first(Emphasis.Seats)).toBe('buyNow');
-    expect(await first(Emphasis.Tables)).toBe('enquiry');
+  it("tiers keep the Studio's order, the table among them (ADR 0042)", async () => {
+    const variants = [
+      ...((await renderToBody(Tiers.Columns)).querySelectorAll('#seats .oy-tiers > article') ?? []),
+    ].map((tier) => tier.getAttribute('data-variant'));
+    expect(variants).toEqual(['buyNow', 'buyNow', 'enquiry']);
   });
 
   it('awards: honorees absent when hidden, between sponsors and past galas when shown', async () => {

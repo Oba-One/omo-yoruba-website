@@ -3,18 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './TakePartBand.stories';
 
-const {
-  Default,
-  SponsorFirst,
-  Gala,
-  Programs,
-  Lessons,
-  Collective,
-  NoLabels,
-  Kicker,
-  RowPending,
-  Pending,
-} = composeStories(stories);
+const { Default, Gala, Programs, Lessons, Collective, NoLabels, Kicker, RowPending, Pending } =
+  composeStories(stories);
 
 const rowsOf = (body: HTMLElement) => [...body.querySelectorAll('.oy-takepart > .oy-path')];
 
@@ -63,18 +53,6 @@ describe('TakePartBand', () => {
       'A booth is held once the fee is paid. Pending: fees, deadline and permit rules',
     );
     expect(sponsor?.querySelector('.oy-pend')).toBeNull();
-  });
-
-  it('moves the lead way in to the top of the markup, and the gold with it', async () => {
-    const rows = rowsOf(await renderToBody(SponsorFirst));
-    expect(rows.map((row) => row.getAttribute('data-way'))).toEqual([
-      'sponsor',
-      'vendor',
-      'performer',
-      'volunteer',
-    ]);
-    expect(rows[0]?.querySelector('.oy-btn--primary')).not.toBeNull();
-    expect(rows[1]?.querySelector('.oy-btn--secondary')).not.toBeNull();
   });
 
   it('draws the Gala rows with the table form and the quiet give row, and no vendor terms', async () => {

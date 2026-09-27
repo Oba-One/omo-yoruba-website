@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { headerPhotoShown } from '../../hidden-inputs';
 import { voice } from '../../validation/rules';
 
 /** The top of every page: kicker, H1, one line, and a photo on the two event pages. */
@@ -26,8 +27,7 @@ export const pageHeader = defineType({
       name: 'image',
       title: 'Photo band image',
       type: 'oyImage',
-      hidden: ({ document }) =>
-        document?._type !== 'festivalPage' && document?._type !== 'galaPage',
+      hidden: ({ document }) => !headerPhotoShown(document?._type),
     }),
   ],
   preview: { select: { title: 'title', subtitle: 'line' } },

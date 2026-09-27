@@ -8,7 +8,12 @@ import {
   editionFieldShown,
 } from '../../edition-fields';
 import { EVENT_PAGE_NAMES } from '../../routes';
-import { hideRetired } from '../../studio/retired-choices';
+import {
+  PARTNER_SCOPE_TITLES,
+  PARTNER_SCOPES,
+  SPONSOR_SCOPE_TITLES,
+  SPONSOR_SCOPES,
+} from '../../scopes';
 import { forMembers } from '../../studio/roles';
 import { voice } from '../../validation/rules';
 import { calendarDate, instantDate, LA_DATETIME, US_DATE } from '../format';
@@ -134,14 +139,6 @@ export const event = defineType({
       hidden: editionHidden('dress'),
       validation: voice.text,
     }),
-    defineField({
-      name: 'heroImage',
-      title: 'Hero image',
-      type: 'oyImage',
-      group: 'edition',
-      // No page reads it (ADR 0042).
-      hidden: true,
-    }),
     {
       ...text(
         'summary',
@@ -266,15 +263,6 @@ export const zone = defineType({
   },
 });
 
-export const SPONSOR_SCOPES = ['odunde', 'gala', 'org'] as const;
-const SPONSOR_SCOPE_TITLES = {
-  odunde: 'Odunde Festival',
-  gala: 'End-of-Year Gala',
-  org: 'The organization',
-} as const;
-/** No page lists Odunde sponsor levels (ADR 0042): hidden from new choices, removed later. */
-const RETIRED_SPONSOR_SCOPES = ['odunde'] as const;
-
 /** The Gala edition a tier, level or honoree belongs to: only Gala editions, never a new one here. */
 const galaEdition = (description: string, required?: string) =>
   defineField({
@@ -346,7 +334,6 @@ export const sponsorLevel = defineType({
         layout: 'radio',
         direction: 'horizontal',
       },
-      components: { input: hideRetired(RETIRED_SPONSOR_SCOPES) },
       validation: (rule) => rule.required(),
     }),
     galaEdition('The Gala edition. Empty shows the level every year.'),
@@ -431,8 +418,7 @@ export const program = defineType({
       name: 'action',
       title: 'Card action',
       type: 'cta',
-      description:
-        'The quiet link on the program card. When the homepage highlights this program, it is also the gold button in the hero. Empty shows no link.',
+      description: 'The quiet link on the program card. Empty shows no link.',
     }),
     defineField({
       ...order,
@@ -758,8 +744,6 @@ export const photographer = defineType({
   type: 'document',
   fields: [
     defineField({ name: 'name', title: 'Name', type: 'string', validation: voice.requiredText }),
-    // No page links a photographer (ADR 0042): hidden now, deleted by migration later.
-    defineField({ name: 'url', title: 'Link', type: 'url', hidden: true }),
     defineField({
       name: 'defaultCredit',
       title: 'Credit line',
@@ -772,15 +756,6 @@ export const photographer = defineType({
 });
 
 export const PARTNER_KINDS = ['funder', 'partner', 'sponsor'] as const;
-export const PARTNER_SCOPES = ['odunde', 'gala', 'org', 'collective'] as const;
-const PARTNER_SCOPE_TITLES = {
-  odunde: 'Odunde Festival page',
-  gala: 'End-of-Year Gala',
-  org: 'The organization',
-  collective: 'Collective',
-} as const;
-/** Scopes no page shows (ADR 0042): hidden from new choices, removed by migration later. */
-const RETIRED_PARTNER_SCOPES = ['gala', 'org', 'collective'] as const;
 
 export const partner = defineType({
   name: 'partner',
@@ -808,7 +783,6 @@ export const partner = defineType({
       of: [{ type: 'string' }],
       description: 'Impact lists every partner; the Odunde page lists its own.',
       options: { list: titled(PARTNER_SCOPES, PARTNER_SCOPE_TITLES) },
-      components: { input: hideRetired(RETIRED_PARTNER_SCOPES) },
     }),
   ],
   preview: { select: { title: 'name', subtitle: 'kind', media: 'logo' } },
@@ -907,8 +881,6 @@ export const stat = defineType({
       description: 'Empty shows Pending on the Impact page.',
       validation: voice.text,
     }),
-    // No page shows the date a figure was counted (ADR 0042).
-    defineField({ name: 'asOf', title: 'As of', type: 'date', options: US_DATE, hidden: true }),
   ],
   preview: {
     select: { value: 'value', label: 'label', source: 'source' },
@@ -949,7 +921,6 @@ export const door = defineType({
     ),
     defineField({ name: 'action', title: 'Action', type: 'cta' }),
     defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
-    { ...order, hidden: true },
   ],
   preview: {
     select: { title: 'title', key: 'key', media: 'image' },

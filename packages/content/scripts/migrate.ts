@@ -53,6 +53,7 @@ function report(migration: Migration, plan: MigrationPlan, waiting: readonly Sto
   console.log(`${TOOL}: ${migration.name}: ${migration.description}`);
   for (const mutation of plan.mutations) console.log(`  ${describeMutation(mutation)}`);
   console.log(`${TOOL}: ${plan.mutations.length} mutations`);
+  for (const note of plan.notes ?? []) console.log(`  note: ${note}`);
   for (const blocker of blockers(plan, waiting)) console.log(`  blocked: ${blocker}`);
 }
 

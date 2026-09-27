@@ -27,16 +27,6 @@ export const siteSettings = defineType({
       validation: voice.requiredText,
     }),
     defineField({
-      name: 'wordmarkLine2',
-      title: 'Wordmark, second line',
-      type: 'string',
-      group: 'org',
-      validation: voice.text,
-      // The nav draws the wordmark and logo itself; no page reads these (ADR 0042).
-      hidden: true,
-    }),
-    defineField({ name: 'logo', title: 'Logo mark', type: 'oyImage', group: 'org', hidden: true }),
-    defineField({
       name: 'ein',
       title: 'EIN',
       type: 'string',
@@ -103,16 +93,6 @@ export const siteSettings = defineType({
           preview: { select: { title: 'network', subtitle: 'url' } },
         },
       ],
-    }),
-    defineField({
-      name: 'footerBlurb',
-      title: 'Footer blurb',
-      type: 'text',
-      rows: 2,
-      group: 'footer',
-      validation: voice.text,
-      // The footer draws no blurb (ADR 0042).
-      hidden: true,
     }),
     defineField({
       name: 'newsletterTitle',

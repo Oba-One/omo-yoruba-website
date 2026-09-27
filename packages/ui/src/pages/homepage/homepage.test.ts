@@ -26,21 +26,18 @@ describe('the homepage page-section stories', () => {
     expect(odunde?.querySelector('.oy-event-band')?.getAttribute('data-kind')).toBe('festival');
   });
 
-  it('highlight: the root attribute reaches the three program cards and the hero button swaps', async () => {
+  it('highlight: the root attribute reaches the three program cards; the hero keeps its own button', async () => {
     const root = (await renderToBody(Highlight.Lessons)).querySelector('.oy-home');
     expect(root?.getAttribute('data-highlight')).toBe('school');
     expect(root?.querySelectorAll('[data-columns="3"] .oy-card')).toHaveLength(3);
     expect(root?.querySelector('.v2-prog--school[data-program="lessons"]')).not.toBeNull();
     expect(root?.querySelector('.v2-prog--collective[data-program="collective"]')).not.toBeNull();
-    expect(text(root?.querySelector('.v2-hero-cta .oy-btn--primary'))).toContain('Enrol a learner');
-    const collective = (await renderToBody(Highlight.Collective)).querySelector('.oy-home');
-    expect(text(collective?.querySelector('.v2-hero-cta .oy-btn--primary'))).toContain(
-      'Meet the Collective',
-    );
-    const festival = (await renderToBody(Highlight.Festival)).querySelector('.oy-home');
-    expect(text(festival?.querySelector('.v2-hero-cta .oy-btn--primary'))).toContain(
-      'See the Odunde Festival',
-    );
+    for (const story of [Highlight.Festival, Highlight.Lessons, Highlight.Collective]) {
+      const home = (await renderToBody(story)).querySelector('.oy-home');
+      expect(text(home?.querySelector('.v2-hero-cta .oy-btn--primary'))).toContain(
+        'See the Odunde Festival',
+      );
+    }
   });
 
   it('gallery: seven, five and three tiles', async () => {
