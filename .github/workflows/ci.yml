@@ -176,7 +176,7 @@ jobs:
       - uses: ./.github/actions/setup-js
       - name: Chromium with its system dependencies (Playwright recommends no cache)
         run: bunx playwright install --with-deps chromium
-      - name: bun e2e (starts astro dev on 4321, docs/research/phase-3-playwright-and-axe.md)
+      - name: bun e2e (starts astro dev on 4322, docs/research/phase-3-playwright-and-axe.md)
         run: bun e2e
       - name: Playwright report
         if: failure()

@@ -1,6 +1,6 @@
 /**
  * The site's query helper (docs/research/phase-2-sanity-studio-v6-and-astro.md: written here,
- * not exported by @sanity/astro). The datasets are private (enquiries and subscribers hold
+ * not exported by @sanity/astro). The site's dataset is private (enquiries and subscribers hold
  * personal data), so every read carries the Viewer token, server side only; without the token
  * every read answers null and the site renders Pending. The perspective cookie the preview
  * routes set switches a read to drafts (or the release stack the Studio asked for) with stega
@@ -27,7 +27,7 @@ export interface LoadQueryResult<T> {
   error?: unknown;
 }
 
-// The Viewer token for the private dataset, and one retry rather than the client's five so a
+// The Viewer token for the site's private dataset, and one retry rather than the client's five so a
 // placeholder project fails fast instead of stalling a page. The stega filter keeps the keys the
 // site branches on clean whenever a read encodes (docs/research/phase-4-sanity-visual-editing.md).
 // This module is server only.

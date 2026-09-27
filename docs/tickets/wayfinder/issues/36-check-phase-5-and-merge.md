@@ -1,7 +1,7 @@
 # Check the event pages in the Studio and on the preview, then merge the Phase 5 pull request
 
 Type: task
-Status: open
+Status: resolved
 Owner: yes
 Labels: infra
 Phase: 5
@@ -25,3 +25,22 @@ https://github.com/Oba-One/omo-yoruba-website/pull/6 from `phase-5/event-pages`
    agent's permissions deny that file.
 4. Switch the Gala page's Awards option to hidden in the Studio if the Gala gives no awards this year
    (the development dataset keeps the `shown` the seed stored; ticket 06).
+
+## Answer
+
+Phase 5 merged as pull request 6. What its steps left open moved to open-work rows before the ticket
+closed; the comment below names each.
+
+## Comments
+
+27 September 2026. Closed (open-work H1): pull request 6 merged on 12 September 2026 (Los Angeles time). Where what
+was left went:
+
+- Step 4, the Gala's Awards option: open-work D10 (ticket 06). `development` still stores `shown`
+  and holds no honoree (checked 27 September), so `/gala` shows the honorees heading with its
+  Pending line.
+- Step 3, the retired `PUBLIC_EVENTBRITE_URL`: its line in `packages/web/.env.example` and any value
+  in Vercel are the owner's to remove, with the retired Zeffy variable (open-work E6). The agents'
+  permissions deny that file, so whether the line is still there was not checked.
+- Steps 1 and 2 were the checks before the merge; the deep review (open-work E2) compares both pages
+  with their prototypes again.

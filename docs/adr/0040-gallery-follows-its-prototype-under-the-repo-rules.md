@@ -18,7 +18,7 @@ centred row draws them. What stays different follows a rule or the owner's answe
   owner's policy and the general inbox (ADR 0039).
 - **Captions are the dataset's.** The prototype's short captions ("Ẹgbẹ́ Ìbílẹ̀ • Odunde 2026") are not in the
   register; the tiles and the Lightbox carry the register's descriptions until the owner confirms captions
-  (wayfinder ticket 09), so the Lightbox's bar runs to two or three lines where the prototype's runs to one.
+  (wayfinder ticket 44), so the Lightbox's bar runs to two or three lines where the prototype's runs to one.
 - **The grill's answers.** A tile's line leaves out a year its title names and carries no credit (Q7); three
   albums fill the block as the lead and two wide tiles (Q6); the album's title is the page's h1 in the header,
   where the prototype sets it as an h2 beside "← All albums" (Q9, and ← is outside the glyph set); the Lightbox
@@ -47,4 +47,4 @@ section head's margin inside `Split` that every page carries.
 
 - The captures are reproducible from the runbook's comparison section, which now names the runtime's
   `sc-interp` trap.
-- When the owner confirms short captions (ticket 09), the Lightbox's bar returns to the prototype's one line.
+- When the owner confirms short captions (ticket 44), the Lightbox's bar returns to the prototype's one line.

@@ -1,7 +1,7 @@
 # Check the program pages in the Studio and on the preview, then merge the Phase 6 pull request
 
 Type: task
-Status: open
+Status: resolved
 Owner: yes
 Labels: infra
 Phase: 6
@@ -33,3 +33,18 @@ Phase 6 (the program pages) is pull request https://github.com/Oba-One/omo-yorub
    the program pages, the sub-programs' photographs and facts, the year strip's kinds, `learn`); edit
    the program pages from this pull request's preview.
 5. Merge when satisfied. Phase 7 starts from `main` afterwards (`docs/plans/prompt-phase-7.md`).
+
+## Answer
+
+Phase 6 merged as pull request 7. What its steps left open moved to open-work rows before the ticket
+closed; the comment below names each.
+
+## Comments
+
+27 September 2026. Closed (open-work H1): pull request 7 merged on 13 September 2026. Step 3's three
+calls stand as ADR 0033 records them, and the owner can reverse any: the Programs header's gold
+"Enrol a learner" is the Studio's own action (clear it in the Studio for the prototype's plain
+header), a handoff box on an alternate ground stays white, and the status and member-led pills keep
+their capitals. No open-work row holds them; the deep review (open-work E2) checks each of ADR 0033's
+differences against its reason, and compares the three pages with their prototypes again (steps 1
+and 2). Step 4 no longer applies: the Studio on `main` knows the new fields.
