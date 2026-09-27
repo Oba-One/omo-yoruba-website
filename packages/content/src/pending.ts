@@ -709,8 +709,7 @@ export const PENDING: readonly PendingEntry[] = [
   },
   ...takePartRows('storyPage', 'Our Story, take part'),
 
-  // News and Gallery
-  { type: 'newsPost', fields: ['body'], where: 'News', what: 'the body of the post' },
+  // Gallery. No News page before launch, so a post owes no body (ADR 0042).
   {
     type: 'album',
     condition: 'creditConfirmed != true',
@@ -788,7 +787,14 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Sponsorship',
     what: 'level names and amounts',
   },
-  { type: 'honoree', minimum: 1, where: 'Gala, honorees', what: 'whether awards exist, and who' },
+  // An honoree shows only when it names a Gala edition (ADR 0042).
+  {
+    type: 'honoree',
+    minimum: 1,
+    filter: 'event->kind == "gala"',
+    where: 'Gala, honorees',
+    what: 'whether awards exist, and who',
+  },
   {
     type: 'testimonial',
     minimum: 1,

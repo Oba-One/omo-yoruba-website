@@ -7,6 +7,8 @@ import {
   KIND_TITLES,
   SENDER_FIELDS,
 } from '../../enquiry-kinds';
+import { forMembers } from '../../studio/roles';
+import { instantDate, LA_DATETIME } from '../format';
 
 /** The object type name that holds one kind's fields. */
 export function enquiryFieldsType(kind: EnquiryKind): string {
@@ -56,6 +58,10 @@ export const enquiry = defineType({
   name: 'enquiry',
   title: 'Enquiry',
   type: 'document',
+  // Personal data: administrators reach enquiries through the Inbox, never through search, and a
+  // member who opens one cannot change it (ADR 0042).
+  readOnly: forMembers,
+  __experimental_omnisearch_visibility: false,
   fields: [
     defineField({
       name: 'kind',
@@ -74,7 +80,13 @@ export const enquiry = defineType({
         readOnly: true,
       }),
     ),
-    defineField({ name: 'submittedAt', title: 'Submitted', type: 'datetime', readOnly: true }),
+    defineField({
+      name: 'submittedAt',
+      title: 'Submitted',
+      type: 'datetime',
+      options: LA_DATETIME,
+      readOnly: true,
+    }),
     defineField({
       name: 'source',
       title: 'Sent from',
@@ -86,14 +98,15 @@ export const enquiry = defineType({
       name: 'notifiedAt',
       title: 'Email sent',
       type: 'datetime',
-      description: 'Set by the enquiry-notify function once the email is away.',
+      options: LA_DATETIME,
+      description: 'When the email to the right contact went out.',
       readOnly: true,
     }),
     defineField({
       name: 'notifyError',
       title: 'Email problem',
       type: 'string',
-      description: 'Set by the enquiry-notify function when the email could not be sent.',
+      description: 'Why the email could not be sent, when it could not.',
       readOnly: true,
     }),
     defineField({ name: 'handled', title: 'Handled', type: 'boolean', initialValue: false }),
@@ -111,9 +124,7 @@ export const enquiry = defineType({
     prepare: (selection: Record<string, unknown>) => {
       const kind = selection.kind as EnquiryKind | undefined;
       const title = kind ? (selection[`${kind}Title`] as string | undefined) : undefined;
-      const when = selection.submittedAt
-        ? new Date(selection.submittedAt as string).toLocaleDateString('en-GB')
-        : '';
+      const when = instantDate(selection.submittedAt as string | undefined);
       return {
         title: title ?? (kind ? KIND_TITLES[kind] : 'Enquiry'),
         subtitle: [kind ? KIND_TITLES[kind] : '', when, selection.handled ? 'handled' : 'unhandled']

@@ -14,6 +14,8 @@
  * 2026" is over once July 2026 arrives, "Gala 2026" stays ahead until the year ends. Every calendar
  * reading is in Los Angeles time, whatever the server's zone.
  */
+import { SITE_TIME_ZONE } from './time-zone';
+
 export type SeasonOption = 'auto' | 'gala' | 'odunde';
 export type LeadKind = 'festival' | 'gala';
 
@@ -40,7 +42,7 @@ const SEASON_MONTHS: Record<LeadKind, readonly number[]> = {
 /** The last month (0 to 11) of each kind's season: an undated edition is over once its year passes it. */
 const SEASON_END: Record<LeadKind, number> = { festival: 5, gala: 11 };
 
-const ZONE = 'America/Los_Angeles';
+const ZONE = SITE_TIME_ZONE;
 const zoneParts = new Intl.DateTimeFormat('en-US', {
   timeZone: ZONE,
   year: 'numeric',

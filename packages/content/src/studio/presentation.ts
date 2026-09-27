@@ -153,7 +153,7 @@ export const presentationOptions: PresentationPluginOptions = {
       },
       enquiry: unlisted('Enquiries are not shown on the site.'),
       subscriber: unlisted('Subscribers are not shown on the site.'),
-      lintReport: unlisted('Lint reports are not shown on the site.'),
+      lintReport: unlisted('Wording to check is not shown on the site.'),
     },
   },
 };

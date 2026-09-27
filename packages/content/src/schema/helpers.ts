@@ -1,5 +1,15 @@
 import { defineArrayMember, defineField } from 'sanity';
 import { voice } from '../validation/rules';
+import { valueTitle } from './objects/layoutOption';
+
+/**
+ * A choice list the Studio shows in the site's words: each stored value keeps its code, and the
+ * member reads its title, a given one or the value in sentence case (ADR 0042).
+ */
+export const titled = <T extends string>(
+  values: readonly T[],
+  titles: Partial<Record<T, string>> = {},
+) => values.map((value) => ({ value, title: titles[value] ?? valueTitle(value) }));
 
 /** A text field with the voice rules. */
 export const text = (name: string, title: string, rows = 3, description?: string) =>
@@ -39,7 +49,8 @@ export const order = defineField({
 export const slug = (source: string) =>
   defineField({
     name: 'slug',
-    title: 'Slug',
+    title: 'Web address',
+    description: 'The end of the page address, made from the title or name. Generate it once.',
     type: 'slug',
     options: { source, maxLength: 96 },
     validation: (rule) => rule.required(),

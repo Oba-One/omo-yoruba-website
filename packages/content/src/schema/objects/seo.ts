@@ -26,6 +26,7 @@ export const seo = defineType({
         rule.max(160).warning('Keep it under 160 characters.'),
       ],
     }),
-    defineField({ name: 'ogImage', title: 'Sharing image', type: 'oyImage' }),
+    // Link previews come with Phase 9; until then no page reads it (ADR 0042).
+    defineField({ name: 'ogImage', title: 'Sharing image', type: 'oyImage', hidden: true }),
   ],
 });

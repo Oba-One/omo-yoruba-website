@@ -3,13 +3,14 @@ import type {
   StructureBuilder,
   StructureResolver,
 } from 'sanity/structure';
+import { ACTIVE_EVENT_KINDS, EVENT_LIST_TITLES } from '../edition-fields';
 import { ENQUIRY_KINDS, KIND_TITLES } from '../enquiry-kinds';
 import { PENDING, pendingFilter, pendingTitle } from '../pending';
-import { EVENT_KINDS } from '../schema/documents';
 import { singletonTypes } from '../schema/singletons';
 import { STUDIO_API_VERSION } from './config';
-import { isAdministrator, STUDIO_HIDDEN_TYPES } from './document-options';
+import { STUDIO_HIDDEN_TYPES } from './document-options';
 import { PendingPresencePane } from './pending-pane';
+import { ADMIN_ONLY_TYPES, isAdministrator } from './roles';
 
 const GROUPS: { title: string; types: string[] }[] = [
   { title: 'Events', types: ['event', 'zone', 'ticketTier', 'sponsorLevel', 'honoree'] },
@@ -27,7 +28,7 @@ const GROUPED = new Set(GROUPS.flatMap((group) => group.types));
 
 function singletonItems(S: StructureBuilder, administrator: boolean) {
   return singletonTypes
-    .filter((type) => administrator || type.name !== 'siteSettings')
+    .filter((type) => administrator || !ADMIN_ONLY_TYPES.has(type.name))
     .map((type) =>
       S.listItem()
         .title(type.title ?? type.name)
@@ -52,19 +53,24 @@ function groupItem(S: StructureBuilder, title: string, types: string[]) {
     );
 }
 
+/** One list per kind still in use, each starting new events of its kind (ADR 0042). */
 function eventsItem(S: StructureBuilder) {
-  const byKind = EVENT_KINDS.map((kind) =>
+  const byKind = ACTIVE_EVENT_KINDS.map((kind) =>
     S.listItem()
-      .title(`${kind.charAt(0).toUpperCase()}${kind.slice(1)} editions`)
+      .title(EVENT_LIST_TITLES[kind])
       .id(`events-${kind}`)
       .child(
         S.documentList()
-          .title(`${kind} editions`)
+          .title(EVENT_LIST_TITLES[kind])
           .schemaType('event')
           .apiVersion(STUDIO_API_VERSION)
           .filter('_type == "event" && kind == $kind')
           .params({ kind })
-          .defaultOrdering([{ field: 'edition', direction: 'desc' }]),
+          .defaultOrdering([
+            { field: kind === 'collective' ? 'start' : 'edition', direction: 'desc' },
+          ])
+          // Last: the builder infers templates again on any later call, dropping these.
+          .initialValueTemplates([S.initialValueTemplateItem(`event-${kind}`)]),
       ),
   );
   return S.listItem()
@@ -128,33 +134,41 @@ function inboxItem(S: StructureBuilder) {
     );
 }
 
-function pendingItem(S: StructureBuilder) {
+/**
+ * The Pending view. Members see only what they can act on: the rows and the wording to check of an
+ * administrator's documents are left out (ADR 0042). Row ids keep the registry index, so both roles
+ * share them.
+ */
+function pendingItem(S: StructureBuilder, administrator: boolean) {
   const presence = S.listItem()
     .title('Missing entirely')
     .id('pending-presence')
     .child(S.component(PendingPresencePane).title('Missing entirely').id('pending-presence-pane'));
   const lint = S.listItem()
-    .title('Voice findings on published documents')
+    .title('Wording to check on published pages')
     .id('pending-lint')
     .child(
       S.documentList()
-        .title('Voice findings')
+        .title('Wording to check')
         .schemaType('lintReport')
         .apiVersion(STUDIO_API_VERSION)
-        .filter('_type == "lintReport" && count(findings) > 0')
+        .filter('_type == "lintReport" && count(findings) > 0 && !(documentType in $hidden)')
+        .params({ hidden: administrator ? [] : [...ADMIN_ONLY_TYPES] })
         .defaultOrdering([{ field: 'checkedAt', direction: 'desc' }]),
     );
-  const rows = PENDING.map((entry, index) =>
-    S.listItem()
-      .title(pendingTitle(entry))
-      .id(`pending-${index}`)
-      .child(
-        S.documentList()
+  const rows = PENDING.flatMap((entry, index) =>
+    !administrator && ADMIN_ONLY_TYPES.has(entry.type)
+      ? []
+      : S.listItem()
           .title(pendingTitle(entry))
-          .schemaType(entry.type)
-          .apiVersion(STUDIO_API_VERSION)
-          .filter(pendingFilter(entry)),
-      ),
+          .id(`pending-${index}`)
+          .child(
+            S.documentList()
+              .title(pendingTitle(entry))
+              .schemaType(entry.type)
+              .apiVersion(STUDIO_API_VERSION)
+              .filter(pendingFilter(entry)),
+          ),
   );
   return S.listItem()
     .title('Pending')
@@ -167,11 +181,11 @@ function pendingItem(S: StructureBuilder) {
 }
 
 /**
- * docs/design/CONTENT-MODEL.md section 5 as amended by ADR 0013 and ADR 0014. Site settings and
- * the Inbox show for administrators only (the role fallback in document-options.ts).
+ * docs/design/CONTENT-MODEL.md section 5 as amended by ADR 0013, ADR 0014 and ADR 0042. Site
+ * settings, the News page and the Inbox show for administrators only (`ADMIN_ONLY_TYPES`).
  */
 export const structure: StructureResolver = (S, context) => {
-  const administrator = isAdministrator(context);
+  const administrator = isAdministrator(context.currentUser);
   return S.list()
     .title('Content')
     .items([
@@ -186,7 +200,7 @@ export const structure: StructureResolver = (S, context) => {
       ),
       S.divider(),
       ...(administrator ? [inboxItem(S)] : []),
-      pendingItem(S),
+      pendingItem(S, administrator),
       S.divider(),
       // Anything registered later and not yet grouped still shows, so nothing is unreachable.
       ...S.documentTypeListItems().filter(

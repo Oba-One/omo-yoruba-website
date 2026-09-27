@@ -21,11 +21,13 @@ export const pageHeader = defineType({
       rows: 2,
       validation: voice.text,
     }),
+    // Only the two event pages draw a photo band; the other headers are slim (ADR 0042).
     defineField({
       name: 'image',
       title: 'Photo band image',
       type: 'oyImage',
-      description: 'Only the two event pages show a photo band; the other headers are slim.',
+      hidden: ({ document }) =>
+        document?._type !== 'festivalPage' && document?._type !== 'galaPage',
     }),
   ],
   preview: { select: { title: 'title', subtitle: 'line' } },

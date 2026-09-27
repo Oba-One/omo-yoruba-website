@@ -1,5 +1,7 @@
 import { defineField, defineType } from 'sanity';
+import { forMembers } from '../../studio/roles';
 import { voice } from '../../validation/rules';
+import { titled } from '../helpers';
 import { layoutOption } from '../objects/layoutOption';
 
 export const SOCIAL_NETWORKS = ['instagram', 'facebook', 'linkedin', 'youtube'] as const;
@@ -8,6 +10,8 @@ export const siteSettings = defineType({
   name: 'siteSettings',
   title: 'Site settings',
   type: 'document',
+  // Administrators only (ADR 0042): a member who reaches the settings sees them, locked.
+  readOnly: forMembers,
   groups: [
     { name: 'org', title: 'Organization', default: true },
     { name: 'contacts', title: 'Contacts' },
@@ -26,11 +30,12 @@ export const siteSettings = defineType({
       name: 'wordmarkLine2',
       title: 'Wordmark, second line',
       type: 'string',
-      description: 'Shown under the name in the nav; hidden on narrow screens.',
       group: 'org',
       validation: voice.text,
+      // The nav draws the wordmark and logo itself; no page reads these (ADR 0042).
+      hidden: true,
     }),
-    defineField({ name: 'logo', title: 'Logo mark', type: 'oyImage', group: 'org' }),
+    defineField({ name: 'logo', title: 'Logo mark', type: 'oyImage', group: 'org', hidden: true }),
     defineField({
       name: 'ein',
       title: 'EIN',
@@ -65,7 +70,8 @@ export const siteSettings = defineType({
       title: 'Routing contacts',
       type: 'array',
       of: [{ type: 'contactRole' }],
-      description: 'One entry per role. Each enquiry kind routes to one role (docs/adr/0016).',
+      description:
+        'One entry per role. Each form goes to its role; a role without an entry goes to the General contact, then to the general email.',
       group: 'contacts',
     }),
     defineField({
@@ -82,7 +88,9 @@ export const siteSettings = defineType({
               name: 'network',
               title: 'Network',
               type: 'string',
-              options: { list: [...SOCIAL_NETWORKS] },
+              options: {
+                list: titled(SOCIAL_NETWORKS, { linkedin: 'LinkedIn', youtube: 'YouTube' }),
+              },
               validation: (rule) => rule.required(),
             }),
             defineField({
@@ -103,6 +111,8 @@ export const siteSettings = defineType({
       rows: 2,
       group: 'footer',
       validation: voice.text,
+      // The footer draws no blurb (ADR 0042).
+      hidden: true,
     }),
     defineField({
       name: 'newsletterTitle',
@@ -123,18 +133,26 @@ export const siteSettings = defineType({
       name: 'zeffyEmbedUrl',
       title: 'Zeffy embed URL',
       type: 'url',
-      description: 'The Give Dialog embeds this (wayfinder ticket 03).',
+      description: 'The donation form every Donate button opens.',
       group: 'services',
     }),
     defineField({
       name: 'analyticsEnabled',
       title: 'Analytics on',
       type: 'boolean',
-      description: 'Pause PostHog without a deploy.',
+      description: 'Off pauses the visitor counts right away.',
       initialValue: true,
       group: 'services',
     }),
-    layoutOption('theme', 'Theme', ['adire', 'calm', 'festival'], 'The data-theme on the body.'),
+    {
+      ...layoutOption(
+        'theme',
+        'Theme',
+        [{ value: 'adire', title: 'Àdìrẹ' }, 'calm', 'festival'],
+        'The colour theme across the site.',
+      ),
+      group: 'services',
+    },
   ],
   preview: { prepare: () => ({ title: 'Site settings' }) },
 });

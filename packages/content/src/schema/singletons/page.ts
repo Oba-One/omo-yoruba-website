@@ -1,4 +1,4 @@
-import { defineField, defineType, type FieldDefinition } from 'sanity';
+import { type ConditionalProperty, defineField, defineType, type FieldDefinition } from 'sanity';
 import type { LayoutSpec } from '../../layout-options';
 import { layoutOption } from '../objects/layoutOption';
 
@@ -15,6 +15,10 @@ export interface PageSpec {
   actions?: boolean;
   /** Pages without a header object (the homepage has a hero instead). */
   header?: boolean;
+  /** Where the page's other facts live, shown under its header (the event pages, ADR 0042). */
+  pointer?: string;
+  /** The whole page locked, for a page only an administrator changes (studio/roles.ts). */
+  readOnly?: ConditionalProperty;
 }
 
 /**
@@ -28,6 +32,8 @@ export function definePage({
   layout,
   actions = true,
   header = true,
+  pointer,
+  readOnly,
 }: PageSpec) {
   const groups = [
     { name: 'content', title: 'Content', default: true },
@@ -39,10 +45,19 @@ export function definePage({
     name,
     title,
     type: 'document',
+    readOnly,
     groups,
     fields: [
       ...(header
-        ? [defineField({ name: 'header', title: 'Header', type: 'pageHeader', group: 'content' })]
+        ? [
+            defineField({
+              name: 'header',
+              title: 'Header',
+              type: 'pageHeader',
+              group: 'content',
+              description: pointer,
+            }),
+          ]
         : []),
       ...fields.map((field) => ({ ...field, group: field.group ?? 'content' })),
       ...(actions
@@ -73,7 +88,9 @@ export function definePage({
               group: 'layout',
               options: { collapsible: false },
               fields: layout.map((option) =>
-                layoutOption(option.name, option.title, option.options, option.description),
+                layoutOption(option.name, option.title, option.options, option.description, {
+                  heldBack: option.heldBack,
+                }),
               ),
             }),
           ]

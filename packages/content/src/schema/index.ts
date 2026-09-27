@@ -1,6 +1,7 @@
 // Every object, singleton and document type, registered in one array (CONTENT-MODEL sections 2
 // to 4 as amended by ADR 0013 to 0017). Order: shared objects, then documents.
 import type { SchemaTypeDefinition } from 'sanity';
+import { skipValidationWhenHidden } from '../validation/rules';
 import { contentDocumentTypes, enquiry, enquiryFieldTypes, subscriber } from './documents';
 import {
   bilingual,
@@ -43,6 +44,13 @@ export const documentTypes: SchemaTypeDefinition[] = [
   subscriber,
 ];
 
-export const schemaTypes: SchemaTypeDefinition[] = [...objectTypes, ...documentTypes];
+/**
+ * Every type as written, with each rule as its field declares it: the Sanity CLI's schema, so a
+ * deployed schema tells agents what each field requires.
+ */
+export const authoredSchemaTypes: SchemaTypeDefinition[] = [...objectTypes, ...documentTypes];
+
+/** What the Studio registers: the same types, with no check on an input the form hides (ADR 0042). */
+export const schemaTypes: SchemaTypeDefinition[] = skipValidationWhenHidden(authoredSchemaTypes);
 
 export { SINGLETON_NAMES };

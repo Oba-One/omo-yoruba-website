@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { EDITION_FIELDS, type EditionField, editionFieldShown } from './edition-fields';
 import {
   ALBUM_CREDIT_PENDING,
   ALBUM_YEAR_PENDING,
@@ -519,5 +520,39 @@ describe('Donate', () => {
     expect(pendingWhat('givingLevel', 'what')).toBe('what the gift does');
     expect(pendingWhat('givingLevel', 'source')).toBe('where the cost comes from');
     expect(pendingWhat('donatePage', 'otherWays[]')).toBe('which other ways to give you accept');
+  });
+});
+
+describe('the to-do list after the Studio decisions (ADR 0042)', () => {
+  // A row naming no kind lists events of every kind, so its fields must show for all three. Rows
+  // with a GROQ condition name no field and are checked by their own tests above.
+  it('asks no event for an input its kind hides', () => {
+    const KINDS = ['festival', 'gala', 'collective'] as const;
+    const inputs: readonly string[] = EDITION_FIELDS;
+    const asked: string[] = [];
+    for (const row of PENDING.filter((entry) => entry.type === 'event')) {
+      const named = /kind == "(festival|gala|collective)"/.exec(row.filter ?? '')?.[1];
+      const kinds = named ? [named] : KINDS;
+      for (const field of row.fields ?? []) {
+        const input = field.startsWith('venue.') ? field : (field.split(/[.[]/)[0] ?? field);
+        if (!inputs.includes(input)) continue;
+        for (const kind of kinds) {
+          if (!editionFieldShown(kind, input as EditionField)) asked.push(`${kind}: ${field}`);
+        }
+      }
+    }
+    expect(asked).toEqual([]);
+  });
+
+  it('owes no news post body while there is no News page', () => {
+    expect(PENDING.filter((row) => row.type === 'newsPost')).toEqual([]);
+  });
+
+  it('counts only honorees tied to a Gala edition', () => {
+    const honorees = PRESENCE.find((row) => row.type === 'honoree');
+    expect(honorees?.filter).toBe('event->kind == "gala"');
+    expect(presenceCountQuery(honorees as (typeof PRESENCE)[number])).toContain(
+      'event->kind == "gala"',
+    );
   });
 });

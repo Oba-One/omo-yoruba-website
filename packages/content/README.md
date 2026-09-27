@@ -95,9 +95,9 @@ Decided with the owner on 11 September 2026; each has its ADR.
   `oyImage.creditNote` (the free text half of "credit: reference or free text"). Each renders
   Pending while empty.
 - `scheduleItem.title` is `bilingual` (English required, Yoruba optional), as section 2 asks.
-- Site settings and the Inbox are hidden from everyone but administrators and their documents
-  lose every action for other roles (the plan fallback in CONTENT-MODEL section 5; wayfinder
-  ticket 22 decides the real roles).
+- Members are Sanity Editors; site settings, the News page and the Inbox are an administrator's
+  (ADR 0042, `src/studio/roles.ts`): members do not see them, open them read-only anywhere else
+  and get no actions on them.
 - Phase 5: the event singletons hold `takePart[]` rows instead of `takePartOrder` (ADR 0025), the
   festival page gains `whatItIsImage`, the Gala's Eventbrite link lives only on the edition's
   `ticketsUrl` (`siteSettings.eventbriteUrl` retired, ADR 0024), and the Gala's `awards` option
