@@ -47,7 +47,7 @@ describe('locations follow the route map', () => {
               kind: 'gala',
               scope: 'gala',
               page: 'lessons',
-              group: 'teacher',
+              group: 'board',
               context: 'lessons',
               slug: 'x',
               title: 'x',
@@ -57,6 +57,15 @@ describe('locations follow the route map', () => {
       for (const route of routes.filter((r) => !r.includes('[')))
         expect(hrefs, `${type} ${route}`).toContain(route);
     }
+  });
+
+  it('leads a person in a group with Our Story, and anyone else with the Lessons page', () => {
+    const locations = presentationOptions.resolve?.locations as
+      | Record<string, Resolver>
+      | undefined;
+    const person = locations?.person as Resolver;
+    expect(person.resolve({ group: 'board' }).locations?.[0]?.href).toBe('/our-story');
+    expect(person.resolve({}).locations?.[0]?.href).toBe('/programs/yoruba-lessons');
   });
 
   it('leads an edition with its own page', () => {

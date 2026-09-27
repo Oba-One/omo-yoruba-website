@@ -788,7 +788,7 @@ export type Person = {
   _rev: string;
   name?: string;
   role?: string;
-  group?: "board" | "staff" | "volunteer" | "teacher";
+  group?: "board" | "staff" | "volunteer";
   portrait?: OyImage;
   bioShort?: string;
   bioFull?: BlockContent;
@@ -4335,7 +4335,7 @@ export type StoryPageQueryResult = {
   }>;
   staff: Array<{
     _id: string;
-    group: "board" | "staff" | "teacher" | "volunteer" | null;
+    group: "board" | "staff" | "volunteer" | null;
     name: string | null;
     role: string | null;
     portrait: {

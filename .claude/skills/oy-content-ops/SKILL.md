@@ -56,12 +56,12 @@ rather than duplicates. Ids never contain a period.
   neither a date nor an edition shows the year's chip.
 - **Gallery policy**: `galleryPage.creditsAndConsent` is the owner's own consent and removal policy in plain
   text; the page never drafts it. Removal requests go to `siteSettings.generalEmail`.
-- **Person**: `person` with `group` (board, staff, volunteer, teacher; part 5 removes teacher, open-work S13) and `order`, the `role`, the short
+- **Person**: `person` with `group` (board, staff, volunteer; none for the teacher) and `order`, the `role`, the short
   bio and, for Our Story's `bios` option, the full bio; portrait optional (the no-portrait card is a real
   design, and a photograph never stands in for someone named). Our Story lists the board by order, then
   the staff and volunteers together; Impact's board cell counts the board. The teacher is the `person`
-  `lessonsPage.teacher` points at, listed on the Lessons page only; her email there is the `teacher`
-  routing contact's.
+  `lessonsPage.teacher` picks, in no group and listed on the Lessons page only; her email there is the
+  `teacher` routing contact's.
 - **Outcome**: an `outcome` for a `program` or for an event page (`kind` festival or gala), never both, with
   the `figure` (the number, what it counts and its source) once something is measured, or the plain
   statement of what is being measured this year; add it to `impactPage.outcomes` in order. Impact shows

@@ -62,8 +62,8 @@ Yoruba Language Lessons. One teacher, live online, enrol by writing to her.
 _Avoid_: School, classes, Saturday school, term
 
 **Teacher**:
-The one person who teaches the Lessons. A reader reaches her through the enrol form or her
-routing contact; her name and portrait are hers to give.
+The one person who teaches the Lessons: the person the Lessons page picks, in no person group (ADR 0042). A
+reader reaches her through the enrol form or her routing contact; her name and portrait are hers to give.
 _Avoid_: teachers, head teacher, tutor, instructor
 
 **Collective**:

@@ -3,6 +3,7 @@ import { buildSeed, RETIRED_FIELDS, type SeedAssets } from '../seed-data';
 import { applyMutations, isDraft, type StoredDocument } from './core';
 import { MIGRATIONS } from './index';
 import { retiredFieldsMigration } from './retired-fields';
+import { teacherGroupMigration } from './teacher-group';
 
 // Every migration (ADR 0042): its plan on the seed, applied, leaves nothing to do, and the names are
 // unique. Each migration's own cases follow.
@@ -72,5 +73,29 @@ describe('retired-fields', () => {
     for (const type of Object.keys(RETIRED_FIELDS)) {
       expect(retiredFieldsMigration.filter).toContain(`"${type}"`);
     }
+  });
+});
+
+describe('teacher-group', () => {
+  const lessons = { _id: 'lessonsPage', _type: 'lessonsPage', teacher: { _ref: 'person-ada' } };
+  const ada = { _id: 'person-ada', _type: 'person', _rev: 'r2', name: 'Ada', group: 'teacher' };
+  const bisi = { _id: 'person-bisi', _type: 'person', _rev: 'r3', name: 'Bisi', group: 'teacher' };
+
+  it('takes the teacher the Lessons page picks out of the groups', () => {
+    const plan = teacherGroupMigration.plan([lessons, ada]);
+    expect(plan).toEqual({
+      mutations: [{ patch: { id: 'person-ada', ifRevisionID: 'r2', unset: ['group'] } }],
+      conflicts: [],
+    });
+    const after = applyMutations([lessons, ada], plan.mutations);
+    expect(teacherGroupMigration.plan(after).mutations).toEqual([]);
+  });
+
+  it('leaves a teacher the page does not pick to the owner', () => {
+    const plan = teacherGroupMigration.plan([lessons, ada, bisi]);
+    expect(plan.mutations).toHaveLength(1);
+    expect(plan.conflicts).toEqual([
+      'person-bisi (Bisi) is in the teacher group, but the Lessons page does not pick her: pick her there, or give her a group Our Story lists.',
+    ]);
   });
 });

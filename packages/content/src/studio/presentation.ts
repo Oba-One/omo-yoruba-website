@@ -106,13 +106,11 @@ export const presentationOptions: PresentationPluginOptions = {
           };
         },
       }),
+      // Our Story lists the people in a group; someone in none is the teacher the Lessons page picks.
       person: defineLocations({
         select: { group: 'group' },
         resolve: (doc) => ({
-          locations: leadWith(
-            'person',
-            doc?.group === 'teacher' ? '/programs/yoruba-lessons' : '/our-story',
-          ),
+          locations: leadWith('person', doc?.group ? '/our-story' : '/programs/yoruba-lessons'),
         }),
       }),
       // A lessons testimonial fills the homepage's parent slot; the Collective's shows on its page.

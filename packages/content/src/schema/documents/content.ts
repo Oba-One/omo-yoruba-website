@@ -491,7 +491,8 @@ export const initiative = defineType({
   preview: { select: { title: 'name', subtitle: 'status', media: 'image' } },
 });
 
-export const PERSON_GROUPS = ['board', 'staff', 'volunteer', 'teacher'] as const;
+/** The groups Our Story lists. The teacher is the person the Lessons page picks, in no group (ADR 0042). */
+export const PERSON_GROUPS = ['board', 'staff', 'volunteer'] as const;
 
 export const person = defineType({
   name: 'person',
@@ -510,13 +511,13 @@ export const person = defineType({
       name: 'group',
       title: 'Group',
       type: 'string',
-      description: 'Our Story lists the board, the staff and the volunteers.',
+      description:
+        'Our Story lists the board, the staff and the volunteers. Leave it empty for someone only the Lessons page shows: the teacher it picks.',
       options: {
         list: titled(PERSON_GROUPS, { volunteer: 'Volunteers' }),
         layout: 'radio',
         direction: 'horizontal',
       },
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'portrait',

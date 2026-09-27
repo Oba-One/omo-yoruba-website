@@ -5190,10 +5190,6 @@
             {
               "type": "string",
               "value": "volunteer"
-            },
-            {
-              "type": "string",
-              "value": "teacher"
             }
           ]
         },
