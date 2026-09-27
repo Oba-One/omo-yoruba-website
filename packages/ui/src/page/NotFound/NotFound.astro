@@ -1,0 +1,48 @@
+---
+/**
+ * The page for an address the site does not have (ROUTES section 1, `/404`: an indigo page, the nav
+ * and footer present, three doors home). An indigo band under the nav, the dark section with its
+ * drifting àdìrẹ dot field, holding the page's one H1, a line in the section lead's measure and the
+ * doors as buttons: the first in gold, the page's one gold action, the others outlined.
+ */
+import Button from '../../core/Button/Button.astro';
+import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
+import ButtonRow from '../ButtonRow/ButtonRow.astro';
+import Section from '../Section/Section.astro';
+
+export interface Door {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  kicker?: BilingualText;
+  title: string;
+  line: string;
+  /** The ways back into the site, the first taking the gold. */
+  doors: readonly Door[];
+}
+
+const { kicker, title, line, doors } = Astro.props;
+---
+
+<Section ground="dark" labelledby="not-found-heading" class="oy-not-found">
+  {kicker && <Kicker yo={kicker.yo ?? undefined} en={kicker.en ?? undefined} />}
+  <h1 id="not-found-heading">{title}</h1>
+  <p class="oy-sec-lead">{line}</p>
+  <ButtonRow>
+    {
+      doors.map((door, at) => (
+        <Button href={door.href} variant={at === 0 ? 'primary' : 'secondary'}>
+          {door.label}
+        </Button>
+      ))
+    }
+  </ButtonRow>
+</Section>
+
+<style>
+  .oy-not-found :global(.oy-kicker) {
+    margin-bottom: 12px;
+  }
+</style>

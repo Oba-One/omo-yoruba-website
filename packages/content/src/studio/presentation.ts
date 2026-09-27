@@ -64,6 +64,8 @@ export const presentationOptions: PresentationPluginOptions = {
       ...Object.entries(ROUTE_SINGLETONS).map(([type, route]) => ({ route, type })),
       { route: '/gallery/:slug', filter: '_type == "album" && slug.current == $slug' },
       { route: '/news/:slug', filter: '_type == "newsPost" && slug.current == $slug' },
+      // The 404 page reads nothing but the chrome's settings.
+      { route: '/404', type: 'siteSettings' },
     ]),
     locations: {
       ...Object.fromEntries(

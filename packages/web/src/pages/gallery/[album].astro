@@ -30,7 +30,7 @@ const { data, preview, error } = await loadQuery(
   { slug },
   { cookies: Astro.cookies },
 );
-// No album for the slug: an empty 404, which a 404 page (Phase 9) fills in.
+// No album for the slug: an empty 404, which Astro answers with the 404 page.
 if (!error && !data?.album) return new Response(null, { status: 404, statusText: 'Not Found' });
 
 const imageSet = createImageSet({

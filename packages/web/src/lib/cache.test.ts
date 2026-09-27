@@ -37,6 +37,11 @@ describe('cachePage', () => {
     expect(draft.calls).toEqual([false]);
   });
 
+  it('does nothing where Astro gives no cache object, as in the error page it renders for an empty 404', () => {
+    expect(() => cachePage({}, '/404', { draft: false })).not.toThrow();
+    expect(cacheOptions('/404').tags).toEqual(['type:siteSettings']);
+  });
+
   it('never caches a render whose Sanity read failed', () => {
     const failed = record();
     cachePage(failed, '/gala', { draft: false, failed: true });

@@ -1,0 +1,35 @@
+---
+/**
+ * The page for an address the site does not have (ROUTES section 1, `/404`): the chrome around an
+ * indigo band with three doors home. Astro renders it for any unknown path and in place of a page's
+ * empty 404, as the album route answers for a slug no album holds. It reads nothing of its own; the
+ * chrome reads the site settings, so an unknown path is cached with their tag like any page (the
+ * middleware opts a draft or preview request out, and the layout a failed settings read). The error
+ * render for an empty 404 has no cache object, so an album that is published later is never kept
+ * behind a cached 404. The page owns its copy.
+ */
+import NotFound from '@oy/ui/page/NotFound/NotFound.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { cachePage } from '../lib/cache';
+
+cachePage(Astro, '/404', { draft: false });
+
+const DOORS = [
+  { label: 'Go to the homepage', href: '/' },
+  { label: 'Get involved', href: '/get-involved' },
+  { label: 'See our programs', href: '/programs' },
+] as const;
+---
+
+<SiteLayout
+  title="Page not found"
+  description="This page is not on the website of Omo Yorùbá of Southern California."
+>
+  <main id="main">
+    <NotFound
+      title="This page is not here"
+      line="The address may be old or mistyped. These three doors lead back into the site."
+      doors={DOORS}
+    />
+  </main>
+</SiteLayout>

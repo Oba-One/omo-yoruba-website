@@ -72,7 +72,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     origin: context.url.origin,
     previewOrigin,
   });
-  if (reason) context.cache.set(false);
+  // An error page Astro renders in place of an empty 404 has no cache object (lib/cache.ts).
+  if (reason) context.cache?.set(false);
   const headers = {
     csp: !cspExempt(context.url.pathname),
     noindex: isPreviewHost(context.url.origin, previewOrigin),
