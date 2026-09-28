@@ -40,7 +40,13 @@ export const Default: Story = {};
 /** A Zeffy address that is not an embed address: the form without the link to its page. */
 export const WithoutPageLink: Story = { args: { pageHref: null } };
 
-/** The iframe did not load in time: the check line and the contact enquiry, address Pending. */
+/** The foot once the settings hold the EIN (the shape, not a fact); the foot shows only with the form. */
+export const WithEin: Story = { args: { ein: '12-3456789' } };
+
+/**
+ * The iframe did not load in time: the check line and the contact enquiry, address Pending. Served in
+ * this mode, the dialog keeps its fallback until Try again.
+ */
 export const Fallback: Story = { args: { mode: 'fallback' } };
 
 /** The name without the address, as the settings hold them today: the chip, never a bare name to post a check to. */
@@ -54,7 +60,6 @@ export const FallbackWithAddress: Story = {
     mode: 'fallback',
     orgName: 'Omo Yorùbá of Southern California',
     address: 'PO Box 000\nLos Angeles, CA 90000',
-    ein: '12-3456789',
   },
 };
 

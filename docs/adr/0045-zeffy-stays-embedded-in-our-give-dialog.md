@@ -17,12 +17,16 @@ policy keeps `frame-src https://www.zeffy.com` and nothing more. What this chang
 - The dialog hears only `message` events whose origin is exactly `https://www.zeffy.com` and whose data is an object
   naming `embedId: 'give'`, as Zeffy's own script filters them, through one window listener registered when the
   element is defined (ADR 0041), and only once a form is mounted. `zeffy-embed:connected` counts as ready, as the
-  frame's `load` does. `zeffy-embed:resized` sets the frame's height, rounded, up to 2400px; the stylesheet keeps
-  today's height, `min(640px, 70vh)`, as the floor, so a taller step grows the frame and a shorter one never shrinks
-  it. `zeffy-embed:thank-you-page-shown` announces the track event `give_completed`, once per mounted form (Try again
-  mounts a new one).
+  frame's `load` does, and after the timer it brings the form back over the fallback; a late `load` does not, since a
+  frame loads an error page too. `zeffy-embed:resized` sets the frame's height, rounded, up to 2400px; the stylesheet
+  keeps today's height, `min(640px, 70vh)`, as the floor, so a taller step grows the frame and a shorter one never
+  shrinks it. Because the frame then grows with the form, the dialog holds the scroll: on
+  `zeffy-embed:step-changed` and `zeffy-embed:thank-you-page-shown` the dialog, or the bottom sheet under 720px,
+  scrolls back to the frame's top when that begins above the view. The thank-you page also announces the track event
+  `give_completed`, once per connection: Safari reloads a persisted frame on every page swap, and the reloaded form
+  connects again.
 - The fallback timer is eight seconds, not four: the research measured 2.4 and 4.7 seconds from insertion to
-  `connected`. The fallback itself is unchanged.
+  `connected`. The fallback still offers the check line, Contact us and Try again.
 - Under the form, a quiet link opens Zeffy's own page for the same form in a new tab. Zeffy never shows Apple Pay and
   Google Pay in an embed; on its own page it shows them on most forms viewed on a phone, for gifts up to $1,000,
   with nothing for the organization to switch on. The layout derives the page from the embed address by dropping its
@@ -52,12 +56,20 @@ policy keeps `frame-src https://www.zeffy.com` and nothing more. What this chang
   steady for every step that fits today's frame.
 - Checking each message's `source` against the mounted frame's window as well as its origin: stricter, but Zeffy's
   own script does not, and a form that posts from a frame inside its own would go unheard.
+- A fresh embed id for each mounted frame, as Zeffy's own script mints one per embed, so that a message a frame sent
+  just before Try again removed it cannot mark the new frame ready: the island would have to hand the dialog a
+  changing address, for a race of milliseconds.
+- The link to Zeffy's page in the fallback as well: it depends on neither the frame nor the island, so it could help
+  when those fail, but its note speaks of Apple Pay and Google Pay, and the fallback's lead counts two other ways to
+  give. Left to the owner with the dialog's copy (open-work D8).
 
 ## Consequences
 
 - Amends ADR 0020, noted there: the timer is eight seconds, the frame's address carries the v2 parameters, and the
   dialog links Zeffy's page. The island still reads the settings itself. The page link rides the cached page, as the
-  dialog's mode already does, and a publish of the site settings purges every page (`type:siteSettings`).
+  dialog's mode already does, and a publish of the site settings purges every page (`type:siteSettings`). The purge
+  is soft, so for one serve after the Zeffy address changes a page can link the old form while its island frames the
+  new one.
 - The contract is undocumented. If Zeffy changes it, the frame keeps today's height, `give_completed` stops arriving
   and the frame's `load` still counts as ready: the form works as it did before this change.
 - `give_completed` is a sign seen in the browser, not a record of a gift. The gift's record is Zeffy's: its
@@ -71,5 +83,5 @@ policy keeps `frame-src https://www.zeffy.com` and nothing more. What this chang
 - Still owed (open-work C12 and D8): the Zeffy form itself, its embed address in the site settings, and whether it
   offers monthly giving and emails receipts. The Donate page's give-now blurb still promises both, and the Gala's
   give row monthly giving; they are Studio content, for the owner to change once the form says what it does.
-- `packages/web/e2e/give.spec.ts` checks the frame's parameters once the settings hold an address; until then every
-  run meets the pending mode.
+- `packages/web/e2e/give.spec.ts` checks the frame's parameters once the settings hold an address, and holds Zeffy's
+  requests unanswered to reach the fallback in that mode; until then every run meets the pending mode.

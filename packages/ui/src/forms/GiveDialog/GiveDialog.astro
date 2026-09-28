@@ -19,6 +19,7 @@
  * `give_embed_failed` and `give_completed` as `oy:track` events (ADR 0018).
  */
 import { pendingWhat } from '@oy/content/pending';
+import { sentence } from '../../content/sentence';
 import { safeHref } from '../../core/ActionButton/action';
 import Button from '../../core/Button/Button.astro';
 import Pending from '../../core/Pending/Pending.astro';
@@ -82,7 +83,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
   data-mode={mode}
   data-timeout={timeout}
   data-zeffy-origin={ZEFFY_ORIGIN}
-  data-zeffy-embed={ZEFFY_EMBED_ID}
+  data-zeffy-embed-id={ZEFFY_EMBED_ID}
   data-lead-embed={LEADS.embed}
   data-lead-fallback={LEADS.fallback}
   data-heading-fallback={HEADINGS.fallback}
@@ -127,7 +128,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
           <b data-heading>{mode === 'pending' ? HEADINGS.pending : HEADINGS.fallback}</b>
           <p>
             Write to us and we will take the gift by hand, or send a check to{' '}
-            {checkTo ? <span>{checkTo}.</span> : <Pending what={pendingWhat('siteSettings', 'address')} />}
+            {checkTo ? <span>{sentence(checkTo)}</span> : <Pending what={pendingWhat('siteSettings', 'address')} />}
           </p>
           <div class="oy-ok-actions">
             <Button href={contactHref} data-enquiry="contact" arrow>
@@ -292,6 +293,30 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         if (loading) loading.hidden = true;
         host.dataset.state = 'ready';
       };
+      // The frame's load counts while the timer runs. A frame loads an error page too, so a load
+      // after the fallback showed leaves it; Zeffy's own connected message brings the form back.
+      const loaded = () => {
+        if (host.dataset.state !== 'failed') ready();
+      };
+      const showForm = () => {
+        if (embed) embed.hidden = false;
+        if (fallback) fallback.hidden = true;
+        if (foot) foot.hidden = false;
+        if (lead) lead.textContent = host.dataset.leadEmbed;
+      };
+      // The frame grows with the form, so the dialog holds the scroll: a step or the thank-you page
+      // that begins above the part in view scrolls back to its top. Under 720px the panel is the
+      // bottom sheet and scrolls itself (overflow auto); above it the panel clips and the dialog scrolls.
+      const reveal = () => {
+        const panel = dialog.querySelector('.oy-modal');
+        const sheet =
+          panel &&
+          /auto|scroll/.test(window.getComputedStyle(panel).overflowY) &&
+          panel.scrollHeight > panel.clientHeight;
+        const scroller = sheet ? panel : dialog;
+        const above = scroller.getBoundingClientRect().top - frame.getBoundingClientRect().top;
+        if (above > 0) scroller.scrollTop -= above;
+      };
       const mountFrame = () => {
         const template = host.querySelector('template[data-zeffy]');
         if (!template || !mount || mounted) return Boolean(template);
@@ -299,17 +324,14 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         completed = false;
         mount.replaceChildren(template.content.cloneNode(true));
         frame = mount.querySelector('iframe');
-        if (frame) frame.addEventListener('load', ready, { once: true });
+        if (frame) frame.addEventListener('load', loaded, { once: true });
         else ready();
         return true;
       };
       const arm = () => {
         if (host.dataset.mode === 'pending') return;
-        if (embed) embed.hidden = false;
-        if (fallback) fallback.hidden = true;
-        if (foot) foot.hidden = false;
+        showForm();
         if (loading) loading.hidden = false;
-        if (lead) lead.textContent = host.dataset.leadEmbed;
         host.dataset.state = 'loading';
         stop();
         timer = window.setTimeout(fail, timeout);
@@ -320,7 +342,8 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         api.trigger = from || null;
         dialog.oyTrigger = api.trigger;
         if (!dialog.open) dialog.showModal();
-        if (!mounted) arm();
+        // Served in the fallback mode (a story's), the fallback stays until Try again.
+        if (!mounted && host.dataset.mode !== 'fallback') arm();
         const close = dialog.querySelector('.oy-modal-close');
         if (close) close.focus();
         track('give_opened');
@@ -328,19 +351,28 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
       api.openFromHash = () => {
         if (window.location.hash === '#give' && !dialog.open) api.open(null);
       };
-      // What Zeffy's mounted form reports on itself (ADR 0045): connected counts as ready, as the frame's
-      // load does; resized sets the frame's height, up to FRAME_MAX; the thank-you page announces
-      // give_completed once per mounted form. That is a sign in the browser, never a record of the gift.
+      // What Zeffy's mounted form reports on itself (ADR 0045). Connected counts as ready, as the
+      // frame's load does, and after the timer it brings the form back over the fallback; each
+      // connection starts the form afresh (Safari reloads a persisted frame on every page swap).
+      // Resized sets the frame's height, up to FRAME_MAX. A new step and the thank-you page come back
+      // into view, and the thank-you page announces give_completed once per connection: a sign in the
+      // browser, never a record of the gift.
       api.receive = (message) => {
         if (!frame) return;
         if (message.type === 'zeffy-embed:connected') {
+          completed = false;
+          if (host.dataset.state === 'failed') showForm();
           ready();
         } else if (message.type === 'zeffy-embed:resized') {
           const height = message.height;
           if (Number.isFinite(height) && height > 0) {
             frame.style.height = Math.min(Math.round(height), FRAME_MAX) + 'px';
           }
-        } else if (message.type === 'zeffy-embed:thank-you-page-shown' && !completed) {
+        } else if (message.type === 'zeffy-embed:step-changed') {
+          reveal();
+        } else if (message.type === 'zeffy-embed:thank-you-page-shown') {
+          reveal();
+          if (completed) return;
           completed = true;
           track('give_completed');
         }
@@ -433,7 +465,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
       const api = host && host.oyApi;
       const data = event.data;
       if (!api || event.origin !== host.dataset.zeffyOrigin) return;
-      if (!data || typeof data !== 'object' || data.embedId !== host.dataset.zeffyEmbed) return;
+      if (!data || typeof data !== 'object' || data.embedId !== host.dataset.zeffyEmbedId) return;
       if (typeof data.type === 'string') api.receive(data);
     });
 

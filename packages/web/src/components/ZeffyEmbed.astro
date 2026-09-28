@@ -1,7 +1,8 @@
 ---
 /**
  * The Zeffy embed as a server island (ADR 0020): rendered on its own request after the page,
- * so the cached page never carries the URL and a Studio change shows on the next open. Reads
+ * so the cached page never carries the embed address and a Studio change shows on the next open
+ * (the layout's link to Zeffy's own page for the form does ride the cached page, ADR 0045). Reads
  * `siteSettings.zeffyEmbedUrl` and hands the Give Dialog a template with the iframe, which the
  * dialog mounts on first open; while the URL is empty or not a Zeffy address it answers the Pending chip and the
  * dialog stays in its pending mode. The iframe's address carries Zeffy's v2 parameters, so the form

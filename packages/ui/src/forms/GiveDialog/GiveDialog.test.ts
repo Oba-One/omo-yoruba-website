@@ -7,6 +7,7 @@ import { ZEFFY_EMBED_ID, ZEFFY_ORIGIN } from './zeffy';
 const {
   Default,
   WithoutPageLink,
+  WithEin,
   Fallback,
   FallbackNameWithoutAddress,
   FallbackWithAddress,
@@ -28,9 +29,11 @@ describe('GiveDialog', () => {
     );
     const host = body.querySelector('oy-give-dialog');
     expect(host?.getAttribute('data-timeout')).toBe('8000');
-    // The listener hears the origin and the form the island's address names (ADR 0045).
+    // The listener hears the origin and the form the island's address names (ADR 0045), under a name
+    // Zeffy's own embed script would not take for one of its containers (`[data-zeffy-embed]`).
     expect(host?.getAttribute('data-zeffy-origin')).toBe(ZEFFY_ORIGIN);
-    expect(host?.getAttribute('data-zeffy-embed')).toBe(ZEFFY_EMBED_ID);
+    expect(host?.getAttribute('data-zeffy-embed-id')).toBe(ZEFFY_EMBED_ID);
+    expect(body.querySelector('[data-zeffy-embed]')).toBeNull();
   });
 
   it("links Zeffy's own page for the form under the embed, in a new tab", async () => {
@@ -61,7 +64,6 @@ describe('GiveDialog', () => {
     expect(contact?.getAttribute('href')).toBe('?enquiry=contact#enquiry');
     expect(text(contact)).toContain('Contact us');
     expect(text(fallback?.querySelector('[data-retry]'))).toBe('Try again');
-    expect(text(body.querySelector('[data-ein]'))).toBe('XX-XXXXXXX');
   });
 
   it('states neither monthly giving nor emailed receipts in any mode, until the form confirms them (R38)', async () => {
@@ -85,6 +87,14 @@ describe('GiveDialog', () => {
     }
   });
 
+  it('names the EIN in the foot once the settings hold it', async () => {
+    const foot = (await renderToBody(WithEin)).querySelector('[data-foot]');
+    expect(foot?.hasAttribute('hidden')).toBe(false);
+    expect(text(foot?.querySelector(':scope > span:last-child'))).toBe(
+      '501(c)(3) • EIN 12-3456789',
+    );
+  });
+
   it('shows the address chip, never a bare name, while the settings hold no address (R45)', async () => {
     const body = await renderToBody(FallbackNameWithoutAddress);
     const line = body.querySelector('[data-fallback] p');
@@ -99,7 +109,6 @@ describe('GiveDialog', () => {
     expect(text(body.querySelector('[data-fallback] p'))).toContain(
       'send a check to Omo Yorùbá of Southern California, PO Box 000, Los Angeles, CA 90000.',
     );
-    expect(text(body.querySelector('[data-ein]'))).toBe('12-3456789');
   });
 
   it('answers Pending without a Try again while the Zeffy URL is empty', async () => {
@@ -235,6 +244,80 @@ describe('GiveDialog, running its element', () => {
     post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' });
     post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' });
     expect(tracked).toEqual(['give_opened', 'give_completed']);
+  });
+
+  it('records give_completed again once a reloaded form connects anew', async () => {
+    // Safari reloads a persisted frame on every page swap without a new mount.
+    await openWithFrame();
+    post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' });
+    post({ type: 'zeffy-embed:connected', embedId: 'give' });
+    post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' });
+    expect(tracked).toEqual(['give_opened', 'give_completed', 'give_completed']);
+  });
+
+  it('brings the form back when Zeffy connects after the timer, where a late load leaves the fallback', async () => {
+    const { host, frame } = await openWithFrame();
+    vi.advanceTimersByTime(8000);
+    expect(host?.dataset.state).toBe('failed');
+    // A frame fires load for an error page too, so a late one proves nothing.
+    frame?.dispatchEvent(new Event('load'));
+    expect(host?.dataset.state).toBe('failed');
+    expect(host?.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(false);
+    post({ type: 'zeffy-embed:connected', embedId: 'give' });
+    expect(host?.dataset.state).toBe('ready');
+    expect(host?.querySelector('[data-embed]')?.hasAttribute('hidden')).toBe(false);
+    expect(host?.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(true);
+    expect(host?.querySelector('[data-foot]')?.hasAttribute('hidden')).toBe(false);
+    expect(text(host?.querySelector('[data-lead]'))).toBe(
+      'Amount and card details, all here. You never leave the page.',
+    );
+  });
+
+  it('scrolls back to the top of a new step or the thank-you page when it begins above the view', async () => {
+    const { host, frame } = await openWithFrame();
+    const at = (element: Element | null | undefined, top: number) => {
+      if (element) element.getBoundingClientRect = () => ({ top }) as DOMRect;
+    };
+    // Above 720px the dialog itself scrolls: the donor is 300px past the frame's top.
+    const dialog = host?.querySelector('dialog') as HTMLDialogElement;
+    dialog.scrollTop = 500;
+    at(dialog, 0);
+    at(frame, -300);
+    post({ type: 'zeffy-embed:step-changed', embedId: 'give' });
+    expect(dialog.scrollTop).toBe(200);
+    // With the frame's top in view nothing moves.
+    at(frame, 120);
+    post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' });
+    expect(dialog.scrollTop).toBe(200);
+    // A panel taller than its box that only clips (overflow hidden, above 720px) is never scrolled.
+    const sheet = host?.querySelector('.oy-modal') as HTMLElement;
+    sheet.style.overflowY = 'hidden';
+    Object.defineProperty(sheet, 'scrollHeight', { value: 1400, configurable: true });
+    Object.defineProperty(sheet, 'clientHeight', { value: 600, configurable: true });
+    at(sheet, 60);
+    at(frame, -40);
+    post({ type: 'zeffy-embed:step-changed', embedId: 'give' });
+    expect(sheet.scrollTop).toBe(0);
+    expect(dialog.scrollTop).toBe(160);
+    // Under 720px the bottom sheet scrolls: the frame begins 50px above the sheet's top edge.
+    sheet.style.overflowY = 'auto';
+    sheet.scrollTop = 400;
+    at(frame, 10);
+    post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' });
+    expect(sheet.scrollTop).toBe(350);
+    expect(dialog.scrollTop).toBe(160);
+  });
+
+  it('keeps a dialog served in its fallback mode on the fallback until Try again', async () => {
+    const body = await renderLive(FallbackNameWithoutAddress);
+    expect(body.querySelector('dialog')?.open).toBe(true);
+    expect(body.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(false);
+    expect(body.querySelector('[data-embed]')?.hasAttribute('hidden')).toBe(true);
+    expect(body.querySelector('[data-foot]')?.hasAttribute('hidden')).toBe(true);
+    vi.useFakeTimers();
+    body.querySelector<HTMLButtonElement>('[data-retry]')?.click();
+    expect(body.querySelector('[data-embed]')?.hasAttribute('hidden')).toBe(false);
+    expect(body.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(true);
   });
 
   it('hears nothing before the form is mounted', async () => {

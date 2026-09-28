@@ -60,6 +60,9 @@ test('#give opens the dialog on load and closing strips the hash', async ({ page
 });
 
 test('Contact us in the fallback hands over to the contact enquiry', async ({ page }) => {
+  // Once the settings hold a Zeffy address, the fallback shows only when the form never arrives:
+  // hold Zeffy's requests unanswered, so the timer ends in it (a refused frame still fires load).
+  await page.route('https://www.zeffy.com/**', () => {});
   await page.goto('/#give');
   const give = page.locator('dialog#give');
   await expect(give).toHaveAttribute('open', '');

@@ -13,11 +13,15 @@ export async function renderToBody(story: ComposedStory): Promise<HTMLElement> {
  * (ADR 0018), so a test that needs an element's behaviour renders through this. The scripts run first and the
  * markup goes back in through a fragment, so the element upgrades with its children in place. Each element
  * script's `customElements.get` guard keeps its definition, and the window and document listeners it
- * registers, to one per test file, as on a page.
+ * registers, to one per test file, as on a page. Only inline classic scripts run here: a bundled or module
+ * script throws rather than leave its element unwired unnoticed.
  */
 export async function renderLive(story: ComposedStory): Promise<HTMLElement> {
   const body = await renderToBody(story);
   const scripts = [...body.querySelectorAll('script')].map((script) => {
+    if (script.src || !['', 'text/javascript'].includes(script.type)) {
+      throw new Error(`renderLive runs inline classic scripts only, not ${script.outerHTML}`);
+    }
     script.remove();
     return script.textContent ?? '';
   });
