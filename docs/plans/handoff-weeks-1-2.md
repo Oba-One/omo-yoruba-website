@@ -9,60 +9,63 @@ is `docs/research/online-giving-options.md`.
 
 ## Where it stands
 
-- **Merged on 27 September** (the owner said to merge what was ready):
+- **Merged on 27 September**, at the owner's word ("do the merges you feel are ready", then "go ahead and complete
+  the work"):
   - [10](https://github.com/Oba-One/omo-yoruba-website/pull/10), the navigation fix (ADR 0041).
-  - [11](https://github.com/Oba-One/omo-yoruba-website/pull/11), the Studio simplification's part 4 (ADR 0042).
-  - [12](https://github.com/Oba-One/omo-yoruba-website/pull/12), the To do and the sidebar.
+  - [11](https://github.com/Oba-One/omo-yoruba-website/pull/11) and
+    [12](https://github.com/Oba-One/omo-yoruba-website/pull/12), the Studio simplification's part 4, the To do and
+    the sidebar (ADR 0042).
   - [17](https://github.com/Oba-One/omo-yoruba-website/pull/17), the review's three blockers and the Zeffy frame
     (ADRs 0043 and 0044).
+  - [13](https://github.com/Oba-One/omo-yoruba-website/pull/13) and
+    [14](https://github.com/Oba-One/omo-yoruba-website/pull/14), part 5, each with its migration day (below).
+  - [15](https://github.com/Oba-One/omo-yoruba-website/pull/15), the 404 page, the READMEs, `DESIGN.md`, the week 1
+    tidy and `SANITY_PREVIEW_SECRET` retired; and
+    [16](https://github.com/Oba-One/omo-yoruba-website/pull/16), the deep review, its triage, the giving research,
+    the week 3 prompt and this handoff, each once its checks passed.
 
-  `main` deploys to the public host, so the draft-mode, footer, Zeffy and consent-hold fixes and the simplified
-  Studio at `/admin` are live there.
-- **Open, stacked, each current with `main`:**
-  - [13](https://github.com/Oba-One/omo-yoruba-website/pull/13), part 5 B: migrations, page lists, one album link,
-    the teacher. Base `main`.
-  - [14](https://github.com/Oba-One/omo-yoruba-website/pull/14), part 5 C: one control per decision, the scopes,
-    the deletions. Base 13.
-  - [15](https://github.com/Oba-One/omo-yoruba-website/pull/15), the 404 page, the READMEs, `DESIGN.md` and the
-    week 1 tidy. Base 14.
-  - [16](https://github.com/Oba-One/omo-yoruba-website/pull/16), the deep review, its triage, the giving research,
-    the week 3 prompt and this handoff. Base 15.
-
-  13 and 14 wait for their migration days with the owner (the runbook's Migrations section; each pull request names
-  its migrations). Base branches are not deleted on merge, so retarget the next pull request to `main` by hand.
-- **Checks after `main` went up the stack:**
-  - `bun check` on 15: 154 files, 1016 tests.
-  - Pull request 17 ran the whole Playwright suite in both data modes before its last review fixes (seeded 296
-    passed; placeholder 265 passed; one known flake in each, below), and the specs it touched afterwards.
-  - CI runs on every push. Auto-fix is off on 13 to 16.
+  `main` deploys to the public host, so the simplified Studio at `/admin` and every fix above are live there.
+- **The migration days, 27 September, with the owner out of the Studio:**
+  - Exported, rehearsed on the export, dry-run live; each matched its pull request's description.
+  - Applied right after each production deploy. 13: `album-link` (2), `inline-lists` (5: the Collective's two
+    initiatives moved into its page list), `teacher-group` and `retired-fields` (nothing). 14: `one-control` (2),
+    `scopes` (nothing), `retired-fields` (9). Every re-plan is empty, and `bun seed -- --dry-run` has nothing due.
+  - The pages' seeded specs before and after each apply: 189 passed and 1 skipped (13), 126 passed and 2 skipped
+    (14). The public host showed the moved initiatives and Odunde's take-part order unchanged.
+  - The two full exports were deleted. The four `.before.ndjson` snapshots (only the documents the migrations
+    wrote) stay in `~/omo-yoruba-exports` for `bun run migrate -- restore`, until the owner is happy with the site.
+- **Not done:** `sanity schema deploy`. The project's Editor token lacks the `deploySchema` grant, so it needs the
+  owner's own login.
+- **Open:** the Zeffy embed work (the owner chose Zeffy, embedded, on 27 September), on branch `feat/zeffy-embed`
+  with its own pull request.
+- **Decided on 27 September:** D3 (`development` holds the real content through launch; `production` to be made
+  private) and D5 (the organization has consent; its event photographer took the photographs). The gallery stays
+  `built`.
 - **The triage** is in the report's "Triage" section and on each ticket:
   - R44 and R109 resolved by pull request 10; R01 to R03 by pull request 17.
-  - Eleven majors are ready for an agent in five groups, and R85 is ready once 13 lands.
-  - R38, R47 and R110 wait on the owner's decision; R142 and R143 on the owner's action or approval.
+  - Eleven majors are ready for an agent in five groups, and R85 is ready now that 13 has landed.
+  - R38 is part of the Zeffy pull request; R47 and R110 wait on the owner's decision; R142 and R143 on the owner's
+    action or approval.
   - The 143 minor and polish findings are untriaged.
 
 ## Owner follow-ups, in order
 
-1. **Migration days:** pull request 13, then 14 (runbook, Migrations). Stay out of the Studio for the hour. Then
-   merge 15 and 16.
-2. **Invite an Editor account.** The member view, the guide's screenshots and the member test need it.
-3. **Decide D3 first:** which dataset holds the real content, and making `production` private. Open-work says to
-   decide it before members type facts.
-4. **Sign in the Sanity MCP** (`/mcp` in an interactive session) for real content (E19), once D3 is answered.
-5. **Decide:**
-   - D5, including whether the albums' hold should also reach the photographs pages show themselves. In the seeded
-     data they are all album photographs (ADR 0043).
-   - The giving provider, monthly giving and receipts (R38, C12, D8), with the research's questions.
-   - R47, R110, R142 (a repository setting) and R143.
-   - D2, D7, D11 and D15 as wanted.
-6. **Delete what nothing reads.** Remove `PUBLIC_ZEFFY_EMBED_URL` and `PUBLIC_EVENTBRITE_URL` from
-   `packages/web/.env.example` and Vercel. `SANITY_PREVIEW_SECRET` is read by nothing (ADR 0044) and can go too.
-   Agents cannot edit `.env.example`.
-7. **Confirm** pull request 15's three 404 doors (the homepage, Get Involved, Programs).
-8. **E1:** prove that a publish purges a page, with the runbook's probe.
-9. **Say yes or no** to `@vercel/functions` as a direct dependency, for a hard purge when the hold flips.
-10. **If header photographs come down under D5,** reword the soon sentence ("the Odunde and Gala pages carry their
-   own photographs"). It is your copy.
+1. **Make `production` private (D3):** sanity.io/manage, the project, Datasets, `production`, Edit, Visibility:
+   Private. Agents do not change access settings.
+2. **Deploy the schema** with your login: `bunx sanity login`, then `bun run --filter @oy/content sanity -- schema
+   deploy`. It tells the MCP and agents what each field requires.
+3. **Delete three lines** from `packages/web/.env.example`: `PUBLIC_ZEFFY_EMBED_URL`, `PUBLIC_EVENTBRITE_URL` and
+   `SANITY_PREVIEW_SECRET` (agents cannot edit that file; none of the three is set in Vercel).
+4. **Zeffy:** create the donation form, turn on automatic tax receipts, decide on monthly giving, and paste the
+   embed URL into Site settings, Zeffy embed URL. Review the Zeffy pull request.
+5. **Invite an Editor account.** The member view, the guide's screenshots and the member test need it.
+6. **Sign in the Sanity MCP** (`/mcp` in an interactive session) for real content (E19).
+7. **The gallery's facts (C3):** the event photographer's name as each album's credit should read, and the consent
+   policy in your words.
+8. **Decide:** R47, R110, R142 (a repository setting) and R143; D2, D7, D11 and D15 as wanted.
+9. **Confirm** pull request 15's three 404 doors (the homepage, Get Involved, Programs), or name others.
+10. **E1:** prove that a publish purges a page, with the runbook's probe.
+11. **Delete the migration snapshots** in `~/omo-yoruba-exports` once the site looks right.
 
 ## Decisions made without the owner (reverse any)
 
@@ -74,15 +77,20 @@ is `docs/research/online-giving-options.md`.
 - **The draft session** is keyed with the Viewer token rather than `SANITY_PREVIEW_SECRET`, and lasts twelve hours
   (ADR 0044).
 - **The Zeffy frame** accepts only an https address on an origin the CSP's `frame-src` lists (`framableSrc`).
-- **Merges.** 10, 11, 12 and 17 merged under the owner's word; 13 and 14 are held for their migration days.
+- **Merges.** All of 10 to 17 merged under the owner's word, 13 and 14 on their migration days.
+- **SANITY_PREVIEW_SECRET retired** from the env schema, the wizard and the runbook (pull request 15), since nothing
+  read it and its name invited rotating the wrong secret.
 - **The short ui README** points at ADRs 0018 and 0041 instead of keeping pull request 10's long paragraph.
 - **The triage's outcomes and groups** (the report).
 
 ## Known gaps
 
 - **The consent hold does not reach a photograph a page shows through its own field.** The Studio's description,
-  CONTEXT.md and D5 say so.
-- **The purge is soft.** After the hold flips, each cached page can show its old photographs to one more visitor.
+  CONTEXT.md and D5 say so. With consent confirmed (D5), it matters only if consent is ever withdrawn.
+- **The purge is soft.** After the hold flips, each cached page can show its old photographs to one more visitor. A
+  hard purge needs `@vercel/functions` as a direct dependency, the owner's call.
+- **The page lists' reference reads.** Pull request 13's queries read both shapes for one deploy; with its migrations
+  applied, the old reads can go (a small pull request).
 - **Flaky tests:**
   - The first axe test after a cold dev server. Vite reloads the page; it passes alone.
   - Pull request 10's footer-trigger test in placeholder mode: one extra page load, once in four runs; 3 of 3 on a

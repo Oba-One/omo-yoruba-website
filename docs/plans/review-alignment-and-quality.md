@@ -86,8 +86,7 @@ says so.
 
 ## Notes for the owner
 
-- **Merging.** Pull requests 10, 11 and 12 merged on 27 September; `main` then went up the stack into 13 to 16.
-  Pull requests 13 and 14 wait for their migration days with the owner, and 15 and 16 sit on them.
+- **Merging.** Pull requests 10 to 17 merged on 27 September, 13 and 14 with their migrations applied that day.
 - **The MCP server.** The Sanity MCP server needs authorizing through `/mcp` in an interactive session.
 - **Handoff.** The owner asked for the blockers fixed, the majors triaged and the handoff written:
   `docs/plans/handoff-weeks-1-2.md`. Fixes follow in sessions, in the groups below.
@@ -109,7 +108,7 @@ sibling of R02, fixed there too: the Zeffy iframe took its address from site set
 | Resolved by pull request 10 | [R44](../tickets/review/issues/44-after-a-client-side-navigation-every-dialog-trigger.md), [R109](../tickets/review/issues/109-closing-a-dialog-opened-by-its-address-wipes.md) | None: `navigation.spec.ts` proves both. |
 | Ready for an agent | R12, R37, R42, R49, R50 (contrast and type); R45, R46, the scrim half of R47 (the dialogs); R15, R21 (latent layouts); R48 (Storybook); R144 (the guardrail hook) | Five small pull requests in that grouping, each with a test that fails first. |
 | Ready after pull request 13 | R85 | The outcomes' To do row is written against Impact's page list, which pull request 13 introduces. |
-| The owner decides | R38 (monthly giving, receipts and the Zeffy mention: C12, D8), R47 (whether a reopened form keeps what was typed), R110 (what the 17px floor covers) | The recommendation is in each ticket. `docs/research/online-giving-options.md` informs R38. |
+| The owner decides | R38 (monthly giving, receipts and the Zeffy mention: C12, D8), R47 (whether a reopened form keeps what was typed), R110 (what the 17px floor covers) | The recommendation is in each ticket. The owner chose Zeffy, embedded, from `docs/research/online-giving-options.md` on 27 September; R38's interim fix is in the Zeffy pull request. |
 | The owner acts or approves | R142 (require TypeGen drift and Playwright and axe: a repository setting), R143 (an agent proposes the advisories to bump or accept; the owner approves the accepted list) | Say the word in a session and an agent runs the change or the proposal. |
 
 ## Architecture candidates

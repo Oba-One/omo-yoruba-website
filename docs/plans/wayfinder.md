@@ -163,14 +163,14 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   perspective cookie set by hand reads as published.
 - [Online giving options](../research/online-giving-options.md): Zeffy embedded properly, Stripe behind our own
   form, Every.org and Give Lively, ranked with sources (27 September 2026).
+- Consent for faces (D5): the organization has consent; its event photographer took the photographs (27 September
+  2026). `development` holds the real content through launch, and `production` is made private (D3, the same day).
 
 ## Frontier
 
-Phases 0 to 8 have merged (pull requests 1 to 9). Of the weeks 1 and 2 work in
-`docs/plans/four-week-plan.md`, pull requests 10 (the navigation fix), 11 and 12 (the Studio simplification's
-part 4 and the To do, ADR 0042) and 17 (the deep review's blockers) merged on 27 September. Pull requests 13 and 14
-(part 5) wait for their migration days with the owner; 15 (the 404 page, the READMEs, `DESIGN.md`) and 16 (the deep
-review and its triage) sit on them. `docs/plans/open-work.md` holds everything still
+Phases 0 to 8 have merged (pull requests 1 to 9), and so has the weeks 1 and 2 work in
+`docs/plans/four-week-plan.md`: pull requests 10 to 17 merged on 27 September, 13 and 14 with their migrations
+applied that day (ADR 0042). The Zeffy embed work (the owner chose Zeffy, embedded) has its own pull request. `docs/plans/open-work.md` holds everything still
 open. Below are the owner decisions still open; Gates names what each holds up now, with its
 open-work row and priority. Details in each ticket.
 
@@ -181,8 +181,8 @@ open-work row and priority. Details in each ticket.
 | 11 | Storybook hosting: separate Vercel project or a path under the site | A shareable Storybook (D20: Later) |
 | 02 | EIN, mailing address, phone, routing email per enquiry kind | Enquiry routing and the organization's facts on every page (C1: Now); tickets 38, 42 and 44 |
 | 05 | The two unnamed festival zones | Odunde's zones (C4: Launch) |
-| 09 | Photo credits to confirm | The gallery's credits and consent (C3, D5: Now) |
-| 03 | Zeffy embed URL and Eventbrite event URL | The Give Dialog's form (C1: Now) and the Gala's ticket buttons (C5: Launch); the giving options are researched in `docs/research/online-giving-options.md` |
+| 09 | Photo credits to confirm: the event photographer's name as each album's credit should read | The gallery's credits (C3: Now) |
+| 03 | Zeffy embed URL and Eventbrite event URL | The Give Dialog's form (C1: Now) and the Gala's ticket buttons (C5: Launch); Zeffy, embedded, chosen on 27 September from `docs/research/online-giving-options.md` |
 | 25 | Create the Sanity webhook on the public host | Edits on the site within a minute (E1: Now): one exists on the stand-in host; the purge check and the move with D2 remain |
 | 27 | Put the recap post's title back to "Odunde 2026: the recap" in `development` | The homepage's news card (C2: Now) |
 | 28 | Lighthouse bypass secret (header or cookie route), required Lighthouse checks | Lighthouse on previews (D14, E14: Launch) |
@@ -196,7 +196,7 @@ open-work row and priority. Details in each ticket.
 | 38 | The event pages' owed facts (Odunde 2027, Gala 2026, albums) | Their Pending chips (C4, C5: Launch) |
 | 40 | The program pages' owed facts (the teacher, the Lessons answers, the initiatives, the Collective's argument and voice) | Their Pending chips (C6 to C8: Launch) |
 | 42 | The trust pages' owed facts (the EIN and contacts, sources, outcomes, governance, people, the Zeffy form, giving levels) | Their Pending chips (C9 to C12: Launch) |
-| 44 | The gallery's owed facts (the consent policy, the general inbox, the credits, the summer camp's year, consent for faces, captions) | Its Pending chips and its `soon` state, which holds the albums (ADR 0043); whether it should also reach the photographs pages show themselves (C3, D5: Now) |
+| 44 | The gallery's owed facts (the consent policy, the general inbox, the credits, the summer camp's year, captions; consent for faces is settled, D5) | Its Pending chips (C3: Now) |
 | 07 | Our Story's timeline: show it once its entries are confirmed, keep it hidden, or drop it | The timeline block (D21: Later) |
 | 10 | Old site URLs for redirects | The redirects (D18, E11: Launch) |
 | 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | The enforced CSP (D13, E9: Launch) |

@@ -93,7 +93,9 @@ secret; the brackets say how.
   shows content only `development` holds (Vercel's `PUBLIC_SANITY_DATASET`, above). `production`
   holds no content, only Sanity's own access groups and retention setting, and its ACL is public, as
   wizard stage 1 asks: anything published there, enquiries and subscribers included, would be
-  readable without a token, which is why D3 asks to make it private before the site writes there.
+  readable without a token. D3, decided on 27 September: `development` holds the real content through
+  launch, and `production` is made private (sanity.io/manage, the project, Datasets, `production`, Edit,
+  Visibility: Private; the Sanity connector still read it as public that evening).
   (The datasets API, read with the Viewer token, and a count per dataset with and without
   `--public`:
   `bun run --filter @oy/content query -- 'count(*[!(_id in path("_.**"))])' --dataset development`.)

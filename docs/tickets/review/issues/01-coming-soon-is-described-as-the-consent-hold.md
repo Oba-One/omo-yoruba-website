@@ -18,3 +18,5 @@ Already recorded as open-work D5; this ticket adds the review's evidence.
 ## Comments
 
 **Triage, 27 September 2026:** Fixed in pull request 17. The first option: Coming soon is now the consent hold for the albums (ADR 0043): album pages, photo addresses and the event pages' past photographs. A photograph a page shows through its own field stays, and in the seeded data they are all album photographs, so D5's "on the pages" half stays open. Taken under the owner's request of 27 September to fix the blockers; the second option (unpublishing albums, with the description corrected) stays open to the owner.
+
+**Update, 27 September 2026:** D5 is decided: the organization has consent, and its event photographer took the photographs. The gallery stays `built`; the hold remains for the day consent is ever withdrawn.
