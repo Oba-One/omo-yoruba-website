@@ -1,7 +1,7 @@
 # 38: Monthly giving and email receipts are stated as fact while the registry holds them as owed
 
 Labels: content
-Status: open
+Status: resolved
 Blocked by: none
 
 **Finding** (R38 in `docs/plans/review-alignment-and-quality.md`; /donate, /gala, GiveDialog (every route); major; content): ADR 0035 makes fees, receipts and monthly giving the owner's facts because they depend on how the Zeffy form is set up, and the Donate page shows them as Pending, yet the same page, the Gala and the Give Dialog promise them. The dialog even says "Powered by Zeffy" and "Receipts by email" while telling the donor the form does not exist. T42 asks the owner to confirm the Donate blurb only; the Gala row and the dialog lines are not listed anywhere.
@@ -18,3 +18,5 @@ Already recorded as open-work C12 and D8 (T42 names the Donate blurb only); open
 ## Comments
 
 **Triage, 27 September 2026:** Needs the owner: which giving provider takes gifts (a new decision, informed by `docs/research/online-giving-options.md`; C12 holds the Zeffy facts, D8 the pending-mode copy), and whether monthly giving and emailed receipts are offered. Recommended meanwhile: the ticket's fix, dropping "monthly" and the receipt promise until the owner confirms them, and hiding the dialog foot ("Powered by Zeffy", "Receipts by email") in the pending and fallback modes.
+
+**Fixed, 27 September 2026:** on branch `feat/zeffy-embed` (ADR 0045), once the owner chose Zeffy, embedded. The Give Dialog's embed lead no longer says "one time or monthly", its foot no longer says "Receipts by email", and the foot ("Secure • Powered by Zeffy" and the EIN) shows only with the form, never in the pending and fallback modes. The Donate blurb and the Gala give row are Studio content and still promise monthly giving (the blurb an emailed receipt too); open-work C12 keeps them for the owner until the form says what it offers.

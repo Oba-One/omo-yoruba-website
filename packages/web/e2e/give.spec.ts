@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 // While the settings hold no Zeffy URL (wayfinder ticket 03) the dialog opens in its pending
-// mode: the Pending chip, the check line, Contact us, no Try again. Once the URL is set the
+// mode: the Pending chip, the check line, Contact us, no Try again, no foot. Once the URL is set the
 // embed box mounts the island's iframe instead, its address carrying Zeffy's v2 parameters
 // (ADR 0045). The timed fallback is covered by the GiveDialog stories' play functions, and
 // Zeffy's messages by the GiveDialog element tests.
@@ -25,15 +25,24 @@ test('a Donate trigger opens the Give Dialog, Escape closes it and focus returns
       'The online giving form is not set up yet.',
     );
     await expect(dialog.locator('[data-retry]')).toHaveCount(0);
-    // No form, so no link to Zeffy's page for it.
+    // No form, so no link to Zeffy's page for it, and no foot naming Zeffy (R38).
     await expect(dialog.getByRole('link', { name: /Give on Zeffy's page/ })).toHaveCount(0);
+    await expect(dialog.locator('[data-foot]')).toBeHidden();
   } else {
     const frame = dialog.locator('[data-mount] iframe');
     await expect(frame).toHaveCount(1);
     const src = new URL((await frame.getAttribute('src')) ?? '');
     expect(src.searchParams.get('embed-version')).toBe('v2');
     expect(src.searchParams.get('embedId')).toBe('give');
+    await expect(dialog.locator('[data-foot]')).toBeVisible();
+    await expect(dialog.locator('[data-foot]')).toContainText('Secure • Powered by Zeffy');
   }
+  // Nothing promises monthly giving or an emailed receipt before the owner's form does (R38), and
+  // the check line never offers the name alone as where to send a check (R45).
+  await expect(dialog).not.toContainText(/monthly|receipt/i);
+  await expect(dialog.locator('[data-fallback] p')).not.toHaveText(
+    /send a check to Omo Yorùbá of Southern California\.$/,
+  );
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toHaveAttribute('open', '');

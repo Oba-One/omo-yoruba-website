@@ -43,6 +43,11 @@ export const WithoutPageLink: Story = { args: { pageHref: null } };
 /** The iframe did not load in time: the check line and the contact enquiry, address Pending. */
 export const Fallback: Story = { args: { mode: 'fallback' } };
 
+/** The name without the address, as the settings hold them today: the chip, never a bare name to post a check to. */
+export const FallbackNameWithoutAddress: Story = {
+  args: { mode: 'fallback', orgName: 'Omo Yorùbá of Southern California' },
+};
+
 /** The fallback once the settings hold the address (the shape, not a fact). */
 export const FallbackWithAddress: Story = {
   args: {

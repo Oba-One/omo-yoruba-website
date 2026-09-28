@@ -7,14 +7,18 @@
  * form then reports on itself (ADR 0045): its connected message counts as ready, as the frame's
  * load does, its resized message sets the frame's height, and its thank-you page announces
  * `give_completed`. If the form is not ready by the end of the timer, or the template never
- * arrives, the fallback shows: write to us, send a check to the mailing address (Pending until
- * the settings hold it), Contact us (the contact enquiry) and Try again. Under the form a link
- * opens Zeffy's own page for it in a new tab, where Apple Pay and Google Pay can show.
+ * arrives, the fallback shows: write to us, send a check to the mailing address (the registry's
+ * chip while the settings hold none, the organization's name only before an address), Contact us
+ * (the contact enquiry) and Try again. Under the form a link opens Zeffy's own page for it in a
+ * new tab, where Apple Pay and Google Pay can show, and the foot names Zeffy and the EIN; the foot
+ * shows only with the form. Nothing here says the form offers monthly giving or emails receipts
+ * until the owner's form confirms it (open-work C12).
  * `mode="pending"` is the island's answer when the settings hold no Zeffy URL. `#give` in the URL
  * opens the dialog on load; a native dialog gives the focus trap and Escape; the element returns
  * focus to the trigger and strips the hash on close. Announces `give_opened`,
  * `give_embed_failed` and `give_completed` as `oy:track` events (ADR 0018).
  */
+import { pendingWhat } from '@oy/content/pending';
 import { safeHref } from '../../core/ActionButton/action';
 import Button from '../../core/Button/Button.astro';
 import Pending from '../../core/Pending/Pending.astro';
@@ -51,7 +55,7 @@ const {
 } = Astro.props;
 
 const LEADS = {
-  embed: 'Amount, one time or monthly, and card details, all here. You never leave the page.',
+  embed: 'Amount and card details, all here. You never leave the page.',
   fallback: 'Two other ways to give while the form is down.',
   pending: 'Two ways to give until the online form is set up.',
 } as const;
@@ -59,9 +63,16 @@ const HEADINGS = {
   fallback: 'The giving form did not load.',
   pending: 'The online giving form is not set up yet.',
 } as const;
-const addressLine = [orgName?.trim(), ...(address ?? '').split(/\r?\n/).map((l) => l.trim())]
-  .filter(Boolean)
-  .join(', ');
+// Where a check goes: the name before the address, and only before one. Without an address the
+// line shows the registry's chip, never a name alone to post a check to.
+const addressLines = (address ?? '')
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter(Boolean);
+const checkTo =
+  addressLines.length > 0
+    ? [orgName?.trim(), ...addressLines].filter(Boolean).join(', ')
+    : undefined;
 const einText = ein?.trim() || 'XX-XXXXXXX';
 // The pending mode has no form, so it has no page to link either.
 const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
@@ -116,7 +127,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
           <b data-heading>{mode === 'pending' ? HEADINGS.pending : HEADINGS.fallback}</b>
           <p>
             Write to us and we will take the gift by hand, or send a check to{' '}
-            {addressLine ? <span>{addressLine}.</span> : <Pending what="mailing address" />}
+            {checkTo ? <span>{checkTo}.</span> : <Pending what={pendingWhat('siteSettings', 'address')} />}
           </p>
           <div class="oy-ok-actions">
             <Button href={contactHref} data-enquiry="contact" arrow>
@@ -131,9 +142,9 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
             }
           </div>
         </div>
-        <p class="oy-give-foot">
+        <p class="oy-give-foot" data-foot hidden={mode !== 'embed'}>
           <span>Secure • Powered by Zeffy</span>
-          <span>501(c)(3) • EIN <span data-ein>{einText}</span> • Receipts by email</span>
+          <span>501(c)(3) • EIN <span data-ein>{einText}</span></span>
         </p>
       </div>
     </div>
@@ -164,7 +175,8 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
   }
   [data-embed][hidden],
   [data-fallback][hidden],
-  [data-loading][hidden] {
+  [data-loading][hidden],
+  [data-foot][hidden] {
     display: none;
   }
   .oy-give-frame {
@@ -239,6 +251,8 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
       const loading = host.querySelector('[data-loading]');
       const fallback = host.querySelector('[data-fallback]');
       const heading = host.querySelector('[data-heading]');
+      // The foot names Zeffy, so it shows only with the form (R38).
+      const foot = host.querySelector('[data-foot]');
       const timeout = Number(host.dataset.timeout) || 8000;
       const api = { trigger: null, dialog };
       let timer = 0;
@@ -267,6 +281,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         stop();
         if (embed) embed.hidden = true;
         if (fallback) fallback.hidden = false;
+        if (foot) foot.hidden = true;
         if (lead) lead.textContent = host.dataset.leadFallback;
         if (heading) heading.textContent = host.dataset.headingFallback;
         host.dataset.state = 'failed';
@@ -292,6 +307,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         if (host.dataset.mode === 'pending') return;
         if (embed) embed.hidden = false;
         if (fallback) fallback.hidden = true;
+        if (foot) foot.hidden = false;
         if (loading) loading.hidden = false;
         if (lead) lead.textContent = host.dataset.leadEmbed;
         host.dataset.state = 'loading';

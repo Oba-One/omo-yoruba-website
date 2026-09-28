@@ -4,8 +4,15 @@ import { renderLive, renderToBody, text } from '../../test/stories';
 import * as stories from './GiveDialog.stories';
 import { ZEFFY_EMBED_ID, ZEFFY_ORIGIN } from './zeffy';
 
-const { Default, WithoutPageLink, Fallback, FallbackWithAddress, Pending, Closed } =
-  composeStories(stories);
+const {
+  Default,
+  WithoutPageLink,
+  Fallback,
+  FallbackNameWithoutAddress,
+  FallbackWithAddress,
+  Pending,
+  Closed,
+} = composeStories(stories);
 
 describe('GiveDialog', () => {
   it('wraps the embed template in the dialog with the fallback hidden', async () => {
@@ -16,7 +23,9 @@ describe('GiveDialog', () => {
     expect(text(body.querySelector('#give-title'))).toBe('Give to Omo Yorùbá');
     expect(body.querySelector('[data-embed] template[data-zeffy]')).not.toBeNull();
     expect(body.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(true);
-    expect(text(body.querySelector('[data-lead]'))).toContain('You never leave the page.');
+    expect(text(body.querySelector('[data-lead]'))).toBe(
+      'Amount and card details, all here. You never leave the page.',
+    );
     const host = body.querySelector('oy-give-dialog');
     expect(host?.getAttribute('data-timeout')).toBe('8000');
     // The listener hears the origin and the form the island's address names (ADR 0045).
@@ -53,6 +62,36 @@ describe('GiveDialog', () => {
     expect(text(contact)).toContain('Contact us');
     expect(text(fallback?.querySelector('[data-retry]'))).toBe('Try again');
     expect(text(body.querySelector('[data-ein]'))).toBe('XX-XXXXXXX');
+  });
+
+  it('states neither monthly giving nor emailed receipts in any mode, until the form confirms them (R38)', async () => {
+    for (const story of [Default, Fallback, Pending]) {
+      const host = (await renderToBody(story)).querySelector('oy-give-dialog');
+      expect(host?.outerHTML).not.toMatch(/monthly|receipt/i);
+    }
+  });
+
+  it('shows its foot only with the form, never in the pending or fallback modes (R38)', async () => {
+    const foot = (await renderToBody(Default)).querySelector('[data-foot]');
+    expect(foot?.hasAttribute('hidden')).toBe(false);
+    expect([...(foot?.querySelectorAll(':scope > span') ?? [])].map(text)).toEqual([
+      'Secure • Powered by Zeffy',
+      '501(c)(3) • EIN XX-XXXXXXX',
+    ]);
+    for (const story of [Fallback, Pending]) {
+      expect((await renderToBody(story)).querySelector('[data-foot]')?.hasAttribute('hidden')).toBe(
+        true,
+      );
+    }
+  });
+
+  it('shows the address chip, never a bare name, while the settings hold no address (R45)', async () => {
+    const body = await renderToBody(FallbackNameWithoutAddress);
+    const line = body.querySelector('[data-fallback] p');
+    expect(text(line)).toBe(
+      'Write to us and we will take the gift by hand, or send a check to Pending: mailing address',
+    );
+    expect(text(line)).not.toContain('Omo Yorùbá of Southern California');
   });
 
   it('names the organisation and the address in the check line once set', async () => {
@@ -140,6 +179,19 @@ describe('GiveDialog, running its element', () => {
     expect(host?.dataset.state).toBe('failed');
     expect(body.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(false);
     expect(tracked).toEqual(['give_opened', 'give_embed_failed']);
+  });
+
+  it('hides the foot with the form when the timer ends, and shows it again on Try again (R38)', async () => {
+    const body = await renderLive(Closed);
+    vi.useFakeTimers();
+    donate();
+    const foot = body.querySelector('[data-foot]');
+    expect(foot?.hasAttribute('hidden')).toBe(false);
+    vi.advanceTimersByTime(8000);
+    expect(foot?.hasAttribute('hidden')).toBe(true);
+    body.querySelector<HTMLButtonElement>('[data-retry]')?.click();
+    expect(body.querySelector<HTMLElement>('oy-give-dialog')?.dataset.state).toBe('loading');
+    expect(foot?.hasAttribute('hidden')).toBe(false);
   });
 
   it("counts Zeffy's connected message as ready, only from Zeffy's origin and for this form", async () => {
