@@ -146,12 +146,15 @@ export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }
   kind: LeadKind,
   options: BuildOptions,
   edit: EditAttribute,
+  /** Whether the gallery holds the albums (`albumsHeld`, ADR 0043): the edition stays, its photographs go. */
+  held: boolean,
 ) {
   const edition = pastEdition(editions, kind, { now: options.now, hasPhotos });
-  const album = edition?.album;
+  const album = held ? undefined : edition?.album;
   return {
     edition,
     view: {
+      held,
       slides: (album?.photos ?? []).filter(present).map((photo) => ({
         _key: photo._key,
         image: resolveImage(options.imageSet, photo, { width: 1022 }),

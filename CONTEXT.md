@@ -354,8 +354,9 @@ switches.
 _Avoid_: admin user, superuser, owner (one person; there may be more administrators)
 
 **Held-back switch**:
-A layout option that publishes content waiting for an owner decision (the gallery's coming-soon state, Our Story's
-timeline, the Gala's awards). Read-only for members.
+A layout option that publishes content waiting for an owner decision (the gallery's coming-soon state, which takes the
+albums off the site while consent is settled, ADR 0043: a photograph a page shows through its own field stays; Our
+Story's timeline; the Gala's awards). Read-only for members.
 _Avoid_: feature flag, lock, admin option
 
 **To do**:

@@ -396,6 +396,19 @@ describe('buildFestivalPage', () => {
     expect(buildFestivalPage(null, options).past.slides).toEqual([]);
   });
 
+  it('keeps past years in words while the gallery holds the albums: no photograph, credit or album (R01)', () => {
+    const view = buildFestivalPage(
+      { ...seeded, galleryLayout: { state: 'soon' } } as FestivalPageData,
+      options,
+    );
+    expect(view.past.held).toBe(true);
+    expect(view.past.slides).toEqual([]);
+    expect(view.past.album).toBeUndefined();
+    // The attendance is no photograph: the edition the photographs come from still gives it.
+    expect(view.past.attendancePending).toBe('the attendance figure');
+    expect(buildFestivalPage(seeded, options).past.held).toBe(false);
+  });
+
   it('carries the partners with their logos resolved, or the registry wording for none', () => {
     const withPartners = {
       ...seeded,

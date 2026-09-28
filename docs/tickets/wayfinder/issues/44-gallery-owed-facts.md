@@ -42,5 +42,6 @@ recipe and the gallery policy are in `oy-content-ops`):
   shared address.
 - **Choices you can reverse** (Phase 8 spec): `open` sends a tile to its album's first photograph (`viewer`) or to
   the album page (`grid`); `captions` shows titles and captions always or on hover; `state: soon` hides the albums
-  behind the prepared-albums sentence. Ticket 37's answers 2 to 5 (the carousel's dots, chevrons, count and eight
+  behind the prepared-albums sentence (since ADR 0043 it also holds the album pages' photographs and the event
+  pages' past photographs). Ticket 37's answers 2 to 5 (the carousel's dots, chevrons, count and eight
   photographs) are still yours.

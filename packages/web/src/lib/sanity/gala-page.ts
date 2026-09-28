@@ -18,6 +18,7 @@ import { countWord } from '@oy/ui/content/count-word.ts';
 import { longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { sentence } from '@oy/ui/content/sentence.ts';
 import type { ClientReturn } from '@sanity/client';
+import { albumsHeld } from './gallery-page';
 import {
   GLANCE_MAX,
   type GlanceFactView,
@@ -119,7 +120,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
 
   const editions = (data?.editions ?? []).filter((event) => event !== null);
   const edition = pageEdition(editions, KIND, { now });
-  const past = pastYears(editions, KIND, options, edit);
+  const past = pastYears(editions, KIND, options, edit, albumsHeld(data?.galleryLayout));
 
   const date = longDate(edition?.start);
   const venue = edition?.venue?.name || undefined;
@@ -207,7 +208,8 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       pending: presenceWhat('honoree')?.what ?? 'whether awards exist, and who',
     },
     past: {
-      shown: layout.past !== 'hidden',
+      // Withdrawn while the gallery holds the albums: past galas are their photographs and two links (ADR 0043).
+      shown: layout.past !== 'hidden' && !past.view.held,
       intro: data?.pastIntro ?? undefined,
       ...past.view,
     },

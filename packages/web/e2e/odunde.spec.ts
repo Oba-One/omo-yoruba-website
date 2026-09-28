@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
-import { expectNoMockWhileOwed, settle } from './helpers';
+import { expectNoMockWhileOwed, galleryHeld, settle } from './helpers';
 
 // The Odunde Festival page in the prototype's order (ROUTES section 4), each block present whether
 // the Studio holds its content or renders Pending: CI runs with a placeholder project, where every
@@ -172,6 +172,13 @@ test.describe('the Odunde Festival page', () => {
     await page.goto('/odunde');
     const past = page.locator('#past');
     await expect(past.locator('h2')).toHaveText('Odunde in past years');
+    if (await galleryHeld(page)) {
+      // Held (ADR 0043): the words and the attendance stay; no photograph, credit or way to the albums.
+      await expect(past.locator('.oy-carousel')).toHaveCount(0);
+      await expect(past.locator('.oy-credit-line')).toHaveCount(0);
+      await expect(past.getByRole('link', { name: 'All Odunde albums' })).toHaveCount(0);
+      return;
+    }
     if ((await past.locator('.oy-carousel-slide').count()) === 0) {
       await expect(past.locator('.oy-carousel-stage .oy-ph')).toHaveCount(1);
       await expect(past.locator('.oy-credit-line')).toHaveCount(0);

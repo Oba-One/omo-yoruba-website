@@ -117,6 +117,8 @@ requests: the general inbox as an email link, or its chip; and a quiet "Send a m
 mosaic with "The albums are being prepared. Until then, the Odunde and Gala pages carry their own
 photographs." and quiet links to both pages. Under `built` with no album holding a photograph, the albums
 section shows the registry's Pending line "the photo albums". Album pages render under either state.
+(Amended by ADR 0043, 27 September 2026: under `soon` an album page shows the sentence in place of its
+photographs, and the event pages' past years show none.)
 `galleryPage.intro` retires.
 
 **Q15. The gallery's header line.** A seed revision (ADR 0035) moves the seeded line to "Odunde, the Gala and
