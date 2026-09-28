@@ -1,3 +1,4 @@
+import { ZEFFY_ORIGIN } from '@oy/ui/forms/GiveDialog/zeffy.ts';
 import { describe, expect, it } from 'vitest';
 import { buildCsp, cspDirectives, cspExempt, framableSrc, reportingEndpointsHeader } from './csp';
 
@@ -8,6 +9,11 @@ describe('buildCsp', () => {
       expect(header).toContain(`${name} ${values.join(' ')}`);
     }
     expect(header.endsWith('report-to csp-endpoint; report-uri /api/csp-report')).toBe(true);
+  });
+
+  it('frames the origin the Give Dialog hears Zeffy from, and loads no Zeffy script (ADR 0045)', () => {
+    expect(cspDirectives['frame-src']).toContain(ZEFFY_ORIGIN);
+    expect(cspDirectives['script-src']?.join(' ')).not.toContain('zeffy');
   });
 
   it('allows only the third parties the site uses', () => {

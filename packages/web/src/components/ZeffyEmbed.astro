@@ -4,23 +4,27 @@
  * so the cached page never carries the URL and a Studio change shows on the next open. Reads
  * `siteSettings.zeffyEmbedUrl` and hands the Give Dialog a template with the iframe, which the
  * dialog mounts on first open; while the URL is empty or not a Zeffy address it answers the Pending chip and the
- * dialog stays in its pending mode. Mount with `server:defer` and a `slot="fallback"` child.
+ * dialog stays in its pending mode. The iframe's address carries Zeffy's v2 parameters, so the form
+ * posts its readiness, height and thank-you page to the dialog (ADR 0045). Mount with `server:defer`
+ * and a `slot="fallback"` child.
  */
 import { siteSettingsQuery } from '@oy/content/queries';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
+import { zeffyFrameSrc } from '@oy/ui/forms/GiveDialog/zeffy.ts';
 import { framableSrc } from '../lib/csp';
 import { loadQuery } from '../lib/sanity/load-query';
 
 const { data } = await loadQuery(siteSettingsQuery, {}, { cookies: Astro.cookies });
 // Only an address the policy frames becomes an iframe (a javascript: URL written through the API
 // would run in the site's origin); anything else answers Pending, as an empty field does.
-const url = framableSrc(data?.zeffyEmbedUrl);
+const form = framableSrc(data?.zeffyEmbedUrl);
+const src = form ? zeffyFrameSrc(form) : undefined;
 ---
 
 {
-  url ? (
+  src ? (
     <template data-zeffy>
-      <iframe src={url} title="Zeffy donation form" allow="payment" loading="lazy"></iframe>
+      <iframe src={src} title="Zeffy donation form" allow="payment" loading="lazy"></iframe>
     </template>
   ) : (
     <Pending what="the Zeffy link" />

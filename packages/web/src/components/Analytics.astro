@@ -4,8 +4,9 @@
 // Vercel takes effect on the next deploy (docs/runbook.md). Pageviews on every navigation, plus
 // the track events the components announce as `oy:track` (CONTEXT.md, Track event; the names in
 // docs/design/ROUTES-AND-INTERACTIONS.md section 2): enquiry_opened, enquiry_submitted,
-// give_opened, give_embed_failed, newsletter_submitted. Events raised before PostHog loads wait
-// in a queue. No autocapture, no session recording, never a form's contents.
+// give_opened, give_embed_failed, newsletter_submitted, and give_completed when Zeffy's form shows
+// its thank-you page (ADR 0045: a sign in the browser, not a record of the gift). Events raised
+// before PostHog loads wait in a queue. No autocapture, no session recording, never a form's contents.
 ---
 
 <script>

@@ -2,8 +2,9 @@ import { expect, test } from '@playwright/test';
 
 // While the settings hold no Zeffy URL (wayfinder ticket 03) the dialog opens in its pending
 // mode: the Pending chip, the check line, Contact us, no Try again. Once the URL is set the
-// embed box mounts the island's iframe instead. The timed fallback is covered by the GiveDialog
-// stories' play functions.
+// embed box mounts the island's iframe instead, its address carrying Zeffy's v2 parameters
+// (ADR 0045). The timed fallback is covered by the GiveDialog stories' play functions, and
+// Zeffy's messages by the GiveDialog element tests.
 test('a Donate trigger opens the Give Dialog, Escape closes it and focus returns', async ({
   page,
   isMobile,
@@ -24,8 +25,14 @@ test('a Donate trigger opens the Give Dialog, Escape closes it and focus returns
       'The online giving form is not set up yet.',
     );
     await expect(dialog.locator('[data-retry]')).toHaveCount(0);
+    // No form, so no link to Zeffy's page for it.
+    await expect(dialog.getByRole('link', { name: /Give on Zeffy's page/ })).toHaveCount(0);
   } else {
-    await expect(dialog.locator('[data-mount] iframe')).toHaveCount(1);
+    const frame = dialog.locator('[data-mount] iframe');
+    await expect(frame).toHaveCount(1);
+    const src = new URL((await frame.getAttribute('src')) ?? '');
+    expect(src.searchParams.get('embed-version')).toBe('v2');
+    expect(src.searchParams.get('embedId')).toBe('give');
   }
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
   await page.keyboard.press('Escape');

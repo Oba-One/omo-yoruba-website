@@ -8,16 +8,24 @@ type Args = StoryArgs<ComponentProps<typeof GiveDialog>>;
 
 const mobile = { globals: { viewport: { value: 'mobile', isRotated: false } } };
 
+/** Zeffy's own address, standing in for the form's page (the settings hold no form yet). */
+const ZEFFY_PAGE_STAND_IN = 'https://www.zeffy.com';
+
 const meta = {
   title: 'Forms/GiveDialog',
   component: GiveDialog,
-  args: { open: true, mode: 'embed', slots: { embed: { component: GiveEmbedPlaceholder } } },
+  args: {
+    open: true,
+    mode: 'embed',
+    pageHref: ZEFFY_PAGE_STAND_IN,
+    slots: { embed: { component: GiveEmbedPlaceholder } },
+  },
   parameters: {
     layout: 'fullscreen',
     docs: {
       description: {
         component:
-          'Every Donate trigger opens this dialog around the Zeffy embed. The site hands the iframe over as a template from a server island; the dialog mounts it on first open and falls back after four seconds to the mailing address and the contact enquiry. While the settings hold no Zeffy URL the island answers Pending.',
+          "Every Donate trigger opens this dialog around the Zeffy embed. The site hands the iframe over as a template from a server island; the dialog mounts it on first open, sizes it by Zeffy's own messages and falls back after eight seconds to the mailing address and the contact enquiry. Under the form a link opens Zeffy's own page for it in a new tab, where Apple Pay and Google Pay can show. While the settings hold no Zeffy URL the island answers Pending.",
       },
     },
   },
@@ -26,8 +34,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
-/** The embed box, with the story's stand-in where the iframe renders on the site. */
+/** The embed box, with the story's stand-in where the iframe renders on the site, and the link to Zeffy's page. */
 export const Default: Story = {};
+
+/** A Zeffy address that is not an embed address: the form without the link to its page. */
+export const WithoutPageLink: Story = { args: { pageHref: null } };
 
 /** The iframe did not load in time: the check line and the contact enquiry, address Pending. */
 export const Fallback: Story = { args: { mode: 'fallback' } };

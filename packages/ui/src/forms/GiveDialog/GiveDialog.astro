@@ -3,16 +3,22 @@
  * The dialog every Donate trigger opens (CONTEXT.md, Give Dialog): the aṣọ òkè top edge, the
  * title, the lead line, the embed box and the fallback. The embed arrives through the `embed`
  * slot as a `<template data-zeffy>` holding the iframe (the site's server island, ADR 0020); the
- * inline element mounts it on first open and starts the timer (4 seconds by default). If the
- * iframe has not loaded by then, or the template never arrives, the fallback shows: write to us,
- * send a check to the mailing address (Pending until the settings hold it), Contact us (the
- * contact enquiry) and Try again. `mode="pending"` is the island's answer when the settings hold
- * no Zeffy URL. `#give` in the URL opens the dialog on load; a native dialog gives the focus
- * trap and Escape; the element returns focus to the trigger and strips the hash on close.
- * Announces `give_opened` and `give_embed_failed` as `oy:track` events (ADR 0018).
+ * inline element mounts it on first open and starts the timer (8 seconds by default). Zeffy's
+ * form then reports on itself (ADR 0045): its connected message counts as ready, as the frame's
+ * load does, its resized message sets the frame's height, and its thank-you page announces
+ * `give_completed`. If the form is not ready by the end of the timer, or the template never
+ * arrives, the fallback shows: write to us, send a check to the mailing address (Pending until
+ * the settings hold it), Contact us (the contact enquiry) and Try again. Under the form a link
+ * opens Zeffy's own page for it in a new tab, where Apple Pay and Google Pay can show.
+ * `mode="pending"` is the island's answer when the settings hold no Zeffy URL. `#give` in the URL
+ * opens the dialog on load; a native dialog gives the focus trap and Escape; the element returns
+ * focus to the trigger and strips the hash on close. Announces `give_opened`,
+ * `give_embed_failed` and `give_completed` as `oy:track` events (ADR 0018).
  */
+import { safeHref } from '../../core/ActionButton/action';
 import Button from '../../core/Button/Button.astro';
 import Pending from '../../core/Pending/Pending.astro';
+import { ZEFFY_EMBED_ID, ZEFFY_ORIGIN } from './zeffy';
 
 export type GiveMode = 'embed' | 'fallback' | 'pending';
 
@@ -27,6 +33,8 @@ interface Props {
   ein?: string | null;
   /** The contact enquiry trigger. */
   contactHref?: string;
+  /** Zeffy's own page for the form (`zeffyPageHref`), linked under the embed; none draws no link. */
+  pageHref?: string | null;
   /** Milliseconds before the fallback shows; stories shorten it. */
   timeout?: number;
 }
@@ -38,7 +46,8 @@ const {
   address,
   ein,
   contactHref = '?enquiry=contact#enquiry',
-  timeout = 4000,
+  pageHref,
+  timeout = 8000,
 } = Astro.props;
 
 const LEADS = {
@@ -54,11 +63,15 @@ const addressLine = [orgName?.trim(), ...(address ?? '').split(/\r?\n/).map((l) 
   .filter(Boolean)
   .join(', ');
 const einText = ein?.trim() || 'XX-XXXXXXX';
+// The pending mode has no form, so it has no page to link either.
+const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
 ---
 
 <oy-give-dialog
   data-mode={mode}
   data-timeout={timeout}
+  data-zeffy-origin={ZEFFY_ORIGIN}
+  data-zeffy-embed={ZEFFY_EMBED_ID}
   data-lead-embed={LEADS.embed}
   data-lead-fallback={LEADS.fallback}
   data-heading-fallback={HEADINGS.fallback}
@@ -79,6 +92,25 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
           <p class="oy-give-loading" data-loading hidden={mode === 'pending'}>Loading the giving form...</p>
           <div class="oy-give-mount" data-mount></div>
           <slot name="embed" />
+          {
+            pageLink && (
+              <p class="oy-give-page">
+                <span id="give-page-note">
+                  On a phone, Zeffy's own page can take Apple Pay and Google Pay. It opens in a new tab.
+                </span>
+                <Button
+                  variant="quiet"
+                  href={pageLink}
+                  target="_blank"
+                  rel="noopener"
+                  aria-describedby="give-page-note"
+                  arrow
+                >
+                  Give on Zeffy's page
+                </Button>
+              </p>
+            )
+          }
         </div>
         <div class="oy-ok oy-give-fallback" data-fallback hidden={mode === 'embed'}>
           <b data-heading>{mode === 'pending' ? HEADINGS.pending : HEADINGS.fallback}</b>
@@ -148,12 +180,25 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
   .oy-give-mount:empty {
     display: none;
   }
+  /* The starting height, and the floor under the height Zeffy's messages set: a taller step grows the
+     frame, a shorter one never shrinks it below this (ADR 0045). */
   .oy-give-mount :global(iframe) {
     display: block;
     width: 100%;
     height: min(640px, 70vh);
+    min-height: min(640px, 70vh);
     border: 0;
     border-radius: 6px;
+  }
+  .oy-give-page {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 12px;
+    font-size: var(--text-small);
+    line-height: 1.5;
+    color: var(--text-muted);
   }
   .oy-give-fallback {
     background: var(--paper);
@@ -183,6 +228,8 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
     // wiring happens once per element; the document and window listeners register once, when this
     // script first runs while the page parses, so they stay ahead of the router's own click
     // listener, which would otherwise navigate to the trigger's href as well (ADR 0041).
+    // The tallest height, in pixels, a Zeffy message may give the frame; the stylesheet keeps the floor.
+    const FRAME_MAX = 2400;
     const wireGiveDialog = (host) => {
       const dialog = host.querySelector('dialog');
       if (!dialog || typeof dialog.showModal !== 'function') return null;
@@ -192,11 +239,13 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
       const loading = host.querySelector('[data-loading]');
       const fallback = host.querySelector('[data-fallback]');
       const heading = host.querySelector('[data-heading]');
-      const timeout = Number(host.dataset.timeout) || 4000;
+      const timeout = Number(host.dataset.timeout) || 8000;
       const api = { trigger: null, dialog };
       let timer = 0;
       let poll = 0;
       let mounted = false;
+      let frame = null;
+      let completed = false;
       const track = (event) => {
         const report = () =>
           host.dispatchEvent(new CustomEvent('oy:track', { bubbles: true, detail: { event } }));
@@ -232,8 +281,9 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
         const template = host.querySelector('template[data-zeffy]');
         if (!template || !mount || mounted) return Boolean(template);
         mounted = true;
+        completed = false;
         mount.replaceChildren(template.content.cloneNode(true));
-        const frame = mount.querySelector('iframe');
+        frame = mount.querySelector('iframe');
         if (frame) frame.addEventListener('load', ready, { once: true });
         else ready();
         return true;
@@ -262,8 +312,26 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
       api.openFromHash = () => {
         if (window.location.hash === '#give' && !dialog.open) api.open(null);
       };
+      // What Zeffy's mounted form reports on itself (ADR 0045): connected counts as ready, as the frame's
+      // load does; resized sets the frame's height, up to FRAME_MAX; the thank-you page announces
+      // give_completed once per mounted form. That is a sign in the browser, never a record of the gift.
+      api.receive = (message) => {
+        if (!frame) return;
+        if (message.type === 'zeffy-embed:connected') {
+          ready();
+        } else if (message.type === 'zeffy-embed:resized') {
+          const height = message.height;
+          if (Number.isFinite(height) && height > 0) {
+            frame.style.height = Math.min(Math.round(height), FRAME_MAX) + 'px';
+          }
+        } else if (message.type === 'zeffy-embed:thank-you-page-shown' && !completed) {
+          completed = true;
+          track('give_completed');
+        }
+      };
       const retry = () => {
         mounted = false;
+        frame = null;
         if (mount) mount.replaceChildren();
         arm();
       };
@@ -342,6 +410,16 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
     };
     window.addEventListener('hashchange', openFromHash);
     document.addEventListener('astro:page-load', openFromHash);
+    // Zeffy's form posts to the page that frames it. Only a message from the origin the element names, about
+    // the form it names, reaches the element (ADR 0045), as Zeffy's own embed script filters them.
+    window.addEventListener('message', (event) => {
+      const host = document.querySelector('oy-give-dialog');
+      const api = host && host.oyApi;
+      const data = event.data;
+      if (!api || event.origin !== host.dataset.zeffyOrigin) return;
+      if (!data || typeof data !== 'object' || data.embedId !== host.dataset.zeffyEmbed) return;
+      if (typeof data.type === 'string') api.receive(data);
+    });
 
     customElements.define(
       'oy-give-dialog',
