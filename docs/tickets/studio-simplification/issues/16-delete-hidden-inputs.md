@@ -23,6 +23,7 @@ Blocked by: 09, 11
 
 - [ ] `RETIRED_FIELDS` entries; the seed; the queries that still fetch them
 - [ ] The `retired-fields` migration
+- [ ] The content-lint function skips the inputs that stay hidden for good (one plain rule it and the schema share), so the wording to check never names an input nobody can open (ticket 07)
 - [ ] `bun check` green; Playwright unchanged in both data modes
 
 ## Comments

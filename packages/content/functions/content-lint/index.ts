@@ -1,7 +1,7 @@
 /**
  * content-lint (ADR 0010, ADR 0014): on `create` or `update` of a content document (the filter in
  * sanity.blueprint.ts names the types), walk its strings with the repo's own checks and write one
- * lintReport, empty when the document is clean, so the Pending view can list what needs a fix.
+ * lintReport, empty when the document is clean, so the Studio's To do can list what needs a fix.
  * Locally (`sanity functions test`) the report is printed, not written.
  */
 import { createClient } from '@sanity/client';

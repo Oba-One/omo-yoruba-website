@@ -71,17 +71,23 @@ The Studio is embedded at `/admin` (`@sanity/astro`, ADR 0017); it loads the con
 `@oy/content` owns through `packages/web/sanity.config.ts`. Locally: `bun dev`, then open
 http://localhost:4321/admin and log in with the Sanity account that belongs to the project. The
 project's CORS origins must include `http://localhost:4321` with credentials and the production
-origin (wizard stage 1), or the login loop never ends. The sidebar: Pages (the singletons),
-Events, Programs, People, Impact, News, Gallery, Inbox (enquiries by kind, unhandled first, and
-subscribers) and Pending (one row per required-for-launch field, a "Missing entirely" pane for
-document types with no documents yet, and the wording to check that the content-lint function
-writes). Members (Sanity Editors) see everything but site settings, the News page, the Inbox and
+origin (wizard stage 1), or the login loop never ends. The sidebar follows the site (ADR 0042): To
+do, News posts, Events (Odunde Festival with its editions and zones, the End-of-Year Gala with its
+editions, tiers, levels and honorees, Collective events), Photos, People, Pages (each page, with the
+documents only it lists beside it), Used on several pages, and for administrators Site settings and
+the Inbox (enquiries by kind, unhandled first, and subscribers). The To do (`studio/todo.ts`, ADR
+0042) groups the registry's rows by the page that shows them, with counts, listing only what is owed:
+site settings rows gather under Organization details (administrators only), a row bound to an edition
+(an event's facts, the Gala's tiers and levels) counts only the edition its page shows, Still to add lists the documents the site needs more of (and a next
+festival or Gala edition not yet entered), and Wording to check lists the content-lint function's
+reports that have something to fix. One live query feeds it and reads drafts, as the Studio does: a
+row leaves once its documents are fixed, even in a draft, so an edition prepared as drafts for the
+announce day leaves nothing owed while the site still shows its Pending chips until it is published. Members (Sanity Editors) see everything but site settings, the News page, the Inbox and
 the Vision tool (ADR 0042, `packages/content/src/studio/roles.ts`); those documents open read-only
 for them wherever else they turn up, and enquiries and subscribers stay out of search. The three
 held-back switches (the gallery's albums, Our Story's timeline, the Gala's awards) are read-only for
-members, who also cannot restore an old version of those three pages. Events list by kind (Odunde
-Festival editions, End-of-Year Gala editions, Collective events), each starting new events of its
-kind, and an edition's form shows only what its page reads; an input the form hides never blocks
+members, who also cannot restore an old version of those three pages. Each kind's events list
+starts new events of its kind, and an edition's form shows only what its page reads; an input the form hides never blocks
 Publish. The Sanity CLI's config (`packages/content/sanity.config.ts`, `cli: true`) registers the rules
 as written, so a deployed schema (`sanity schema deploy`) tells agents what each field requires. Content Releases and scheduling are switched off: an edition is prepared as drafts and
 published by hand on the announce day. Hiding and locking are not access control: through the API (a
@@ -196,7 +202,7 @@ with their code under `packages/content/functions/`:
   for the kind's role (`siteSettings.contacts`, then the general entry, then `generalEmail`)
   through Resend and patches `notifiedAt`, or `notifyError` when nothing routed or the send failed.
 - `content-lint`: on `create` or `update` of a content document, writes one `lintReport`
-  (empty when clean) that the Studio's Pending view lists under "Wording to check".
+  (empty when clean) that the Studio's To do lists under "Wording to check".
 
 Local test, from the repo root (the wrapper loads `packages/web/.env`):
 

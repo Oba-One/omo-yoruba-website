@@ -1,91 +1,161 @@
 import type {
   DefaultDocumentNodeResolver,
+  ListItemBuilder,
   StructureBuilder,
   StructureResolver,
 } from 'sanity/structure';
-import { ACTIVE_EVENT_KINDS, EVENT_LIST_TITLES } from '../edition-fields';
+import { STUDIO_API_VERSION } from '../api-version';
+import { EVENT_LIST_TITLES } from '../edition-fields';
 import { ENQUIRY_KINDS, KIND_TITLES } from '../enquiry-kinds';
-import { PENDING, pendingFilter, pendingTitle } from '../pending';
-import { singletonTypes } from '../schema/singletons';
-import { STUDIO_API_VERSION } from './config';
+import { EVENT_PAGE_NAMES } from '../routes';
 import { STUDIO_HIDDEN_TYPES } from './document-options';
-import { PendingPresencePane } from './pending-pane';
-import { ADMIN_ONLY_TYPES, isAdministrator } from './roles';
+import { isAdministrator } from './roles';
+import { SITE_PAGES, type SitePage } from './site-pages';
+import { todoItem } from './todo-list';
 
-const GROUPS: { title: string; types: string[] }[] = [
-  { title: 'Events', types: ['event', 'zone', 'ticketTier', 'sponsorLevel', 'honoree'] },
-  { title: 'Programs', types: ['program', 'initiative', 'givingLevel'] },
-  {
-    title: 'People',
-    types: ['person', 'testimonial', 'photographer', 'partner', 'hometownAssociation', 'door'],
-  },
-  { title: 'Impact', types: ['stat', 'outcome', 'governanceDoc', 'timelineEntry'] },
-  { title: 'News', types: ['newsPost'] },
-  { title: 'Gallery', types: ['album'] },
-];
+/*
+ * The sidebar follows the site (ADR 0042; the tree in docs/tickets/studio-simplification/spec.md):
+ * To do, News posts, Events, Photos, People, Pages, Used on several pages. Administrators also get
+ * Site settings, the News page and the Inbox (`studio/roles.ts`).
+ */
 
-const GROUPED = new Set(GROUPS.flatMap((group) => group.types));
+const FESTIVAL_LISTS = ['zone'];
+const GALA_LISTS = ['ticketTier', 'sponsorLevel', 'honoree'];
+const PHOTOS = ['album', 'photographer'];
+const PEOPLE = ['person', 'testimonial', 'hometownAssociation'];
+/** Documents more than one page reads. */
+const SHARED = ['program', 'stat', 'door', 'partner'];
 
-function singletonItems(S: StructureBuilder, administrator: boolean) {
-  return singletonTypes
-    .filter((type) => administrator || !ADMIN_ONLY_TYPES.has(type.name))
-    .map((type) =>
-      S.listItem()
-        .title(type.title ?? type.name)
-        .id(type.name)
-        .child(
-          S.document()
-            .schemaType(type.name)
-            .documentId(type.name)
-            .title(type.title ?? type.name),
-        ),
-    );
-}
+/** The documents a page lists, kept beside the page until they become its own lists (part 5, S14). */
+const PAGE_LISTS: Partial<Record<SitePage, readonly string[]>> = {
+  collectivePage: ['initiative'],
+  impactPage: ['outcome', 'governanceDoc'],
+  storyPage: ['timelineEntry'],
+  donatePage: ['givingLevel'],
+};
 
-function groupItem(S: StructureBuilder, title: string, types: string[]) {
+/** Every type the tree places; a type added later and placed nowhere still shows at the end. */
+const PLACED: ReadonlySet<string> = new Set([
+  'newsPost',
+  'event',
+  ...FESTIVAL_LISTS,
+  ...GALA_LISTS,
+  ...PHOTOS,
+  ...PEOPLE,
+  ...Object.values(PAGE_LISTS).flat(),
+  ...SHARED,
+]);
+
+function typesItem(S: StructureBuilder, id: string, title: string, types: readonly string[]) {
   return S.listItem()
+    .id(id)
     .title(title)
-    .id(title.toLowerCase())
     .child(
       S.list()
+        .id(id)
         .title(title)
         .items(types.map((type) => S.documentTypeListItem(type))),
     );
 }
 
-/** One list per kind still in use, each starting new events of its kind (ADR 0042). */
-function eventsItem(S: StructureBuilder) {
-  const byKind = ACTIVE_EVENT_KINDS.map((kind) =>
-    S.listItem()
-      .title(EVENT_LIST_TITLES[kind])
-      .id(`events-${kind}`)
-      .child(
-        S.documentList()
-          .title(EVENT_LIST_TITLES[kind])
-          .schemaType('event')
-          .apiVersion(STUDIO_API_VERSION)
-          .filter('_type == "event" && kind == $kind')
-          .params({ kind })
-          .defaultOrdering([
-            { field: kind === 'collective' ? 'start' : 'edition', direction: 'desc' },
-          ])
-          // Last: the builder infers templates again on any later call, dropping these.
-          .initialValueTemplates([S.initialValueTemplateItem(`event-${kind}`)]),
-      ),
-  );
+/** One kind's events, each new one starting as that kind. */
+function editionsItem(
+  S: StructureBuilder,
+  kind: keyof typeof EVENT_LIST_TITLES,
+  title: string = EVENT_LIST_TITLES[kind],
+) {
   return S.listItem()
-    .title('Events')
-    .id('events')
+    .id(`events-${kind}`)
+    .title(title)
+    .child(
+      S.documentList()
+        .id(`events-${kind}`)
+        .title(EVENT_LIST_TITLES[kind])
+        .schemaType('event')
+        .apiVersion(STUDIO_API_VERSION)
+        .filter('_type == "event" && kind == $kind')
+        .params({ kind })
+        .defaultOrdering([
+          { field: kind === 'collective' ? 'start' : 'edition', direction: 'desc' },
+        ])
+        // Last: the builder infers templates again on any later call, dropping these.
+        .initialValueTemplates([S.initialValueTemplateItem(`event-${kind}`)]),
+    );
+}
+
+/** An event with its editions and the documents that belong to them. */
+function eventItem(
+  S: StructureBuilder,
+  id: string,
+  kind: 'festival' | 'gala',
+  types: readonly string[],
+) {
+  const title = EVENT_PAGE_NAMES[kind];
+  return S.listItem()
+    .id(id)
+    .title(title)
     .child(
       S.list()
+        .id(id)
+        .title(title)
+        .items([
+          editionsItem(S, kind, 'Editions'),
+          ...types.map((type) => S.documentTypeListItem(type)),
+        ]),
+    );
+}
+
+function eventsItem(S: StructureBuilder) {
+  return S.listItem()
+    .id('events')
+    .title('Events')
+    .child(
+      S.list()
+        .id('events')
         .title('Events')
         .items([
-          ...byKind,
-          S.divider(),
-          ...['zone', 'ticketTier', 'sponsorLevel', 'honoree'].map((type) =>
-            S.documentTypeListItem(type),
-          ),
+          eventItem(S, 'odunde', 'festival', FESTIVAL_LISTS),
+          eventItem(S, 'gala', 'gala', GALA_LISTS),
+          editionsItem(S, 'collective'),
         ]),
+    );
+}
+
+function singletonItem(S: StructureBuilder, type: string, title: string) {
+  return S.listItem()
+    .id(type)
+    .title(title)
+    .child(S.document().schemaType(type).documentId(type).title(title));
+}
+
+/** Each page opens its document; a page that lists documents of its own opens them beside it. */
+function pagesItem(S: StructureBuilder, administrator: boolean) {
+  const pages = SITE_PAGES.map(({ type, title }) => {
+    const lists = PAGE_LISTS[type];
+    if (!lists) return singletonItem(S, type, title);
+    return S.listItem()
+      .id(type)
+      .title(title)
+      .child(
+        S.list()
+          .id(type)
+          .title(title)
+          .items([
+            singletonItem(S, type, `${title} page`),
+            ...lists.map((list) => S.documentTypeListItem(list)),
+          ]),
+      );
+  });
+  // No News page before launch (D22): only an administrator changes its document.
+  const news = administrator ? [singletonItem(S, 'newsPage', 'News & Events page')] : [];
+  return S.listItem()
+    .id('pages')
+    .title('Pages')
+    .child(
+      S.list()
+        .id('pages')
+        .title('Pages')
+        .items([...pages, ...news]),
     );
 }
 
@@ -134,78 +204,28 @@ function inboxItem(S: StructureBuilder) {
     );
 }
 
-/**
- * The Pending view. Members see only what they can act on: the rows and the wording to check of an
- * administrator's documents are left out (ADR 0042). Row ids keep the registry index, so both roles
- * share them.
- */
-function pendingItem(S: StructureBuilder, administrator: boolean) {
-  const presence = S.listItem()
-    .title('Missing entirely')
-    .id('pending-presence')
-    .child(S.component(PendingPresencePane).title('Missing entirely').id('pending-presence-pane'));
-  const lint = S.listItem()
-    .title('Wording to check on published pages')
-    .id('pending-lint')
-    .child(
-      S.documentList()
-        .title('Wording to check')
-        .schemaType('lintReport')
-        .apiVersion(STUDIO_API_VERSION)
-        .filter('_type == "lintReport" && count(findings) > 0 && !(documentType in $hidden)')
-        .params({ hidden: administrator ? [] : [...ADMIN_ONLY_TYPES] })
-        .defaultOrdering([{ field: 'checkedAt', direction: 'desc' }]),
-    );
-  const rows = PENDING.flatMap((entry, index) =>
-    !administrator && ADMIN_ONLY_TYPES.has(entry.type)
-      ? []
-      : S.listItem()
-          .title(pendingTitle(entry))
-          .id(`pending-${index}`)
-          .child(
-            S.documentList()
-              .title(pendingTitle(entry))
-              .schemaType(entry.type)
-              .apiVersion(STUDIO_API_VERSION)
-              .filter(pendingFilter(entry)),
-          ),
-  );
-  return S.listItem()
-    .title('Pending')
-    .id('pending')
-    .child(
-      S.list()
-        .title('Pending')
-        .items([presence, lint, S.divider(), ...rows]),
-    );
-}
-
-/**
- * docs/design/CONTENT-MODEL.md section 5 as amended by ADR 0013, ADR 0014 and ADR 0042. Site
- * settings, the News page and the Inbox show for administrators only (`ADMIN_ONLY_TYPES`).
- */
 export const structure: StructureResolver = (S, context) => {
   const administrator = isAdministrator(context.currentUser);
+  const forAdministrators: ListItemBuilder[] = administrator
+    ? [singletonItem(S, 'siteSettings', 'Site settings'), inboxItem(S)]
+    : [];
   return S.list()
     .title('Content')
     .items([
-      S.listItem()
-        .title('Pages')
-        .id('pages')
-        .child(S.list().title('Pages').items(singletonItems(S, administrator))),
+      todoItem(S, context, administrator),
       S.divider(),
+      S.documentTypeListItem('newsPost').title('News posts'),
       eventsItem(S),
-      ...GROUPS.filter((group) => group.title !== 'Events').map((group) =>
-        groupItem(S, group.title, group.types),
-      ),
+      typesItem(S, 'photos', 'Photos', PHOTOS),
+      typesItem(S, 'people', 'People', PEOPLE),
       S.divider(),
-      ...(administrator ? [inboxItem(S)] : []),
-      pendingItem(S, administrator),
-      S.divider(),
-      // Anything registered later and not yet grouped still shows, so nothing is unreachable.
-      ...S.documentTypeListItems().filter(
-        (item) => !GROUPED.has(item.getId() ?? '') && !STUDIO_HIDDEN_TYPES.has(item.getId() ?? ''),
-      ),
+      pagesItem(S, administrator),
+      typesItem(S, 'shared', 'Used on several pages', SHARED),
+      ...(forAdministrators.length > 0 ? [S.divider(), ...forAdministrators] : []),
+      ...S.documentTypeListItems().filter((item) => {
+        const id = item.getId() ?? '';
+        return !PLACED.has(id) && !STUDIO_HIDDEN_TYPES.has(id);
+      }),
     ]);
 };
 

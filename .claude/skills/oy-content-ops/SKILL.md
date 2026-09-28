@@ -38,7 +38,7 @@ rather than duplicates. Ids never contain a period.
   (ADR 0030, ADR 0042), and the form shows nothing else. The Collective page lists it from the moment it is published until it
   ends, or with no end until its start day ends in Los Angeles, nearest first, with "Ask to join" opening
   the contact form. An event without a start never lists, so enter it once the date is set. The venue's
-  chip shows until `venue.name` is filled; the Pending view counts the events still to come.
+  chip shows until `venue.name` is filled; the To do's Still to add counts the events still to come.
 - **Initiative**: Solar Hub and Green Goods are `initiative` documents the Collective page lists in the
   order of `collectivePage.initiatives`. The status line is the pill in the Collective's own words, set
   only from what the owner confirms ("[ How far the project has come ]"); `status`, `serves`, `since` and
@@ -84,11 +84,17 @@ rather than duplicates. Ids never contain a period.
 - **Routing contact** (administrators): `siteSettings.contacts[]`, one entry per role with name, email, phone and
   the response line the success copy uses ("within five working days"). The `general` contact answers
   on Get Involved and Our Story; `partnerships` closes Impact.
-- **Clear pending**: open Pending in the Studio (rows come from `packages/content/src/pending.ts`;
-  members see only the rows they can act on; the site settings and News page rows are an
-  administrator's), fill
-  the field, publish, confirm the chip is gone on the site after the purge. "Missing entirely" rows
-  clear when the documents exist.
+- **Clear pending**: open the To do in the Studio (rows come from `packages/content/src/pending.ts`,
+  grouped by the page that shows them; members see only the rows they can act on, and the site
+  settings rows sit under Organization details for administrators), open a row, fill the field and
+  publish; the row leaves the To do, and the chip leaves the site after the purge. Still to add
+  rows clear when enough documents exist. Through the Sanity MCP server there is no To do: query
+  the row's filter (`pendingFilter` in `pending.ts`) with the drafts perspective, and for a row with
+  an `edition` keep only the documents of the edition its page shows (`'next'`: the next festival
+  or Gala edition still to come, or the Collective's dated events still to come; `'past'`: the
+  newest past edition whose album has photographs, as `lead-event.ts` reads them). An event is its
+  own edition; a ticket tier or sponsor level names one in `event`, and a sponsor level naming none
+  shows every year.
 - **Enquiries** (administrators): the Inbox lists them by kind, unhandled first; tick `handled` and add notes. They hold personal data and stay out of search. A row
   with `notifyError` did not reach its email; fix the routing contact and the function retries
   on the next create only, so forward it by hand.

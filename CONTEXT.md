@@ -255,13 +255,13 @@ empty the copy names the role instead.
 _Avoid_: named contact in code, hard-coded address, coordinator field
 
 **Pending**:
-An empty required-for-launch field. Renders a named chip on the site and a row in the
-Studio Pending view.
+An empty required-for-launch field. Renders a named chip on the site until the fix is published, and a
+row in the Studio's To do until it is filled, in a draft or published.
 _Avoid_: placeholder flag, TODO, lorem ipsum, mock
 
 **Pending registry**:
-The one list of required-for-launch fields with the wording of what is missing. The Studio
-Pending view and the site's chips both read it.
+The one list of required-for-launch fields with the wording of what is missing. The Studio's
+To do and the site's chips both read it.
 _Avoid_: placeholder list, TODO list, missing-content map
 
 **Presence pending**:
@@ -360,20 +360,17 @@ Story's timeline; the Gala's awards). Read-only for members.
 _Avoid_: feature flag, lock, admin option
 
 **To do**:
-The Studio view listing what the site still owes, by page, with counts: only rows that match something, the types
-still to add, and wording to check. It replaces the Pending view in the second part of the Studio simplification
-(ADR 0042); until then the Pending view does its job.
-_Avoid_: backlog, task list
+The Studio view listing what the site still owes, by page, with counts: only rows that match something (a row bound
+to an edition only for the edition its page shows), what is still to add, and wording to check (ADR 0042). It replaced the
+Pending view.
+_Avoid_: Pending view, backlog, task list
 
 **Used on several pages**:
-The sidebar group for documents more than one page reads: programs, headline figures, doors, partners. It arrives
-with the sidebar's regrouping in the second part of the Studio simplification (ADR 0042); until then those
-documents sit under Programs, Impact and People.
+The sidebar group for documents more than one page reads: programs, headline figures, doors, partners (ADR 0042).
 _Avoid_: shared content, globals, library
 
 **Wording to check**:
-The list of lint reports with something to fix: published text that breaks the voice rules. A list in the Pending
-view, then a section of the To do view.
+The To do's list of lint reports with something to fix: published text that breaks the voice rules.
 _Avoid_: lint errors, validation warnings, voice findings
 
 **Layout option**:

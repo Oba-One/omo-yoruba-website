@@ -10,7 +10,7 @@ Blocked by: 02, 03, 07
 ## Question
 
 `/get-involved`, `/impact`, `/our-story` and `/donate` render every fact the Studio does not hold as its
-Pending chip or line; the Studio's Pending view lists each one by page. The register
+Pending chip or line; the Studio's To do lists each one by page. The register
 (`19 Mock Content Register.dc.html`) marks the prototypes' versions invented, so none of them stands in.
 These are the pages a grant reviewer checks, so each needs to be true before launch. In the Studio (the
 recipes are in `oy-content-ops`):
