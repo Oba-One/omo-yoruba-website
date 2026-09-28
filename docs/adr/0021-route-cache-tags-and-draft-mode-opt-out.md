@@ -7,8 +7,8 @@ from the same route map the Presentation locations use (`tagsForRoute` in `@oy/c
 and the Vercel provider adds its own path tag. `/api/revalidate` purges a published document's type
 tag as a tag and each of its routes as a path (`purgePlan`), so a publish reaches every page that
 reads the type without the site keeping a list of pages per document. Draft mode opts out per
-request: the middleware switches the cache off after the render whenever the perspective cookie is
-present, on anything but a GET, and on every request to the preview host, so a response with drafts
+request: the middleware switches the cache off after the render whenever the perspective cookie or
+the draft session (ADR 0044) is present, on anything but a GET, and on every request to the preview host, so a response with drafts
 is never stored. Because Vercel's CDN key ignores cookies, an editor on the public host could still
 be served the public copy; the Presentation tool therefore previews on `PUBLIC_PREVIEW_ORIGIN` when
 the owner sets it, a second hostname of the same deployment with its own key space and no cache,
@@ -34,6 +34,7 @@ and on its own origin until then (right locally, where the cache is a no-op).
   enable route already sets, and `frame-ancestors` that admits the Studio's origin when the CSP is
   enforced (Phase 9).
 - As a custom domain the preview host sits outside Vercel Authentication ("all except custom
-  domains"), so anyone can load its uncached published pages; drafts still need the signed enable
-  route. Every response it gives carries `X-Robots-Tag: noindex, nofollow` (the middleware) so it
+  domains"), so anyone can load its uncached published pages; drafts still need the session cookie
+  the enable route signs (ADR 0044, which made this true: until 27 September the perspective cookie alone
+  read drafts). Every response it gives carries `X-Robots-Tag: noindex, nofollow` (the middleware) so it
   never competes with the public host in search.

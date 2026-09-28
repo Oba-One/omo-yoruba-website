@@ -4,7 +4,9 @@
  * personal data), so every read carries the Viewer token, server side only; without the token
  * every read answers null and the site renders Pending. The perspective cookie the preview
  * routes set switches a read to drafts (or the release stack the Studio asked for) with stega
- * and the source map for Visual Editing (the layout mounts the overlay). A page never throws because
+ * and the source map for Visual Editing (the layout mounts the overlay), but only beside the
+ * session cookie the same route signed (`draft-session.ts`): anyone can set the perspective
+ * cookie by hand, and without the session it reads as published. A page never throws because
  * Sanity did: a failed read logs and answers null, which is also what lets the dev server and CI
  * run against a placeholder project.
  */
@@ -13,7 +15,8 @@ import { sanityClient } from 'sanity:client';
 import { stegaFilter } from '@oy/content/stega';
 import type { ClientReturn, QueryParams } from '@sanity/client';
 import type { AstroCookies } from 'astro';
-import { PERSPECTIVE_COOKIE, type PreviewPerspective, perspectiveFromCookie } from './preview';
+import { previewPerspective } from './draft-session';
+import { DRAFT_SESSION_COOKIE, PERSPECTIVE_COOKIE, type PreviewPerspective } from './preview';
 
 export interface LoadQueryOptions {
   cookies?: AstroCookies;
@@ -21,8 +24,9 @@ export interface LoadQueryOptions {
 
 export interface LoadQueryResult<T> {
   data: T | null;
+  /** The perspective the request reads: published unless its draft session verifies. */
   perspective: PreviewPerspective;
-  /** Whether drafts were read with the token. */
+  /** Whether the request is in draft mode, so drafts were read (or would have been, had the read not failed). */
   preview: boolean;
   error?: unknown;
 }
@@ -39,14 +43,36 @@ const client = sanityClient.withConfig({
   ...(token ? { token } : {}),
 });
 
+// One answer per request: the page's read and the layout's run apart, and an answer taken for each
+// could split a request across the session's expiry, or leave the layout on published when only its
+// own read failed, mounting the router beside a draft page (ADR 0041). Astro hands every component
+// of one render the same cookies object, so it keys the answer.
+const decided = new WeakMap<AstroCookies, PreviewPerspective>();
+
+function requestPerspective(cookies: AstroCookies | undefined): PreviewPerspective {
+  if (!cookies) return 'published';
+  let perspective = decided.get(cookies);
+  if (perspective === undefined) {
+    perspective = previewPerspective(
+      {
+        perspective: cookies.get(PERSPECTIVE_COOKIE)?.value,
+        session: cookies.get(DRAFT_SESSION_COOKIE)?.value,
+      },
+      token,
+      Date.now(),
+    );
+    decided.set(cookies, perspective);
+  }
+  return perspective;
+}
+
 export async function loadQuery<const Q extends string>(
   query: Q,
   params: QueryParams = {},
   { cookies }: LoadQueryOptions = {},
 ): Promise<LoadQueryResult<ClientReturn<Q, unknown>>> {
-  const wanted = perspectiveFromCookie(cookies?.get(PERSPECTIVE_COOKIE)?.value);
-  const preview = wanted !== 'published' && Boolean(token);
-  const perspective: PreviewPerspective = preview ? wanted : 'published';
+  const perspective = requestPerspective(cookies);
+  const preview = perspective !== 'published';
   try {
     const data = await client.fetch(
       query,
@@ -64,6 +90,6 @@ export async function loadQuery<const Q extends string>(
         message: error instanceof Error ? error.message : String(error),
       }),
     );
-    return { data: null, perspective: 'published', preview: false, error };
+    return { data: null, perspective, preview, error };
   }
 }

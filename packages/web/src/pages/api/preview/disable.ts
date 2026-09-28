@@ -3,7 +3,7 @@ import { disableCookieHeaders } from '../../../lib/sanity/preview';
 
 export const prerender = false;
 
-/** Clears the perspective cookie (the Presentation tool does not call this itself) and goes home. */
+/** Clears both draft-mode cookies (the Presentation tool does not call this itself) and goes home. */
 export const GET: APIRoute = () => {
   const headers = new Headers({ Location: '/' });
   for (const header of disableCookieHeaders()) headers.append('Set-Cookie', header);

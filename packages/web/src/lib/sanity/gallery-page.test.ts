@@ -201,6 +201,8 @@ describe('buildGalleryPage', () => {
         { label: 'End-of-Year Gala', href: '/gala' },
       ],
     });
+    // Held, no tile is built: no cover and no photo address leave the builder (R01).
+    expect(page.albums.tiles).toEqual([]);
   });
 
   it("closes with photography credit and permissions: the Credits line, the owner's policy and the inbox, each owed while empty", () => {

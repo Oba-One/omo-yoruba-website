@@ -167,25 +167,29 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
         notePending={page.past.attendancePending}
         id="past-heading"
       />
-      <PhotoCarousel
-        id="past-carousel"
-        labelledby="past-heading"
-        slides={page.past.slides}
-        pending={page.past.pending}
-        edit={page.past.album?.edit}
-      />
       {
-        page.past.album && (
-          <CreditLine
-            credit={page.past.album.credit}
-            confirmed={page.past.album.confirmed}
-            pending={page.past.album.pending}
-          />
+        !page.past.held && (
+          <>
+            <PhotoCarousel
+              id="past-carousel"
+              labelledby="past-heading"
+              slides={page.past.slides}
+              pending={page.past.pending}
+              edit={page.past.album?.edit}
+            />
+            {page.past.album && (
+              <CreditLine
+                credit={page.past.album.credit}
+                confirmed={page.past.album.confirmed}
+                pending={page.past.album.pending}
+              />
+            )}
+            <ButtonRow>
+              <Button variant="secondary" href="/gallery" arrow>All Odunde albums</Button>
+            </ButtonRow>
+          </>
         )
       }
-      <ButtonRow>
-        <Button variant="secondary" href="/gallery" arrow>All Odunde albums</Button>
-      </ButtonRow>
     </Section>
 
     <Section id="partners" labelledby="partners-heading">

@@ -10,6 +10,7 @@
  * page adds its own newsletter band. Where the prototype's SVG marks and two columns differ from
  * the routes table's initials and four columns, the prototype won (the later polish).
  */
+import { safeHref } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
 import NewsletterForm, {
   type NewsletterState,
@@ -61,17 +62,21 @@ const addressLines = (settings.address ?? '')
   .split(/\r?\n/)
   .map((line) => line.trim())
   .filter(Boolean);
-const socials = (settings.socials ?? []).filter(
-  (social): social is { network: SocialNetwork; url: string } =>
-    Boolean(social.network && social.url),
-);
-
 const NETWORK_NAMES: Record<SocialNetwork, string> = {
   instagram: 'Instagram',
   facebook: 'Facebook',
   linkedin: 'LinkedIn',
   youtube: 'YouTube',
 };
+
+// The schema's rules run only in the Studio, so a value written through the API is checked again here, as
+// every other Studio link is (safeHref): a link renders only with a safe address and a network it has a
+// mark and a name for, never as an empty, nameless link.
+const socials = (settings.socials ?? []).flatMap((social) => {
+  const url = safeHref(social.url);
+  const network = social.network;
+  return url && network && Object.hasOwn(NETWORK_NAMES, network) ? [{ network, url }] : [];
+});
 ---
 
 <footer class="oy-footer oy-dark v2-footer">

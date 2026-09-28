@@ -35,8 +35,9 @@ and no GROQ.
 ## Draft mode
 
 The Studio's Presentation tool opens `/api/preview/enable`, which checks its secret and sets the
-perspective cookie. With the cookie, `loadQuery` reads drafts with stega, the layout mounts the
-overlay and nothing is cached; `/api/preview/disable` clears it. The preview host and the checks by
+perspective cookie and a session signed with the Viewer token (ADR 0044). With both, `loadQuery`
+reads drafts with stega, the layout mounts the overlay and nothing is cached; a perspective cookie
+set by hand, without the session, reads as published. `/api/preview/disable` clears both. The preview host and the checks by
 hand: [Studio, preview and Visual Editing](../../docs/runbook.md#studio-preview-and-visual-editing).
 
 ## Commands

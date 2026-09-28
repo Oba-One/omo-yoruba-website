@@ -49,6 +49,14 @@ describe('the Gallery page-section stories', () => {
     expect(root?.querySelector('#credit')).not.toBeNull();
   });
 
+  it('state soon on an album page: the sentence in place of the photographs, no count', async () => {
+    const root = (await renderToBody(State.AlbumSoon)).querySelector('.oy-home');
+    expect(root?.querySelector('#photographs')).not.toBeNull();
+    expect(root?.querySelector('.oy-lightbox, a[data-photo]')).toBeNull();
+    expect(text(root?.querySelector('#photographs'))).toContain('The albums are being prepared.');
+    expect(root?.querySelector('header .oy-phead-facts')).toBeNull();
+  });
+
   it('open: under viewer each tile leads to its first photograph, under grid to its album page', async () => {
     const hrefs = async (story: typeof Open.Viewer) =>
       [...((await renderToBody(story)).querySelectorAll('#albums a.oy-album') ?? [])].map((tile) =>

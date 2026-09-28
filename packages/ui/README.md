@@ -22,6 +22,9 @@ library imports nothing from `packages/web`.
   are its own.
 - `.storybook/`: `main.ts`, `preview.ts` (the tokens, the backgrounds and the `.oy-dark` decorator),
   `manager.ts` and `theme.ts` (the values at the bottom of COMPONENT-MAP).
+- Interactive components are custom elements in an inline script (ADR 0018); a document-level
+  listener that claims a click registers once, at definition, and a history write keeps
+  `history.state` (ADR 0041).
 
 ## Commands
 

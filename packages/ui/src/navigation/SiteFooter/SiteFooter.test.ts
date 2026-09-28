@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './SiteFooter.stories';
 
-const { Default, Pending, Filled, NewsletterSuccess } = composeStories(stories);
+const { Default, Pending, Filled, UnsafeSocials, NewsletterSuccess } = composeStories(stories);
 
 describe('SiteFooter', () => {
   it('reads the EIN placeholder and Pending chips while the settings are empty', async () => {
@@ -50,6 +50,17 @@ describe('SiteFooter', () => {
     ]);
     expect(body.querySelectorAll('.oy-socials svg[aria-hidden="true"]')).toHaveLength(4);
     expect(body.querySelector('.oy-pend')).toBeNull();
+  });
+
+  it('links a social only when its address is safe and its network has a mark (R02)', async () => {
+    const body = await renderToBody(UnsafeSocials);
+    const socials = Array.from(body.querySelectorAll('.oy-socials a')).map((a) => [
+      a.getAttribute('aria-label'),
+      a.getAttribute('href'),
+    ]);
+    expect(socials).toEqual([['YouTube', 'https://youtube.com/@example']]);
+    expect(body.querySelector('a[href^="javascript:"]')).toBeNull();
+    expect(body.querySelector('.oy-socials a:not([aria-label])')).toBeNull();
   });
 
   it('makes Volunteer and Contact enquiry triggers and Donate a Give trigger', async () => {
