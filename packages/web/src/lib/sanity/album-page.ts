@@ -6,7 +6,8 @@
  * gallery and the edition's page, the credit with its chip and the consent note, the photographs as tiles linking
  * to their photo addresses, the Lightbox's photographs with each one's credit and the photograph served open, the
  * credit and permissions section, and the `data-sanity` attributes in draft mode. Keys, the slug and the `?photo=`
- * value are cleaned of stega before they become an address or a comparison.
+ * value are cleaned of stega before they become an address or a comparison. While the gallery holds the albums
+ * (`state: soon`, ADR 0043) the view carries no photograph, only the gallery's soon sentence.
  */
 import { albumLine, albumYear } from '@oy/content/albums';
 import { withLayoutDefaults } from '@oy/content/layout';
@@ -20,7 +21,7 @@ import type { albumPageQuery } from '@oy/content/queries';
 import { albumHref, editionPage } from '@oy/content/routes';
 import type { ClientReturn } from '@sanity/client';
 import { galleryCredits } from './gallery-credits';
-import { GALLERY_TITLE, type GalleryLayout } from './gallery-page';
+import { albumsHeld, GALLERY_TITLE, type GalleryLayout, soonNotice } from './gallery-page';
 import {
   type BuildOptions,
   cleanText,
@@ -48,10 +49,13 @@ export function buildAlbumPage(
   // The album's own fields open the album document, named by its id and its type.
   const albumEdit = (path: string) => (album ? edit(path, album._id, 'album') : undefined);
   const { captions } = withLayoutDefaults<GalleryLayout>('galleryPage', data?.page?.layout);
+  // While the gallery holds the albums (ADR 0043) the page keeps its title and year but no photograph
+  // leaves here: no tile, nothing in the Lightbox, and a photo address opens nothing.
+  const held = albumsHeld(data?.page?.layout);
 
   const slug = cleanText(album?.slug) ?? '';
   const title = cleanText(album?.title);
-  const photos = (album?.photos ?? []).filter(present).flatMap((photo) => {
+  const photos = (held ? [] : (album?.photos ?? [])).filter(present).flatMap((photo) => {
     const key = cleanText(photo._key);
     return key ? [{ key, photo, edit: albumEdit(`photos[_key=="${key}"]`) }] : [];
   });
@@ -63,12 +67,18 @@ export function buildAlbumPage(
   const wanted = cleanText(photoParam ?? undefined);
   const openKey = wanted && photos.some(({ key }) => key === wanted) ? wanted : undefined;
   const edition = editionPage(cleanText(album?.edition?.kind));
+  const soon = held ? soonNotice() : undefined;
   const albumConfirmed = album?.creditConfirmed === true;
 
   return {
     found: album !== null,
     title: title ?? GALLERY_TITLE,
-    description: title ? `${title}: ${line.photographs}.` : undefined,
+    // While held the page still describes itself, without a count of photographs it does not show.
+    description: title
+      ? soon
+        ? `${title}. ${soon.text}`
+        : `${title}: ${line.photographs}.`
+      : undefined,
     root: { captions },
     header: {
       variant: 'slim' as const,
@@ -81,7 +91,7 @@ export function buildAlbumPage(
               : line.yearOwed
                 ? [{ pending: ALBUM_YEAR_PENDING }]
                 : []),
-            { text: line.photographs },
+            ...(held ? [] : [{ text: line.photographs }]),
           ]
         : [],
     },
@@ -95,6 +105,7 @@ export function buildAlbumPage(
       pending: ALBUM_CREDIT_PENDING,
       edit: albumEdit('credit'),
     },
+    soon: soon ? { ...soon, edit: edit('layout.state') } : undefined,
     consentNote: studioText(album?.consentNote),
     consentEdit: albumEdit('consentNote'),
     photos: {

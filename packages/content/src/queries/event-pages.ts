@@ -8,7 +8,8 @@ import { defineQuery } from 'groq';
  * first album made that names the edition and holds a photograph, ADR 0042) with the album's credit;
  * the zones in order; the partners scoped to Odunde. Images project the
  * asset reference, the hotspot and the crop, never a URL string (ADR 0022). Layout values come back
- * as stored; the page fills the schema defaults (`withLayoutDefaults`).
+ * as stored; the page fills the schema defaults (`withLayoutDefaults`). The gallery's `state` comes
+ * too: while it holds the albums, past years show no photograph (ADR 0043).
  */
 export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
   header{
@@ -26,6 +27,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
   planYourVisit[]{_key, label, value, note},
   takePart[]{_key, way, chip, title, line, label},
   pastYearsIntro,
+  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},
   partnersIntro,
   "editions": *[_type == "event" && kind == "festival"] | order(edition desc){
     _id,
@@ -74,6 +76,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
  * levels scoped to the Gala or the whole organization, in order, with the edition a level is tied to;
  * every honoree with the edition it belongs to. Images project the asset reference, the hotspot and the crop (ADR 0022). Layout values
  * come back as stored; the page fills the schema defaults (`withLayoutDefaults`).
+ * The gallery's `state` comes too: while it holds the albums, past years show no photograph (ADR 0043).
  */
 export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
   header{
@@ -89,6 +92,7 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
   sponsorIntro,
   honoreesIntro,
   pastIntro,
+  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},
   takePart[]{_key, way, chip, title, line, label},
   "editions": *[_type == "event" && kind == "gala"] | order(edition desc){
     _id,

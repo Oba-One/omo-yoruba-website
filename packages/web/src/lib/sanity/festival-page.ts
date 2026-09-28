@@ -17,6 +17,7 @@ import { countWord } from '@oy/ui/content/count-word.ts';
 import { editionHours, longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { figureSentence } from '@oy/ui/content/figure-sentence.ts';
 import type { ClientReturn } from '@sanity/client';
+import { albumsHeld } from './gallery-page';
 import {
   GLANCE_MAX,
   type GlanceFactView,
@@ -55,7 +56,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
 
   const editions = (data?.editions ?? []).filter((event) => event !== null);
   const edition = pageEdition(editions, KIND, { now });
-  const past = pastYears(editions, KIND, options, edit);
+  const past = pastYears(editions, KIND, options, edit, albumsHeld(data?.galleryLayout));
 
   const date = longDate(edition?.start);
   // The hours need both ends of the day: a missing end is the registry's "the hours" (its row checks
@@ -133,6 +134,8 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       vendorTermsPending: pending('vendorTerms.fees'),
     },
     past: {
+      // While the gallery holds the albums the section keeps its words and the attendance, and the
+      // page leaves out the photographs, their credit and the way to the albums (ADR 0043).
       intro: data?.pastYearsIntro ?? undefined,
       // The attendance of the edition the photographs come from, or its chip while it is owed.
       attendance: figureSentence(past.edition?.attendance),

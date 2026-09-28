@@ -152,6 +152,9 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   [39](../tickets/wayfinder/issues/39-check-phase-6-and-merge.md),
   [41](../tickets/wayfinder/issues/41-check-phase-7-and-merge.md)): what they left open moved to open-work rows.
 
+- [Persisted dialogs listen for their triggers once, and draft mode loads pages in full](../adr/0041-dialog-listeners-register-once-and-draft-mode-full-loads.md):
+  the home page's flashing and white gap after a client-side arrival (weeks 1 and 2, 26 September 2026).
+
 ## Frontier
 
 Phases 0 to 8 have merged (pull requests 1 to 9). The weeks 1 and 2 work of

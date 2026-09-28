@@ -120,8 +120,9 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
   // Donate's trust block keeps its promise of a source line under every number only while Impact shows them.
   impactPage: ['/impact', '/donate'],
-  // Every album page closes with the gallery's credit and permissions section and wears its kicker.
-  galleryPage: ['/gallery', '/gallery/[album]'],
+  // Every album page closes with the gallery's credit and permissions section and wears its kicker; the
+  // gallery's state holds the photographs the event pages' past years reach through albums (ADR 0043).
+  galleryPage: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],
   // The year strip names the festival and the Gala by kind, so no edition reaches the Programs hub.
   // Impact's civic cells read the festival's editions (ADR 0035). An album takes its edition's year, and
   // its page links to the edition's page (ADR 0039).

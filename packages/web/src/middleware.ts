@@ -10,7 +10,7 @@ import {
   redirectAfterNewsletter,
 } from './lib/forms/modal-state';
 import type { FormResult } from './lib/forms/result';
-import { isDraftRequest, PERSPECTIVE_COOKIE } from './lib/sanity/preview';
+import { DRAFT_SESSION_COOKIE, isDraftRequest, PERSPECTIVE_COOKIE } from './lib/sanity/preview';
 
 const CSP_REPORT_ONLY = buildCsp();
 const REPORTING_ENDPOINTS = reportingEndpointsHeader(CSP_REPORT_PATH);
@@ -68,7 +68,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const previewOrigin = PUBLIC_PREVIEW_ORIGIN || undefined;
   const reason = uncacheableReason({
     method: context.request.method,
-    draft: isDraftRequest(context.cookies.get(PERSPECTIVE_COOKIE)?.value),
+    draft: isDraftRequest({
+      perspective: context.cookies.get(PERSPECTIVE_COOKIE)?.value,
+      session: context.cookies.get(DRAFT_SESSION_COOKIE)?.value,
+    }),
     origin: context.url.origin,
     previewOrigin,
   });
