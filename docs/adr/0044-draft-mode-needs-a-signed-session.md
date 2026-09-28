@@ -24,7 +24,8 @@ published. The middleware still refuses to cache a request carrying either cooki
 - `SANITY_PREVIEW_SECRET` as the key, as the ticket proposed: a second secret to set in every environment before
   the Presentation tool shows drafts again. The Viewer token is already in every environment that can read drafts,
   and whoever holds it reads drafts from the API without the site, so a key derived from it adds no exposure.
-  `SANITY_PREVIEW_SECRET` stays declared and unread.
+  `SANITY_PREVIEW_SECRET`, read by nothing, retired the same day: the env schema, the wizard and the runbook
+  dropped it.
 - Checking the Studio's preview secret on every request: the secret document is short-lived, and it would cost a
   query per page.
 - Signing the perspective cookie itself: its name and plain value come from `@sanity/preview-url-secret`, and the
@@ -38,6 +39,6 @@ published. The middleware still refuses to cache a request carrying either cooki
 - Twelve hours after the Presentation tool opened, the iframe reads as published until the tool is opened again,
   which runs the enable route again. Nothing on the server can end one session early: `/api/preview/disable`
   clears the cookies of the browser that visits it. To end every session, rotate the Viewer token (the runbook's
-  variables table); rotating `SANITY_PREVIEW_SECRET` ends none.
+  variables table).
 - `packages/web/e2e/navigation.spec.ts` signs a session with the token from `packages/web/.env` for its draft-mode
   case, and proves that a perspective cookie set by hand, without the session, reads as published.

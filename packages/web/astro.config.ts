@@ -130,11 +130,6 @@ export default defineConfig({
         access: 'secret',
         optional: true,
       }),
-      SANITY_PREVIEW_SECRET: envField.string({
-        context: 'server',
-        access: 'secret',
-        optional: true,
-      }),
       SANITY_WEBHOOK_SECRET: envField.string({
         context: 'server',
         access: 'secret',
