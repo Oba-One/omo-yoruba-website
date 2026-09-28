@@ -14,3 +14,5 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+**Triage, 27 September 2026:** Ready: no decision needed. The Lightbox's served-open controls are the pattern to copy.

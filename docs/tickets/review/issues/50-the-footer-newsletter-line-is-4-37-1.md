@@ -14,3 +14,5 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+**Triage, 27 September 2026:** Ready: one token, as the trust line already uses.

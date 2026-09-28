@@ -14,3 +14,5 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+**Triage, 27 September 2026:** Needs the owner: branch protection is a repository security setting, so the owner changes it or asks an agent to in the session. Recommended: require both checks; the runbook's CI section then lists them.

@@ -14,3 +14,5 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+**Triage, 27 September 2026:** Ready: measured at 375 over the lightest part of each header photograph.

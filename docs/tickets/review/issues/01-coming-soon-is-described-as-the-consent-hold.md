@@ -1,7 +1,7 @@
 # 01: Coming soon is described as the consent hold, but album pages, photo addresses and past years keep every photograph public
 
 Labels: infra
-Status: open
+Status: resolved
 Blocked by: none
 
 **Finding** (R01 in `docs/plans/review-alignment-and-quality.md`; galleryPage state switch (Studio description, open-work D5); blocker; docs): ADR 0039 made soon an editor's 'not ready yet' switch that swaps the mosaic for one sentence; the Studio simplification later described it to administrators as the holding pattern while photo consent is settled. An administrator who flips it to protect identifiable children would still publish every album page, every shareable photo address and the event pages' carousels, which is misleading for the one decision (D5) about children's faces. Verified by reading both routes' builders and the event page builders; the switch was compared through the Pages/Gallery/State stories.
@@ -10,9 +10,11 @@ Blocked by: none
 
 **What to build:** The owner decides what the consent hold is: either soon also withdraws the album pages and photo addresses (the soon sentence or a 404) and the past-years photographs, or layout-options.ts:201, D5 and the plan say soon hides only the gallery's index and the hold is unpublishing albums; then set the switch the plan asks for. Size M. Needs the owner's decision first.
 
-- [ ] The fix, with a test that fails before it where the behaviour can be tested
-- [ ] `bun check` green; Playwright in both data modes where a page changes
+- [x] The fix, with a test that fails before it where the behaviour can be tested
+- [x] `bun check` green; Playwright in both data modes where a page changes
 
 Already recorded as open-work D5; this ticket adds the review's evidence.
 
 ## Comments
+
+**Triage, 27 September 2026:** Fixed in pull request 17. The first option: Coming soon is now the consent hold for the albums (ADR 0043): album pages, photo addresses and the event pages' past photographs. A photograph a page shows through its own field stays, and in the seeded data they are all album photographs, so D5's "on the pages" half stays open. Taken under the owner's request of 27 September to fix the blockers; the second option (unpublishing albums, with the description corrected) stays open to the owner.

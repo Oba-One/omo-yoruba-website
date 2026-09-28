@@ -14,3 +14,5 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+**Triage, 27 September 2026:** Needs the owner: does 17px cover every sentence a reader must read (card blurbs, bios, form errors, the human fallback) or paragraphs only? Recommended: every sentence a reader must read, keeping smaller sizes for kickers, chips, captions and meta lines only.

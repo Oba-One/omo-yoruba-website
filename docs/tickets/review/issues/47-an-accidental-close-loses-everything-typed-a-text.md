@@ -14,3 +14,5 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+**Triage, 27 September 2026:** The scrim part is a bug and ready: close only when the pointer went down on the scrim too. Whether a reopened form keeps what was typed is the owner's call (convenience against a shared device). Recommended: keep it until the form succeeds or the page is left.

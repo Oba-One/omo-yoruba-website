@@ -62,7 +62,7 @@ To do until it is filled (the To do reads drafts). The launch gate
 | C9 | Get Involved | Bullets for the member, volunteer and vendor doors; the vendor door's blurb; a volunteer photograph; the general contact's name and response line | Launch | T42 | open |
 | C10 | Impact | A source for each headline figure; How we work; four outcomes; 2026 attendance and vendors hosted; the 2027 cost; three voices; the Form 990, annual report and audit; partners and funders; confirm the captions | Launch | T42 | open |
 | C11 | Our Story | The 1997 story, the founders, the first year, the earliest photograph; timeline entries; the board, staff and volunteers | Launch | T42, T07 | open |
-| C12 | Donate | How the Zeffy form handles fees, receipts and monthly giving; confirm the give-now blurb and the larger-scale intro; giving levels with what each pays for; other ways to give; the tax line | Launch | T42, T03 | open |
+| C12 | Donate | How the Zeffy form handles fees, receipts and monthly giving; confirm the give-now blurb and the larger-scale intro; giving levels with what each pays for; other ways to give; the tax line. The options and their facts, researched 27 September: `docs/research/online-giving-options.md` (review ticket R38) | Launch | T42, T03 | open |
 | C13 | News | Waits for the cadence decision | Later | T08 | open |
 
 ## 3. The Studio, simplified for members
@@ -117,7 +117,7 @@ Answered on 26 September 2026; the spec lists each answer.
 | # | Work | Needs first | Priority | Source | Status |
 | --- | --- | --- | --- | --- | --- |
 | E1 | Create the publish webhook on the chosen host, so an edit shows within a minute instead of up to a day | D2 | Now | T25 | doing: a webhook, `purge-site-cache`, sends `development` publishes to khaki since 13 Sep (checked 27 Sep); left: prove a publish purges a page, and move it with D2 or D3 |
-| E2 | Run the deep review of design alignment and code quality | D1 | Now | `docs/plans/prompt-deep-review.md` | done: 27 Sep, `docs/plans/review-alignment-and-quality.md` with 165 tickets under `docs/tickets/review/issues/` (3 blockers, 19 major), in pull request 16; the owner triages |
+| E2 | Run the deep review of design alignment and code quality | D1 | Now | `docs/plans/prompt-deep-review.md` | done: 27 Sep, `docs/plans/review-alignment-and-quality.md` with 165 tickets under `docs/tickets/review/issues/` (3 blockers, 19 major), in pull request 16. Blockers fixed in pull request 17; majors triaged on 27 September (the report's Triage section) |
 | E3 | The favicon files | D7 | Now | T32 | open |
 | E4 | A 404 page in the site chrome | none | Now | ROUTES section 1, Phase 9 | done: pull request 15; `404.astro` in the chrome with three doors home (`NotFound` in `@oy/ui`), and the album route's empty 404 renders it; the doors are for the owner to confirm |
 | E5 | The performer form's blurb says "Five questions" and asks six | none | Now | `enquiry-kinds.ts` | done: pull request 15; "Six questions", and a test holds every counted blurb to its form |

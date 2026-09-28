@@ -14,3 +14,5 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+**Triage, 27 September 2026:** An agent can triage the nine advisories and propose bumps, overrides and an ignore list with a reason for each; the owner approves which build-time-only advisories are accepted.

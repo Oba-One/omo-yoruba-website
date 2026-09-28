@@ -1,7 +1,7 @@
 # 44: After a client-side navigation every dialog trigger also navigates: focus return fails and Donate leaves the visitor on /donate
 
 Labels: bug
-Status: open
+Status: resolved
 Blocked by: none
 
 **Finding** (R44 in `docs/plans/review-alignment-and-quality.md`; EnquiryModal, GiveDialog; major; correctness): The review branch does not contain pull request 10, so the defect ADR 0041 describes is live here. Most visitors reach a form or a Donate button after a client-side navigation, so the common path breaks the contract that Escape returns focus to the trigger, re-fetches the page for every enquiry trigger, and swaps the page behind the Give Dialog to /donate. Reproduced with Playwright; the first-load path passes.
@@ -10,9 +10,11 @@ Blocked by: none
 
 **What to build:** Merge pull request 10 (fix/navigation-dialogs: the listeners register once at definition, ADR 0041) and rebase this branch on it, then re-run focus return after a client-side navigation. Size S.
 
-- [ ] The fix, with a test that fails before it where the behaviour can be tested
-- [ ] `bun check` green; Playwright in both data modes where a page changes
+- [x] The fix, with a test that fails before it where the behaviour can be tested
+- [x] `bun check` green; Playwright in both data modes where a page changes
 
 Already recorded as pull request 10 (fix/navigation-dialogs, ADR 0041, open-work E23 on that branch), open and not merged; this ticket adds the review's evidence.
 
 ## Comments
+
+**Triage, 27 September 2026:** Fixed by pull request 10, merged on 27 September (ADR 0041): the dialogs register their document listeners once, so a trigger after a client-side arrival opens its dialog and nothing else. `packages/web/e2e/navigation.spec.ts` proves it on both persist paths.

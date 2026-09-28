@@ -16,3 +16,5 @@ Blocked by: none
 Already recorded as open-work C12 and D8 (T42 names the Donate blurb only); open-work D8 (the pending-mode line only), C12; open-work D8 (the pending-mode copy) and C12 (the give-now facts); open-work D8 (adds the foot line to the copy to confirm); this ticket adds the review's evidence.
 
 ## Comments
+
+**Triage, 27 September 2026:** Needs the owner: which giving provider takes gifts (a new decision, informed by `docs/research/online-giving-options.md`; C12 holds the Zeffy facts, D8 the pending-mode copy), and whether monthly giving and emailed receipts are offered. Recommended meanwhile: the ticket's fix, dropping "monthly" and the receipt promise until the owner confirms them, and hiding the dialog foot ("Powered by Zeffy", "Receipts by email") in the pending and fallback modes.
