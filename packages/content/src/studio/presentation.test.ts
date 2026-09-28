@@ -86,16 +86,9 @@ describe('locations follow the route map', () => {
     expect(event.resolve(null).locations?.map((l) => l.href)).toEqual(staticRoutes);
   });
 
-  it('sends a Gala or organization sponsor level to the Gala page and says an Odunde one shows nowhere', () => {
-    const locations = presentationOptions.resolve?.locations as Record<string, Resolver>;
-    const level = locations.sponsorLevel as Resolver;
-    expect(level.resolve({ scope: 'org' }).locations?.map((l) => l.href)).toEqual(['/gala']);
-    const odunde = level.resolve({ scope: 'odunde' }) as {
-      locations?: unknown[];
-      message?: string;
-    };
-    expect(odunde.locations).toEqual([]);
-    expect(odunde.message).toMatch(/no page/);
+  it('sends every sponsor level to the Gala page, the one page that lists them (ADR 0042)', () => {
+    const locations = presentationOptions.resolve?.locations as Record<string, Static>;
+    expect(locations.sponsorLevel?.locations?.map((l) => l.href)).toEqual(['/gala']);
   });
 
   it('leads a program with its own page, or the map order without one', () => {

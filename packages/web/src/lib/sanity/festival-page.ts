@@ -33,7 +33,6 @@ export interface FestivalLayout extends Record<string, string> {
   phead: 'photo' | 'slim';
   zones: 'mosaic' | 'five' | 'grid' | 'list';
   schedule: 'shown' | 'collapsed' | 'hidden';
-  takepart: 'vendor' | 'sponsor';
   labels: 'column' | 'none' | 'kicker';
 }
 
@@ -129,7 +128,6 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     takePart: {
       ...page.takePart,
       intro: takePartIntro(page.takePart.rows.length),
-      lead: layout.takepart,
       labels: layout.labels,
       // Null while the next edition holds no terms, so the vendor row shows the registry's chip.
       vendorTerms: edition?.vendorTerms ?? null,

@@ -98,10 +98,10 @@ export const evening = (schedule: 'shown' | 'hidden'): SlotValue => ({
 export const seam: SlotValue = { component: Divider, props: { kind: 'seam' } };
 
 /**
- * Seats and tables on the tint as the `tiers` and `emphasis` options draw them: placeholder tiers (the
- * Studio holds none), no Eventbrite link yet, so the buy-now tiers show the chip where their button goes.
+ * Seats and tables on the tint as the `tiers` option draws them, in the Studio's order: placeholder tiers
+ * (the Studio holds none), no Eventbrite link yet, so the buy-now tiers show the chip where their button goes.
  */
-export const seats = (tiers: 'columns' | 'rows', emphasis: 'seats' | 'tables'): SlotValue => ({
+export const seats = (tiers: 'columns' | 'rows'): SlotValue => ({
   component: Section,
   props: { id: 'seats', ground: 'alt', labelledby: 'seats-heading' },
   slots: {
@@ -120,7 +120,6 @@ export const seats = (tiers: 'columns' | 'rows', emphasis: 'seats' | 'tables'): 
         props: {
           tiers: TIER_PLACEHOLDERS,
           layout: tiers,
-          emphasis,
           pending: 'three prices and what each includes',
         },
       },

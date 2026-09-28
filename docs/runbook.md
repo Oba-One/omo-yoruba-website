@@ -192,7 +192,8 @@ overwrites instead of filling missing fields (the default never overwrites an ow
 `bun seed -- --dataset production` targets production on purpose. Re-running is safe: assets are
 matched by SHA-1 and documents by id. A field a schema change retired is unset where it is still
 stored (`RETIRED_FIELDS` in `scripts/seed-data.ts`: `takePartOrder` on both event singletons and
-`siteSettings.eventbriteUrl` since Phase 5); nothing else is ever removed.
+`siteSettings.eventbriteUrl` since Phase 5, and the inputs ADR 0042 retired); nothing else is ever
+removed.
 
 ## Migrations
 
@@ -207,14 +208,16 @@ the owner stays out of the Studio for the hour:
    the day is over.
 2. `bun run migrate -- <name> --from <export>` rehearses on the export in memory: the plan, then the
    check that applying it leaves nothing to do.
-3. `bun run migrate -- <name>` is the dry run on the live dataset: every mutation, and what blocks it.
+3. `bun run migrate -- <name>` is the dry run on the live dataset: every mutation, what blocks it, and
+   notes on what the site changes by the owner's decision (nothing blocks on a note).
    A conflict (stored content the plan cannot move without the owner's word) blocks it, and so does a
    draft or release version that still holds what the migration moves, or one of a document it writes:
    publish or discard it first. A draft the migration would leave alone (next year's edition prepared
    for its announce day) blocks nothing, and no migration reads the Presentation tool's preview secret,
    which it keeps under a draft id (`sanity.previewUrlSecret`).
 4. Merge the pull request and wait for its deploy, so the site already reads the new shape. Apply
-   right away: until `inline-lists` runs, the Studio shows the old items of the Collective's, Impact's,
+   right away: until the migrations run, the Studio lists the retired fields a document still holds as
+   unknown fields, and until `inline-lists` runs, it shows the old items of the Collective's, Impact's,
    Our Story's and Donate's lists as items it cannot use, and those pages cannot be published, so nobody
    edits them in between (the site keeps showing them).
 5. `bun run migrate -- <name> --apply` saves the documents it will write as they are
@@ -228,8 +231,10 @@ the owner stays out of the Studio for the hour:
 All of it runs on the Editor token the seed uses (`SANITY_API_WRITE_TOKEN`), against `development`
 unless `--dataset` names another. `retired-fields` unsets the fields in `RETIRED_FIELDS` on every
 document, not only the seed's; a retired field another migration moves first (`MOVED_FIELDS`: the
-edition's album link, which `album-link` hands to the album) waits for it, in the seed too. The order
-for pull request B's migrations: `album-link`, `inline-lists`, `teacher-group`, then `retired-fields`.
+edition's album link, which `album-link` hands to the album, and the three second controls for one
+decision, which `one-control` settles) waits for it, in the seed too. The order for pull request B's
+migrations: `album-link`, `inline-lists`, `teacher-group`, then `retired-fields`. For pull request C's:
+`one-control`, `scopes`, then `retired-fields` again.
 
 ## Functions
 
@@ -240,7 +245,8 @@ with their code under `packages/content/functions/`:
   for the kind's role (`siteSettings.contacts`, then the general entry, then `generalEmail`)
   through Resend and patches `notifiedAt`, or `notifyError` when nothing routed or the send failed.
 - `content-lint`: on `create` or `update` of a content document, writes one `lintReport`
-  (empty when clean) that the Studio's To do lists under "Wording to check".
+  (empty when clean) that the Studio's To do lists under "Wording to check". It skips the inputs the
+  Studio hides, for good or by an event's kind (`src/hidden-inputs.ts`).
 
 Local test, from the repo root (the wrapper loads `packages/web/.env`):
 

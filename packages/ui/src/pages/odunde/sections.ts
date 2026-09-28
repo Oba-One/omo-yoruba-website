@@ -170,10 +170,10 @@ export const plan: SlotValue = {
 };
 
 /**
- * The closing take-part band as the `takepart` and `labels` options draw it: the seed's four rows
- * with the lead way in first in the markup, the vendor terms Pending, then the give handoff.
+ * The closing take-part band as the `labels` option draws it: the seed's four rows in their own order,
+ * the first with the gold, the vendor terms Pending, then the give handoff.
  */
-export const takePart = (lead: 'vendor' | 'sponsor', labels: TakePartLabels): SlotValue => ({
+export const takePart = (labels: TakePartLabels): SlotValue => ({
   component: Section,
   props: { id: 'take-part', labelledby: 'take-part-heading' },
   slots: {
@@ -191,7 +191,6 @@ export const takePart = (lead: 'vendor' | 'sponsor', labels: TakePartLabels): Sl
         component: TakePartBand,
         props: {
           rows: FESTIVAL_TAKE_PART,
-          lead,
           labels,
           vendorTerms: null,
           vendorTermsPending: VENDOR_TERMS_PENDING,

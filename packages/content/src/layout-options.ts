@@ -30,12 +30,17 @@ export const PAGE_LAYOUTS = {
       description: 'Which event leads the homepage. By date picks the nearest one still to come.',
     },
     // The prototype's value is "school"; the Studio shows the repo's word for it (AGENTS.md: never "School").
+    // "festival" highlights no card: the festival has none, and the hero keeps its own button (ADR 0042).
     {
       name: 'highlight',
       title: 'Highlight',
-      options: ['festival', { value: 'school', title: 'Lessons' }, 'collective'],
+      options: [
+        { value: 'festival', title: 'No program' },
+        { value: 'school', title: 'Lessons' },
+        'collective',
+      ],
       description:
-        "The program the homepage leans on: its card moves first with the gold ring, and its card action becomes the hero's gold button. Festival keeps the hero's own button.",
+        'The program card the homepage leans on moves first with the gold ring. No program keeps the cards in order.',
     },
     {
       name: 'gallery',
@@ -80,14 +85,6 @@ export const PAGE_LAYOUTS = {
     },
     { name: 'schedule', title: 'Schedule', options: ['shown', 'collapsed', 'hidden'] },
     {
-      name: 'takepart',
-      title: 'Take part first row',
-      options: [
-        { value: 'vendor', title: 'Vendors first' },
-        { value: 'sponsor', title: 'Sponsors first' },
-      ],
-    },
-    {
       name: 'labels',
       title: 'Take-part labels',
       options: [
@@ -100,7 +97,6 @@ export const PAGE_LAYOUTS = {
   galaPage: [
     { name: 'treatment', title: 'Treatment', options: ['formal', 'warm'] },
     { name: 'tiers', title: 'Tiers', options: ['columns', 'rows'] },
-    { name: 'emphasis', title: 'Emphasis', options: ['seats', 'tables'] },
     {
       name: 'awards',
       title: 'Awards',

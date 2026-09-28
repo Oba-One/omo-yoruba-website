@@ -95,11 +95,6 @@ test.describe('the End-of-Year Gala page', () => {
       await expect(link).toHaveAttribute('target', '_blank');
       await expect(link).toHaveAttribute('rel', /noopener/);
     }
-    if ((await page.locator('body').getAttribute('data-emphasis')) === 'tables') {
-      const first = seats.locator('.oy-tiers > article').first();
-      const hasTable = (await seats.locator('article[data-variant="enquiry"]').count()) > 0;
-      if (hasTable) await expect(first).toHaveAttribute('data-variant', 'enquiry');
-    }
     const table = seats.locator('article[data-variant="enquiry"] a[data-enquiry="table"]').first();
     if ((await table.count()) === 1) {
       await table.scrollIntoViewIfNeeded();

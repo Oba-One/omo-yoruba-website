@@ -2,7 +2,7 @@
 /**
  * The Odunde Festival page (`08 Odunde Festival.dc.html`, ROUTES sections 1, 4 and 5): composed from
  * the one festival query through `loadQuery`, showing the next festival edition (ADR 0024) with the
- * registry's Pending chips for every fact the Studio does not hold, and the five layout options read
+ * registry's Pending chips for every fact the Studio does not hold, and the four layout options read
  * from the singleton with the schema defaults filled. The page arranges library parts and owns its
  * copy (the section kickers and headings the prototype carries, "Odunde" unmarked in display text,
  * ADR 0009) and its layout.
@@ -144,13 +144,11 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
       />
       <TakePartBand
         rows={page.takePart.rows}
-        lead={page.takePart.lead}
         labels={page.takePart.labels}
         vendorTerms={page.takePart.vendorTerms}
         vendorTermsPending={page.takePart.vendorTermsPending}
         pending={page.takePart.pending}
         rowPending={page.takePart.rowPending}
-        edit={page.edit.takepart}
       />
       <Handoff
         shape="box"

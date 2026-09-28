@@ -109,13 +109,12 @@ test.describe('the Odunde Festival page', () => {
     await context.close();
   });
 
-  test('draws the take-part rows with the lead way in first in the markup and one gold action', async ({
+  test("draws the take-part rows in the Studio's order with one gold action on the first working row", async ({
     page,
   }) => {
     await page.goto('/odunde');
     const section = page.locator('#take-part');
     await expect(section.locator('h2')).toHaveText('Take part in Odunde');
-    const lead = await page.locator('body').getAttribute('data-takepart');
     const labels = await page.locator('body').getAttribute('data-labels');
     const rows = section.locator('.oy-takepart > .oy-path');
     if ((await rows.count()) === 0) {
@@ -125,9 +124,12 @@ test.describe('the Odunde Festival page', () => {
     } else {
       await expect(section.locator('.oy-takepart')).toHaveAttribute('data-labels', labels ?? '');
       const ways = await rows.evaluateAll((els) => els.map((el) => el.getAttribute('data-way')));
-      if (lead && ways.includes(lead)) expect(ways[0]).toBe(lead);
       expect(new Set(ways).size).toBe(ways.length);
       await expect(section.locator('.oy-btn--primary')).toHaveCount(1);
+      // No option reorders the rows (ADR 0042): the first working button in the markup is the gold one.
+      await expect(
+        section.locator('.oy-takepart > .oy-path .oy-btn:not(.oy-btn--quiet)').first(),
+      ).toHaveClass(/oy-btn--primary/);
       // The vendor row carries the edition's terms or the registry's chip, never an invented fee.
       const vendor = rows.and(page.locator('[data-way="vendor"]'));
       if ((await vendor.count()) === 1) {

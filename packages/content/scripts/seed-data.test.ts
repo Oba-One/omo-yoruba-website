@@ -178,14 +178,14 @@ describe('missingFields', () => {
     const seed = {
       hero: { title: 'Seed title', blessing: { yo: 'a', en: 'b' } },
       voicesIntro: 'Intro',
-      leadEvent: { _type: 'reference', _ref: 'event-gala-2026' },
+      voice: { _type: 'reference', _ref: 'testimonial-1' },
       layout: { season: 'auto' },
     };
     const current = { hero: { title: 'Owner title' }, layout: { season: 'gala' } };
     expect(missingFields(seed, current)).toEqual({
       'hero.blessing': { yo: 'a', en: 'b' },
       voicesIntro: 'Intro',
-      leadEvent: { _type: 'reference', _ref: 'event-gala-2026' },
+      voice: { _type: 'reference', _ref: 'testimonial-1' },
     });
   });
 

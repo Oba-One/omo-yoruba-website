@@ -10,14 +10,12 @@ import { ENQUIRY_KINDS, replyToField } from '../enquiry-kinds';
 /** The site settings every page reads for the chrome, the dialogs and the actions. */
 export const siteSettingsQuery = defineQuery(`*[_id == "siteSettings"][0]{
   orgName,
-  wordmarkLine2,
   ein,
   address,
   phone,
   generalEmail,
   contacts[]{role, name, email, phone, responds},
   socials[]{network, url},
-  footerBlurb,
   newsletterTitle,
   newsletterBlurb,
   zeffyEmbedUrl,

@@ -41,7 +41,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
     summary,
     schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},
     vendorTerms{fees, closeDate, decisionDate, permitNote},
-    attendance{value, label, source, asOf},
+    attendance{value, label, source},
     "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{
       _id,
       title,
@@ -64,13 +64,13 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
     kind,
     logo{_type, alt, caption, hotspot, crop, asset}
   },
-  layout{phead, zones, schedule, takepart, labels},
+  layout{phead, zones, schedule, labels},
   seo{title, description}
 }`);
 
 /**
  * The Gala page in one read (ROUTES section 1): the `galaPage` singleton with its header, actions,
- * extra glance facts, section intros and take-part rows; every gala edition with the facts the page
+ * section intros and take-part rows; every gala edition with the facts the page
  * reads (the page picks the next one and the past one, ADR 0024), its running order, its ticket
  * tiers in order and the first eight photographs of its album (as the festival's) with the album's credit; the sponsor
  * levels scoped to the Gala or the whole organization, in order, with the edition a level is tied to;
@@ -87,7 +87,6 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
   },
   primaryAction{label, kind, enquiryKind, href, newTab},
   secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},
-  extraFacts[]{_key, label, value, note},
   eveningIntro,
   tiersIntro,
   sponsorIntro,
@@ -139,6 +138,6 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
     image{_type, alt, caption, hotspot, crop, asset},
     "eventId": event._ref
   },
-  layout{treatment, tiers, emphasis, awards, schedule, past, labels},
+  layout{treatment, tiers, awards, schedule, past, labels},
   seo{title, description}
 }`);

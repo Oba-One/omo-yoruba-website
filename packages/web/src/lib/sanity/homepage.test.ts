@@ -31,7 +31,6 @@ const data = {
     },
     secondaryActions: [],
   },
-  leadEvent: null,
   events: [
     {
       _id: 'odunde-2027',
@@ -61,7 +60,6 @@ const data = {
       label: 'years serving Southern California',
       shortLabel: 'years serving SoCal',
       source: null,
-      asOf: null,
     },
     { _id: 't', value: '9', label: 'hometown associations', shortLabel: null, source: null },
   ],
@@ -221,10 +219,9 @@ describe('buildHomepage', () => {
     ).toBe('35% 35%');
   });
 
-  it('sets the gold words and swaps the gold button for the highlighted program action', () => {
+  it("sets the gold words and keeps the hero's own gold button whatever the highlight (ADR 0042)", () => {
     const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.hero.emphasis).toBe('alive');
-    // The Lessons card has no action yet, so the hero keeps its own.
     expect(view.hero.primary?.label).toBe('See the Odunde Festival');
     const enrol = { label: 'Enrol a learner', kind: 'url', href: '/programs/yoruba-lessons' };
     const withAction = {
@@ -232,26 +229,19 @@ describe('buildHomepage', () => {
       programs: data.programs?.map((program) => ({ ...program, action: enrol })),
     } as HomepageData;
     const school = buildHomepage(withAction, { imageSet, draft: false, studioUrl: '/admin', now });
-    expect(school.hero.primary?.label).toBe('Enrol a learner');
-    const festival = buildHomepage(
-      { ...withAction, layout: { ...data.layout, highlight: 'festival' } } as HomepageData,
-      { imageSet, draft: false, studioUrl: '/admin', now },
-    );
-    expect(festival.hero.primary?.label).toBe('See the Odunde Festival');
-    // A half-filled action (an enquiry with no form chosen yet) never removes the gold button.
+    expect(school.layout.highlight).toBe('school');
+    expect(school.hero.primary?.label).toBe('See the Odunde Festival');
+    // A half-filled hero button (an enquiry with no form chosen yet) shows none.
     const half = {
       ...data,
-      programs: data.programs?.map((program) => ({
-        ...program,
-        action: { label: 'Enrol a learner', kind: 'enquiry', enquiryKind: null },
-      })),
+      hero: { ...data.hero, primaryAction: { label: 'Join', kind: 'enquiry', enquiryKind: null } },
     } as HomepageData;
     expect(
-      buildHomepage(half, { imageSet, draft: false, studioUrl: '/admin', now }).hero.primary?.label,
-    ).toBe('See the Odunde Festival');
+      buildHomepage(half, { imageSet, draft: false, studioUrl: '/admin', now }).hero.primary,
+    ).toBeUndefined();
   });
 
-  it('shows the first three programs and lets the highlight reach any of them', () => {
+  it('shows the first three programs', () => {
     const program = (order: number, page: string | null) => ({
       _id: `program-${order}`,
       name: `Program ${order}`,
@@ -279,8 +269,6 @@ describe('buildHomepage', () => {
       'program-2',
       'program-3',
     ]);
-    // Lessons is fourth, off the grid, and the highlight still puts its action in the hero.
-    expect(view.hero.primary?.label).toBe('Action 4');
   });
 
   it('reads the short label into the strip where one is held', () => {

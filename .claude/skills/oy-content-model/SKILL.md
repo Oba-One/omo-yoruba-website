@@ -30,7 +30,17 @@ Spec: `docs/design/CONTENT-MODEL.md`, amended by ADR 0013 to ADR 0017 (the delta
 - Portable Text is `blockContent`: normal, h3, blockquote; strong, em, link; `pullQuote` only.
 - Enquiries: change `src/enquiry-kinds.ts`, never the `enquiry` type by hand; the objects, the
   Zod schemas, the Inbox lists and the notify email all derive from it (ADR 0015, ADR 0016).
-- Removing a field is an owner decision (`docs/design/AGENT-DOCS.md` section 8).
+- Removing a field is an owner decision (`docs/design/AGENT-DOCS.md` section 8). A removed field
+  goes into `RETIRED_FIELDS` (`scripts/seed-data.ts`): the seed and the `retired-fields` migration
+  unset it. A value that must move first names its migration in `MOVED_FIELDS`, and that migration
+  lives in `scripts/migrations/` with a test that applying it to the seed leaves nothing to do
+  (runbook, Migrations). Stored content never moves by hand.
+- An input kept for later but hidden from everyone is named in `src/hidden-inputs.ts`, which the
+  content-lint function skips (with the inputs an event's kind hides, `src/edition-fields.ts`), so
+  the wording to check never names it; `studio-words.test.ts` fails on a fixed `hidden: true` the
+  module does not name.
+- Option lists hold only values a page reads (ADR 0042): a value no page shows is removed with a
+  migration, not kept as a choice that does nothing.
 
 ## Validation
 

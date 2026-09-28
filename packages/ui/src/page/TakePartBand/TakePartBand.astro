@@ -4,13 +4,12 @@
  * singleton's `takePart[]` as path rows in the tokens' `.oy-takepart` column, each row's accent and
  * button following its way in (an enquiry kind, the Give Dialog for `give`, the page's newsletter form
  * for `updates`) with the row's own title, line and button label, and its chip the way in's unless the
- * row names its own ("Partner" on a sponsor row). The label style is the page's `labels` option. `lead`
- * moves one way in to the top in the markup, never with CSS `order`, so reading and tab order follow
- * what is seen (Odunde's `takepart` option). The first row with a working button carries the band's
- * one gold action; the give and updates rows' are quiet. With `vendorTerms` the vendor row's line goes on with the edition's terms
- * (`vendorTermsText`) and the registry's chip while the fees or either date is missing, since the
- * vendor form says they are on the festival page.
- * No rows renders the registry's Pending line.
+ * row names its own ("Partner" on a sponsor row). The rows show in the Studio's order, the one control
+ * for which way in leads (ADR 0042), and the label style is the page's `labels` option. The first row
+ * with a working button carries the band's one gold action; the give and updates rows' are quiet.
+ * With `vendorTerms` the vendor row's line goes on with the edition's terms (`vendorTermsText`) and
+ * the registry's chip while the fees or either date is missing, since the vendor form says they are
+ * on the festival page. No rows renders the registry's Pending line.
  */
 import { isQuietWay, isWayIn, WAY_CHIPS, wayAction } from '@oy/content/take-part';
 import PathRow from '../../cards/PathRow/PathRow.astro';
@@ -35,8 +34,6 @@ export type TakePartLabels = 'column' | 'none' | 'kicker';
 interface Props {
   rows?: (TakePartRowLike | null)[] | null;
   labels?: TakePartLabels;
-  /** The way in the page puts first. */
-  lead?: string;
   /**
    * The festival edition's vendor terms for the vendor row. The festival page always passes it, null
    * while the edition holds none (the row then shows the chip); a page without it adds no terms.
@@ -48,29 +45,22 @@ interface Props {
   pending?: string;
   /** The registry's wording for a row missing its way in, title or button label. */
   rowPending?: string;
-  /** A `data-sanity` attribute for the band, so click-to-edit reaches the option. */
-  edit?: string;
   class?: string;
 }
 
 const {
   rows,
   labels = 'column',
-  lead,
   vendorTerms,
   vendorTermsPending = 'the vendor terms',
   pending = 'the ways in',
   rowPending = 'the way in',
-  edit,
   class: className,
 } = Astro.props;
 
 const list = (rows ?? []).filter((row) => row !== null);
-const leadAt = lead ? list.findIndex((row) => row.way === lead) : -1;
-const ordered =
-  leadAt > 0 ? [list[leadAt] as TakePartRowLike, ...list.filter((_, at) => at !== leadAt)] : list;
 
-const views = ordered.map((row) => {
+const views = list.map((row) => {
   const way = isWayIn(row.way) ? row.way : undefined;
   return { row, way, action: way ? wayAction(way, row.label) : undefined };
 });
@@ -81,11 +71,11 @@ const { text: terms, missing: termsMissing } = vendorTermsText(vendorTerms);
 
 {
   views.length === 0 ? (
-    <div class:list={['oy-takepart', className]} data-labels={labels} data-sanity={edit}>
+    <div class:list={['oy-takepart', className]} data-labels={labels}>
       <Pending variant="line" what={pending} />
     </div>
   ) : (
-    <PathRows labels={labels} class={className} data-sanity={edit}>
+    <PathRows labels={labels} class={className}>
       {views.map(({ row, way, action }, at) => {
         const props = {
           way,

@@ -4,13 +4,11 @@ import { renderToBody, text } from '../../test/stories';
 import * as labels from './Labels.stories';
 import * as phead from './Phead.stories';
 import * as schedule from './Schedule.stories';
-import * as takepart from './Takepart.stories';
 import * as zones from './Zones.stories';
 
 const Phead = composeStories(phead);
 const Zones = composeStories(zones);
 const Schedule = composeStories(schedule);
-const Takepart = composeStories(takepart);
 const Labels = composeStories(labels);
 
 describe('the Odunde page-section stories', () => {
@@ -55,25 +53,21 @@ describe('the Odunde page-section stories', () => {
     expect(text(hidden?.querySelector('#plan h2'))).toBe('Plan your visit');
   });
 
-  it('takepart: the lead way in first in the markup with the gold, then the give handoff', async () => {
-    for (const [story, lead] of [
-      [Takepart.Vendor, 'vendor'],
-      [Takepart.Sponsor, 'sponsor'],
-    ] as const) {
-      const root = (await renderToBody(story)).querySelector('.oy-home');
-      expect(root?.getAttribute('data-takepart')).toBe(lead);
-      const section = root?.querySelector('#take-part');
-      expect(text(section?.querySelector('h2'))).toBe('Take part in Odunde');
-      expect(text(section?.querySelector('.oy-sec-intro'))).toBe(
-        'Four ways in. Each one says what it asks of you, then opens a short form.',
-      );
-      const first = section?.querySelector('.oy-takepart > .oy-path');
-      expect(first?.getAttribute('data-way')).toBe(lead);
-      expect(first?.querySelector('.oy-btn--primary')).not.toBeNull();
-      expect(section?.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
-      const handoff = section?.querySelector('.oy-takepart + .oy-handoff');
-      expect(handoff?.querySelector('.oy-btn--quiet[data-give]')).not.toBeNull();
-    }
+  it('take part: the rows in their own order, the first with the gold, then the give handoff', async () => {
+    const section = (await renderToBody(Labels.Column)).querySelector('.oy-home #take-part');
+    expect(text(section?.querySelector('h2'))).toBe('Take part in Odunde');
+    expect(text(section?.querySelector('.oy-sec-intro'))).toBe(
+      'Four ways in. Each one says what it asks of you, then opens a short form.',
+    );
+    const ways = [...(section?.querySelectorAll('.oy-takepart > .oy-path') ?? [])].map((row) =>
+      row.getAttribute('data-way'),
+    );
+    expect(ways).toEqual(['vendor', 'sponsor', 'performer', 'volunteer']);
+    const first = section?.querySelector('.oy-takepart > .oy-path');
+    expect(first?.querySelector('.oy-btn--primary')).not.toBeNull();
+    expect(section?.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
+    const handoff = section?.querySelector('.oy-takepart + .oy-handoff');
+    expect(handoff?.querySelector('.oy-btn--quiet[data-give]')).not.toBeNull();
   });
 
   it('labels: the option on the root and the column', async () => {

@@ -1,9 +1,10 @@
 import { type ConditionalPropertyCallback, defineField, defineType } from 'sanity';
+import { photoCreditShown } from '../../hidden-inputs';
 import { voice } from '../../validation/rules';
 
 /** Only an album's photographs show a credit of their own, so the credit inputs show only there (ADR 0042). */
 const creditHidden: ConditionalPropertyCallback = ({ document, path }) =>
-  !(document?._type === 'album' && path[0] === 'photos');
+  !photoCreditShown(document?._type, path[0]);
 
 /**
  * Every image on the site: hotspot, alt (required once there is a picture), caption, credit. On an

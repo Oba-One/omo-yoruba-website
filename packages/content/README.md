@@ -71,8 +71,8 @@ Functions. The only package where GROQ lives. Built in Phase 2 from
 Decided with the owner on 11 September 2026; each has its ADR.
 
 - Per-edition facts (dates, doors, venue, cost, dress, schedule, vendor terms, tickets URL,
-  attendance) live on `event`, not on `festivalPage` or `galaPage`; the pages keep `extraFacts[]`
-  (ADR 0013).
+  attendance) live on `event`, not on `festivalPage` or `galaPage`; the festival page keeps
+  `extraFacts[]` for a glance fact beyond the edition's four (ADR 0013, ADR 0042).
 - `stat`, `door` and `governanceDoc` are documents referenced by pages; there is no inline
   `stats[]`, no `stat.placement`, no `faq` document (the Lessons FAQ is inline) and no
   `impactPage.governance` block (ADR 0013).
@@ -89,8 +89,8 @@ Decided with the owner on 11 September 2026; each has its ADR.
   page that shows them (site settings rows under Organization details, for administrators), the
   presence rows and a missing next festival or Gala edition as Still to add, and the `lintReport`
   documents with findings as Wording to check (ADR 0014).
-- `stat` stores its figure flat (`value`, `label`, `source`, `asOf`); `outcome.figure` is a
-  `sourcedFigure` object.
+- `stat` stores its figure flat (`value`, `label`, `source`); `outcome.figure` is a
+  `sourcedFigure` object, whose `asOf` stays hidden (ADR 0042).
 - Fields the prototypes carry beyond the spec's tables: `event.attendance` (the past-years
   figure), `initiative.serves`, `since`, `next` (the status block), `givingLevel.source` (the line
   under each amount), `programsPage.culturalExchange.howToJoin`, `siteSettings.newsletterBlurb`,
@@ -137,7 +137,13 @@ Decided with the owner on 11 September 2026; each has its ADR.
   types held in their pages' own lists (`collectivePage.initiatives`, `impactPage.outcomes`,
   `storyPage.timeline`, `donatePage.whatYourGiftDoes`), read as references too until the `inline-lists`
   migration; their registry rows keep the item type and name the list (`list`). The `other` event kind and
-  the `teacher` person group are retired, and `event.album` gives way to the album's own `event`.
+  the `teacher` person group are retired, and `event.album` gives way to the album's own `event`. One
+  control per decision retires Odunde's `takepart`, the Gala's `emphasis` and `homepage.leadEvent` (the
+  `one-control` migration settles them first); the scopes no page shows go (`src/scopes.ts`, the `scopes`
+  migration); and the hidden inputs with no planned use are deleted (`event.heroImage`,
+  `collectivePage.keepsOwnList`, `door.order`, `galaPage.extraFacts`, the settings' `logo`, `wordmarkLine2`
+  and `footerBlurb`, `photographer.url`, `stat.asOf`), while the ones kept for later stay hidden and are
+  named in `src/hidden-inputs.ts`, which the content-lint function skips.
   `scripts/migrations/` holds the reviewed migrations the runner applies (`bun run migrate`).
 - The seed accepts `SANITY_WRITE_TOKEN` as an alias of `SANITY_API_WRITE_TOKEN` with a warning,
   because the owner's `packages/web/.env` predates the wizard's names.

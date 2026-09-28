@@ -23,13 +23,13 @@ export default meta;
 type Story = StoryObj<Args>;
 
 export const Column: Story = {
-  args: { options: { labels: 'column' }, slots: { default: [takePart('vendor', 'column')] } },
+  args: { options: { labels: 'column' }, slots: { default: [takePart('column')] } },
 };
 
 export const None: Story = {
-  args: { options: { labels: 'none' }, slots: { default: [takePart('vendor', 'none')] } },
+  args: { options: { labels: 'none' }, slots: { default: [takePart('none')] } },
 };
 
 export const Kicker: Story = {
-  args: { options: { labels: 'kicker' }, slots: { default: [takePart('vendor', 'kicker')] } },
+  args: { options: { labels: 'kicker' }, slots: { default: [takePart('kicker')] } },
 };

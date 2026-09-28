@@ -153,7 +153,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     _id: 'siteSettings',
     _type: 'siteSettings',
     orgName: 'Omo Yorùbá of Southern California',
-    wordmarkLine2: 'of Southern California',
     contacts: withKeys(
       'contact',
       CONTACT_ROLES.map((role) => ({ _type: 'contactRole', role })),
@@ -307,7 +306,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     title: 'Odunde Festival 2026',
     edition: 2026,
     venue: { name: 'Leimert Park' },
-    heroImage: image(assets, 'odunde-2026-procession-with-drummer.jpg'),
   });
   docs.push({
     _id: 'event-gala-2025',
@@ -315,7 +313,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     kind: 'gala',
     title: 'End-of-Year Gala 2025',
     edition: 2025,
-    heroImage: image(assets, 'gala-2025-attendees-sitting.jpg'),
   });
 
   const posts = [
@@ -435,7 +432,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       focus: [50, 40] as Focus,
     },
   ];
-  doors.forEach((door, index) => {
+  doors.forEach((door) => {
     docs.push({
       _id: door.id,
       _type: 'door',
@@ -445,7 +442,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       ...(door.bullets ? { bullets: door.bullets } : {}),
       action: door.action,
       ...(door.image ? { image: image(assets, door.image, undefined, door.focus) } : {}),
-      order: index + 1,
     });
   });
 
@@ -787,7 +783,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         { _type: 'initiative', name: 'Solar Hub', memberLed: true },
         { _type: 'initiative', name: 'Green Goods', memberLed: true },
       ]),
-      keepsOwnList: false,
       // The skills the projects need are invented; the Updates row points at the newsletter form.
       takePart: withKeys('way', [
         {
@@ -960,13 +955,25 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
  * stored, so the Studio shows no unknown field (`takePartOrder` became `takePart`, ADR 0025; the
  * settings' Eventbrite link moved to each Gala edition's `ticketsUrl`, ADR 0024; Kids & STEM's
  * section photograph and ages, a sub-program's ages and detail line, a year strip row's edition
- * reference, and the Lessons page's voices, ADR 0031). A path reaches
- * into objects with a dot and into every keyed item of an array with `[]`.
+ * reference, and the Lessons page's voices, ADR 0031; the inputs that changed nothing and the second
+ * controls for one decision, ADR 0042). A path reaches into objects with a dot and into every keyed
+ * item of an array with `[]`.
  */
 export const RETIRED_FIELDS: Record<string, readonly string[]> = {
-  festivalPage: ['takePartOrder'],
-  galaPage: ['takePartOrder'],
-  siteSettings: ['eventbriteUrl'],
+  // The rows' own order leads the take-part band (ADR 0042); `one-control` moves a lead first.
+  festivalPage: ['takePartOrder', 'layout.takepart'],
+  // The tiers' own order and featured flag (ADR 0042); the edition fills all five glance facts.
+  galaPage: ['takePartOrder', 'layout.emphasis', 'extraFacts'],
+  // The season option leads the event band (ADR 0042).
+  homepage: ['leadEvent'],
+  // The updates row always points at the newsletter (ADR 0042).
+  collectivePage: ['keepsOwnList'],
+  // The nav draws the wordmark and logo itself, and the footer draws no blurb (ADR 0042).
+  siteSettings: ['eventbriteUrl', 'logo', 'wordmarkLine2', 'footerBlurb'],
+  // The pages list their doors in their own order; no page links a photographer or dates a figure.
+  door: ['order'],
+  photographer: ['url'],
+  stat: ['asOf'],
   programsPage: [
     'kidsStem.image',
     'kidsStem.ages',
@@ -979,15 +986,21 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   impactPage: ['nextYear.blurb'],
   // The header line says what the intro would (ADR 0039).
   galleryPage: ['intro'],
-  // The album names its edition, the one link between them (ADR 0042); `album-link` moves it first.
-  event: ['album'],
+  // The album names its edition, the one link between them (ADR 0042); `album-link` moves it
+  // first. No page reads an edition's hero image.
+  event: ['album', 'heroImage'],
 };
 
 /**
  * Retired fields a migration moves before they go (`scripts/migrations`), by `type.field`: the seed
  * and `retired-fields` leave them to that migration, so a link is never dropped before it is moved.
  */
-export const MOVED_FIELDS: Readonly<Record<string, string>> = { 'event.album': 'album-link' };
+export const MOVED_FIELDS: Readonly<Record<string, string>> = {
+  'event.album': 'album-link',
+  'festivalPage.layout.takepart': 'one-control',
+  'galaPage.layout.emphasis': 'one-control',
+  'homepage.leadEvent': 'one-control',
+};
 
 /**
  * A value an earlier seed wrote that this seed writes differently (ADR 0035): the header actions no

@@ -72,8 +72,7 @@ export const homepage = definePage({
           name: 'primaryAction',
           title: 'Primary action',
           type: 'cta',
-          description:
-            "The gold button. When the layout's Highlight names Language Lessons or the Collective, that program's card action takes its place.",
+          description: 'The gold button.',
         }),
         defineField({
           name: 'secondaryActions',
@@ -82,13 +81,6 @@ export const homepage = definePage({
           of: [{ type: 'cta' }],
         }),
       ],
-    }),
-    defineField({
-      name: 'leadEvent',
-      title: 'Event band',
-      type: 'reference',
-      to: [{ type: 'event' }],
-      description: 'Empty picks the next upcoming edition by date.',
     }),
     refs('stats', 'Headline figures', 'stat', 'Four, in order.'),
     text('programsIntro', 'Programs intro', 2),
@@ -160,11 +152,6 @@ export const galaPage = definePage({
   title: 'End-of-Year Gala page',
   pointer: `The date, doors, venue, dress, tickets and running order belong to the edition: Events, then ${EVENT_PAGE_NAMES.gala}, then Editions; the ticket tiers, sponsor levels and honorees sit beside them.`,
   fields: [
-    // The edition fills all five glance facts, so no extra fact can show (ADR 0042).
-    {
-      ...facts('extraFacts', 'Extra glance facts'),
-      hidden: true,
-    },
     text('eveningIntro', 'The evening intro'),
     text('tiersIntro', 'Seats and tables intro', 2),
     text('sponsorIntro', 'Sponsor intro', 2),
@@ -400,14 +387,6 @@ export const collectivePage = definePage({
       title: 'One voice',
       type: 'reference',
       to: [{ type: 'testimonial' }],
-    }),
-    // No page reads it: the updates row always points at the newsletter (ADR 0042).
-    defineField({
-      name: 'keepsOwnList',
-      title: 'The Collective keeps its own mailing list',
-      type: 'boolean',
-      initialValue: false,
-      hidden: true,
     }),
     takePart,
   ],

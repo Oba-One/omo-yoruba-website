@@ -9,6 +9,8 @@ describe('homepageQuery', () => {
     }
     expect(homepageQuery).toContain('kind in ["festival", "gala"]');
     expect(homepageQuery).toContain('order(date desc)[0...3]');
+    // The three program cards only: the highlight no longer reaches a fourth program (ADR 0042).
+    expect(homepageQuery).toContain('*[_type == "program"] | order(order asc)[0...3]');
   });
 
   it('projects the asset reference and never a URL, so stega cannot reach a src', () => {

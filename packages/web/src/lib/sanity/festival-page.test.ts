@@ -119,7 +119,6 @@ const seeded = {
     phead: 'photo',
     zones: 'mosaic',
     schedule: 'shown',
-    takepart: 'vendor',
     labels: 'column',
   },
   seo: null,
@@ -135,7 +134,6 @@ describe('buildFestivalPage', () => {
       phead: 'slim',
       zones: 'mosaic',
       schedule: 'shown',
-      takepart: 'vendor',
       labels: 'column',
     });
     expect(view.root).toEqual(view.layout);
@@ -314,7 +312,6 @@ describe('buildFestivalPage', () => {
     expect(view.takePart.rows.map((row) => row.way)).toEqual(['vendor', 'sponsor']);
     expect(view.takePart).toMatchObject({
       intro: 'Two ways in. Each one says what it asks of you, then opens a short form.',
-      lead: 'vendor',
       labels: 'column',
       vendorTerms: null,
       vendorTermsPending: 'fees, deadline and permit rules',

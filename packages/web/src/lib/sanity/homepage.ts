@@ -1,8 +1,8 @@
 /**
  * The homepage view: what the page hands the library parts, built from the one homepage query.
  * Pure, so a test can drive it with a fixture: the layout with the schema defaults filled, the
- * lead edition from the season rule, the hero's gold button following the highlight option (the
- * highlighted program's own action, as the prototype swaps it), the strip's short labels, every
+ * lead edition from the season rule, the hero's own gold button whatever the highlight (ADR 0042;
+ * the prototype swapped in the highlighted program's action), the strip's short labels, every
  * image resolved to a CDN set with its alt and hotspot framing, the voices padded to the
  * prototype's three placeholder slots while fewer exist, the news oldest first with Read more on
  * the page each post is tagged to, the body data attributes the options drive, the head's title
@@ -34,13 +34,6 @@ export interface HomepageLayout extends Record<string, string> {
 
 const ORG_NAME = 'Omo Yorùbá of Southern California';
 
-/** The program page each highlight value leads with; `festival` keeps the hero's own action. */
-const HIGHLIGHT_PAGES: Record<HomepageLayout['highlight'], string | undefined> = {
-  festival: undefined,
-  school: 'lessons',
-  collective: 'collective',
-};
-
 type NewsTag = { _type: string; kind?: string | null; page?: string | null } | null;
 
 /**
@@ -66,7 +59,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
   const layout = withLayoutDefaults<HomepageLayout>('homepage', data?.layout);
   const hero = data?.hero;
   const events = (data?.events ?? []).filter((event) => event !== null);
-  const lead = leadEvent(events, { season: layout.season, explicit: data?.leadEvent, now });
+  const lead = leadEvent(events, { season: layout.season, now });
   const leadKind = lead ? leadKindOf(lead) : calendarKind(now);
 
   // The prototype's three-column rhythm: placeholder slots fill up to three while voices are few,
@@ -81,13 +74,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       .map((placeholder) => ({ placeholder })),
   ];
 
-  // The highlighted program's action replaces the hero's gold button (the prototype's CTA switch),
-  // looked up among every program, while the grid shows the first three.
-  const allPrograms = (data?.programs ?? []).filter((program) => program !== null);
-  const highlightPage = HIGHLIGHT_PAGES[layout.highlight];
-  const highlightAction = highlightPage
-    ? allPrograms.find((program) => program.page === highlightPage)?.action
-    : undefined;
+  const listed = (data?.programs ?? []).filter((program) => program !== null);
 
   // Nothing in the head may carry stega (the overlay would read the title as editable text).
   const clean = cleanText;
@@ -114,8 +101,8 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       emphasis: hero?.emphasis,
       sub: hero?.sub,
       blessing: hero?.blessing,
-      // A half-filled program action (a draft, a write outside the Studio) never removes the button.
-      primary: usableAction(highlightAction, hero?.primaryAction),
+      // A half-filled action (a draft, a write outside the Studio) shows no button.
+      primary: usableAction(hero?.primaryAction),
       secondary: (hero?.secondaryActions ?? []).filter((action) => action !== null),
       motion: layout.motion !== 'off',
     },
@@ -127,7 +114,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
     programsIntro: data?.programsIntro,
     // No aspect lock: the card crops with object-fit and the hotspot, as the prototype does, so a
     // narrow card on a phone does not crop a crop.
-    programs: allPrograms.slice(0, 3).map((program) => ({
+    programs: listed.slice(0, 3).map((program) => ({
       program: {
         ...program,
         image: resolveImage(imageSet, program.image, { width: 360 }),

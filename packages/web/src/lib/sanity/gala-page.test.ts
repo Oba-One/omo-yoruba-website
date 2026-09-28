@@ -65,7 +65,6 @@ const seeded = {
       newTab: null,
     },
   ],
-  extraFacts: null,
   eveningIntro: 'The Gala closes our year.',
   tiersIntro: null,
   sponsorIntro: null,
@@ -113,7 +112,6 @@ const seeded = {
   layout: {
     treatment: 'formal',
     tiers: 'columns',
-    emphasis: 'seats',
     awards: 'shown',
     schedule: 'shown',
     past: 'shown',
@@ -223,12 +221,8 @@ describe('buildGalaPage', () => {
     expect(view.glance[4]?.note).toBe('Tables of ten from [ table price ]');
   });
 
-  it('keeps the glance to five facts, so the extra facts wait behind the derived ones', () => {
-    const extra = {
-      ...seeded,
-      extraFacts: [{ _key: 'fact-1', label: '[ label ]', value: '[ value ]', note: null }],
-    } as unknown as GalaPageData;
-    expect(buildGalaPage(extra, options).glance.map((fact) => fact.label)).toEqual([
+  it('fills the five glance facts from the edition', () => {
+    expect(buildGalaPage(seeded, options).glance.map((fact) => fact.label)).toEqual([
       'Date',
       'Doors',
       'Venue',
@@ -283,7 +277,6 @@ describe('buildGalaPage', () => {
     expect(view.seats).toMatchObject({
       tiers: [],
       layout: 'columns',
-      emphasis: 'seats',
       ticketsUrl: undefined,
       pending: 'three prices and what each includes',
       ticketsPending: 'the Eventbrite link',
@@ -293,7 +286,7 @@ describe('buildGalaPage', () => {
     const sold = {
       ...seeded,
       tiersIntro: '[ intro ]',
-      layout: { tiers: 'rows', emphasis: 'tables' },
+      layout: { tiers: 'rows' },
       editions: [
         edition('event-gala-2026', 2026, {
           ticketsUrl: 'https://www.eventbrite.com/e/0',
@@ -305,7 +298,6 @@ describe('buildGalaPage', () => {
     expect(draft.seats.intro).toBe('[ intro ]');
     expect(draft.seats.ticketsUrl).toBe('https://www.eventbrite.com/e/0');
     expect(draft.seats.layout).toBe('rows');
-    expect(draft.seats.emphasis).toBe('tables');
     expect(draft.seats.tiers[0]?.edit).toContain('id=seat;type=ticketTier;path=name');
   });
 
