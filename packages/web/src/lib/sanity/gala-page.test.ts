@@ -409,4 +409,15 @@ describe('buildGalaPage', () => {
       pending: 'the photo albums',
     });
   });
+
+  it('withdraws past years, their photographs and album with them, while the gallery holds the albums (R01)', () => {
+    const view = buildGalaPage(
+      { ...seeded, galleryLayout: { state: 'soon' } } as GalaPageData,
+      options,
+    );
+    expect(view.past.shown).toBe(false);
+    expect(view.past.slides).toEqual([]);
+    expect(view.past.album).toBeUndefined();
+    expect(buildGalaPage(seeded, options).past.shown).toBe(true);
+  });
 });

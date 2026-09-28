@@ -25,7 +25,10 @@ forwards to `invalidateByTag` from `@vercel/functions` (a dependency of `@astroj
 `homepage` singleton (`mainDocuments`), every homepage type lists `/` in its locations, and the layout
 mounts `VisualEditing` from `@sanity/astro/visual-editing` when the cookie is set. A mutation reloads
 the page (the documented default); the overlay is outside the persisted dialogs, so a cross-fade
-navigation mounts it fresh with the new page.
+navigation mounts it fresh with the new page. Amended by ADR 0041 (26 September 2026): draft mode
+has no router, so there is no cross-fade for editors. Amended by ADR 0044 (27 September 2026): the
+perspective cookie reads drafts, and mounts the overlay, only beside the session the enable route
+signs.
 
 **Q4. What does `season: auto` pick?** An explicit `leadEvent` reference wins. `gala` or `odunde` picks
 the nearest upcoming edition of that kind, or the newest edition of that kind when none is dated.

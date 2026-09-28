@@ -141,6 +141,9 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
   0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).
 
+- [Persisted dialogs listen for their triggers once, and draft mode loads pages in full](../adr/0041-dialog-listeners-register-once-and-draft-mode-full-loads.md):
+  the home page's flashing and white gap after a client-side arrival (weeks 1 and 2, 26 September 2026).
+
 ## Frontier
 
 Owner decisions that gate a phase, in phase order. Details in each ticket.

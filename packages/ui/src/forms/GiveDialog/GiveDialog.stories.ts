@@ -96,3 +96,29 @@ export const FallsBackWithoutEmbed: Story = {
     await expect(canvas.getByRole('link', { name: /Contact us/ })).toBeVisible();
   },
 };
+
+/**
+ * Disconnected and connected again, as every page swap does to a persisted element: the trigger
+ * still opens the dialog and the click is prevented before a bubble listener registered later
+ * (the router's) sees it, because the document listener registered once, at definition (ADR 0041).
+ */
+export const OpensAfterReconnection: Story = {
+  args: { open: false, timeout: 300 },
+  play: async (context) => {
+    const { canvasElement } = context;
+    const root = canvasElement.querySelector<HTMLElement>('oy-give-dialog');
+    await waitFor(() => expect(root?.dataset.ready).toBe('true'), { timeout: 5000 });
+    let prevented: boolean | undefined;
+    document.addEventListener(
+      'click',
+      (event) => {
+        prevented = event.defaultPrevented;
+      },
+      { once: true },
+    );
+    root?.remove();
+    canvasElement.append(root as HTMLElement);
+    await OpensFromTrigger.play?.(context);
+    await expect(prevented).toBe(true);
+  },
+};

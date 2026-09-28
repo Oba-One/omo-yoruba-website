@@ -7,15 +7,20 @@
  * address (`?photo=<key>`) serves the Lightbox open on that photograph, the one exception beside `#give` to
  * nothing opening on load; a key the album does not hold serves nothing open. An unknown slug is a 404, and a
  * failed read is a 503 in the Pending form that no cache keeps. The Lightbox comes first in the section, so a
- * reader without JavaScript reaches its controls before the photographs behind it.
+ * reader without JavaScript reaches its controls before the photographs behind it. While the gallery holds the
+ * albums (`state: soon`, ADR 0043) the page shows the gallery's soon sentence in place of the photographs, and a
+ * photo address opens nothing.
  */
 import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
 import { createImageSet } from '@oy/content/images';
 import { albumPageQuery } from '@oy/content/queries';
+import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Button from '@oy/ui/core/Button/Button.astro';
 import AlbumIntro from '@oy/ui/media/AlbumIntro/AlbumIntro.astro';
 import GalleryCredits from '@oy/ui/media/GalleryCredits/GalleryCredits.astro';
 import Lightbox from '@oy/ui/media/Lightbox/Lightbox.astro';
 import PhotoGrid from '@oy/ui/media/PhotoGrid/PhotoGrid.astro';
+import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
@@ -55,34 +60,49 @@ cachePage(Astro, '/gallery/[album]', { draft: preview, failed: Boolean(error) })
       facts={page.header.facts}
     />
 
-    <Section id="photographs">
-      <Lightbox
-        id={page.lightbox.id}
-        label={page.lightbox.label}
-        albumHref={page.lightbox.albumHref}
-        album={page.lightbox.album}
-        photos={page.lightbox.photos}
-        openKey={page.lightbox.openKey}
-      />
-      <AlbumIntro
-        links={[page.links.gallery, page.links.edition]}
-        showCredit={page.found}
-        credit={page.credit.credit}
-        confirmed={page.credit.confirmed}
-        pending={page.credit.pending}
-        creditEdit={page.credit.edit}
-        consentNote={page.consentNote}
-        consentEdit={page.consentEdit}
-      />
-      <PhotoGrid
-        photos={page.photos.tiles}
-        lightbox={page.lightbox.id}
-        captions={page.photos.captions}
-        priority={page.photos.priority}
-        pending={page.photos.pending}
-        edit={page.photos.edit}
-      />
-    </Section>
+    {
+      page.soon ? (
+        <Section id="photographs" data-sanity={page.soon.edit}>
+          <Prose text={page.soon.text} />
+          <ButtonRow>
+            {page.soon.links.map((link) => (
+              <Button variant="quiet" href={link.href} arrow>
+                {link.label}
+              </Button>
+            ))}
+          </ButtonRow>
+        </Section>
+      ) : (
+        <Section id="photographs">
+          <Lightbox
+            id={page.lightbox.id}
+            label={page.lightbox.label}
+            albumHref={page.lightbox.albumHref}
+            album={page.lightbox.album}
+            photos={page.lightbox.photos}
+            openKey={page.lightbox.openKey}
+          />
+          <AlbumIntro
+            links={[page.links.gallery, page.links.edition]}
+            showCredit={page.found}
+            credit={page.credit.credit}
+            confirmed={page.credit.confirmed}
+            pending={page.credit.pending}
+            creditEdit={page.credit.edit}
+            consentNote={page.consentNote}
+            consentEdit={page.consentEdit}
+          />
+          <PhotoGrid
+            photos={page.photos.tiles}
+            lightbox={page.lightbox.id}
+            captions={page.photos.captions}
+            priority={page.photos.priority}
+            pending={page.photos.pending}
+            edit={page.photos.edit}
+          />
+        </Section>
+      )
+    }
 
     <GalleryCredits credits={page.credits} />
   </main>

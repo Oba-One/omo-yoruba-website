@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { parseEnv } from 'node:util';
 import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { expect, type Locator, type Page } from '@playwright/test';
@@ -8,6 +10,23 @@ import { expect, type Locator, type Page } from '@playwright/test';
  * test process sees no such variable.
  */
 export const PLACEHOLDER_PROJECT = process.env.PUBLIC_SANITY_PROJECT_ID === 'placeholder';
+
+/**
+ * The Viewer token the dev server reads, for a spec that signs the draft session as the enable route
+ * would (ADR 0044): the process env first (the placeholder command in the runbook sets it empty),
+ * else the one variable from `packages/web/.env`, parsed without loading the rest into the test
+ * process. CI has neither, so it is undefined there.
+ */
+export const READ_TOKEN =
+  (process.env.SANITY_API_READ_TOKEN ?? envFileValue('SANITY_API_READ_TOKEN')) || undefined;
+
+function envFileValue(name: string): string | undefined {
+  try {
+    return parseEnv(readFileSync(new URL('../.env', import.meta.url), 'utf8'))[name];
+  } catch {
+    return undefined;
+  }
+}
 
 /** Axe's WCAG 2.1 A and AA violations on the page as it stands: each rule and its first nodes. */
 export async function axeViolations(page: Page) {
@@ -39,6 +58,15 @@ export async function expectEnquiryRoundTrip(page: Page, trigger: Locator) {
 /** A layout option as the page root carries it on the body (`data-<name>`). */
 export const bodyOption = (page: Page, name: string) =>
   page.locator('body').getAttribute(`data-${name}`);
+
+/**
+ * Whether the gallery holds the albums (`state: soon`, ADR 0043), read from the gallery's own body: the album
+ * pages and the event pages' past years then show no photograph. False in CI's placeholder runs.
+ */
+export async function galleryHeld(page: Page): Promise<boolean> {
+  const html = await (await page.request.get('/gallery')).text();
+  return /<body[^>]*\sdata-state="soon"/.test(html);
+}
 
 /** A Give trigger's round trip: the click opens the Give Dialog, Escape closes it, focus returns to it. */
 export async function expectGiveRoundTrip(page: Page, trigger: Locator) {

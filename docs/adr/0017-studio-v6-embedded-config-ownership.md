@@ -17,5 +17,6 @@ function's source under `packages/content/functions/<name>`.
 - Functions run on Node 24 in production and on the machine's Node 22 locally; the runtime gap
   is recorded, not resolved.
 - Draft mode is the `sanity-preview-perspective` cookie set by `/api/preview/enable` after
-  `validatePreviewUrl`; `loadQuery` is hand written in `packages/web` (the integration exports
+  `validatePreviewUrl`, beside the signed session the same route sets (ADR 0044, since 27 September
+  2026); `loadQuery` is hand written in `packages/web` (the integration exports
   none).

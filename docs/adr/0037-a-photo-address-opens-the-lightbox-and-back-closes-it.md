@@ -8,7 +8,7 @@ exit intent). An address that names a photograph is the visitor asking for that 
 `#give` opens the Give Dialog and the reason ADR 0019 renders the Enquiry Modal open for `?enquiry=<kind>`.
 
 - **The address opens the Lightbox.** `/gallery/<album>?photo=<key>` renders the album page with the Lightbox
-  open on that photograph, server side, so a shared link works without JavaScript: previous and next are
+  open on that photograph (unless the gallery holds the albums, ADR 0043: then it opens nothing), server side, so a shared link works without JavaScript: previous and next are
   links to the neighbouring photo addresses and close is a link to the album's page. The element's script
   turns the served dialog modal. A key the album does not hold renders the album page with nothing open; an
   unknown album is a 404.

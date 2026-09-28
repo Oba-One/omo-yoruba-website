@@ -178,8 +178,11 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
 
 <script is:inline>
   if (!customElements.get('oy-give-dialog')) {
-    // Persisted across navigations: the internal wiring happens once, the document and window
-    // listeners are added per connection and aborted on disconnection.
+    // Persisted across navigations, and a persisted element is disconnected and connected again on
+    // every swap (moveBefore included: the element defines no connectedMoveCallback). The internal
+    // wiring happens once per element; the document and window listeners register once, when this
+    // script first runs while the page parses, so they stay ahead of the router's own click
+    // listener, which would otherwise navigate to the trigger's href as well (ADR 0041).
     const wireGiveDialog = (host) => {
       const dialog = host.querySelector('dialog');
       if (!dialog || typeof dialog.showModal !== 'function') return null;
@@ -284,7 +287,12 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
       });
       dialog.addEventListener('close', () => {
         if (window.location.hash === '#give') {
-          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          // Keep the router's entry state (its index and scroll position), only drop the hash.
+          window.history.replaceState(
+            window.history.state,
+            '',
+            window.location.pathname + window.location.search,
+          );
         }
         const back = api.trigger;
         if (back && back.isConnected && typeof back.focus === 'function') back.focus();
@@ -300,35 +308,52 @@ const einText = ein?.trim() || 'XX-XXXXXXX';
       return api;
     };
 
+    /** The wired element on this page: one per page, persisted across navigations. */
+    const liveGiveDialog = () => {
+      const host = document.querySelector('oy-give-dialog');
+      return host && host.oyApi ? host.oyApi : null;
+    };
+    /** A dialog moved with appendChild (Safari, Firefox) leaves the top layer but keeps `open`. */
+    const restoreModal = (dialog) => {
+      let lost = false;
+      try {
+        lost = dialog.open && !dialog.matches(':modal');
+      } catch {
+        lost = false;
+      }
+      if (!lost) return;
+      dialog.removeAttribute('open');
+      dialog.showModal();
+    };
+
+    document.addEventListener('click', (event) => {
+      const api = liveGiveDialog();
+      if (!api) return;
+      const target = event.target && event.target.closest && event.target.closest('[data-give]');
+      if (!target) return;
+      event.preventDefault();
+      // A Donate inside the mobile menu closes with it: focus goes back to the burger.
+      const from = target.closest('dialog');
+      api.open(from && from !== api.dialog && from.oyTrigger ? from.oyTrigger : target);
+    });
+    const openFromHash = () => {
+      const api = liveGiveDialog();
+      if (api) api.openFromHash();
+    };
+    window.addEventListener('hashchange', openFromHash);
+    document.addEventListener('astro:page-load', openFromHash);
+
     customElements.define(
       'oy-give-dialog',
       class extends HTMLElement {
         connectedCallback() {
           if (!this.oyApi) this.oyApi = wireGiveDialog(this);
-          const api = this.oyApi;
-          if (!api) return;
-          this.oyListeners = new AbortController();
-          const signal = this.oyListeners.signal;
-          document.addEventListener(
-            'click',
-            (event) => {
-              const target =
-                event.target && event.target.closest && event.target.closest('[data-give]');
-              if (!target) return;
-              event.preventDefault();
-              // A Donate inside the mobile menu closes with it: focus goes back to the burger.
-              const from = target.closest('dialog');
-              api.open(from && from !== api.dialog && from.oyTrigger ? from.oyTrigger : target);
-            },
-            { signal },
-          );
-          window.addEventListener('hashchange', api.openFromHash, { signal });
-          document.addEventListener('astro:page-load', api.openFromHash, { signal });
+          if (!this.oyApi) return;
+          restoreModal(this.oyApi.dialog);
           this.dataset.ready = 'true';
         }
 
         disconnectedCallback() {
-          if (this.oyListeners) this.oyListeners.abort();
           delete this.dataset.ready;
         }
       },

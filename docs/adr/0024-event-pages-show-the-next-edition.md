@@ -6,7 +6,8 @@ homepage band already uses (`leadEvent` in `@oy/content`: a dated edition until 
 by the calendar). Every fact the edition lacks renders the registry's Pending chip, and when no edition
 is still to come the same chips stand for the next one. The newest past edition appears only as past
 years: the first eight photographs of its album, with the album's credit and a Pending chip while the
-credit is unconfirmed. Per-edition facts stay on the edition (ADR 0013), the Eventbrite link for Gala
+credit is unconfirmed (while the gallery holds the albums, ADR 0043, Odunde keeps its past years in words and the
+Gala withdraws them). Per-edition facts stay on the edition (ADR 0013), the Eventbrite link for Gala
 seats included: `event.ticketsUrl` is its one source, and `siteSettings.eventbriteUrl` and
 `PUBLIC_EVENTBRITE_URL` retire. A block the Studio has nothing for renders its heading and a Pending line
 whenever its option shows it, although the prototypes mark the schedule, the running order and past

@@ -46,10 +46,13 @@ export const albums = (
   },
 });
 
-/** `state: soon`: one sentence that claims nothing unconfirmed, and the two event pages. */
-export const soon: SlotValue = {
+/**
+ * `state: soon`: one sentence that claims nothing unconfirmed, and the two event pages, in place of the gallery's
+ * albums or, on an album page, of its photographs.
+ */
+const soonIn = (id: 'albums' | 'photographs'): SlotValue => ({
   component: Section,
-  props: { id: 'albums' },
+  props: { id },
   slots: {
     default: [
       {
@@ -77,7 +80,12 @@ export const soon: SlotValue = {
       },
     ],
   },
-};
+});
+
+export const soon = soonIn('albums');
+
+/** An album page while the gallery holds the albums: the sentence in place of its photographs. */
+export const albumSoon = soonIn('photographs');
 
 /** Photography credit and permissions, every gallery route's close, with the policy and the inbox owed. */
 export const credits: SlotValue = {
@@ -94,6 +102,12 @@ export const albumHeader: SlotValue = {
     title: GALA_ALBUM.title,
     facts: [{ text: GALA_ALBUM.count }],
   },
+};
+
+/** An album page's header while the albums are held: the title keeps its year, and no count is shown. */
+export const albumHeaderHeld: SlotValue = {
+  component: PageHeader,
+  props: { variant: 'slim', kicker: GALLERY_HEADER.kicker, title: GALA_ALBUM.title, facts: [] },
 };
 
 /** An album page's body, the Lightbox served open on the first photograph or closed. */
