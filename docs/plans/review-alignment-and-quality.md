@@ -26,7 +26,7 @@ Nineteen majors, in five groups:
   The Give Dialog tells a donor to send a check to the organization's name with no address and no Pending chip (R45).
 - **Forms and dialogs.**
   - After one page change, every Donate and form trigger also navigates the page underneath (R44). Pull request 10
-    fixes this and is not in this stack.
+    fixes this; it was not in this stack when the review ran and has merged since (see the triage below).
   - Without JavaScript the Enquiry Modal cannot be closed (R46).
   - A stray drag onto the scrim closes a form and loses what was typed (R47).
   - Back after closing a dialog opened by its address changes the address but not the page (R109).
