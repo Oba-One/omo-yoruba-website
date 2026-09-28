@@ -1,5 +1,8 @@
 # Dialogs are native dialog elements, and the Give embed is a server island mounted on first open
 
+Amended by ADR 0045: the timer is eight seconds, the iframe's address carries Zeffy's v2 parameters so the form
+reports its readiness and height to the dialog, and the dialog links Zeffy's own page for the form.
+
 Decided with the owner on 11 September 2026 (Phase 3 grill). The Enquiry Modal, the Give Dialog
 and the mobile menu are `<dialog>` elements opened with `showModal()`, so the focus trap,
 Escape and the scrim come from the browser (Chrome 37, Firefox 98, Safari and iOS 15.4 onward),

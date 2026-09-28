@@ -25,6 +25,12 @@ Two links are not variables. The Zeffy form's embed link is `siteSettings.zeffyE
 an administrator enters in the Studio and the Give Dialog's server island reads (ADR 0020); each
 gala edition holds its Eventbrite link as `ticketsUrl` (ADR 0024). Remove any
 `PUBLIC_ZEFFY_EMBED_URL` or `PUBLIC_EVENTBRITE_URL` left in Vercel or a local env file.
+Since ADR 0045 the island adds Zeffy's v2 parameters (`embed-version=v2&embedId=give`) to the
+frame's address, so the form reports its readiness, its height and its thank-you page to the
+dialog, and the layout links Zeffy's own page for the same form under it, the embed address
+without its `/embed` segment, where Apple Pay and Google Pay can show on a phone. Paste the embed
+address as Zeffy gives it (`https://www.zeffy.com/en-US/embed/donation-form/<slug>`, the locale
+optional); an address in any other shape draws no link to the page.
 
 Local: Node 22 and Bun 1.4 through `mise` (`mise trust` once, then `mise install`).
 `bun install` installs the git hooks. `LEFTHOOK=0 git commit` skips them once; do not
@@ -400,8 +406,10 @@ bun run --filter @oy/content query -- '*[_type == "enquiry"] | order(submittedAt
 ```
 
 Analytics: the components announce `oy:track` events (`enquiry_opened`, `enquiry_submitted`,
-`give_opened`, `give_embed_failed`, `newsletter_submitted`) and `Analytics.astro` forwards them
-to PostHog once it loads, with pageviews on every navigation and never a form's contents.
+`give_opened`, `give_embed_failed`, `give_completed`, `newsletter_submitted`) and `Analytics.astro`
+forwards them to PostHog once it loads, with pageviews on every navigation and never a form's
+contents. `give_completed` means Zeffy's form showed its thank-you page: a sign in the browser,
+not a record of the gift, which stays in Zeffy (ADR 0045).
 
 ## Lighthouse
 
@@ -478,6 +486,11 @@ Allowed today: `'self'` everywhere; scripts and connections to PostHog
 to `*.api.sanity.io` and `*.apicdn.sanity.io`; frames from `www.zeffy.com`;
 `frame-ancestors 'self'` for the embedded Presentation tool. Eventbrite is a link, not
 an embed. Fonts are self-hosted, so no font origin.
+
+Zeffy is a frame and never a script (ADR 0045). With the v2 parameters on the frame's address,
+Zeffy's form posts to the page with `postMessage`, which the policy does not govern; the dialog
+hears only messages from `https://www.zeffy.com` that name `give`. The link to Zeffy's own page
+for the form is a plain link, which needs no policy entry either.
 
 To allow a new origin: add it to the directive in `csp.ts`, update this list, and note it
 in the phase's handoff. Expect `style-src` reports from Astro's inlined small stylesheets
