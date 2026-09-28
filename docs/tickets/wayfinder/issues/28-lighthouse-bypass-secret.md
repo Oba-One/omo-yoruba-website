@@ -21,5 +21,14 @@ Blocked by: none
 2. Branch protection: whether `Lighthouse (mobile)` and `Lighthouse (desktop)` become required. They
    are missing when a Vercel build fails and for a fork's pull request (no run starts).
 
-Expect the mobile audit to fail the performance budget until ticket 33 lands; the local production
-build scored 0.67 to 0.77 on mobile on 12 September 2026 (`docs/plans/handoff-phase-4.md`).
+Ticket 33 raised the homepage's mobile performance from 0.67 to 0.77 to 0.94 to 0.96 on 12 September
+2026, so its performance score now passes. Until their tickets land, expect the mobile audit to fail
+on LCP on `/` and both gallery routes and on layout shift when the event pages' fonts swap (ticket 35,
+open-work E12), and on best practices, 0.93 on every route for the favicon's 404 (ticket 32) and the
+report-only CSP's issues (ADR 0011). Open-work D14 holds this ticket's two decisions.
+
+## Comments
+
+27 September 2026. Rewritten (open-work H2): ticket 33 is resolved, so the failures to expect are ticket
+35's and ticket 32's. The repository still has no Actions secrets (`gh secret list`, 27 September), so
+the workflow skips.

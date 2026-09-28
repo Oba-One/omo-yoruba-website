@@ -271,8 +271,7 @@ step "Add a second token named 'enquiries write', permissions Editor, copy it."
 ask_secret SANITY_API_WRITE_TOKEN "Paste the Editor token:"
 write_env SANITY_API_READ_TOKEN "$SANITY_API_READ_TOKEN"
 write_env SANITY_API_WRITE_TOKEN "$SANITY_API_WRITE_TOKEN"
-say "The preview secret and the webhook secret are generated here, or kept from a previous run."
-ensure_secret SANITY_PREVIEW_SECRET
+say "The webhook secret is generated here, or kept from a previous run."
 ensure_secret SANITY_WEBHOOK_SECRET
 pause
 
@@ -302,12 +301,11 @@ if (( VERCEL_READY )) && confirm "Push the values from $ENV_FILE to Vercel now? 
   vercel_env PUBLIC_SITE_URL "$LOCAL_URL" development
   vercel_env SANITY_API_READ_TOKEN "$SANITY_API_READ_TOKEN"
   vercel_env SANITY_API_WRITE_TOKEN "$SANITY_API_WRITE_TOKEN"
-  vercel_env SANITY_PREVIEW_SECRET "$SANITY_PREVIEW_SECRET"
   vercel_env SANITY_WEBHOOK_SECRET "$SANITY_WEBHOOK_SECRET"
 else
   SKIPPED+=("Vercel environment variables: push them later by re-running stage 3, or add them in the dashboard")
 fi
-note "PUBLIC_ZEFFY_EMBED_URL is added the same way once you have it (wayfinder ticket 03); the Gala's ticket link lives on the edition in the Studio."
+note "The Zeffy donation form's link lives in the Studio's site settings, and the Gala's ticket link on the edition; neither is an environment variable."
 note "Public values are baked in at build time: redeploy after changing one."
 pause
 

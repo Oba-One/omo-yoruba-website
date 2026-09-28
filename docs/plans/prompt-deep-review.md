@@ -35,7 +35,7 @@ together, after every phase's changes to shared components, and at the parts no 
      `15 People and History.dc.html`; `/donate` and `16 Donate.dc.html`.
    - `/gallery`, `/gallery/<album>` and an open photograph with `18 Photo Gallery.dc.html`.
    - Where a layout option hides a block, compare the page-section story with the prototype's block shown.
-2. **The chrome and the dialogs:** `Site Nav.dc.html` (desktop, the Events dropdown, the overlay under 760px, the
+2. **The chrome and the dialogs:** `Site Nav.dc.html` (desktop, the Events dropdown, the overlay under 880px, the
    current page on every route), `Site Footer.dc.html`, `Enquiry Modal.dc.html` (all eight kinds and five states,
    the bottom sheet under 720px), `Give Dialog.dc.html` (the embed and its fallback) and `Photo Carousel.dc.html`.
 3. **The whole site as one:** `Omo Yoruba Site.dc.html` stitches the pages together. Walk it beside the site for

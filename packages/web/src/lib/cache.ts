@@ -7,7 +7,10 @@
  * opts out again in the middleware after the render, since a
  * later `cache.set()` would switch the cache back on; so does a render whose Sanity read failed,
  * which would otherwise keep an all-Pending page on the CDN for a day. The layout opts a form error
- * re-render and a failed settings read out itself. In dev the cache object is a no-op.
+ * re-render and a failed settings read out itself. In dev the cache object is a no-op. The error page
+ * Astro renders in place of a page's empty 404 has no cache object at all (Astro 7.3 provides one to
+ * route renders only), so every call here, in the layout and in the middleware tolerates its absence:
+ * such a render is never cached.
  */
 import { type PublicRoute, tagsForRoute } from '@oy/content/routes';
 import type { AstroGlobal } from 'astro';
@@ -29,13 +32,13 @@ export function cacheOptions(route: PublicRoute) {
 }
 
 export function cachePage(
-  astro: { cache: CacheLike },
+  astro: { cache?: CacheLike },
   route: PublicRoute,
   { draft, failed = false }: CachePageOptions,
 ): void {
   if (draft || failed) {
-    astro.cache.set(false);
+    astro.cache?.set(false);
     return;
   }
-  astro.cache.set(cacheOptions(route));
+  astro.cache?.set(cacheOptions(route));
 }

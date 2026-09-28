@@ -18,6 +18,15 @@ describe('ENQUIRY_SPECS', () => {
     expect(ENQUIRY_KINDS).toHaveLength(8);
   });
 
+  // A blurb that counts its questions counts the form's fields (open-work E5).
+  it.each(ENQUIRY_KINDS)('%s counts its questions truly, where its blurb counts them', (kind) => {
+    const WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+    const { blurb, fields } = ENQUIRY_SPECS[kind];
+    const stated = /\b(\w+) questions\b/i.exec(blurb)?.[1]?.toLowerCase();
+    if (stated === undefined) return;
+    expect(WORDS.indexOf(stated) + 1, blurb).toBe(fields.length);
+  });
+
   it.each(ENQUIRY_KINDS)('%s has the copy the modal needs', (kind) => {
     const spec = ENQUIRY_SPECS[kind];
     expect(spec.kind).toBe(kind);

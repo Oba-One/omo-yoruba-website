@@ -9,7 +9,8 @@ owner's decision; no session answers it for them.
 Every route in `docs/design/ROUTES-AND-INTERACTIONS.md` renders from Sanity and matches
 its prototype at 375 and 1440 with a named Pending chip wherever content is still owed;
 every component lives once in `@oy/ui` with a story; Visual Editing and cache purge work;
-all nine forms create a document and an email within a minute; the quality bars in
+the eight enquiry forms create a document and an email within a minute, and the newsletter
+stores its subscriber (it sends nothing, ticket 01); the quality bars in
 `docs/design/QUALITY.md` are met; and the owner adds a news post, an event and an album from
 Claude Code without opening code. Full list: `docs/design/README.md` section 8.
 
@@ -53,11 +54,15 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   the owner merged pull request #2 on 5 September 2026; the stubs and workarounds carry in the
   ticket's answer; no pivot (ADR 0002).
 
+- [GitHub and Vercel are named](../tickets/wayfinder/issues/12-github-org-and-vercel-team.md): the
+  repository `Oba-One/omo-yoruba-website` on the owner's personal account, and the project
+  `omo-yoruba` in the Greenpill Dev Guild team; resolved 27 September 2026.
+
 - Domain: `omoyorubasocal.org`, bought by the owner on 11 September 2026 through Vercel, since the
   old `omoyorubaofsocal.org` is registered elsewhere and not yet in the owner's hands. Its DNS
   is at Cloudflare. The repo, the wizard and the Vercel project use the new name; the old one
   redirects here once the owner controls it (ticket 10). Vercel reads the `development` dataset
-  until `production` is seeded.
+  until D3 makes `production` private and it is seeded.
 
 - `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` are required at build time since Phase 2
   (the data layer exists); CI builds with placeholder values (`docs/runbook.md`).
@@ -140,52 +145,57 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
 - [The homepage under the mobile performance budget](../tickets/wayfinder/issues/33-homepage-mobile-lighthouse-budget.md):
   right-sized logos, weight-only Source Serif 4 and renamed Yoruba subsets (ADR 0026); mobile 0.77 to
   0.95, LCP 5.9 s to 2.7 s; the last 0.2 s is ticket 35 (Phase 5, owner's choice of fonts).
+- [Editor roles](../tickets/wayfinder/issues/22-editor-roles.md): members are Sanity Editors, and
+  administrators keep site settings, the Inbox and the held-back switches (D4, ADR 0042).
+- Phases 4 to 7 checked and merged ([26](../tickets/wayfinder/issues/26-check-phase-4-and-merge.md),
+  [36](../tickets/wayfinder/issues/36-check-phase-5-and-merge.md),
+  [39](../tickets/wayfinder/issues/39-check-phase-6-and-merge.md),
+  [41](../tickets/wayfinder/issues/41-check-phase-7-and-merge.md)): what they left open moved to open-work rows.
 
 - [Persisted dialogs listen for their triggers once, and draft mode loads pages in full](../adr/0041-dialog-listeners-register-once-and-draft-mode-full-loads.md):
   the home page's flashing and white gap after a client-side arrival (weeks 1 and 2, 26 September 2026).
 
 ## Frontier
 
-Owner decisions that gate a phase, in phase order. Details in each ticket.
+Phases 0 to 8 have merged (pull requests 1 to 9). The weeks 1 and 2 work of
+`docs/plans/four-week-plan.md` is in open pull requests: 10, the navigation fix, and 11 to 14, the
+Studio simplification's parts 4 and 5 (ADR 0042). `docs/plans/open-work.md` holds everything still
+open. Below are the owner decisions still open; Gates names what each holds up now, with its
+open-work row and priority. Details in each ticket.
 
 | Ticket | Decision | Gates |
 | --- | --- | --- |
-| 12 | GitHub org and repo name, Vercel team | Phase 0 wizard |
-| 17 | Run `scripts/setup-wizard.sh` (Sanity, Vercel, Resend, PostHog, Chromatic) | Phase 2 seed, Phase 4 preview |
-| 18 | Accept the em dash lint carve-out for `docs/design/` | Phase 0 sign-off |
-| 11 | Storybook hosting: separate Vercel project or a path under the site | Phase 1 |
-| 02 | EIN, mailing address, phone, routing email per enquiry kind | Phase 2 seed, Phase 3 routing |
-| 05 | The two unnamed festival zones | Phase 2 seed, Phase 5 |
-| 09 | Photo credits to confirm | Phase 2 seed |
-| 22 | Editor roles on the Sanity plan | Phase 2 |
-| 03 | Zeffy embed URL and Eventbrite event URL | Phase 3, Phase 5 |
-| 26 | Check Visual Editing and the cache, merge pull request 5 | Phase 5 branch, ticket 25 |
-| 25 | Create the Sanity webhook on the public domain | Publish-to-purge in production |
-| 27 | Put the recap post's title back to "Odunde 2026: the recap" in `development` | The homepage news card |
-| 28 | Lighthouse bypass secret (header or cookie route), required Lighthouse checks | Lighthouse on previews |
-| 29 | Preview host `preview.omoyorubasocal.org` for editors | Draft previews on the live site |
-| 30 | Photo hero heading on phones: the prototype's 34px or the brief's 44px | One token |
-| 31 | A photograph of the Yoruba Cultural Collective | Phase 6 program pages |
-| 32 | The favicon | Ticket 33 (best practices) |
-| 04 | Gala tables: enquiry or purchase | Phase 5 |
-| 06 | Gala awards: yes or no | Phase 5 |
-| 36 | Check the event pages in the Studio and on the preview, merge pull request 6 | Phase 6 branch |
-| 37 | The photo carousel's controls (ADR 0027's answers) | The Lightbox, Phase 8 |
-| 38 | The event pages' owed facts (Odunde 2027, Gala 2026, albums) | Launch |
-| 39 | Check the program pages in the Studio and on the preview, merge pull request 7 | Phase 7 branch |
-| 40 | The program pages' owed facts (the teacher, the Lessons answers, the initiatives, the Collective's argument and voice) | Launch |
-| 41 | Check the trust pages in the Studio and on the preview, merge pull request 8 | Phase 8 branch |
-| 42 | The trust pages' owed facts (the EIN and contacts, sources, outcomes, governance, people, the Zeffy form, giving levels) | Launch |
-| 43 | Check the gallery in the Studio and on the preview, merge pull request 9 | Phase 9 branch |
-| 44 | The gallery's owed facts (the consent policy, the general inbox, the credits, the summer camp's year, consent for faces, captions) | Launch |
-| 07 | Our Story timeline shown by default | Phase 7 |
-| 10 | Old site URLs for redirects | Phase 9 |
-| 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | Phase 9 |
-| 08 | News cadence: feed or list | Later phase |
+| 17 | Finish the setup: Resend and the functions, PostHog, Chromatic (wizard stages 4 to 6) | Enquiry emails and the content-lint reports, analytics, visual baselines (D16, E16: Launch) |
+| 18 | Accept the em dash lint carve-out for `docs/design/` | Nothing waits: `.lintignore` holds the carve-out today (D23: Later) |
+| 11 | Storybook hosting: separate Vercel project or a path under the site | A shareable Storybook (D20: Later) |
+| 02 | EIN, mailing address, phone, routing email per enquiry kind | Enquiry routing and the organization's facts on every page (C1: Now); tickets 38, 42 and 44 |
+| 05 | The two unnamed festival zones | Odunde's zones (C4: Launch) |
+| 09 | Photo credits to confirm | The gallery's credits and consent (C3, D5: Now) |
+| 03 | Zeffy embed URL and Eventbrite event URL | The Give Dialog's form (C1: Now) and the Gala's ticket buttons (C5: Launch) |
+| 25 | Create the Sanity webhook on the public host | Edits on the site within a minute (E1: Now): one exists on the stand-in host; the purge check and the move with D2 remain |
+| 27 | Put the recap post's title back to "Odunde 2026: the recap" in `development` | The homepage's news card (C2: Now) |
+| 28 | Lighthouse bypass secret (header or cookie route), required Lighthouse checks | Lighthouse on previews (D14, E14: Launch) |
+| 29 | A preview host for editors | Drafts in the Presentation tool on the public host (D15: Launch) |
+| 30 | Photo hero heading on phones: the prototype's 34px or the brief's 44px | The type tokens and AGENTS.md's sizes (D11: Launch; the sizes half of E7) |
+| 31 | A photograph of the Yoruba Cultural Collective | The Collective's photograph on the homepage, Programs and Collective pages (C2: Now) |
+| 32 | The favicon | The favicon files and best practices 100 (D7, E3: Now) |
+| 04 | Gala tables: enquiry or purchase | The Gala's tables block and its copy (D9: Launch) |
+| 06 | Gala awards: yes or no | The Gala's honorees block (D10: Launch) |
+| 37 | The photo carousel's controls, answers 2 to 5 (ADR 0027) | Styling only (D19: Later) |
+| 38 | The event pages' owed facts (Odunde 2027, Gala 2026, albums) | Their Pending chips (C4, C5: Launch) |
+| 40 | The program pages' owed facts (the teacher, the Lessons answers, the initiatives, the Collective's argument and voice) | Their Pending chips (C6 to C8: Launch) |
+| 42 | The trust pages' owed facts (the EIN and contacts, sources, outcomes, governance, people, the Zeffy form, giving levels) | Their Pending chips (C9 to C12: Launch) |
+| 44 | The gallery's owed facts (the consent policy, the general inbox, the credits, the summer camp's year, consent for faces, captions) | Its Pending chips and its `soon` state (C3, D5: Now) |
+| 07 | Our Story's timeline: show it once its entries are confirmed, keep it hidden, or drop it | The timeline block (D21: Later) |
+| 10 | Old site URLs for redirects | The redirects (D18, E11: Launch) |
+| 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | The enforced CSP (D13, E9: Launch) |
+| 08 | News cadence: feed or list | The News page (D22, C13: Later) |
 
-Research and design tickets the phases work themselves: 15 (analytics bundle versus the JS
-budget), 20 (Sanity loader for live collections), 21 (cache and draft mode), 35 (the last 0.2 s of
-the homepage's mobile LCP, Phase 9). Tickets 33 and 34 were resolved in Phase 5. Ticket 19 (fonts) was resolved in Phase 1.
+A session works ticket 35 without the owner (the last 0.2 s of the mobile LCP and the event pages'
+font-swap shift, open-work E12). Resolved: 19 in Phase 1; 15, 20 and 21 in Phase 4; 33 and 34 in
+Phase 5; 12 on 27 September. The check-and-merge tickets are closed: 43 on 13 September with pull
+request 9, and 26, 36, 39 and 41 on 27 September, their pull requests (5 to 8) having merged on 12
+and 13 September. Each one's last comment says where its remaining calls went.
 
 ## Not yet specified
 
@@ -193,10 +203,11 @@ the homepage's mobile LCP, Phase 9). Tickets 33 and 34 were resolved in Phase 5.
   ticket 08.
 - Agent Actions candidates (alt text drafts, Yoruba kicker suggestions): owner-triggered
   only; shape unknown until Phase 10.
-- Nightly `content-lint.yml` delivery: a summary in the Pending view, an email, or both.
-- OG image generation and the 404 page's three doors (Phase 9); redirects list shape
-  (ticket 10).
-- Content Release naming and who may publish one; depends on ticket 22.
+- Nightly `content-lint.yml` delivery: a summary in the Studio's To do, an email, or both.
+- OG image generation (Phase 9); redirects list shape (ticket 10). The 404 page's three doors
+  (the homepage, Get Involved, Programs) were chosen in week 1 for the owner to confirm.
+- Who may publish once members edit: settled by D4 (members are Editors, ADR 0042); Content
+  Releases are off.
 
 ## Out of scope
 

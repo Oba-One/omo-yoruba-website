@@ -11,9 +11,10 @@ Blocked by: none
 
 The research note (`docs/research/phase-5-photo-carousel-custom-element.md`) left five choices to the
 owner. ADR 0027 answered each with the rule that outranks the prototype, so the carousel ships and any
-answer can be reversed:
+answer can be reversed. Answer 1 is settled; answers 2 to 5 are still yours (open-work D19):
 
-1. Swipe: none until the Lightbox (Phase 8) decides for both.
+1. Swipe, settled (ADR 0038): the Lightbox and the carousel both move on one touch swipe, and the buttons
+   stay.
 2. The dots are 44px tabs with the 12px dot drawn inside, not the prototype's 12px dots on a 20px
    pitch; the alternative is decorative dots with previous, next and the count as the only controls.
 3. The chevrons are drawn (the glyph set has no ‹ ›); the tabs are named "Photo 2", not "Photo 2 of 6".
@@ -27,3 +28,6 @@ answer can be reversed:
 Q3; ADR 0038): the Lightbox and the carousel both move on one touch swipe, at least 40px sideways and further
 sideways than down, ignored while the page is pinch-zoomed, with no change to scrolling or zoom; the buttons stay.
 Answers 2 to 5 (the dots as tabs, the drawn chevrons, the count's case, eight photographs) are still the owner's.
+
+27 September 2026. Rewritten (open-work H2): the question now shows answer 1 as settled and asks only 2 to 5,
+keeping the numbers other documents cite.

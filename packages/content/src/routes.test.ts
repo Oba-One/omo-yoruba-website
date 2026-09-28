@@ -75,6 +75,7 @@ describe('PUBLIC_ROUTES', () => {
       '/gallery/[album]',
       '/news',
       '/news/[slug]',
+      '/404',
     ]);
   });
 });

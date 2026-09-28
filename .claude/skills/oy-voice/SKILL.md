@@ -25,8 +25,9 @@ and "yours" for the reader. Action verbs open buttons. Never corporate, never ge
   colour alone, never clearing what was typed. A summary sentence at the top of the form
   with `role="alert"`.
 - Every form shows a human fallback beside it: email and phone from `siteSettings`.
-- Framing line for the festival: Odunde sits with Chinese New Year, Diwali and Nowruz,
-  "communities that pause the world to celebrate who they are."
+- Framing line for the festival: Odunde sits alongside Lunar New Year, Diwali and Nowruz,
+  "communities that pause the world for a day to celebrate who they are" (the Odunde
+  prototype's words, which the seed carries).
 - Trust line: "501(c)(3) nonprofit since 1997 • EIN XX-XXXXXXX • Los Angeles, CA".
 - Alt text describes the moment (who, doing what, where), Yoruba names with marks; no
   "image of".

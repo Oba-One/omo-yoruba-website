@@ -64,7 +64,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   border colour. Photos never zoom.
 - Nav: Events dropdown (Ọdúndé Festival, End-of-Year Gala), Programs, Get Involved,
   Impact, Our Story, gold Donate button. Contact lives in the footer only. Full-screen
-  overlay under 760px. Logo mark 40px plus the two-line wordmark; line two hides under 1060px.
+  overlay under 880px, as the ported CSS builds it (the brief and ROUTES say 760px; Phase 3
+  kept the CSS). Logo mark 40px plus the two-line wordmark; line two hides under 1060px.
 - Every Donate button opens the Give Dialog (Zeffy embed, fallback to Contact and the
   mailing address). `#give` in the URL opens it on load.
 - Every form opens the Enquiry Modal (dialog on desktop, bottom sheet under 720px) from a

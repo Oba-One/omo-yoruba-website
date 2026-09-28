@@ -29,7 +29,7 @@ ticket holds the detail, the row links it and stays one line. New work goes into
 | D9 | Gala tables: an enquiry or a purchase | An enquiry, invoiced by hand | The tables block and its copy | Launch | T04 | open |
 | D10 | Gala awards | Hidden by default; `development` stores shown | The honorees block | Launch | T06 | open |
 | D11 | Type sizes on phones: photo hero 34 or 44px, hero 38 or 44, H2 30 or 32 | The prototypes' sizes | AGENTS.md says 44 and 32; the tokens follow the prototypes | Launch | T30 | open |
-| D12 | The volunteer chip's green outside Collective content | Green, as four prototypes draw it | AGENTS.md keeps green inside the Collective | Launch | T41, ADR 0036 | open |
+| D12 | The volunteer chip's green outside Collective content | Green, as four prototypes draw it | AGENTS.md keeps green inside the Collective | Launch | T41 (resolved), ADR 0036 | open |
 | D13 | CSP: enforce as a header with hashes (keeps the cross-fade) or Astro's meta CSP (drops it) | Report-only | Phase 9 security; best practices 100 | Launch | T13, ADR 0011 | open |
 | D14 | Lighthouse on previews: the bypass secret, and whether the checks are required | The workflow skips | Budgets checked on every pull request | Launch | T28 | open |
 | D15 | Preview host for drafts (a second hostname) | None; the public host shows the cached page in Presentation | Editors see drafts before they publish | Launch | T29 | open |
@@ -116,13 +116,13 @@ Answered on 26 September 2026; the spec lists each answer.
 
 | # | Work | Needs first | Priority | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| E1 | Create the publish webhook on the chosen host, so an edit shows within a minute instead of up to a day | D2 | Now | T25 | open |
+| E1 | Create the publish webhook on the chosen host, so an edit shows within a minute instead of up to a day | D2 | Now | T25 | doing: a webhook, `purge-site-cache`, sends `development` publishes to khaki since 13 Sep (checked 27 Sep); left: prove a publish purges a page, and move it with D2 or D3 |
 | E2 | Run the deep review of design alignment and code quality | D1 | Now | `docs/plans/prompt-deep-review.md` | open |
 | E3 | The favicon files | D7 | Now | T32 | open |
-| E4 | A 404 page in the site chrome | none | Now | ROUTES section 1, Phase 9 | open |
-| E5 | The performer form's blurb says "Five questions" and asks six | none | Now | `enquiry-kinds.ts` | open |
-| E6 | Remove `PUBLIC_ZEFFY_EMBED_URL` from the env schema, the runbook and the wizard (the Zeffy link lives in site settings) | none | Now | HP3, runbook | open |
-| E7 | Correct AGENTS.md where the build differs: the menu overlay starts under 880px, the hero sizes follow the tokens (after D11) | D11 for the sizes | Now | inventory | open |
+| E4 | A 404 page in the site chrome | none | Now | ROUTES section 1, Phase 9 | done: pull request 15; `404.astro` in the chrome with three doors home (`NotFound` in `@oy/ui`), and the album route's empty 404 renders it; the doors are for the owner to confirm |
+| E5 | The performer form's blurb says "Five questions" and asks six | none | Now | `enquiry-kinds.ts` | done: pull request 15; "Six questions", and a test holds every counted blurb to its form |
+| E6 | Remove `PUBLIC_ZEFFY_EMBED_URL` from the env schema, the runbook and the wizard (the Zeffy link lives in site settings) | none | Now | HP3, runbook | doing: pull request 15 removes it from the env schema, the runbook and the wizard; left for the owner: delete `PUBLIC_ZEFFY_EMBED_URL` and the retired `PUBLIC_EVENTBRITE_URL` from `packages/web/.env.example` and from Vercel's variables (agents cannot edit that file; ticket 36) |
+| E7 | Correct AGENTS.md where the build differs: the menu overlay starts under 880px, the hero sizes follow the tokens (after D11) | D11 for the sizes | Now | inventory | doing: pull request 15 corrects the overlay to 880px in AGENTS.md; the hero sizes wait for D11 |
 | E8 | The editor guide `docs/content-ops.md`, written for members after the simplification | D6 | Now | Phase 10 | open |
 | E9 | Enforce the CSP with hashes, proven in Playwright; security headers | D13 | Launch | Phase 9 | open |
 | E10 | Sitemap, robots, canonical links and share images | D17 | Launch | Phase 9 | open |
@@ -144,10 +144,10 @@ Answered on 26 September 2026; the spec lists each answer.
 
 | # | Item | Status |
 | --- | --- | --- |
-| H1 | Close T26, T36, T39 and T41 (their pull requests merged); move their remaining calls into D11, D12, D10 and E1 first | open |
-| H2 | Rewrite T12 (the org and team are named), T17 (only the remaining stages), T37 (answer 1 is settled), T03 (it names an env variable nothing reads), T07 (the timeline is hidden by default), T28 (ticket 33 is resolved) and T29 (ticket 26 has merged) | open |
-| H3 | Refresh the wayfinder frontier's "Gates" column, which still points at finished phases | open |
-| H4 | Fix the documents that contradict the build: the runbook's "datasets are private"; the wayfinder's "all nine forms send an email" (the newsletter only stores); ADR 0040 sending captions to T09 (T44 holds them); the voice skill's "Chinese New Year" against the seed's "Lunar New Year" | open |
+| H1 | Close T26, T36, T39 and T41 (their pull requests merged); move their remaining calls into D11, D12, D10 and E1 first | done: pull request 15; T26, T36, T39 and T41 resolved 27 Sep, their calls moved to D10 (T06), D11 (T30), D12 and E1 (T25), the rest to E2, E6, E14, E18 and D24; T39's three calls stand as ADR 0033 records them |
+| H2 | Rewrite T12 (the org and team are named), T17 (only the remaining stages), T37 (answer 1 is settled), T03 (it names an env variable nothing reads), T07 (the timeline is hidden by default), T28 (ticket 33 is resolved) and T29 (ticket 26 has merged) | done: pull request 15; T12 resolved, T17 keeps stages 4 to 6, T03, T07, T28, T29 and T37 rewritten |
+| H3 | Refresh the wayfinder frontier's "Gates" column, which still points at finished phases | done: pull request 15; the Gates name each ticket's open-work rows and priority, and closed tickets left the table |
+| H4 | Fix the documents that contradict the build: the runbook's "datasets are private"; the wayfinder's "all nine forms send an email" (the newsletter only stores); ADR 0040 sending captions to T09 (T44 holds them); the voice skill's "Chinese New Year" against the seed's "Lunar New Year" | done: pull request 15; the dataset lines in the runbook, the README and the query helper, the wayfinder's destination, ADR 0040's ticket (44), oy-voice's "Lunar New Year" |
 | H5 | The owner runs `/mattpocock-skills:handoff` for `docs/plans/handoff-phase-8.md` | open |
 | H6 | Delete the e2e proof enquiries left in `development` | open |
-| H7 | Record the 13 September hosting facts in the runbook: `omo-yoruba-khaki.vercel.app` as the public host, the Sanity CORS entries, no webhook yet, `development` private and read by the site, `production` empty with a public ACL, the owner as the only member | open |
+| H7 | Record the 13 September hosting facts in the runbook: `omo-yoruba-khaki.vercel.app` as the public host, the Sanity CORS entries, no webhook yet, `development` private and read by the site, `production` empty with a public ACL, the owner as the only member | done: pull request 15; the runbook's "Hosting today", each fact checked 27 Sep; since 13 Sep a webhook to khaki on `development` exists |

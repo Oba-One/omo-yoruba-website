@@ -6,7 +6,8 @@
 # repository's deployments on 12 September 2026); production is audited on the public domain
 # instead.
 #
-# Every vercel.app host sits behind Vercel Authentication, so the audit needs the project's
+# Every vercel.app host but the public stand-in (runbook, Hosting today) sits behind Vercel
+# Authentication, so the audit of a preview needs the project's
 # Protection Bypass for Automation secret as the repository secret
 # VERCEL_AUTOMATION_BYPASS_SECRET. Until the owner creates it the job skips with a notice rather
 # than auditing the login page. A fork's preview never runs here: GitHub does not start a run for

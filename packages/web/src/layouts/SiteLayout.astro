@@ -75,7 +75,7 @@ const {
 } = await loadQuery(siteSettingsQuery, {}, { cookies: Astro.cookies });
 // A failed settings read renders the chrome's Pending facts; the CDN must not keep that copy. The
 // layout renders after the page's frontmatter, so this wins over the page's cachePage.
-if (settingsError) Astro.cache.set(false);
+if (settingsError) Astro.cache?.set(false);
 const contacts = contactsByRole(settings?.contacts);
 const site = { email: settings?.generalEmail ?? undefined, phone: settings?.phone ?? undefined };
 const copyFor = (kind: EnquiryKind) => successCopy(kind, contacts[KIND_TO_ROLE[kind]], site);
@@ -97,7 +97,8 @@ const newsletter = newsletterStateFrom(Astro.url, newsletterOutcome, site);
 // and the CDN never stores it.
 if (modal.state === 'error' || newsletter.state === 'error') {
   Astro.response.status = 400;
-  Astro.cache.set(false);
+  // The error render Astro gives an empty 404 has no cache object (lib/cache.ts).
+  Astro.cache?.set(false);
 }
 
 // The same check as the island's, so the dialog never waits for a frame the island refuses.

@@ -267,7 +267,7 @@ The constraints and where each is fixed: GROQ only in `@oy/content` through `def
 TypeGen's `SanityQueries` registry so that `client.fetch` and `ClientReturn<Q>` resolve the result
 (`packages/content/src/queries.ts` lines 1 to 7, `packages/content/src/sanity.types.ts` lines 1309 to 1319,
 `@sanity/client` `dist/index.node.d.ts` lines 9804 to 9837; TypeGen scans `../web/src/**/*.{ts,astro}` per
-`packages/content/sanity.cli.ts`); the Viewer token on every read because the datasets are private
+`packages/content/sanity.cli.ts`); the Viewer token on every read because the site's dataset is private
 (`packages/web/src/lib/sanity/load-query.ts` lines 29 to 36); the perspective cookie switching a read to
 drafts with stega and the source map per request (lines 43 to 53); cache tags per document type from
 `cacheTagsFor(type)`, which answers `type:<type>` plus one `route:<route>` per affected route

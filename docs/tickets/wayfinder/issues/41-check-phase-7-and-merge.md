@@ -1,7 +1,7 @@
 # Check the trust pages in the Studio and on the preview, then merge the Phase 7 pull request
 
 Type: task
-Status: open
+Status: resolved
 Owner: yes
 Labels: infra
 Phase: 7
@@ -39,3 +39,23 @@ Phase 7 (conversion and trust) is pull request https://github.com/Oba-One/omo-yo
    `vendorsHosted`, the outcome's subject, the timeline entry's shape, the founding facts and image, the
    give-now facts, the other ways' kind and detail); edit the trust pages from this pull request's preview.
 6. Merge when satisfied. Phase 8 starts from `main` afterwards (`docs/plans/prompt-phase-8.md`).
+
+## Answer
+
+Phase 7 merged as pull request 8. What its steps left open moved to open-work rows before the ticket
+closed; the comment below names each.
+
+## Comments
+
+27 September 2026. Closed (open-work H1): pull request 8 merged on 13 September 2026. Where what
+was left went:
+
+- The volunteer chip's green outside Collective content (step 3): open-work D12; ADR 0036 and this
+  ticket keep the detail.
+- Donate's one Give now follows the one-gold-action rule (spec Q14); a second door beside Partner or
+  sponsor is open-work D24 (ticket 42, ADR 0034).
+- `SectionHead`'s section lead on every page (step 3) and the comparison with the prototypes (step 2):
+  the deep review (open-work E2), whose prompt names the section lead.
+- Reseeding another dataset (step 4): open-work E18, once D3 names the dataset that holds the content.
+- Step 1 was a check before the merge. Step 5 no longer applies: the Studio on `main` knows the new
+  fields.

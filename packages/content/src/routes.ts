@@ -18,6 +18,9 @@ export const PUBLIC_ROUTES = [
   '/gallery/[album]',
   '/news',
   '/news/[slug]',
+  // The page for an address the site does not have: the chrome's site settings only. Never listed
+  // anywhere a visitor browses (a sitemap, a menu).
+  '/404',
 ] as const;
 export type PublicRoute = (typeof PUBLIC_ROUTES)[number];
 
