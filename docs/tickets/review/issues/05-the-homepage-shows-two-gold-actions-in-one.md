@@ -1,0 +1,16 @@
+# 05: The homepage shows two gold actions in one screen view, the hero's and the event band's
+
+Labels: design
+Status: open
+Blocked by: none
+
+**Finding** (R05 in `docs/plans/review-alignment-and-quality.md`; / (hero and event band); minor; rule-conflict): The homepage prototype draws the hero's gold button and a gold Tickets & tables in the band right under the stat strip, so both show together at 1440 and 375. The later pages demoted every second gold their prototypes drew (the teacher's card, Get Involved's doors, Donate's second Give now), so the homepage is now the one page that breaks the rule. ADR 0023 records the homepage following its prototype but says nothing about the gold count, so this is the owner's call.
+
+**Evidence:** test-results/review/site/measure-all.json goldPairs: home@1440 See the Odunde Festival (top 463) + Tickets & tables (top 965), 458px apart in a 900px view; home@375 434 and 1166, 688px apart in an 812px view. Every other route keeps one gold action per view in main (same file). Prototype does the same: docs/design/design/02 Homepage.dc.html:69 and :107 (both oy-btn--primary); proto-site.txt home gold at 463 and 963. Code: packages/ui/src/bands/EventBand/EventBand.astro:92 (Button with the default primary variant). packages/web/e2e/home.spec.ts checks gold per section only, not goldSharingAView. Also: Viewport captures test-results/review/home-events/gold-site-home-1440-scroll250.png and gold-proto-home-1440-scroll250.png: at scroll 250 'See the Odunde Festival' (viewport top 213) and 'Tickets & tables' (715 on the site, 713 in the prototype) are both in view. A sliding 900px window finds both fully visible from scroll 120 to 380 at 1440. The repo's own goldSharingAView (packages/web/e2e/helpers.ts:153-172), run as written, flags the pair on / at 1440 (gap 453 < 900) and at 375 (gap 688 < 812); /odunde and /gala pass at both widths. home.spec.ts checks gold per section only, so nothing fails today. Also: Viewport-slice count of visible .oy-btn--primary outside the nav (/private/tmp/claude-501/-Users-afo-Code-omo-yoruba/452b50c5-d114-459b-9fb8-3a0945241754/scratchpad/lr/gold-all.mjs): at 1440, / "See the Odunde Festival" + "Tickets & tables" (scroll 125 to 375px) and "Become a member" + "Subscribe"; /odunde and /get-involved "Donate" + "Subscribe"; /programs "Enrol a learner" + "Subscribe"; /impact "Sponsor or partner" + "Subscribe"; /our-story "Become a member" + "Subscribe"; /no-such-page "Go to the homepage" + "Subscribe". At 375: /odunde, /get-involved, /impact, /no-such-page. 02 Homepage.dc.html measures the same two pairs at 1440 (/private/tmp/claude-501/-Users-afo-Code-omo-yoruba/452b50c5-d114-459b-9fb8-3a0945241754/scratchpad/lr/gold-proto.mjs).
+
+**What to build:** AGENTS.md's one gold primary action per screen view should win, as ADRs 0033, 0034 and 0036 applied it to the later pages: draw the event band's button as the secondary outline on dark, and run goldSharingAView on / as E15 plans for every route. Size S. Needs the owner's decision first.
+
+- [ ] The fix, with a test that fails before it where the behaviour can be tested
+- [ ] `bun check` green; Playwright in both data modes where a page changes
+
+## Comments
