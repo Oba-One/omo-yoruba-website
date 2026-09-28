@@ -56,6 +56,24 @@ export const Filled: Story = {
   },
 };
 
+/**
+ * Social values the Studio's rule would refuse but the API accepts: a script URL, an address without its
+ * scheme and a network the footer draws no mark for. Only the YouTube link is fit to render.
+ */
+export const UnsafeSocials: Story = {
+  args: {
+    settings: {
+      ...seeded,
+      socials: [
+        { network: 'instagram', url: 'javascript:alert(1)' },
+        { network: 'facebook', url: 'facebook.com/example' },
+        { network: 'tiktok' as 'youtube', url: 'https://tiktok.com/@example' },
+        { network: 'youtube', url: 'https://youtube.com/@example' },
+      ],
+    },
+  },
+};
+
 export const NewsletterBusy: Story = {
   args: { newsletterState: 'busy', newsletterValue: 'ade@example.org' },
 };
