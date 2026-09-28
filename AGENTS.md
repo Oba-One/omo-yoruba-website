@@ -25,6 +25,8 @@ at `/admin` (ADR 0017); Storybook via `@storybook-astro/framework`; Bun workspac
 | `bun lint` | Biome, then the em dash, Yoruba diacritics and colour literal checks (`.lintignore` lists the exemptions) |
 | `bun typegen` | Sanity TypeGen: extracts `packages/content/schema.json`, generates `sanity.types.ts` (CI job `TypeGen drift` checks both) |
 | `bun seed` | seeds the `development` dataset with the confirmed facts and photographs (`-- --dry-run`, `-- --replace`); needs an Editor token |
+| `bun run export` | saves a dataset as NDJSON outside the repo (`OY_EXPORT_DIR`), the first step of a migration day |
+| `bun run migrate -- <name>` | a stored-content migration's dry run; `--from <export>` rehearses, `--apply` writes, `restore <snapshot>` undoes (runbook, Migrations) |
 | `bun run --filter @oy/content sanity -- <args>` | the Sanity CLI with `packages/web/.env` loaded (`documents`, `datasets`, `functions test`) |
 | `bun check` | typecheck, lint, unit tests, toolchain pins; pre-push and CI run this |
 | `bun run build` | production build of `packages/web` (`bun build` is Bun's bundler) |

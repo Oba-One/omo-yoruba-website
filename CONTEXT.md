@@ -62,8 +62,8 @@ Yoruba Language Lessons. One teacher, live online, enrol by writing to her.
 _Avoid_: School, classes, Saturday school, term
 
 **Teacher**:
-The one person who teaches the Lessons. A reader reaches her through the enrol form or her
-routing contact; her name and portrait are hers to give.
+The one person who teaches the Lessons: the person the Lessons page picks, in no person group (ADR 0042). A
+reader reaches her through the enrol form or her routing contact; her name and portrait are hers to give.
 _Avoid_: teachers, head teacher, tutor, instructor
 
 **Collective**:
@@ -73,7 +73,7 @@ _Avoid_: YCC in copy, sustainability program
 
 **Initiative**:
 One of the Collective's member-led projects, Solar Hub or Green Goods, with its status line, who
-it serves, when it started and what comes next.
+it serves, when it started and what comes next. An item of the Collective page's own list (ADR 0042).
 _Avoid_: venture, program (a program is one of the four)
 
 **Status line**:
@@ -286,7 +286,7 @@ _Avoid_: citation, footnote, reference
 
 **Outcome**:
 What one program or event (the festival, the Gala) produced: a figure with its source line, or a
-plain statement of what is being measured. Shown on Impact, one subject each.
+plain statement of what is being measured. An item of Impact's own list, one subject each (ADR 0042).
 _Avoid_: result, impact metric, KPI
 
 **Slot**:
@@ -300,12 +300,13 @@ request". Impact shows the newest of each kind and names a missing one.
 _Avoid_: financials, filing, paperwork
 
 **Timeline entry**:
-A year or a span of years and one line on Our Story's timeline; a milestone (the founding, today)
-is drawn apart from the rest.
+A year or a span of years and one line on Our Story's timeline, an item of the page's own list (ADR
+0042); a milestone (the founding, today) is drawn apart from the rest.
 _Avoid_: event (that is an edition), history item
 
 **Giving level**:
-An amount and what it pays for, with the source of the cost. Donate shows each as an outcome card.
+An amount and what it pays for, with the source of the cost: an item of Donate's own list (ADR 0042),
+each shown as an outcome card.
 _Avoid_: donation tier, preset, amount selector
 
 **Other way to give**:
@@ -321,8 +322,8 @@ _Avoid_: HTA in copy, chapter, club
 
 **Album**:
 The photographs of one occasion, an edition or an occasion with no edition such as the summer camp, with
-its own page on the gallery, one photo credit and its consent note. Its year is its own date's, else its
-edition's.
+its own page on the gallery, one photo credit and its consent note. It names its edition, the one link between
+them (ADR 0042), and its year is its own date's, else its edition's.
 _Avoid_: set, collection, gallery (the page of every album)
 
 **Cover**:

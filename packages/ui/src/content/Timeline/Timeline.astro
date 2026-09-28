@@ -6,11 +6,11 @@
  * today). No entry shows the registry's Pending line. The page decides whether the timeline shows at all
  * (the `timeline` option, hidden until the owner confirms the entries).
  */
-import { presenceWhat } from '@oy/content/pending';
+import { pendingWhat } from '@oy/content/pending';
 import Pending from '../../core/Pending/Pending.astro';
 
 export interface TimelineEntryLike {
-  _id?: string | null;
+  _key?: string | null;
   year?: string | null;
   /** The one line under the year. */
   line?: string | null;
@@ -28,7 +28,7 @@ interface Props {
 
 const {
   entries,
-  pending = presenceWhat('timelineEntry')?.what,
+  pending = pendingWhat('storyPage', 'timeline[]'),
   edit,
   class: className,
 } = Astro.props;

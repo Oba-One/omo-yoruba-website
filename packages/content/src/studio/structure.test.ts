@@ -181,16 +181,17 @@ describe('the sidebar follows the site', () => {
     }
   });
 
-  it('lists the pages as the site does, with the documents a page lists beside it', () => {
+  it('lists the pages as the site does, Impact with its governance filings beside it', () => {
     const pages = child(cached(EDITOR), 'pages');
     expect(ids(pages)).toEqual(SITE_PAGES.map(({ type }) => type));
     expect(items(pages).map((item) => item.getTitle())).toEqual(
       SITE_PAGES.map(({ title }) => title),
     );
-    expect(ids(child(pages, 'impactPage'))).toEqual(['impactPage', 'outcome', 'governanceDoc']);
-    expect(ids(child(pages, 'storyPage'))).toEqual(['storyPage', 'timelineEntry']);
-    expect(ids(child(pages, 'donatePage'))).toEqual(['donatePage', 'givingLevel']);
-    expect(ids(child(pages, 'collectivePage'))).toEqual(['collectivePage', 'initiative']);
+    expect(ids(child(pages, 'impactPage'))).toEqual(['impactPage', 'governanceDoc']);
+    // A page's own lists (initiatives, the timeline, the giving levels) are in its form.
+    for (const page of ['storyPage', 'donatePage', 'collectivePage']) {
+      expect((child(pages, page) as unknown as DocumentBuilder).getDocumentId()).toBe(page);
+    }
     const homepage = child(pages, 'homepage') as unknown as DocumentBuilder;
     expect(homepage.getDocumentId()).toBe('homepage');
     expect(ids(child(cached(ADMIN), 'pages'))).toEqual([

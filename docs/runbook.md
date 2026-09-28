@@ -73,8 +73,9 @@ http://localhost:4321/admin and log in with the Sanity account that belongs to t
 project's CORS origins must include `http://localhost:4321` with credentials and the production
 origin (wizard stage 1), or the login loop never ends. The sidebar follows the site (ADR 0042): To
 do, News posts, Events (Odunde Festival with its editions and zones, the End-of-Year Gala with its
-editions, tiers, levels and honorees, Collective events), Photos, People, Pages (each page, with the
-documents only it lists beside it), Used on several pages, and for administrators Site settings and
+editions, tiers, levels and honorees, Collective events), Photos, People, Pages (each page; its own
+lists, such as Impact's outcomes and the Collective's initiatives, are in its form, and Impact's
+governance filings open beside it), Used on several pages, and for administrators Site settings and
 the Inbox (enquiries by kind, unhandled first, and subscribers). The To do (`studio/todo.ts`, ADR
 0042) groups the registry's rows by the page that shows them, with counts, listing only what is owed:
 site settings rows gather under Organization details (administrators only), a row bound to an edition
@@ -192,6 +193,43 @@ overwrites instead of filling missing fields (the default never overwrites an ow
 matched by SHA-1 and documents by id. A field a schema change retired is unset where it is still
 stored (`RETIRED_FIELDS` in `scripts/seed-data.ts`: `takePartOrder` on both event singletons and
 `siteSettings.eventbriteUrl` since Phase 5); nothing else is ever removed.
+
+## Migrations
+
+Stored content changes shape only through a reviewed migration (`packages/content/scripts/migrations/`,
+ADR 0042), never by hand in the Studio. Each migration is a plan: given the published documents its
+filter reads, the mutations that move them; `bun run migrate -- list` names them. On a migration day
+the owner stays out of the Studio for the hour:
+
+1. `bun run export` saves the whole dataset, drafts included, as NDJSON in `OY_EXPORT_DIR` (else
+   `~/omo-yoruba-exports`). The file holds every enquiry, subscriber and the preview secret: the script
+   refuses a folder inside the repository, `*.ndjson` is ignored by git, and the file is deleted once
+   the day is over.
+2. `bun run migrate -- <name> --from <export>` rehearses on the export in memory: the plan, then the
+   check that applying it leaves nothing to do.
+3. `bun run migrate -- <name>` is the dry run on the live dataset: every mutation, and what blocks it.
+   A conflict (stored content the plan cannot move without the owner's word) blocks it, and so does a
+   draft or release version that still holds what the migration moves, or one of a document it writes:
+   publish or discard it first. A draft the migration would leave alone (next year's edition prepared
+   for its announce day) blocks nothing, and no migration reads the Presentation tool's preview secret,
+   which it keeps under a draft id (`sanity.previewUrlSecret`).
+4. Merge the pull request and wait for its deploy, so the site already reads the new shape. Apply
+   right away: until `inline-lists` runs, the Studio shows the old items of the Collective's, Impact's,
+   Our Story's and Donate's lists as items it cannot use, and those pages cannot be published, so nobody
+   edits them in between (the site keeps showing them).
+5. `bun run migrate -- <name> --apply` saves the documents it will write as they are
+   (`<dataset>-<name>-<time>.before.ndjson` beside the exports, with the dataset it ran on), writes
+   everything in one transaction that fails if any of them changed since it was read (a failed
+   transaction writes nothing, and its snapshot is removed), records the revisions it left, and plans
+   again: anything left is reported as a failure. `bun run migrate -- restore <file>.before.ndjson`
+   puts those documents back on that dataset, and refuses while any of them has changed since.
+6. `bun seed -- --dry-run` reports nothing due, and the pages render the same content.
+
+All of it runs on the Editor token the seed uses (`SANITY_API_WRITE_TOKEN`), against `development`
+unless `--dataset` names another. `retired-fields` unsets the fields in `RETIRED_FIELDS` on every
+document, not only the seed's; a retired field another migration moves first (`MOVED_FIELDS`: the
+edition's album link, which `album-link` hands to the album) waits for it, in the seed too. The order
+for pull request B's migrations: `album-link`, `inline-lists`, `teacher-group`, then `retired-fields`.
 
 ## Functions
 

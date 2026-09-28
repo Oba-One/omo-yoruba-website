@@ -97,13 +97,13 @@ export function buildDonatePage(data: DonatePageData | null, options: BuildOptio
     gifts: {
       shown: layout.impact !== 'hidden',
       levels: (data?.levels ?? []).filter(present).map((level) => ({
-        _id: level._id,
+        _key: level._key,
         figure: cleanText(level.amount)
           ? `${level.amount}${cleanText(level.frequency) === 'monthly' ? ' a month' : ''}`
           : undefined,
         line: level.what ?? undefined,
         source: level.source ?? undefined,
-        edit: edit('amount', level._id, 'givingLevel'),
+        edit: edit(`whatYourGiftDoes[_key=="${level._key}"].amount`),
       })),
       pending: pending('whatYourGiftDoes[]'),
       linePending: pendingWhat('givingLevel', 'what') ?? 'what the gift does',

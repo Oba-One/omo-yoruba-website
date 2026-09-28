@@ -29,5 +29,5 @@ amended by ADR 0013 and ADR 0042. Which inputs each kind of event shows:
 8. Verify on the site: the pages update within a minute (the webhook purges by tag) and show no
    Pending chip for what the edition holds. The To do reads drafts, so it clears as the drafts are
    filled, before the announce day. There is no status to flip: which edition is next and which is past
-   comes from the dates. After the event, link its album (on both ends until the Studio keeps one link,
-   open-work S9); after the festival, also fill the attendance with its source (the Gala shows none).
+   comes from the dates. After the event, make its album and name the edition in the album's Edition
+   field; after the festival, also fill the attendance with its source (the Gala shows none).

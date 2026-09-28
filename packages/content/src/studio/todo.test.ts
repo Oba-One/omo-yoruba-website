@@ -1,7 +1,7 @@
 import { evaluate, parse } from 'groq-js';
 import { describe, expect, it } from 'vitest';
 import { buildSeed, type SeedAssets } from '../../scripts/seed-data';
-import { PENDING, PRESENCE, pendingFilter } from '../pending';
+import { PENDING, PRESENCE, pendingFilter, rowDocumentType } from '../pending';
 import { ADMIN_ONLY_TYPES } from './roles';
 import { SITE_PAGES } from './site-pages';
 import {
@@ -116,7 +116,7 @@ describe('the rows of the To do', () => {
 
   it('listens to every type it counts', () => {
     const listened = todoListenQuery(ADMINISTRATORS);
-    for (const type of [...PENDING, ...PRESENCE].map((entry) => entry.type)) {
+    for (const type of [...PENDING.map(rowDocumentType), ...PRESENCE.map(({ type }) => type)]) {
       expect(listened).toContain(`"${type}"`);
     }
     expect(listened).toContain('"lintReport"');

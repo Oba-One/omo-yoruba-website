@@ -5,6 +5,7 @@ import {
   buildRevisions,
   buildSeed,
   missingFields,
+  movedFields,
   retiredFields,
   revisedFields,
   type SeedAssets,
@@ -111,7 +112,15 @@ describe('buildSeed', () => {
     ]);
     for (const event of events) expect(event.start).toBeUndefined();
     expect(docs.filter((d) => d._type === 'program')).toHaveLength(4);
-    expect(docs.filter((d) => d._type === 'initiative')).toHaveLength(2);
+    // The Collective's two initiatives are items of its own list (ADR 0042), not documents.
+    expect(docs.filter((d) => d._type === 'initiative')).toHaveLength(0);
+    const collective = docs.find((d) => d._id === 'collectivePage') as
+      | { initiatives?: { _key: string; name: string }[] }
+      | undefined;
+    expect(collective?.initiatives?.map(({ _key, name }) => [_key, name])).toEqual([
+      ['initiative-1', 'Solar Hub'],
+      ['initiative-2', 'Green Goods'],
+    ]);
     expect(docs.filter((d) => d._type === 'newsPost')).toHaveLength(3);
     expect(docs.filter((d) => d._type === 'photographer')).toHaveLength(3);
     expect(docs.filter((d) => d._type === 'door')).toHaveLength(5);
@@ -791,5 +800,13 @@ describe('Donate', () => {
     expect(donate.whatYourGiftDoes).toBeUndefined();
     expect(donate.otherWays).toBeUndefined();
     expect(JSON.stringify(donate)).not.toMatch(/100%|Benevity|Double the Donation|\$25|\$500/);
+  });
+});
+
+describe('fields a migration moves before they go', () => {
+  it('are left to that migration by the seed', () => {
+    const edition = { _id: 'event-odunde-2026', album: { _ref: 'album-odunde-2026' } };
+    expect(retiredFields('event', edition)).toEqual([]);
+    expect(movedFields('event', edition)).toEqual([{ path: 'album', migration: 'album-link' }]);
   });
 });

@@ -7,6 +7,7 @@ export {
   PARTNER_SCOPES,
   PERSON_GROUPS,
   PROGRAM_PAGES,
+  pageListTypes,
   TESTIMONIAL_CONTEXTS,
 } from './content';
 export { enquiry, enquiryFieldsType, enquiryFieldTypes, enquiryTitleField } from './enquiry';

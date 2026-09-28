@@ -41,7 +41,7 @@ nothing, help text with ADR numbers, and personal data one query away.
   keeps its rows and wording, so the site's chips read as before: the To do takes each row's page from the
   register's Where label, a row bound to an edition (an event's facts, the Gala's ticket tiers and sponsor
   levels) says which edition it asks about (the next one or the past one) and counts only the edition the site's
-  own rules pick, and the page lists add a way to name a field inside a list item. The To do is Sanity's own lists
+  own rules pick, and a row for an item of a page's list keeps the item's type and names the list it lives in. The To do is Sanity's own lists
   fed by one live query, not a custom pane; it opens on a counting line, so opening a document from search never
   waits for the count, and a failed count tries again by itself.
 
@@ -69,7 +69,7 @@ nothing, help text with ADR numbers, and personal data one query away.
   administrators-only dataset would be the lock (D3). The member guide says what is off limits and why.
 - Amends ADR 0006 (three options are administrators' only), ADR 0013 (giving levels, outcomes, timeline entries
   and initiatives are page lists; governance documents stay documents, one per filing), ADR 0014 (the To do view,
-  the edition an event row asks about, and list-item paths), ADR 0025 (take-part order is the rows' order, with no option over it) and
+  the edition an event row asks about, and the list a list row names), ADR 0025 (take-part order is the rows' order, with no option over it) and
   ADR 0039 (the album's link only).
 - Stored content moves only by migration after a dataset export (the runner in part 5, ADR 0035's rule); nothing
   is moved by hand. Every page renders the same content before and after, proved in both data modes.

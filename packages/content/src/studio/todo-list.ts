@@ -28,7 +28,7 @@ import type {
   StructureResolverContext,
 } from 'sanity/structure';
 import { STUDIO_API_VERSION } from '../api-version';
-import { pendingFilter } from '../pending';
+import { pendingFilter, rowDocumentType } from '../pending';
 import { SINGLETON_NAMES } from '../schema/singletons';
 import { ADMIN_ONLY_TYPES } from './roles';
 import {
@@ -195,7 +195,8 @@ function rowChild(view: View, rowId: string) {
   const { S, plan, live } = view;
   const row = plan.rows.find(({ id }) => id === rowId);
   if (!row) return undefined;
-  const { type, edition } = row.entry;
+  const { edition } = row.entry;
+  const type = rowDocumentType(row.entry);
   // The pane keeps the row's id, so opening the page from search never lands in the To do.
   if (SINGLETONS.has(type)) return S.document().id(row.id).schemaType(type).documentId(type);
   const list = (ids?: readonly string[]) => {

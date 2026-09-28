@@ -156,5 +156,9 @@ playwright-report/
 # Sanity Functions: local transpile output of `sanity functions test`
 .build/
 
+# Dataset exports and migration snapshots hold enquiries and subscribers: they live outside the repo
+# (OY_EXPORT_DIR, else ~/omo-yoruba-exports), and a stray one never reaches git.
+*.ndjson
+
 # Claude Code: each person's own permissions (the shared settings are .claude/settings.json)
 .claude/settings.local.json

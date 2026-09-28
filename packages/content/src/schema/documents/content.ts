@@ -1,11 +1,11 @@
 import { type ConditionalPropertyCallback, defineField, defineType } from 'sanity';
+import { STUDIO_API_VERSION } from '../../api-version';
 import { DOOR_CHIPS, DOOR_KEYS } from '../../doors';
 import {
   type EditionField,
   EVENT_KIND_TITLES,
   EVENT_KINDS,
   editionFieldShown,
-  RETIRED_EVENT_KINDS,
 } from '../../edition-fields';
 import { EVENT_PAGE_NAMES } from '../../routes';
 import { hideRetired } from '../../studio/retired-choices';
@@ -46,7 +46,6 @@ export const event = defineType({
         layout: 'radio',
         direction: 'horizontal',
       },
-      components: { input: hideRetired(RETIRED_EVENT_KINDS) },
       group: 'edition',
       validation: (rule) => rule.required(),
     }),
@@ -159,14 +158,6 @@ export const event = defineType({
       group: 'edition',
       description: 'Eventbrite, for Gala seats.',
       hidden: editionHidden('ticketsUrl'),
-    }),
-    defineField({
-      name: 'album',
-      title: 'Album',
-      type: 'reference',
-      to: [{ type: 'album' }],
-      group: 'edition',
-      hidden: editionHidden('album'),
     }),
     defineField({
       name: 'attendance',
@@ -452,10 +443,11 @@ export const program = defineType({
   preview: { select: { title: 'name', subtitle: 'cadence', media: 'image' } },
 });
 
+/** One of the Collective's initiatives: an item of the Collective page's list (ADR 0042). */
 export const initiative = defineType({
   name: 'initiative',
-  title: 'Collective initiative',
-  type: 'document',
+  title: 'Initiative',
+  type: 'object',
   fields: [
     defineField({ name: 'name', title: 'Name', type: 'string', validation: voice.requiredHeading }),
     defineField({ name: 'memberLed', title: 'Member led', type: 'boolean', initialValue: true }),
@@ -481,19 +473,12 @@ export const initiative = defineType({
     defineField({ name: 'serves', title: 'Serves', type: 'string', validation: voice.text }),
     defineField({ name: 'since', title: 'Since', type: 'string', validation: voice.text }),
     defineField({ name: 'next', title: 'Next', type: 'string', validation: voice.text }),
-    // No page reads these (ADR 0042): hidden now, deleted by migration later.
-    defineField({
-      name: 'proceedsReturn',
-      title: 'Proceeds return to the Collective',
-      type: 'boolean',
-      hidden: true,
-    }),
-    { ...order, hidden: true },
   ],
   preview: { select: { title: 'name', subtitle: 'status', media: 'image' } },
 });
 
-export const PERSON_GROUPS = ['board', 'staff', 'volunteer', 'teacher'] as const;
+/** The groups Our Story lists. The teacher is the person the Lessons page picks, in no group (ADR 0042). */
+export const PERSON_GROUPS = ['board', 'staff', 'volunteer'] as const;
 
 export const person = defineType({
   name: 'person',
@@ -512,13 +497,27 @@ export const person = defineType({
       name: 'group',
       title: 'Group',
       type: 'string',
-      description: 'Our Story lists the board, the staff and the volunteers.',
+      description:
+        'Our Story lists the board, the staff and the volunteers. Leave it empty for someone only the Lessons page shows: the teacher it picks.',
       options: {
         list: titled(PERSON_GROUPS, { volunteer: 'Volunteers' }),
         layout: 'radio',
         direction: 'horizontal',
       },
-      validation: (rule) => rule.required(),
+      // Empty is right only for the teacher the Lessons page picks; anyone else would show nowhere.
+      validation: (rule) =>
+        rule
+          .custom(async (group, context) => {
+            if (group) return true;
+            const id = context.document?._id?.replace(/^drafts\./, '');
+            const picked = await context
+              .getClient({ apiVersion: STUDIO_API_VERSION })
+              .fetch<string | null>('*[_id == "lessonsPage"][0].teacher._ref');
+            return picked === id
+              ? true
+              : 'Our Story lists no one without a group. Leave it empty only for the teacher the Lessons page picks.';
+          })
+          .warning(),
     }),
     defineField({
       name: 'portrait',
@@ -554,10 +553,11 @@ export const person = defineType({
  * One entry on Our Story's timeline (ADR 0035): a year or a span and one line, as `15 People and
  * History.dc.html` draws it; a milestone (the founding, today) is drawn apart from the rest.
  */
+/** One entry of Our Story's timeline: an item of the page's list (ADR 0042). */
 export const timelineEntry = defineType({
   name: 'timelineEntry',
   title: 'Timeline entry',
-  type: 'document',
+  type: 'object',
   fields: [
     defineField({
       name: 'year',
@@ -581,7 +581,6 @@ export const timelineEntry = defineType({
       description: 'Drawn apart from the other entries, as the founding and today are.',
       initialValue: false,
     }),
-    { ...order, hidden: true },
   ],
   preview: { select: { title: 'year', subtitle: 'blurb' } },
 });
@@ -699,7 +698,7 @@ export const album = defineType({
       type: 'reference',
       to: [{ type: 'event' }],
       description:
-        "The edition the photographs come from: its year dates the album, and the album page links to the edition's page.",
+        "The edition the photographs come from: its year dates the album, the album page links to the edition's page, and the edition's page shows the first album that names it under past years.",
     }),
     defineField({ name: 'cover', title: 'Cover', type: 'oyImage' }),
     defineField({
@@ -822,13 +821,14 @@ export const OUTCOME_KINDS = ['festival', 'gala'] as const;
  * as a year strip row names one (ADR 0031); its heading on Impact is the subject's name. A figure carries
  * its source line; without one, the plain statement says what is being measured.
  */
+/** What one program or event produced: an item of Impact's list (ADR 0042). */
 export const outcome = defineType({
   name: 'outcome',
   title: 'Outcome',
-  type: 'document',
+  type: 'object',
   validation: (rule) =>
-    rule.custom((document) => {
-      const value = document as { program?: unknown; kind?: string } | undefined;
+    rule.custom((item) => {
+      const value = item as { program?: unknown; kind?: string } | undefined;
       if (!value) return true;
       if (value.program && value.kind) return 'Choose a program or an event, not both.';
       if (!value.program && !value.kind)
@@ -866,7 +866,6 @@ export const outcome = defineType({
       2,
       'What is being measured this year, when there is no figure.',
     ),
-    { ...order, hidden: true },
   ],
   preview: {
     select: { program: 'program.name', kind: 'kind', value: 'figure.value' },
@@ -973,10 +972,11 @@ export const hometownAssociation = defineType({
   preview: { select: { title: 'name', subtitle: 'url' } },
 });
 
+/** One preset amount and what it pays for: an item of the Donate page's list (ADR 0042). */
 export const givingLevel = defineType({
   name: 'givingLevel',
   title: 'Giving level',
-  type: 'document',
+  type: 'object',
   fields: [
     defineField({
       name: 'amount',
@@ -1003,7 +1003,6 @@ export const givingLevel = defineType({
       description: 'Where the cost comes from.',
       validation: voice.text,
     }),
-    { ...order, hidden: true },
   ],
   preview: { select: { title: 'amount', subtitle: 'what' } },
 });
@@ -1118,19 +1117,18 @@ export const contentDocumentTypes = [
   sponsorLevel,
   honoree,
   program,
-  initiative,
   person,
-  timelineEntry,
   testimonial,
   newsPost,
   album,
   photographer,
   partner,
-  outcome,
   stat,
   door,
   hometownAssociation,
-  givingLevel,
   governanceDoc,
   lintReport,
 ];
+
+/** The items of the pages' own lists: once documents, now objects the page holds (ADR 0042). */
+export const pageListTypes = [initiative, outcome, timelineEntry, givingLevel];

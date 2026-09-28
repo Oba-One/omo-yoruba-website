@@ -111,14 +111,14 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       const subject = outcomeSubject(outcome);
       const figure = cleanText(outcome.figure?.value) ? outcome.figure : undefined;
       return {
-        key: outcome._id,
+        key: outcome._key,
         subject,
         title: subject?.name,
         figure: figure?.value ?? undefined,
         line: (figure ? figure.label : outcome.plainStatement) ?? undefined,
         source: figure?.source ?? undefined,
         pending: OUTCOME_PENDING,
-        edit: edit('figure', outcome._id, 'outcome'),
+        edit: edit(`outcomes[_key=="${outcome._key}"].figure`),
       };
     }),
     ...slots.map((subject) => ({

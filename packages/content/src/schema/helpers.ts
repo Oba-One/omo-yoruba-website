@@ -25,6 +25,10 @@ export const refs = (name: string, title: string, to: string, description?: stri
     description,
   });
 
+/** A page's own list of items of an object type: kept where the page shows them (ADR 0042). */
+export const itemList = (name: string, title: string, of: string, description?: string) =>
+  defineField({ name, title, type: 'array', of: [{ type: of }], description });
+
 /** An array of glance strip facts. */
 export const facts = (name: string, title: string, description?: string) =>
   defineField({ name, title, type: 'array', of: [{ type: 'fact' }], description });

@@ -16,6 +16,7 @@ import {
   pendingFilter,
   pendingTitle,
   presenceFilter,
+  rowDocumentType,
 } from '../pending';
 import { EVENT_PAGE_NAMES } from '../routes';
 import { SITE_PAGES, type SitePage } from './site-pages';
@@ -188,7 +189,7 @@ export function todoPlan(hidden: Iterable<string> = []): TodoPlan {
     };
   });
   return {
-    rows: PENDING.filter((entry) => !left.has(entry.type)).map((entry) => ({
+    rows: PENDING.filter((entry) => !left.has(rowDocumentType(entry))).map((entry) => ({
       id: todoRowId(entry),
       entry,
       group: todoGroup(entry),
@@ -219,7 +220,7 @@ export function todoQuery(plan: TodoPlan): string {
     presence ? [`"${id}": ${found(presenceFilter(presence))}`] : [],
   );
   return `{
-  "editions": *[_type == "event"]{_id, kind, edition, start, end, "photos": count(album->photos)},
+  "editions": *[_type == "event"]{_id, kind, edition, start, end, "photos": count(*[_type == "album" && event._ref == ^._id].photos[])},
   "rows": {${rows.join(', ')}},
   "presence": {${presence.join(', ')}},
   "wording": count(*[${wordingFilter(plan)}])
@@ -229,7 +230,7 @@ export function todoQuery(plan: TodoPlan): string {
 /** What the To do listens to: a change to a document of any of these types counts again. */
 export function todoListenQuery(plan: TodoPlan): string {
   const types = new Set(['event', 'album', 'lintReport']);
-  for (const { entry } of plan.rows) types.add(entry.type);
+  for (const { entry } of plan.rows) types.add(rowDocumentType(entry));
   for (const { type } of plan.stillToAdd) types.add(type);
   return `*[_type in ${JSON.stringify([...types].sort())}]`;
 }

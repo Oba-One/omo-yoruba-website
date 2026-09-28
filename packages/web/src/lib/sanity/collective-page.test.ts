@@ -48,7 +48,7 @@ const seeded = {
   },
   initiatives: [
     {
-      _id: 'initiative-solar-hub',
+      _key: 'initiative-1',
       name: 'Solar Hub',
       memberLed: true,
       status: null,
@@ -60,7 +60,7 @@ const seeded = {
       next: null,
     },
     {
-      _id: 'initiative-green-goods',
+      _key: 'initiative-2',
       name: 'Green Goods',
       memberLed: true,
       status: null,
@@ -351,7 +351,7 @@ describe('buildCollectivePage', () => {
     expect(draft.why.photoEdit).toContain('id=program-cultural-collective;type=program');
     expect(draft.voice.edit).toContain('path=voice');
     expect(draft.initiatives.items[0]?.imageEdit).toContain(
-      'id=initiative-solar-hub;type=initiative;path=image',
+      'id=collectivePage;type=collectivePage;path=initiatives:initiative-1.image',
     );
     expect(draft.edit.initiatives).toContain('path=layout.initiatives');
     expect(draft.edit.status).toContain('path=layout.status');

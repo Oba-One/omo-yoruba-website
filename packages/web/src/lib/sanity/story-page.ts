@@ -82,12 +82,12 @@ export function buildStoryPage(data: StoryPageData | null, options: BuildOptions
     timeline: {
       shown: layout.timeline === 'shown',
       entries: (data?.timeline ?? []).filter(present).map((entry) => ({
-        _id: entry._id,
+        _key: entry._key,
         year: entry.year,
         line: entry.blurb,
         milestone: entry.milestone === true,
       })),
-      pending: presenceWhat('timelineEntry')?.what ?? 'the dated entries',
+      pending: pendingWhat('storyPage', 'timeline[]') ?? 'the dated entries',
     },
     board: {
       intro: data?.boardIntro ?? undefined,

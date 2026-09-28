@@ -267,21 +267,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
   });
 
   docs.push({
-    _id: 'initiative-solar-hub',
-    _type: 'initiative',
-    name: 'Solar Hub',
-    memberLed: true,
-    order: 1,
-  });
-  docs.push({
-    _id: 'initiative-green-goods',
-    _type: 'initiative',
-    name: 'Green Goods',
-    memberLed: true,
-    order: 2,
-  });
-
-  docs.push({
     _id: 'zone-oja-balogun',
     _type: 'zone',
     name: bilingual('Ọjà Balógun', 'The market'),
@@ -323,7 +308,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     edition: 2026,
     venue: { name: 'Leimert Park' },
     heroImage: image(assets, 'odunde-2026-procession-with-drummer.jpg'),
-    album: ref('album-odunde-2026'),
   });
   docs.push({
     _id: 'event-gala-2025',
@@ -332,7 +316,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     title: 'End-of-Year Gala 2025',
     edition: 2025,
     heroImage: image(assets, 'gala-2025-attendees-sitting.jpg'),
-    album: ref('album-gala-2025'),
   });
 
   const posts = [
@@ -799,9 +782,10 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Yoruba Cultural Collective',
         line: 'Culture put to work. A circle of members who meet, host events through the year, and run two member-led projects, the Solar Hub and Green Goods.',
       },
+      // The Collective's own list (ADR 0042), under the keys the earlier references had.
       initiatives: withKeys('initiative', [
-        ref('initiative-solar-hub'),
-        ref('initiative-green-goods'),
+        { _type: 'initiative', name: 'Solar Hub', memberLed: true },
+        { _type: 'initiative', name: 'Green Goods', memberLed: true },
       ]),
       keepsOwnList: false,
       // The skills the projects need are invented; the Updates row points at the newsletter form.
@@ -995,7 +979,15 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   impactPage: ['nextYear.blurb'],
   // The header line says what the intro would (ADR 0039).
   galleryPage: ['intro'],
+  // The album names its edition, the one link between them (ADR 0042); `album-link` moves it first.
+  event: ['album'],
 };
+
+/**
+ * Retired fields a migration moves before they go (`scripts/migrations`), by `type.field`: the seed
+ * and `retired-fields` leave them to that migration, so a link is never dropped before it is moved.
+ */
+export const MOVED_FIELDS: Readonly<Record<string, string>> = { 'event.album': 'album-link' };
 
 /**
  * A value an earlier seed wrote that this seed writes differently (ADR 0035): the header actions no
@@ -1118,7 +1110,7 @@ export function revisedFields(
   return { set, unset };
 }
 
-/** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`. */
+/** The stored paths a retired path names: `a.b` as it is, `a[].b` once per keyed item that holds `b`; null counts as empty. */
 function storedPaths(value: unknown, steps: readonly string[], prefix: string): string[] {
   const [step, ...rest] = steps;
   // A retired path names a field, never a whole array item.
@@ -1136,17 +1128,30 @@ function storedPaths(value: unknown, steps: readonly string[], prefix: string): 
   }
   const next = value[step];
   return rest.length === 0
-    ? next === undefined
+    ? next === undefined || next === null
       ? []
       : [`${prefix}${step}`]
     : storedPaths(next, rest, `${prefix}${step}.`);
 }
 
-/** The retired fields a stored document still carries, as paths the seed can unset. */
+/** The retired fields a stored document still carries, as paths the seed can unset; moved fields wait. */
 export function retiredFields(type: string, current: Record<string, unknown>): string[] {
-  return (RETIRED_FIELDS[type] ?? []).flatMap((field) =>
-    storedPaths(current, field.split('.'), ''),
-  );
+  return (RETIRED_FIELDS[type] ?? [])
+    .filter((field) => !MOVED_FIELDS[`${type}.${field}`])
+    .flatMap((field) => storedPaths(current, field.split('.'), ''));
+}
+
+/** The retired fields a stored document still carries that a migration moves first, with its name. */
+export function movedFields(
+  type: string,
+  current: Record<string, unknown>,
+): { path: string; migration: string }[] {
+  return (RETIRED_FIELDS[type] ?? []).flatMap((field) => {
+    const migration = MOVED_FIELDS[`${type}.${field}`];
+    return migration
+      ? storedPaths(current, field.split('.'), '').map((path) => ({ path, migration }))
+      : [];
+  });
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

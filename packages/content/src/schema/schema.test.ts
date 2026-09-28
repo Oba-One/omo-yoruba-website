@@ -71,19 +71,15 @@ describe('singletons and documents', () => {
       'sponsorLevel',
       'honoree',
       'program',
-      'initiative',
       'person',
-      'timelineEntry',
       'testimonial',
       'newsPost',
       'album',
       'photographer',
       'partner',
-      'outcome',
       'stat',
       'door',
       'hometownAssociation',
-      'givingLevel',
       'governanceDoc',
       'enquiry',
       'subscriber',
@@ -92,6 +88,11 @@ describe('singletons and documents', () => {
       expect(names).toContain(name);
     }
     expect(names).not.toContain('faq');
+    // The items of a page's own list are objects the page holds (ADR 0042).
+    for (const name of ['initiative', 'outcome', 'timelineEntry', 'givingLevel']) {
+      expect(names).not.toContain(name);
+      expect(objectTypes.map((type) => type.name)).toContain(name);
+    }
   });
 
   it('stores no derived field', () => {

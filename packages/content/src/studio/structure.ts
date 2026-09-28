@@ -26,12 +26,12 @@ const PEOPLE = ['person', 'testimonial', 'hometownAssociation'];
 /** Documents more than one page reads. */
 const SHARED = ['program', 'stat', 'door', 'partner'];
 
-/** The documents a page lists, kept beside the page until they become its own lists (part 5, S14). */
+/**
+ * The documents that open beside a page: Impact's governance filings, one document per filing. A
+ * page's own lists (initiatives, outcomes, the timeline, the giving levels) live in its form (ADR 0042).
+ */
 const PAGE_LISTS: Partial<Record<SitePage, readonly string[]>> = {
-  collectivePage: ['initiative'],
-  impactPage: ['outcome', 'governanceDoc'],
-  storyPage: ['timelineEntry'],
-  donatePage: ['givingLevel'],
+  impactPage: ['governanceDoc'],
 };
 
 /** Every type the tree places; a type added later and placed nowhere still shows at the end. */
