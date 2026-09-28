@@ -4,11 +4,15 @@ import { STUDIO_API_VERSION } from '@oy/content/api-version';
 import { createClient } from '@sanity/client';
 import { validatePreviewUrl } from '@sanity/preview-url-secret';
 import type { APIRoute } from 'astro';
-import { PERSPECTIVE_COOKIE, previewCookieOptions } from '../../../lib/sanity/preview';
+import { draftModeCookies } from '../../../lib/sanity/draft-session';
 
 export const prerender = false;
 
-/** The Presentation tool opens this with its secret; a valid one turns draft mode on and redirects. */
+/**
+ * The Presentation tool opens this with its secret; a valid one turns draft mode on and redirects. The
+ * perspective cookie names what the Studio asked for; the session cookie, signed with the Viewer token,
+ * is what makes the loaders believe it (ADR 0044).
+ */
 export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   const token = getSecret('SANITY_API_READ_TOKEN');
   if (!token) {
@@ -31,10 +35,9 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
     request.url,
   );
   if (!isValid) return new Response('Invalid secret', { status: 401 });
-  cookies.set(
-    PERSPECTIVE_COOKIE,
-    studioPreviewPerspective ?? 'drafts',
-    previewCookieOptions(request),
-  );
+  const perspective = studioPreviewPerspective ?? 'drafts';
+  for (const cookie of draftModeCookies(request, token, perspective, Date.now())) {
+    cookies.set(cookie.name, cookie.value, cookie.options);
+  }
   return redirect(redirectTo ?? '/', 307);
 };

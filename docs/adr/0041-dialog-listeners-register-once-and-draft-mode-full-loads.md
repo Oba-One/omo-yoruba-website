@@ -32,7 +32,7 @@ propagation. A dialog that a re-insertion left open but not modal is shown modal
 they strip `#give` or the `enquiry` and `sent` parameters, instead of `null`, which had wiped the router's
 `{ index, scrollX, scrollY }` entry and made it ignore Back and Forward for that entry.
 
-Draft mode has no router: the layout renders `<ClientRouter />` only without the perspective cookie. An
+Draft mode has no router: the layout renders `<ClientRouter />` only outside draft mode (since ADR 0044, the perspective cookie beside a verified session). An
 editor's navigation is a full load, which is what Sanity's Astro guide sets up: the overlay mounts once per
 page and never meets a swap, and the Presentation tool's history adapter, which assigns `location`,
 matches. Editors lose the cross-fade and the persisted dialogs while the cookie is set; the public site
@@ -70,8 +70,8 @@ the stray element when it recurs.
   click prevented.
 - Phase 4's answer that a cross-fade navigation mounts the overlay fresh (`docs/tickets/phase-4/spec.md`,
   Q3) is amended: there is no cross-fade in draft mode.
-- The perspective cookie belongs to the origin, so an editor's normal tabs stay in draft mode until
-  `/api/preview/disable` is visited; on the public host a cached page still comes back as the public copy,
+- The draft-mode cookies belong to the origin, so an editor's normal tabs stay in draft mode until
+  `/api/preview/disable` is visited or the session's twelve hours pass (ADR 0044); on the public host a cached page still comes back as the public copy,
   router and all (ADR 0021). The runbook says so; the preview host (open-work D15) keeps the public origin
   clear of it.
 - Found on the way: under `astro dev` the overlay never mounted, because Vite served
