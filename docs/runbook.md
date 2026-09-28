@@ -406,10 +406,11 @@ bun run --filter @oy/content query -- '*[_type == "enquiry"] | order(submittedAt
 ```
 
 Analytics: the components announce `oy:track` events (`enquiry_opened`, `enquiry_submitted`,
-`give_opened`, `give_embed_failed`, `give_completed`, `newsletter_submitted`) and `Analytics.astro`
+`give_opened`, `give_embed_failed`, `give_completed`, `give_page_opened`, `newsletter_submitted`) and `Analytics.astro`
 forwards them to PostHog once it loads, with pageviews on every navigation and never a form's
 contents. `give_completed` means Zeffy's form showed its thank-you page: a sign in the browser,
-not a record of the gift, which stays in Zeffy (ADR 0045).
+not a record of the gift, which stays in Zeffy (ADR 0045). `give_page_opened` means the donor took
+the link to Zeffy's own page, where a gift never reports back.
 
 ## Lighthouse
 

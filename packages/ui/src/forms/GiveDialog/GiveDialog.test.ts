@@ -24,9 +24,8 @@ describe('GiveDialog', () => {
     expect(text(body.querySelector('#give-title'))).toBe('Give to Omo Yorùbá');
     expect(body.querySelector('[data-embed] template[data-zeffy]')).not.toBeNull();
     expect(body.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(true);
-    expect(text(body.querySelector('[data-lead]'))).toBe(
-      'Amount and card details, all here. You never leave the page.',
-    );
+    // No promise that the donor never leaves the page: the link under the form opens Zeffy's own.
+    expect(text(body.querySelector('[data-lead]'))).toBe('Amount and card details, all here.');
     const host = body.querySelector('oy-give-dialog');
     expect(host?.getAttribute('data-timeout')).toBe('8000');
     // The listener hears the origin and the form the island's address names (ADR 0045), under a name
@@ -235,6 +234,52 @@ describe('GiveDialog, running its element', () => {
     expect(frame?.style.height).toBe('2400px');
   });
 
+  it("records give_page_opened when the donor takes the link to Zeffy's own page", async () => {
+    const body = await renderLive(Closed);
+    donate();
+    // The link opens a new tab; the test keeps the document where it is.
+    document.addEventListener('click', (event) => event.preventDefault(), {
+      capture: true,
+      once: true,
+    });
+    body.querySelector<HTMLAnchorElement>('[data-zeffy-page]')?.click();
+    expect(tracked).toEqual(['give_opened', 'give_page_opened']);
+  });
+
+  it("turns express checkout off on an iPhone before the frame loads, as Zeffy's own script does", async () => {
+    const form =
+      'https://www.zeffy.com/en-US/embed/donation-form/example?embed-version=v2&embedId=give';
+    // The frame's address is what is checked; happy-dom must not fetch it.
+    const settings = (
+      window as unknown as { happyDOM: { settings: { disableIframePageLoading: boolean } } }
+    ).happyDOM.settings;
+    const loading = settings.disableIframePageLoading;
+    settings.disableIframePageLoading = true;
+    const mountWith = async () => {
+      const body = await renderLive(Closed);
+      body
+        .querySelector('[data-embed]')
+        ?.insertAdjacentHTML(
+          'beforeend',
+          `<template data-zeffy><iframe src="${form}"></iframe></template>`,
+        );
+      vi.useFakeTimers();
+      donate();
+      return body.querySelector('[data-mount] iframe')?.getAttribute('src') ?? '';
+    };
+    expect(new URL(await mountWith()).searchParams.has('disableExpressCheckout')).toBe(false);
+    document.body.replaceChildren();
+    vi.useRealTimers();
+    const agent = vi
+      .spyOn(window.navigator, 'userAgent', 'get')
+      .mockReturnValue('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)');
+    const src = new URL(await mountWith());
+    agent.mockRestore();
+    settings.disableIframePageLoading = loading;
+    expect(src.searchParams.get('disableExpressCheckout')).toBe('true');
+    expect(src.searchParams.get('embedId')).toBe('give');
+  });
+
   it('records give_completed once, when Zeffy shows its thank-you page', async () => {
     await openWithFrame();
     post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' }, 'https://example.org');
@@ -268,9 +313,7 @@ describe('GiveDialog, running its element', () => {
     expect(host?.querySelector('[data-embed]')?.hasAttribute('hidden')).toBe(false);
     expect(host?.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(true);
     expect(host?.querySelector('[data-foot]')?.hasAttribute('hidden')).toBe(false);
-    expect(text(host?.querySelector('[data-lead]'))).toBe(
-      'Amount and card details, all here. You never leave the page.',
-    );
+    expect(text(host?.querySelector('[data-lead]'))).toBe('Amount and card details, all here.');
   });
 
   it('scrolls back to the top of a new step or the thank-you page when it begins above the view', async () => {

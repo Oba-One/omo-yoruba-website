@@ -33,7 +33,11 @@ policy keeps `frame-src https://www.zeffy.com` and nothing more. What this chang
   `/embed` segment (`https://www.zeffy.com/en-US/embed/donation-form/<slug>` becomes
   `https://www.zeffy.com/en-US/donation-form/<slug>`, the locale optional) and draws no link for any other address.
   Both shapes were checked on 27 September 2026 against the embed code in Zeffy's help centre and its public sample
-  form, which answer at both addresses, without submitting anything.
+  form, which answer at both addresses, without submitting anything. A gift made there never reports back to the
+  page, so the link announces `give_page_opened` instead, and the embed's lead drops "You never leave the page.",
+  which the link made untrue.
+- On an iPhone the dialog adds `disableExpressCheckout=true` to the frame's address before the frame loads, as Zeffy's
+  own embed script does there.
 - The deep review's tickets R38 and R45 (pull request 16) are fixed on the way. The dialog no longer states monthly
   giving or emailed receipts, and its foot ("Secure • Powered by Zeffy" and the EIN) shows only with the form, not in
   the pending and fallback modes. The check line shows the mailing address's Pending chip whenever the address is

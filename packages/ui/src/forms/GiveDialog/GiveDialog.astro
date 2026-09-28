@@ -56,7 +56,7 @@ const {
 } = Astro.props;
 
 const LEADS = {
-  embed: 'Amount and card details, all here. You never leave the page.',
+  embed: 'Amount and card details, all here.',
   fallback: 'Two other ways to give while the form is down.',
   pending: 'Two ways to give until the online form is set up.',
 } as const;
@@ -116,6 +116,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
                   target="_blank"
                   rel="noopener"
                   aria-describedby="give-page-note"
+                  data-zeffy-page
                   arrow
                 >
                   Give on Zeffy's page
@@ -322,7 +323,23 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         if (!template || !mount || mounted) return Boolean(template);
         mounted = true;
         completed = false;
-        mount.replaceChildren(template.content.cloneNode(true));
+        const content = template.content.cloneNode(true);
+        const clone = content.querySelector('iframe');
+        // Zeffy's own embed script turns express checkout off in an embed on an iPhone; so does this,
+        // before the frame is inserted and loads.
+        const src = clone && clone.getAttribute('src');
+        if (src && /iPhone|iPod/i.test(navigator.userAgent)) {
+          try {
+            const url = new URL(src);
+            if (!url.searchParams.has('disableExpressCheckout')) {
+              url.searchParams.set('disableExpressCheckout', 'true');
+              clone.setAttribute('src', url.href);
+            }
+          } catch {
+            // Not an address: the frame loads as the island wrote it.
+          }
+        }
+        mount.replaceChildren(content);
         frame = mount.querySelector('iframe');
         if (frame) frame.addEventListener('load', loaded, { once: true });
         else ready();
@@ -391,6 +408,9 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
       });
       const retryButton = host.querySelector('[data-retry]');
       if (retryButton) retryButton.addEventListener('click', retry);
+      // A gift on Zeffy's own page never reports back here, so the way out is counted instead.
+      const pageLink = host.querySelector('[data-zeffy-page]');
+      if (pageLink) pageLink.addEventListener('click', () => track('give_page_opened'));
       const closeButton = dialog.querySelector('.oy-modal-close');
       if (closeButton) closeButton.addEventListener('click', () => dialog.close());
       dialog.addEventListener('click', (event) => {
