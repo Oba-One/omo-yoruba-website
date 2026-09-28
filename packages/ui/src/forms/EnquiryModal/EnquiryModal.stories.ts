@@ -130,3 +130,29 @@ export const OpensFromTrigger: Story = {
     await waitFor(() => expect(trigger).toHaveFocus());
   },
 };
+
+/**
+ * Disconnected and connected again, as every page swap does to a persisted element: the trigger
+ * still opens its kind and the click is prevented before a bubble listener registered later
+ * (the router's) sees it, because the document listener registered once, at definition (ADR 0041).
+ */
+export const OpensAfterReconnection: Story = {
+  args: { open: false, kind: undefined },
+  play: async (context) => {
+    const { canvasElement } = context;
+    const root = canvasElement.querySelector<HTMLElement>('oy-enquiry-modal');
+    await waitFor(() => expect(root?.dataset.ready).toBe('true'), { timeout: 5000 });
+    let prevented: boolean | undefined;
+    document.addEventListener(
+      'click',
+      (event) => {
+        prevented = event.defaultPrevented;
+      },
+      { once: true },
+    );
+    root?.remove();
+    canvasElement.append(root as HTMLElement);
+    await OpensFromTrigger.play?.(context);
+    await expect(prevented).toBe(true);
+  },
+};

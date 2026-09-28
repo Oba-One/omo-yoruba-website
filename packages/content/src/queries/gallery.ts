@@ -35,8 +35,8 @@ export const galleryPageQuery = defineQuery(`*[_type == "galleryPage" && _id == 
  * whether the photographer confirmed it, its consent note, its edition's year and kind (the facts line and the
  * link to the edition's page, from the edition it names) and every photograph in order
  * with its alt, caption and any credit of its own; the gallery singleton's kicker, the owner's consent policy and
- * the `captions` option; and the settings' general inbox. No album for the slug answers `album: null`, which the
- * route serves as a 404.
+ * the `captions` option, and the `state` that holds the album's photographs while it is `soon` (ADR 0043); and
+ * the settings' general inbox. No album for the slug answers `album: null`, which the route serves as a 404.
  */
 export const albumPageQuery = defineQuery(`{
   "album": *[_type == "album" && slug.current == $slug][0]{
@@ -63,7 +63,7 @@ export const albumPageQuery = defineQuery(`{
   "page": *[_type == "galleryPage" && _id == "galleryPage"][0]{
     header{kicker{yo, en}},
     creditsAndConsent,
-    layout{captions}
+    layout{captions, state}
   },
   "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{generalEmail}
 }`);

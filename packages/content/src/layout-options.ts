@@ -198,7 +198,7 @@ export const PAGE_LAYOUTS = {
         { value: 'soon', title: 'Coming soon' },
       ],
       description:
-        'Coming soon hides the albums behind one sentence pointing to the Odunde and Gala pages, while photo consent is settled.',
+        'Coming soon takes the albums off the site while photo consent is settled: the gallery and every album page show one sentence pointing to the Odunde and Gala pages, and those pages show no photographs of past years. Photographs a page shows in its own fields, such as headers, the homepage and the doors, stay even when an album holds them too, so change those on their pages. A page may show its old photographs to one more visitor after the change.',
       heldBack: true,
     },
   ],

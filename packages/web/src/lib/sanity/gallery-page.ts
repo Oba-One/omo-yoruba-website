@@ -9,9 +9,10 @@
  * address; the tile's title keeps its stega for click-to-edit.
  */
 import { albumLine, albumYear, byNewestAlbum } from '@oy/content/albums';
+import { withLayoutDefaults } from '@oy/content/layout';
 import { ALBUM_YEAR_PENDING, presenceWhat } from '@oy/content/pending';
 import type { galleryPageQuery } from '@oy/content/queries';
-import { albumHref, EVENT_PAGE_NAMES, ROUTE_SINGLETONS } from '@oy/content/routes';
+import { albumHref, editionPage } from '@oy/content/routes';
 import type { ClientReturn } from '@sanity/client';
 import { galleryCredits } from './gallery-credits';
 import { pageSkeleton } from './page-skeleton';
@@ -32,11 +33,36 @@ export const GALLERY_TITLE = 'Photographs';
 const SOON_TEXT =
   'The albums are being prepared. Until then, the Odunde and Gala pages carry their own photographs.';
 
+/**
+ * Whether the gallery's Coming soon switch holds the albums (ADR 0043): while it does, no photograph
+ * reaches a page through an album, whether the gallery, an album page, a photo address or an event
+ * page's past years. A photograph a page's own field shows (a header, the homepage's, a door) is
+ * outside the switch, even when an album holds it too.
+ */
+export function albumsHeld(
+  layout: Partial<Record<string, string | null | undefined>> | null | undefined,
+): boolean {
+  return withLayoutDefaults<GalleryLayout>('galleryPage', layout).state === 'soon';
+}
+
+/** What stands in for the photographs while the albums are held: one sentence and the two event pages. */
+export function soonNotice() {
+  return {
+    text: SOON_TEXT,
+    links: ['festival', 'gala'].flatMap((kind) => {
+      const page = editionPage(kind);
+      return page ? [{ label: page.name, href: page.route as string }] : [];
+    }),
+  };
+}
+
 export function buildGalleryPage(data: GalleryPageData | null, options: BuildOptions) {
   const page = pageSkeleton<GalleryLayout>('galleryPage', data, options, GALLERY_TITLE);
   const { edit, layout } = page;
+  // While held no tile is built, so no cover and no photo address leave the builder.
+  const held = albumsHeld(layout);
 
-  const albums = (data?.albums ?? []).filter(present).flatMap((album) => {
+  const albums = (held ? [] : (data?.albums ?? [])).filter(present).flatMap((album) => {
     const slug = cleanText(album.slug);
     if (!slug) return [];
     const title = cleanText(album.title) ?? '';
@@ -71,16 +97,7 @@ export function buildGalleryPage(data: GalleryPageData | null, options: BuildOpt
       captions: layout.captions,
       pending: presenceWhat('album')?.what ?? 'the photo albums',
     },
-    soon:
-      layout.state === 'soon'
-        ? {
-            text: SOON_TEXT,
-            links: [
-              { label: EVENT_PAGE_NAMES.festival, href: ROUTE_SINGLETONS.festivalPage as string },
-              { label: EVENT_PAGE_NAMES.gala, href: ROUTE_SINGLETONS.galaPage as string },
-            ],
-          }
-        : undefined,
+    soon: held ? soonNotice() : undefined,
     credits: galleryCredits(data?.creditsAndConsent, data?.settings?.generalEmail),
     edit: page.layoutEdit,
   };

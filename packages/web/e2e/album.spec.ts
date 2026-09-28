@@ -1,6 +1,13 @@
 import { ALBUM_CREDIT_PENDING, pendingWhat } from '@oy/content/pending';
 import { expect, type Page, type Request, test } from '@playwright/test';
-import { axeViolations, goldSharingAView, PLACEHOLDER_PROJECT, settle, swipe } from './helpers';
+import {
+  axeViolations,
+  galleryHeld,
+  goldSharingAView,
+  PLACEHOLDER_PROJECT,
+  settle,
+  swipe,
+} from './helpers';
 
 // An album's page and its Lightbox (ROUTES sections 1 and 3, ADR 0037, ADR 0038): the page in the prototype's
 // order, the photo address served open and shareable, Back closing the Lightbox and Forward reopening it without
@@ -24,7 +31,8 @@ const tile = (page: Page, key: string) => page.locator(`a[data-photo="${key}"]`)
 
 /**
  * The album page with its Lightbox wired. With the placeholder project the read fails: the page answers 503 with
- * nothing to open, which is asserted before the spec stops (false).
+ * nothing to open, and while the gallery holds the albums (ADR 0043) the page shows its sentence in place of the
+ * photographs; either is asserted before the spec stops (false).
  */
 async function albumPage(page: Page, address = ALBUM): Promise<boolean> {
   const response = await page.goto(address);
@@ -34,8 +42,24 @@ async function albumPage(page: Page, address = ALBUM): Promise<boolean> {
     await expect(page.locator('dialog[open]')).toHaveCount(0);
     return false;
   }
+  if (await galleryHeld(page)) {
+    await expectHeld(page);
+    return false;
+  }
   await expect(page.locator('oy-lightbox')).toHaveAttribute('data-ready', 'true');
   return true;
+}
+
+/** The album page while the gallery holds the albums: the sentence and both event pages, nothing to open. */
+async function expectHeld(page: Page) {
+  await expect(page.locator('oy-lightbox')).toHaveCount(0);
+  await expect(page.locator('a[data-photo]')).toHaveCount(0);
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+  await expect(page.locator('#photographs')).toContainText('The albums are being prepared.');
+  const links = await page
+    .locator('#photographs a')
+    .evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')));
+  expect(links).toEqual(['/odunde', '/gala']);
 }
 
 /** Every page request for the album's own path from now on: a document, or the router's fetch of one. */
@@ -81,6 +105,12 @@ test.describe('an album page', () => {
     }
     expect(response?.status()).toBe(200);
     await expect(page.locator('h1')).toHaveText('End-of-Year Gala 2025');
+    if (await galleryHeld(page)) {
+      // Held (ADR 0043): the title stays, with no count of photographs the page does not show.
+      await expect(page.locator('header#top')).not.toContainText('photographs');
+      await expectHeld(page);
+      return;
+    }
     await expect(page.locator('header#top')).toContainText('6 photographs');
     await expect(page.locator('.oy-album-intro-links a')).toHaveText([
       'All albums',
@@ -194,8 +224,8 @@ test.describe('an album page', () => {
     await page.goto(ALBUM);
     await settle(page);
     expect(await axeViolations(page)).toEqual([]);
-    // The placeholder project serves the Pending form, with no Lightbox to open.
-    if (PLACEHOLDER_PROJECT) return;
+    // The placeholder project serves the Pending form, and a held gallery its sentence: no Lightbox to open.
+    if (PLACEHOLDER_PROJECT || (await galleryHeld(page))) return;
     await tile(page, KEYS[0] as string).click();
     await expect(dialog(page)).toHaveAttribute('open', '');
     await settle(page);
@@ -237,6 +267,11 @@ test.describe('the Lightbox without JavaScript', () => {
     const response = await page.goto(`${ALBUM}?photo=${KEYS[0]}`);
     if (PLACEHOLDER_PROJECT) {
       expect(response?.status()).toBe(503);
+      await expect(page.locator('dialog[open]')).toHaveCount(0);
+      return;
+    }
+    if (await galleryHeld(page)) {
+      // Held (ADR 0043): a photo address opens nothing.
       await expect(page.locator('dialog[open]')).toHaveCount(0);
       return;
     }

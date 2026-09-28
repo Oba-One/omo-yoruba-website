@@ -3,7 +3,8 @@
  * one day fresh and seven days stale-while-revalidate (ROUTES section 1), tagged with one
  * `type:` tag per document type that reaches the route (`tagsForRoute`), so a publish purges by
  * type through `/api/revalidate` and the provider adds the path tag itself. A draft-mode request
- * (the perspective cookie) opts out here and again in the middleware after the render, since a
+ * (a verified session, ADR 0044) opts out here, and any request carrying either draft-mode cookie
+ * opts out again in the middleware after the render, since a
  * later `cache.set()` would switch the cache back on; so does a render whose Sanity read failed,
  * which would otherwise keep an all-Pending page on the CDN for a day. The layout opts a form error
  * re-render and a failed settings read out itself. In dev the cache object is a no-op.

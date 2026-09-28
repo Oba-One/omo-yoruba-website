@@ -1,5 +1,8 @@
 # Interactive components carry their behaviour in inline, plain JavaScript custom elements
 
+Amended by ADR 0041: a document-level listener that claims a click registers once, at definition,
+never per connection, and a history write keeps `history.state`.
+
 Decided with the owner on 11 September 2026 (Phase 3 grill) after the spike in
 `docs/research/phase-3-storybook-play-functions.md`. `@storybook-astro/framework` 1.11.0 serves
 a hoisted `<script>` untransformed in the dev canvas (TypeScript syntax fails, plain JavaScript
