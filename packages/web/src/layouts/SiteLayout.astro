@@ -34,6 +34,7 @@ import { VisualEditing } from '@sanity/astro/visual-editing';
 import Analytics from '../components/Analytics.astro';
 import FormBridge from '../components/FormBridge.astro';
 import ZeffyEmbed from '../components/ZeffyEmbed.astro';
+import { framableSrc } from '../lib/csp';
 import { ENQUIRY_ACTIONS, NEWSLETTER_ACTION } from '../lib/forms/action-paths';
 import {
   modalStateFromResult,
@@ -99,7 +100,8 @@ if (modal.state === 'error' || newsletter.state === 'error') {
   Astro.cache.set(false);
 }
 
-const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';
+// The same check as the island's, so the dialog never waits for a frame the island refuses.
+const zeffyMode = framableSrc(settings?.zeffyEmbedUrl) ? 'embed' : 'pending';
 // The Studio can pause PostHog without a deploy (siteSettings.analyticsEnabled).
 const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !== false;
 ---
