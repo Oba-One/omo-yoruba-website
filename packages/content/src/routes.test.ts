@@ -149,7 +149,6 @@ describe('tagsForRoute', () => {
 
 describe('the gallery routes', () => {
   it('purges every album page with the gallery singleton and with an edition, whose year and page it shows', () => {
-    expect(TYPE_ROUTES.galleryPage).toEqual(['/gallery', '/gallery/[album]']);
     expect(TYPE_ROUTES.event).toEqual(expect.arrayContaining(['/gallery', '/gallery/[album]']));
     expect(tagsForRoute('/gallery/[album]')).toEqual([
       'type:siteSettings',
@@ -158,6 +157,12 @@ describe('the gallery routes', () => {
       'type:album',
       'type:photographer',
     ]);
+  });
+
+  it("purges the event pages with the gallery singleton, whose state holds their past years' photographs", () => {
+    expect(TYPE_ROUTES.galleryPage).toEqual(['/gallery', '/gallery/[album]', '/odunde', '/gala']);
+    expect(tagsForRoute('/odunde')).toContain('type:galleryPage');
+    expect(tagsForRoute('/gala')).toContain('type:galleryPage');
   });
 
   it("writes an album's page and a photograph's address, the key encoded", () => {

@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
-import { expectNoMockWhileOwed, settle } from './helpers';
+import { expectNoMockWhileOwed, galleryHeld, settle } from './helpers';
 
 // The End-of-Year Gala page in the prototype's order (ROUTES section 4), each block present whether
 // the Studio holds its content or renders Pending: CI runs with a placeholder project, where every
@@ -22,7 +22,10 @@ test.describe('the End-of-Year Gala page', () => {
       ),
     );
     const awards = await page.locator('body').getAttribute('data-awards');
-    const past = await page.locator('body').getAttribute('data-past');
+    // Past galas go while the page hides them or the gallery holds the albums (ADR 0043).
+    const past = (await galleryHeld(page))
+      ? 'hidden'
+      : await page.locator('body').getAttribute('data-past');
     expect(order).toEqual([
       'top',
       'glance',
@@ -139,7 +142,7 @@ test.describe('the End-of-Year Gala page', () => {
       await expect(honorees).toHaveCount(0);
     }
     const past = page.locator('#past');
-    if ((await body.getAttribute('data-past')) === 'hidden') {
+    if ((await body.getAttribute('data-past')) === 'hidden' || (await galleryHeld(page))) {
       await expect(past).toHaveCount(0);
       return;
     }

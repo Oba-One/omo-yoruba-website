@@ -1,6 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
-import { PERSPECTIVE_COOKIE } from '../src/lib/sanity/preview';
-import { PLACEHOLDER_PROJECT, settle } from './helpers';
+import { draftSessionValue } from '../src/lib/sanity/draft-session';
+import { DRAFT_SESSION_COOKIE, PERSPECTIVE_COOKIE } from '../src/lib/sanity/preview';
+import { PLACEHOLDER_PROJECT, READ_TOKEN, settle } from './helpers';
 
 // A page reached through the nav (the ClientRouter's swap) must behave as a fresh load (ADR 0041):
 // the document stays the footer's height with nothing outside the body; the persisted dialogs still
@@ -253,22 +254,32 @@ test("closing a dialog opened by its address keeps the router's history state", 
 });
 
 // Draft mode has no router (ADR 0041): the arrival is a full load, the overlay mounts once, and
-// nothing sits below the footer. Seeded runs only: without the read token no page mounts the overlay.
+// nothing sits below the footer. Seeded runs against the local server only: without the read token
+// no page mounts the overlay, and a deployed host may hold another token or answer from its cache.
+const DEPLOYED = Boolean(process.env.PLAYWRIGHT_TEST_BASE_URL);
+
 test('in draft mode the arrival is a full load and the overlay is mounted once', async ({
   page,
   baseURL,
 }) => {
-  test.skip(PLACEHOLDER_PROJECT, 'draft mode needs the read token (seeded runs only)');
-  await page
-    .context()
-    .addCookies([{ name: PERSPECTIVE_COOKIE, value: 'drafts', url: baseURL as string }]);
+  test.skip(
+    PLACEHOLDER_PROJECT || !READ_TOKEN || DEPLOYED,
+    'draft mode needs the read token and the local server (seeded runs only)',
+  );
+  await page.context().addCookies([
+    { name: PERSPECTIVE_COOKIE, value: 'drafts', url: baseURL as string },
+    {
+      name: DRAFT_SESSION_COOKIE,
+      value: draftSessionValue(READ_TOKEN as string, Date.now()),
+      url: baseURL as string,
+      httpOnly: true,
+    },
+  ]);
   await page.addInitScript(COUNTERS);
   await visit(page, FROM);
-  // The layout renders the overlay's island only in draft mode, so its presence is the signal.
-  test.skip(
-    (await page.locator('astro-island').count()) === 0,
-    'draft mode needs the read token in packages/web/.env (seeded runs only)',
-  );
+  // The layout renders the overlay's island only in draft mode, so its presence proves the signed
+  // session was accepted; a refused session fails here rather than skipping (ADR 0044).
+  await expect(page.locator('astro-island')).toHaveCount(1);
   await expect(page.locator('sanity-visual-editing')).toHaveCount(1);
   await expect(page.locator('meta[name="astro-view-transitions-enabled"]')).toHaveCount(0);
   await arriveHome(page, FROM);
@@ -283,4 +294,27 @@ test('in draft mode the arrival is a full load and the overlay is mounted once',
     loads: 0,
   });
   expect(arrived[0].outsideBody, 'the overlay host alone sits outside the body').toBe(1);
+});
+
+// Anyone can set the perspective cookie by hand (review R03): without the session the enable route
+// signs, the page reads as published, so no overlay mounts and the router stays. Seeded runs only, where
+// the token would otherwise read drafts.
+test('a perspective cookie set by hand, without the session, reads as published', async ({
+  page,
+  baseURL,
+}) => {
+  // Worth running against a deployed host too: a hand-set cookie must read as published there.
+  test.skip(
+    PLACEHOLDER_PROJECT || !READ_TOKEN,
+    'only the read token could read drafts (seeded runs only)',
+  );
+  await page.context().addCookies([
+    { name: PERSPECTIVE_COOKIE, value: 'drafts', url: baseURL as string },
+    { name: DRAFT_SESSION_COOKIE, value: 'forged', url: baseURL as string },
+  ]);
+  // A fresh query string misses any CDN copy, so the server itself answers, as in the attack (ADR 0044).
+  await visit(page, `${FROM}?forged=${Date.now()}`);
+  await expect(page.locator('meta[name="astro-view-transitions-enabled"]')).toHaveCount(1);
+  await expect(page.locator('astro-island')).toHaveCount(0);
+  await expect(page.locator('sanity-visual-editing')).toHaveCount(0);
 });

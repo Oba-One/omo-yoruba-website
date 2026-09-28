@@ -9,8 +9,9 @@
  * success to `sent=1`, which renders the success block (ADR 0019). `#give` opens the Give
  * Dialog on load with JavaScript. The page's layout options reach the body as data attributes
  * (`root`), the newsletter sits in the footer or as a band before it, and in draft mode (the
- * perspective cookie) the Visual Editing overlay mounts after the bridge (ADR 0021) and pages
- * load in full: the router stays out, so the overlay never meets a swap (ADR 0041).
+ * perspective cookie beside a verified session, ADR 0044) the Visual Editing overlay mounts after
+ * the bridge (ADR 0021) and pages load in full: the router stays out, so the overlay never meets a
+ * swap (ADR 0041).
  */
 import '@oy/tokens';
 import { PUBLIC_POSTHOG_KEY } from 'astro:env/client';
@@ -33,6 +34,7 @@ import { VisualEditing } from '@sanity/astro/visual-editing';
 import Analytics from '../components/Analytics.astro';
 import FormBridge from '../components/FormBridge.astro';
 import ZeffyEmbed from '../components/ZeffyEmbed.astro';
+import { framableSrc } from '../lib/csp';
 import { ENQUIRY_ACTIONS, NEWSLETTER_ACTION } from '../lib/forms/action-paths';
 import {
   modalStateFromResult,
@@ -98,7 +100,8 @@ if (modal.state === 'error' || newsletter.state === 'error') {
   Astro.cache.set(false);
 }
 
-const zeffyMode = settings?.zeffyEmbedUrl?.trim() ? 'embed' : 'pending';
+// The same check as the island's, so the dialog never waits for a frame the island refuses.
+const zeffyMode = framableSrc(settings?.zeffyEmbedUrl) ? 'embed' : 'pending';
 // The Studio can pause PostHog without a deploy (siteSettings.analyticsEnabled).
 const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !== false;
 ---

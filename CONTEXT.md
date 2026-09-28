@@ -354,8 +354,9 @@ switches.
 _Avoid_: admin user, superuser, owner (one person; there may be more administrators)
 
 **Held-back switch**:
-A layout option that publishes content waiting for an owner decision (the gallery's coming-soon state, Our Story's
-timeline, the Gala's awards). Read-only for members.
+A layout option that publishes content waiting for an owner decision (the gallery's coming-soon state, which takes the
+albums off the site while consent is settled, ADR 0043: a photograph a page shows through its own field stays; Our
+Story's timeline; the Gala's awards). Read-only for members.
 _Avoid_: feature flag, lock, admin option
 
 **To do**:
@@ -388,9 +389,10 @@ June, Gala July to December). A past edition never leads.
 _Avoid_: next event, featured event, current event
 
 **Draft mode**:
-A request carrying the perspective cookie the Presentation tool set: reads come back as drafts
-with stega, the overlay mounts, the response is never cached, and the page has no router (every
-navigation is a full load, ADR 0041).
+A request carrying both cookies the enable route set when the Presentation tool opened it, the
+perspective cookie and the signed session (ADR 0044): reads come back as drafts with stega, the
+overlay mounts, the response is never cached, and the page has no router (every navigation is a
+full load, ADR 0041). A perspective cookie without the session reads as published.
 _Avoid_: preview mode, visual editing mode, the draft cookie (the mechanism)
 
 **Preview host**:

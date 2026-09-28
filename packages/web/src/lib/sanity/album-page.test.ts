@@ -1,6 +1,7 @@
 import { createImageSet } from '@oy/content/images';
 import { describe, expect, it } from 'vitest';
 import { type AlbumPageData, buildAlbumPage } from './album-page';
+import { soonNotice } from './gallery-page';
 
 const imageSet = createImageSet({ projectId: 'abc123', dataset: 'development' });
 const options = { imageSet, draft: false, studioUrl: '/admin' };
@@ -194,6 +195,33 @@ describe('buildAlbumPage', () => {
       buildAlbumPage(seeded, options, 'a-removed-photograph').lightbox.openKey,
     ).toBeUndefined();
     expect(buildAlbumPage(seeded, options, '').lightbox.openKey).toBeUndefined();
+  });
+
+  it('keeps every photograph off the page while the gallery holds the albums, a photo address included (R01)', () => {
+    const held = {
+      ...seeded,
+      page: { ...seeded.page, layout: { captions: 'always', state: 'soon' } },
+    } as AlbumPageData;
+    const page = buildAlbumPage(held, options, 'gala-2025-three-friends-selfie');
+    expect(page.found).toBe(true);
+    expect(page.photos.tiles).toEqual([]);
+    expect(page.lightbox.photos).toEqual([]);
+    expect(page.lightbox.openKey).toBeUndefined();
+    // The title and the year stay; no count of photographs the page does not show.
+    expect(page.header.title).toBe('End-of-Year Gala 2025');
+    expect(page.header.facts).toEqual([]);
+    const untitled = {
+      ...held,
+      album: { ...held.album, title: 'End-of-Year Gala' },
+    } as AlbumPageData;
+    expect(buildAlbumPage(untitled, options, null).header.facts).toEqual([{ text: '2025' }]);
+    // Still described, so the page keeps its meta description, without the count.
+    expect(page.description).toBe(`End-of-Year Gala 2025. ${soonNotice().text}`);
+    expect(page.soon).toMatchObject(soonNotice());
+    expect(buildAlbumPage(held, draft, null).soon?.edit).toContain(
+      'id=galleryPage;type=galleryPage;path=layout.state',
+    );
+    expect(buildAlbumPage(seeded, options, null).soon).toBeUndefined();
   });
 
   it('keeps stega out of keys, addresses and comparisons', () => {

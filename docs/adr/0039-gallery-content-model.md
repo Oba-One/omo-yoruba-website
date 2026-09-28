@@ -22,7 +22,9 @@ prototype or the schema would otherwise make the page claim something nobody con
   to the album's page; the album page is the same under both.
 - **`soon` is the editor's switch, Pending is the data's.** `state: soon` replaces the mosaic with one sentence
   that claims nothing unconfirmed and points to the event pages' photographs; with no album holding a
-  photograph, `built` shows the registry's Pending line instead.
+  photograph, `built` shows the registry's Pending line instead. ADR 0043 widened
+  `soon` into the consent hold for the albums: it also holds the album pages' photographs and the event pages'
+  past photographs.
 - **The policy is the owner's words.** `galleryPage.creditsAndConsent` becomes plain text, one row of the
   credit and permissions section beside a Credits row that states only how the site credits ("Given with each
   album, and with a photograph where it differs.") and a Removal requests row with the general inbox and the
