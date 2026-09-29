@@ -34,8 +34,8 @@ is `docs/research/online-giving-options.md`.
     (14). The public host showed the moved initiatives and Odunde's take-part order unchanged.
   - The two full exports were deleted. The four `.before.ndjson` snapshots (only the documents the migrations
     wrote) stay in `~/omo-yoruba-exports` for `bun run migrate -- restore`, until the owner is happy with the site.
-- **Not done:** `sanity schema deploy`. The project's Editor token lacks the `deploySchema` grant, so it needs the
-  owner's own login.
+- **Not done on 27 September:** `sanity schema deploy`. The project's Editor token lacks the `deployStudio` grant,
+  so it needs the owner's own login. The owner deployed it on 29 September.
 - **Open:** the Zeffy embed work (the owner chose Zeffy, embedded, on 27 September), on branch `feat/zeffy-embed`
   with its own pull request.
 - **Decided on 27 September:** D3 (`development` holds the real content through launch; `production` to be made
@@ -53,7 +53,8 @@ is `docs/research/online-giving-options.md`.
 1. **Make `production` private (D3):** sanity.io/manage, the project, Datasets, `production`, Edit, Visibility:
    Private. Agents do not change access settings.
 2. **Deploy the schema** with your login: `bunx sanity login`, then `bun run --filter @oy/content sanity -- schema
-   deploy`. It tells the MCP and agents what each field requires.
+   deploy`. It tells the MCP and agents what each field requires. Done on 29 September; agents read it by id
+   (runbook, Studio, preview and Visual Editing).
 3. **Delete three lines** from `packages/web/.env.example`: `PUBLIC_ZEFFY_EMBED_URL`, `PUBLIC_EVENTBRITE_URL` and
    `SANITY_PREVIEW_SECRET` (agents cannot edit that file; none of the three is set in Vercel).
 4. **Zeffy:** create the donation form, turn on automatic tax receipts, decide on monthly giving, and paste the

@@ -77,7 +77,9 @@ the webhook purge follow. Every document type needs a `locations` entry and ever
 After any schema or query change: `bun typegen`, commit `packages/content/schema.json` and
 `packages/content/src/sanity.types.ts`. The CI job `TypeGen drift` fails on a difference.
 Validation, Pending and locations are checked in the Studio: open `/admin` and confirm the new
-field warns, lists and locates.
+field warns, lists and locates. Once the change merges and deploys, ask the owner to open `/admin` on the
+public host and deploy the schema from an up-to-date `main` (runbook, Studio, preview and Visual Editing):
+agents read the deployed copy, and the Editor token cannot deploy it.
 
 <!-- shared-engineering:begin -->
 ## Semantic changes
