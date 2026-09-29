@@ -1,7 +1,7 @@
 # 45: The check line hides the missing mailing address: it reads 'send a check to Omo Yorùbá of Southern California.' with no address and no Pending chip
 
 Labels: bug
-Status: open
+Status: resolved
 Blocked by: none
 
 **Finding** (R45 in `docs/plans/review-alignment-and-quality.md`; GiveDialog; major; correctness): Every Donate click shows this dialog while the Zeffy link is unset, and it asks donors to post a check with no address, which is misleading on the site's main money path. It also hides a launch-required fact (the registry's 'mailing address') on the surface where it matters most. The Studio holds the organisation name and not the address, which is the state today.
@@ -16,3 +16,5 @@ Blocked by: none
 ## Comments
 
 **Triage, 27 September 2026:** Ready: no decision needed. Show the address Pending chip in the check line while the address is empty.
+
+**Fixed, 27 September 2026:** on branch `feat/zeffy-embed`. The check line shows the registry's chip for the mailing address whenever the address is empty, and the organization's name only before a present address. The `FallbackNameWithoutAddress` story and its test cover the name without an address.

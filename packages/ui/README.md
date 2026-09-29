@@ -40,6 +40,9 @@ From the repo root:
 A test composes its stories (`composeStories`) and renders them into happy-dom with the helpers in
 `src/test/`, so it sees the args, slots and decorators Storybook shows. Astro's container API
 returns no scoped `<style>`, so tests assert markup and ARIA state, never CSS.
+That render never runs a component's script: `renderLive` runs a story's inline script, exactly as
+shipped, where a test needs the element's behaviour, as the Give Dialog's tests do for Zeffy's
+messages and the timer (ADR 0045).
 
 ## Rules that matter most here
 
@@ -59,7 +62,7 @@ skill.
 ## Known limits of the Storybook framework
 
 - Static builds prerender every story: controls are read-only, decorators freeze with the story's
-  globals, and client scripts never run in Vitest.
+  globals, and client scripts never run in Vitest unless a test renders through `renderLive`.
 - Slot strings are sanitised: `class`, `id`, `role` and `aria-*` survive; `style`, `data-*` and tags
   such as `section`, `nav`, `button`, `template`, `iframe` and `svg` are dropped. Story wrappers use
   classes from `.storybook/preview.css`. A slot can also be a configured component,

@@ -27,6 +27,7 @@ import { siteSettingsQuery } from '@oy/content/queries';
 import NewsletterBand from '@oy/ui/bands/NewsletterBand/NewsletterBand.astro';
 import EnquiryModal from '@oy/ui/forms/EnquiryModal/EnquiryModal.astro';
 import GiveDialog from '@oy/ui/forms/GiveDialog/GiveDialog.astro';
+import { zeffyPageHref } from '@oy/ui/forms/GiveDialog/zeffy.ts';
 import SiteFooter from '@oy/ui/navigation/SiteFooter/SiteFooter.astro';
 import SiteNav from '@oy/ui/navigation/SiteNav/SiteNav.astro';
 import ProgressBar from '@oy/ui/page/ProgressBar/ProgressBar.astro';
@@ -101,8 +102,11 @@ if (modal.state === 'error' || newsletter.state === 'error') {
   Astro.cache?.set(false);
 }
 
-// The same check as the island's, so the dialog never waits for a frame the island refuses.
-const zeffyMode = framableSrc(settings?.zeffyEmbedUrl) ? 'embed' : 'pending';
+// The same check as the island's, so the dialog never waits for a frame the island refuses. Zeffy's
+// own page for the same form is the dialog's link to Apple Pay and Google Pay (ADR 0045).
+const zeffyForm = framableSrc(settings?.zeffyEmbedUrl);
+const zeffyMode = zeffyForm ? 'embed' : 'pending';
+const zeffyPage = zeffyPageHref(zeffyForm);
 // The Studio can pause PostHog without a deploy (siteSettings.analyticsEnabled).
 const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !== false;
 ---
@@ -176,6 +180,7 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
       />
       <GiveDialog
         mode={zeffyMode}
+        pageHref={zeffyPage}
         orgName={settings?.orgName}
         address={settings?.address}
         ein={settings?.ein}

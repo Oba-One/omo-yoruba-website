@@ -3,6 +3,10 @@
 Amended by ADR 0041: a document-level listener that claims a click registers once, at definition,
 never per connection, and a history write keeps `history.state`.
 
+Amended by ADR 0045: a Vitest test can run a component's inline script, exactly as shipped, through
+`renderLive` in `packages/ui/src/test/stories.ts`, where it needs the element's behaviour; every
+other test still asserts the initial markup and ARIA state.
+
 Decided with the owner on 11 September 2026 (Phase 3 grill) after the spike in
 `docs/research/phase-3-storybook-play-functions.md`. `@storybook-astro/framework` 1.11.0 serves
 a hoisted `<script>` untransformed in the dev canvas (TypeScript syntax fails, plain JavaScript
