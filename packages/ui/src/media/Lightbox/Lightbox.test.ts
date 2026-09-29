@@ -1,10 +1,19 @@
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
-import { renderToBody, text } from '../../test/stories';
+import { renderLive, renderToBody, text } from '../../test/stories';
 import * as stories from './Lightbox.stories';
 
-const { Default, LaterPhotograph, OwnCredit, OnePhoto, Closed, Pending, ConfirmedUnnamed } =
-  composeStories(stories);
+const {
+  Default,
+  LaterPhotograph,
+  OwnCredit,
+  LinkedCredit,
+  LinkedThenOwnCredit,
+  OnePhoto,
+  Closed,
+  Pending,
+  ConfirmedUnnamed,
+} = composeStories(stories);
 
 describe('Lightbox', () => {
   it('is a dialog named for the album, served open on the photo address with the element not yet wired', async () => {
@@ -112,6 +121,15 @@ describe('Lightbox', () => {
     expect(owed?.querySelector('.oy-lb-dot')).not.toBeNull();
   });
 
+  it("links the credit's name in the bar to the photographer's page (ADR 0046)", async () => {
+    const body = await renderToBody(LinkedCredit);
+    const line = body.querySelector('.oy-lb-cap > p[data-active="true"] .oy-credit-line');
+    expect(text(line)).toBe('Photographs: Red Carpet Films.');
+    expect(line?.querySelector('a')?.getAttribute('href')).toBe(
+      'https://www.youtube.com/@redcarpetfilmshollywood',
+    );
+  });
+
   it("names a photograph's own unconfirmed credit with its own chip", async () => {
     const body = await renderToBody(OwnCredit);
     expect(text(body.querySelector('.oy-lb-cap .oy-credit-line'))).toBe(
@@ -141,5 +159,43 @@ describe('Lightbox', () => {
     expect(source).toContain(
       "document.addEventListener('DOMContentLoaded', report, { once: true })",
     );
+  });
+});
+
+// The element itself, through the script the page ships (renderLive). These run last: once defined, the element
+// would wire the markup the tests above expect unwired.
+describe('Lightbox, wired', () => {
+  const press = (name: string) =>
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }),
+    );
+  const shownLink = () =>
+    document.querySelector<HTMLElement>('.oy-lb-cap > p[data-active="true"] a[href]');
+  const count = () => text(document.querySelector('.oy-lb-count'));
+  const live = async (story: Parameters<typeof renderLive>[0]) => {
+    history.replaceState(null, '', '/gallery/gala-2025');
+    const body = await renderLive(story);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    return body;
+  };
+
+  it("keeps focus on the shown caption's credit link as the photograph moves (ADR 0046)", async () => {
+    await live(LinkedCredit);
+    shownLink()?.focus();
+    press('ArrowRight');
+    expect(count()).toBe('2 of 2');
+    expect(document.activeElement).toBe(shownLink());
+    // Focus stayed in the dialog, so the arrows still move it.
+    press('ArrowLeft');
+    expect(count()).toBe('1 of 2');
+    expect(document.activeElement).toBe(shownLink());
+  });
+
+  it('moves focus to Next when the shown caption has no link', async () => {
+    await live(LinkedThenOwnCredit);
+    shownLink()?.focus();
+    press('ArrowRight');
+    expect(count()).toBe('2 of 2');
+    expect(document.activeElement?.getAttribute('aria-label')).toBe('Next photo');
   });
 });

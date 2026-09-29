@@ -1,5 +1,9 @@
 import type { ComponentProps } from 'astro/types';
-import { GALA_ALBUM_CREDIT, ODUNDE_ALBUM_CREDIT } from '../../fixtures/event-pages';
+import {
+  GALA_ALBUM_CREDIT,
+  LINKED_ALBUM_CREDIT,
+  ODUNDE_ALBUM_CREDIT,
+} from '../../fixtures/event-pages';
 import { type Meta, onDark, type StoryArgs, type StoryObj } from '../../storybook';
 import CreditLine from './CreditLine.astro';
 
@@ -13,7 +17,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "An album's photograph credit: the name as the Studio holds it, with the registry's chip until the credit is confirmed.",
+          "An album's photograph credit: the name as the Studio holds it, with the registry's chip until the credit is confirmed, linking to the photographer's page when the Studio holds one.",
       },
     },
   },
@@ -22,7 +26,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
-/** The Odunde 2026 album as the dataset holds it: the name, not yet confirmed. */
+/** The Odunde 2026 album as the seed writes it: the register's name, not yet confirmed. */
 export const Unconfirmed: Story = {};
 
 export const Gala: Story = { args: { ...GALA_ALBUM_CREDIT } };
@@ -41,3 +45,14 @@ export const Inline: Story = { args: { as: 'span' } };
 
 /** The inline form in the dark scope, as the Lightbox's bar shows it: the chip in its on-dark colours. */
 export const OnDark: Story = { ...onDark, args: { as: 'span' } };
+
+/** The credit the three albums hold since 28 September 2026: confirmed, the name a link to the photographer's page. */
+export const Linked: Story = { args: { ...LINKED_ALBUM_CREDIT } };
+
+/** The linked name inline in the dark scope, as the Lightbox's bar shows it: the link in the scope's colours. */
+export const LinkedOnDark: Story = { ...onDark, args: { ...LINKED_ALBUM_CREDIT, as: 'span' } };
+
+/** An address the Studio's rule refuses but the API accepts: the name shows, with no link. */
+export const UnsafeLink: Story = {
+  args: { ...LINKED_ALBUM_CREDIT, href: 'javascript:alert(1)' },
+};

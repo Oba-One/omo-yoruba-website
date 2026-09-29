@@ -2,7 +2,8 @@
 /**
  * What an album page says before its photographs (`18 Photo Gallery.dc.html`'s album view, spec Q9 of Phase 8):
  * the quiet way back to the gallery and to the edition's page (text only, since ← is outside the glyph set), the
- * photo credit with its chip until confirmed, and the album's consent note when it has one. The prototype's row
+ * photo credit with its chip until confirmed and its link to the photographer's page (ADR 0046), and the album's
+ * consent note when it has one. The prototype's row
  * sits 22px above the credit and the credit 20px above the photographs.
  */
 import Button from '../../core/Button/Button.astro';
@@ -19,6 +20,8 @@ interface Props {
   /** Whether the credit line shows: false when no album could be read, so nothing is known of its credit. */
   showCredit?: boolean;
   credit?: string | null;
+  /** The photographer's page, which the credit's name links to. */
+  creditHref?: string | null;
   confirmed?: boolean | null;
   /** The registry's wording while the credit is unconfirmed. */
   pending?: string;
@@ -33,6 +36,7 @@ const {
   links = [],
   showCredit = true,
   credit,
+  creditHref,
   confirmed,
   pending,
   consentNote,
@@ -58,7 +62,7 @@ const shown = links.filter((link): link is AlbumIntroLink => Boolean(link?.href)
   {
     showCredit && (
       <div data-sanity={creditEdit}>
-        <CreditLine credit={credit} confirmed={confirmed} pending={pending} />
+        <CreditLine credit={credit} href={creditHref} confirmed={confirmed} pending={pending} />
       </div>
     )
   }

@@ -112,7 +112,7 @@ export const photoTiles = (photos: FixturePhotograph[]): PhotoGridItem[] =>
     caption,
   }));
 
-/** The End-of-Year Gala 2025 album: all six photographs in album order, the credit unconfirmed. */
+/** The End-of-Year Gala 2025 album: all six photographs in album order, the credit unconfirmed as the seed writes it. */
 export const GALA_ALBUM_PHOTOS: FixturePhotograph[] = [
   photograph('gala-2025', 'gala-2025-attendees-group-photo', PHOTOS.galaGroupPortrait),
   photograph('gala-2025', 'gala-2025-three-friends-selfie', PHOTOS.galaSelfie),
@@ -145,7 +145,7 @@ export const OWN_CREDIT_PHOTO: FixturePhotograph = {
   creditPending: GALLERY_PENDING.ownCredit,
 };
 
-/** The End-of-Year Gala 2025 album page's head: its title, its line and the credit as the dataset holds it. */
+/** The End-of-Year Gala 2025 album page's head: its title, its line and the credit as the seed writes it. */
 export const GALA_ALBUM = {
   title: 'End-of-Year Gala 2025',
   count: '6 photographs',

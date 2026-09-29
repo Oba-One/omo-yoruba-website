@@ -22,6 +22,7 @@ export interface SeedDocument {
   [field: string]: unknown;
 }
 
+// The register's guessed photographers, unconfirmed; the owner's confirmed credits live in the dataset (ADR 0046).
 const PHOTOGRAPHERS: Record<PhotographerId, { name: string; credit: string }> = {
   'red-carpet-media': { name: 'Red Carpet Media', credit: 'Red Carpet Media' },
   'members-and-volunteers': { name: 'Members and volunteers', credit: 'Members and volunteers' },
@@ -970,9 +971,8 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   collectivePage: ['keepsOwnList'],
   // The nav draws the wordmark and logo itself, and the footer draws no blurb (ADR 0042).
   siteSettings: ['eventbriteUrl', 'logo', 'wordmarkLine2', 'footerBlurb'],
-  // The pages list their doors in their own order; no page links a photographer or dates a figure.
+  // The pages list their doors in their own order; no page dates a figure.
   door: ['order'],
-  photographer: ['url'],
   stat: ['asOf'],
   programsPage: [
     'kidsStem.image',

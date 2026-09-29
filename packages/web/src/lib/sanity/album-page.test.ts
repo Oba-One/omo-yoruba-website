@@ -20,8 +20,8 @@ const photo = (key: string, description: string, extra: Record<string, unknown> 
   ...extra,
 });
 
-// End-of-Year Gala 2025 as the development dataset holds it: six photographs whose captions are the register's
-// descriptions, the credit unconfirmed, no date, the 2025 gala edition.
+// End-of-Year Gala 2025 as the seed wrote it: six photographs whose captions are the register's descriptions, the
+// credit unconfirmed, no date, the 2025 gala edition.
 const seeded = {
   album: {
     _id: 'album-gala-2025',
@@ -184,6 +184,32 @@ describe('buildAlbumPage', () => {
       creditPending: "a photograph's own credit to confirm",
     });
     expect(page.credit.confirmed).toBe(true);
+  });
+
+  it("links a credit to its photographer's page, a photograph's own only through its own (ADR 0046)", () => {
+    const channel = 'https://www.youtube.com/@redcarpetfilmshollywood';
+    const page = buildAlbumPage(
+      withAlbum({
+        creditUrl: channel,
+        photos: [
+          photo('gala-2025-attendees-group-photo', 'Three women'),
+          photo('gala-2025-group-photo', 'Six guests', { credit: 'A guest', creditUrl: null }),
+          photo('gala-2025-attendees-smiling', 'Two women and a man', {
+            credit: 'Another photographer',
+            creditUrl: 'https://example.org/another-photographer',
+          }),
+        ],
+      }),
+      options,
+      null,
+    );
+    expect(page.credit.creditHref).toBe(channel);
+    expect(page.lightbox.photos.map((each) => each.creditHref)).toEqual([
+      channel,
+      undefined,
+      'https://example.org/another-photographer',
+    ]);
+    expect(buildAlbumPage(seeded, options, null).credit.creditHref).toBeUndefined();
   });
 
   it('serves the Lightbox open on a photo address the album holds, and nothing open for any other', () => {

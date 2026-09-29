@@ -86,6 +86,7 @@ cachePage(Astro, '/gallery/[album]', { draft: preview, failed: Boolean(error) })
             links={[page.links.gallery, page.links.edition]}
             showCredit={page.found}
             credit={page.credit.credit}
+            creditHref={page.credit.creditHref}
             confirmed={page.credit.confirmed}
             pending={page.credit.pending}
             creditEdit={page.credit.edit}

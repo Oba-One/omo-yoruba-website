@@ -3,13 +3,17 @@
  * Who took an album's photographs, under a carousel or an album (`18 Photo Gallery.dc.html`, the
  * album's "Photographs: Red Carpet Media."): the credit as the Studio holds it, and the registry's
  * chip while the album's credit is not confirmed (spec Q8), the row that lists it. A confirmed album
- * with no photographer named shows no line. Inside a sentence (the Lightbox's bar, after the caption) it
+ * with no photographer named shows no line. The name links to the photographer's page when the Studio
+ * holds one the site may link (ADR 0046). Inside a sentence (the Lightbox's bar, after the caption) it
  * is a `span` that keeps the text's own size and colour.
  */
+import { safeHref } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
 
 interface Props {
   credit?: string | null;
+  /** The photographer's page, which the name links to. */
+  href?: string | null;
   confirmed?: boolean | null;
   /** The registry's wording while the credit is unconfirmed. */
   pending?: string;
@@ -18,21 +22,24 @@ interface Props {
   class?: string;
 }
 
+// With an `as` prop Astro reads the props as untyped unless cast; the cast keeps every caller's props checked.
 const {
   credit,
+  href,
   confirmed = false,
   pending = 'photographer credit to confirm',
   as: Tag = 'p',
   class: className,
-} = Astro.props;
+} = Astro.props as Props;
 const name = credit?.trim();
 const owed = !confirmed;
+const link = safeHref(href);
 ---
 
 {
   (name || owed) && (
     <Tag class:list={['oy-credit-line', Tag === 'span' && 'oy-credit-line--inline', className]}>
-      Photographs: {name && (owed ? `${name} ` : `${name}.`)}
+      Photographs: {name && <>{link ? <a href={link}>{name}</a> : name}{owed ? ' ' : '.'}</>}
       {owed && <Pending what={pending} />}
     </Tag>
   )

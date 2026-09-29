@@ -1084,6 +1084,7 @@ export type Photographer = {
   _rev: string;
   name?: string;
   defaultCredit?: string;
+  url?: string;
 };
 
 export type SanityImageCrop = {
@@ -1203,7 +1204,7 @@ export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields |
 
 // Source: src/queries/event-pages.ts
 // Variable: festivalPageQuery
-// Query: *[_id == "festivalPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  extraFacts[]{_key, label, value, note},  whatItIs,  whatItIsImage{_type, alt, caption, hotspot, crop, asset},  zonesIntro,  planYourVisit[]{_key, label, value, note},  takePart[]{_key, way, chip, title, line, label},  pastYearsIntro,  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},  partnersIntro,  "editions": *[_type == "event" && kind == "festival"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    venue{name, address, line},    cost,    summary,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    vendorTerms{fees, closeDate, decisionDate, permitNote},    attendance{value, label, source},    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "zones": *[_type == "zone" && active != false] | order(order asc){    _id,    name{yo, en},    line,    image{_type, alt, caption, hotspot, crop, asset}  },  "partners": *[_type == "partner" && "odunde" in scope] | order(name asc){    _id,    name,    url,    kind,    logo{_type, alt, caption, hotspot, crop, asset}  },  layout{phead, zones, schedule, labels},  seo{title, description}}
+// Query: *[_id == "festivalPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  extraFacts[]{_key, label, value, note},  whatItIs,  whatItIsImage{_type, alt, caption, hotspot, crop, asset},  zonesIntro,  planYourVisit[]{_key, label, value, note},  takePart[]{_key, way, chip, title, line, label},  pastYearsIntro,  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},  partnersIntro,  "editions": *[_type == "event" && kind == "festival"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    venue{name, address, line},    cost,    summary,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    vendorTerms{fees, closeDate, decisionDate, permitNote},    attendance{value, label, source},    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "creditUrl": credit->url,      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "zones": *[_type == "zone" && active != false] | order(order asc){    _id,    name{yo, en},    line,    image{_type, alt, caption, hotspot, crop, asset}  },  "partners": *[_type == "partner" && "odunde" in scope] | order(name asc){    _id,    name,    url,    kind,    logo{_type, alt, caption, hotspot, crop, asset}  },  layout{phead, zones, schedule, labels},  seo{title, description}}
 export type FestivalPageQueryResult = {
   header: null;
   primaryAction: null;
@@ -1264,6 +1265,7 @@ export type FestivalPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1367,6 +1369,7 @@ export type FestivalPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1493,6 +1496,7 @@ export type FestivalPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1632,6 +1636,7 @@ export type FestivalPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1778,6 +1783,7 @@ export type FestivalPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1924,6 +1930,7 @@ export type FestivalPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2087,6 +2094,7 @@ export type FestivalPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2142,7 +2150,7 @@ export type FestivalPageQueryResult = {
 
 // Source: src/queries/event-pages.ts
 // Variable: galaPageQuery
-// Query: *[_id == "galaPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  eveningIntro,  tiersIntro,  sponsorIntro,  honoreesIntro,  pastIntro,  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},  takePart[]{_key, way, chip, title, line, label},  "editions": *[_type == "event" && kind == "gala"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    doors,    venue{name, address, line},    dress,    ticketsUrl,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    "tiers": *[_type == "ticketTier" && event._ref == ^._id] | order(order asc){      _id,      name,      price,      includes,      variant,      featured    },    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "sponsorLevels": *[_type == "sponsorLevel" && scope in ["gala", "org"]] | order(order asc){    _id,    name,    amount,    recognition,    "eventId": event._ref  },  "honorees": *[_type == "honoree" && event->kind == "gala"] | order(name asc){    _id,    name,    award,    blurb,    image{_type, alt, caption, hotspot, crop, asset},    "eventId": event._ref  },  layout{treatment, tiers, awards, schedule, past, labels},  seo{title, description}}
+// Query: *[_id == "galaPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  eveningIntro,  tiersIntro,  sponsorIntro,  honoreesIntro,  pastIntro,  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},  takePart[]{_key, way, chip, title, line, label},  "editions": *[_type == "event" && kind == "gala"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    doors,    venue{name, address, line},    dress,    ticketsUrl,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    "tiers": *[_type == "ticketTier" && event._ref == ^._id] | order(order asc){      _id,      name,      price,      includes,      variant,      featured    },    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "creditUrl": credit->url,      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "sponsorLevels": *[_type == "sponsorLevel" && scope in ["gala", "org"]] | order(order asc){    _id,    name,    amount,    recognition,    "eventId": event._ref  },  "honorees": *[_type == "honoree" && event->kind == "gala"] | order(name asc){    _id,    name,    award,    blurb,    image{_type, alt, caption, hotspot, crop, asset},    "eventId": event._ref  },  layout{treatment, tiers, awards, schedule, past, labels},  seo{title, description}}
 export type GalaPageQueryResult = {
   header: null;
   primaryAction: null;
@@ -2199,6 +2207,7 @@ export type GalaPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2290,6 +2299,7 @@ export type GalaPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2406,6 +2416,7 @@ export type GalaPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2535,6 +2546,7 @@ export type GalaPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2671,6 +2683,7 @@ export type GalaPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2807,6 +2820,7 @@ export type GalaPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2943,6 +2957,7 @@ export type GalaPageQueryResult = {
       slug: string | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -3059,7 +3074,7 @@ export type GalleryPageQueryResult = {
 
 // Source: src/queries/gallery.ts
 // Variable: albumPageQuery
-// Query: {  "album": *[_type == "album" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    date,    consentNote,    creditConfirmed,    "credit": coalesce(credit->defaultCredit, credit->name),    "edition": event->{"year": edition, kind},    "photos": photos[]{      _key,      _type,      alt,      caption,      hotspot,      crop,      asset,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name, creditNote)    }  },  "page": *[_type == "galleryPage" && _id == "galleryPage"][0]{    header{kicker{yo, en}},    creditsAndConsent,    layout{captions, state}  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{generalEmail}}
+// Query: {  "album": *[_type == "album" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    date,    consentNote,    creditConfirmed,    "credit": coalesce(credit->defaultCredit, credit->name),    "creditUrl": credit->url,    "edition": event->{"year": edition, kind},    "photos": photos[]{      _key,      _type,      alt,      caption,      hotspot,      crop,      asset,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name, creditNote),      "creditUrl": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)    }  },  "page": *[_type == "galleryPage" && _id == "galleryPage"][0]{    header{kicker{yo, en}},    creditsAndConsent,    layout{captions, state}  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{generalEmail}}
 export type AlbumPageQueryResult = {
   album: {
     _id: string;
@@ -3069,6 +3084,7 @@ export type AlbumPageQueryResult = {
     consentNote: string | null;
     creditConfirmed: boolean | null;
     credit: string | null;
+    creditUrl: string | null;
     edition: {
       year: number | null;
       kind: "collective" | "festival" | "gala" | null;
@@ -3083,6 +3099,7 @@ export type AlbumPageQueryResult = {
       asset: SanityImageAssetReference | null;
       creditConfirmed: boolean | null;
       credit: string | null;
+      creditUrl: string | null;
     }> | null;
   } | null;
   page: {
@@ -4385,10 +4402,10 @@ export type DonatePageQueryResult = {
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    "*[_id == \"festivalPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  whatItIs,\n  whatItIsImage{_type, alt, caption, hotspot, crop, asset},\n  zonesIntro,\n  planYourVisit[]{_key, label, value, note},\n  takePart[]{_key, way, chip, title, line, label},\n  pastYearsIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  partnersIntro,\n  \"editions\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    venue{name, address, line},\n    cost,\n    summary,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    vendorTerms{fees, closeDate, decisionDate, permitNote},\n    attendance{value, label, source},\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"zones\": *[_type == \"zone\" && active != false] | order(order asc){\n    _id,\n    name{yo, en},\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"partners\": *[_type == \"partner\" && \"odunde\" in scope] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  layout{phead, zones, schedule, labels},\n  seo{title, description}\n}": FestivalPageQueryResult;
-    "*[_id == \"galaPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  eveningIntro,\n  tiersIntro,\n  sponsorIntro,\n  honoreesIntro,\n  pastIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  takePart[]{_key, way, chip, title, line, label},\n  \"editions\": *[_type == \"event\" && kind == \"gala\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    doors,\n    venue{name, address, line},\n    dress,\n    ticketsUrl,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    \"tiers\": *[_type == \"ticketTier\" && event._ref == ^._id] | order(order asc){\n      _id,\n      name,\n      price,\n      includes,\n      variant,\n      featured\n    },\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"sponsorLevels\": *[_type == \"sponsorLevel\" && scope in [\"gala\", \"org\"]] | order(order asc){\n    _id,\n    name,\n    amount,\n    recognition,\n    \"eventId\": event._ref\n  },\n  \"honorees\": *[_type == \"honoree\" && event->kind == \"gala\"] | order(name asc){\n    _id,\n    name,\n    award,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"eventId\": event._ref\n  },\n  layout{treatment, tiers, awards, schedule, past, labels},\n  seo{title, description}\n}": GalaPageQueryResult;
+    "*[_id == \"festivalPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  whatItIs,\n  whatItIsImage{_type, alt, caption, hotspot, crop, asset},\n  zonesIntro,\n  planYourVisit[]{_key, label, value, note},\n  takePart[]{_key, way, chip, title, line, label},\n  pastYearsIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  partnersIntro,\n  \"editions\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    venue{name, address, line},\n    cost,\n    summary,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    vendorTerms{fees, closeDate, decisionDate, permitNote},\n    attendance{value, label, source},\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url,\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"zones\": *[_type == \"zone\" && active != false] | order(order asc){\n    _id,\n    name{yo, en},\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"partners\": *[_type == \"partner\" && \"odunde\" in scope] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  layout{phead, zones, schedule, labels},\n  seo{title, description}\n}": FestivalPageQueryResult;
+    "*[_id == \"galaPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  eveningIntro,\n  tiersIntro,\n  sponsorIntro,\n  honoreesIntro,\n  pastIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  takePart[]{_key, way, chip, title, line, label},\n  \"editions\": *[_type == \"event\" && kind == \"gala\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    doors,\n    venue{name, address, line},\n    dress,\n    ticketsUrl,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    \"tiers\": *[_type == \"ticketTier\" && event._ref == ^._id] | order(order asc){\n      _id,\n      name,\n      price,\n      includes,\n      variant,\n      featured\n    },\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url,\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"sponsorLevels\": *[_type == \"sponsorLevel\" && scope in [\"gala\", \"org\"]] | order(order asc){\n    _id,\n    name,\n    amount,\n    recognition,\n    \"eventId\": event._ref\n  },\n  \"honorees\": *[_type == \"honoree\" && event->kind == \"gala\"] | order(name asc){\n    _id,\n    name,\n    award,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"eventId\": event._ref\n  },\n  layout{treatment, tiers, awards, schedule, past, labels},\n  seo{title, description}\n}": GalaPageQueryResult;
     "*[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  creditsAndConsent,\n  \"albums\": *[_type == \"album\" && defined(slug.current) && count(photos) > 0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    \"editionYear\": event->edition,\n    cover{_type, alt, caption, hotspot, crop, asset},\n    \"firstPhoto\": photos[0]{_key, _type, alt, caption, hotspot, crop, asset},\n    \"count\": count(photos)\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail},\n  layout{open, captions, state},\n  seo{title, description}\n}": GalleryPageQueryResult;
-    "{\n  \"album\": *[_type == \"album\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    consentNote,\n    creditConfirmed,\n    \"credit\": coalesce(credit->defaultCredit, credit->name),\n    \"edition\": event->{\"year\": edition, kind},\n    \"photos\": photos[]{\n      _key,\n      _type,\n      alt,\n      caption,\n      hotspot,\n      crop,\n      asset,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name, creditNote)\n    }\n  },\n  \"page\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n    header{kicker{yo, en}},\n    creditsAndConsent,\n    layout{captions, state}\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail}\n}": AlbumPageQueryResult;
+    "{\n  \"album\": *[_type == \"album\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    consentNote,\n    creditConfirmed,\n    \"credit\": coalesce(credit->defaultCredit, credit->name),\n    \"creditUrl\": credit->url,\n    \"edition\": event->{\"year\": edition, kind},\n    \"photos\": photos[]{\n      _key,\n      _type,\n      alt,\n      caption,\n      hotspot,\n      crop,\n      asset,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name, creditNote),\n      \"creditUrl\": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)\n    }\n  },\n  \"page\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n    header{kicker{yo, en}},\n    creditsAndConsent,\n    layout{captions, state}\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail}\n}": AlbumPageQueryResult;
     "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc)[0...3]{\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  newsIntro,\n  \"news\": *[_type == \"newsPost\"] | order(date desc)[0...3]{\n    _id, title, \"slug\": slug.current, date, kicker{yo, en}, summary,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"tags\": tags[]->{_type, kind, page}\n  },\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_type == \"programsPage\" && _id == \"programsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  takePart[]{_key, way, chip, title, line, label},\n  kidsStem{\n    title,\n    blurb,\n    subprograms[]{\n      _key, name, blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      facts[]{_key, label, value, note},\n      action{label, kind, enquiryKind, href, newTab}\n    }\n  },\n  culturalExchange{\n    title, blurb, cadence, eligibility, howToJoin,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  yearStrip[]{_key, when, kind, note, \"program\": program->name},\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  layout{cards, inline, yearstrip},\n  seo{title, description}\n}": ProgramsPageQueryResult;
     "*[_type == \"lessonsPage\" && _id == \"lessonsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  glance[]{_key, label, value, note},\n  \"teacher\": teacher->{\n    _id, name, role, bioShort,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  teacherIntro,\n  learn,\n  levels[]{_key, name, blurb},\n  oneLesson[]{_key, step, title, detail},\n  faq[]{_key, question, answer},\n  takePart[]{_key, way, chip, title, line, label},\n  \"teacherEmail\": *[_id == \"siteSettings\"][0].contacts[role == \"teacher\"][0].email,\n  layout{lesson, portraits, faq},\n  seo{title, description}\n}": LessonsPageQueryResult;

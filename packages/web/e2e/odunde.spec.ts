@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
-import { expectNoMockWhileOwed, galleryHeld, settle } from './helpers';
+import { expectNoMockWhileOwed, galleryHeld, PHOTOGRAPHER_PAGE, settle } from './helpers';
 
 // The Odunde Festival page in the prototype's order (ROUTES section 4), each block present whether
 // the Studio holds its content or renders Pending: CI runs with a placeholder project, where every
@@ -186,6 +186,8 @@ test.describe('the Odunde Festival page', () => {
       await expect(past.locator('.oy-credit-line')).toHaveCount(0);
     } else {
       await expect(past.locator('.oy-credit-line')).toContainText('Photographs:');
+      // The album's credit names its photographer's page as the dataset holds it (ADR 0046).
+      await expect(past.locator('.oy-credit-line a')).toHaveAttribute('href', PHOTOGRAPHER_PAGE);
       const lead = await past.locator('.oy-sec-intro').innerText();
       expect(/pending: the attendance figure|\d/i.test(lead)).toBe(true);
     }

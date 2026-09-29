@@ -3,8 +3,16 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './CreditLine.stories';
 
-const { Unconfirmed, Confirmed, Pending, ConfirmedWithoutName, Inline, OnDark } =
-  composeStories(stories);
+const {
+  Unconfirmed,
+  Confirmed,
+  Pending,
+  ConfirmedWithoutName,
+  Inline,
+  OnDark,
+  Linked,
+  UnsafeLink,
+} = composeStories(stories);
 
 describe('CreditLine', () => {
   it('names the photographer with the chip until the credit is confirmed', async () => {
@@ -38,5 +46,19 @@ describe('CreditLine', () => {
   it("sits in the dark scope with its chip, as the Lightbox's bar sets it", async () => {
     const body = await renderToBody(OnDark);
     expect(body.querySelector('.oy-dark span.oy-credit-line .oy-pend')).not.toBeNull();
+  });
+
+  it("links the name to the photographer's page, the full stop outside the link (ADR 0046)", async () => {
+    const line = (await renderToBody(Linked)).querySelector('p.oy-credit-line');
+    expect(text(line)).toBe('Photographs: Red Carpet Films.');
+    const link = line?.querySelector('a');
+    expect(link?.getAttribute('href')).toBe('https://www.youtube.com/@redcarpetfilmshollywood');
+    expect(text(link)).toBe('Red Carpet Films');
+  });
+
+  it('shows the name without a link for an address the site does not link', async () => {
+    const line = (await renderToBody(UnsafeLink)).querySelector('p.oy-credit-line');
+    expect(text(line)).toBe('Photographs: Red Carpet Films.');
+    expect(line?.querySelector('a')).toBeNull();
   });
 });
