@@ -16,8 +16,8 @@ open, read it and its ADR.
 The goal for the week:
 - A member can add an edition, an album with its credits and consent, a person and a news post, and clear a to-do
   item, with `docs/content-ops.md` and without help.
-- Real content goes in through the Sanity MCP once it is signed in, the organization's facts first, into
-  `development` (D3).
+- Real content goes in through the Sanity MCP (the claude.ai connector writes as the owner), the organization's
+  facts first, into `development` (D3).
 - The owner's open decisions are asked, one at a time, each with a recommendation.
 
 Every rule in AGENTS.md holds: never invent content, Pending for every empty required field, one gold action per
@@ -32,7 +32,8 @@ owner. Update docs/plans/open-work.md in the same pull request as each item land
   with the queries, TypeGen, the builders' tests and the seeded specs of the pages it touches.
 - **The schema deploy.** Ask whether the owner ran it (`bunx sanity login`, then `bun run --filter @oy/content
   sanity -- schema deploy`); the project's Editor token cannot. The Sanity connector's `list_workspace_schemas`
-  shows the deployed schema.
+  shows the deployed schema. It must run again after the credit link change (ADR 0046) merges: on 28 September
+  the deployed `photographer` had no Link, so an agent reading it would leave a photographer's page out.
 - **`production` private (D3).** Ask whether the owner changed its visibility; the connector's `list_datasets`
   shows each dataset's ACL. Then correct the runbook's "Hosting today".
 - **The migration snapshots** in `~/omo-yoruba-exports`: delete them once the owner says the site looks right.
@@ -52,9 +53,10 @@ and `oy-release` skills to match. The guide says what the gallery's Coming soon 
 - The roles the owner chose (ADR 0042): check the member view with the Editor account.
 - The preview host, if D15 says yes (runbook).
 - E1: prove that a publish purges a page, with the runbook's signed probe; never print a secret.
-- E19: once the owner signs the Sanity MCP in (`/mcp`), add what the owner sends, C1 to C3 first, through the
-  oy-content-ops recipes. Nothing invented; the owner confirms each fact. C3 wants the event photographer's name as
-  each album's credit should read, and the consent policy in the owner's words.
+- E19: add what the owner sends, C1 to C3 first, through the oy-content-ops recipes. Nothing invented; the owner
+  confirms each fact. C3's credits are done (28 September, ADR 0046); it still wants the consent policy in the
+  owner's words, the summer camp's year, the captions and the header line. The claude.ai Sanity connector is
+  signed in as the owner and writes (below), so this does not wait for the project's own Sanity MCP (`/mcp`).
 - The member test: one or two members do the common tasks with the guide while the owner watches. Ticket every place
   a member stalled under `docs/tickets/`, one ticket each.
 
@@ -92,8 +94,10 @@ now that pull request 13 has landed.
 - **Known flakes:** the first axe test after a cold dev server (Vite reloads the page), and pull request 10's
   footer-trigger test in placeholder mode (one extra page load, once in four runs). Rerun before chasing either.
 - **Access:** the Vercel MCP cannot list the project's environment variables (403), but the owner's signed-in
-  Vercel CLI can (`vercel env ls` in `packages/web`). The claude.ai Sanity connector reads datasets and deployed
-  schemas; the project's Editor token cannot deploy the schema.
+  Vercel CLI can (`vercel env ls` in `packages/web`). The claude.ai Sanity connector is signed in as the owner: it
+  reads datasets and deployed schemas, and it writes, `patch_documents` saving drafts and `publish_documents`
+  publishing them (the album credits went in that way on 28 September). The project's Editor token cannot deploy
+  the schema.
 
 ## Closing
 

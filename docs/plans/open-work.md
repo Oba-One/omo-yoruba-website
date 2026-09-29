@@ -53,7 +53,7 @@ To do until it is filled (the To do reads drafts). The launch gate
 | --- | --- | --- | --- | --- | --- |
 | C1 | Everywhere | The EIN, the mailing address and the phone; the general inbox; each role's contact (membership, volunteers, partnerships, vendors, performers, tables, teacher, general) with an email and a response line; the Zeffy link; social links | Now | T02, T03 | open |
 | C2 | Homepage | Put the recap post's title back to "Odunde 2026: the recap"; three named voices; a Collective photograph; confirm the posts' dates | Now | T27, T31, `pending.ts` | open |
-| C3 | Gallery | The consent and removal policy in your words; consent per album; confirm the three photographers' credits (27 Sep: the owner says the organization's event photographer took the photographs, so each album's credit wants that photographer's name as it should appear); the summer camp's year; captions; the header line | Now | T44, T09 | open |
+| C3 | Gallery | The consent and removal policy in your words; a consent note on any album that needs its own line; the summer camp's year; captions; the header line | Now | T44, T09 | open; credits done 28 Sep: the owner named the event photographer, Red Carpet Films, as the photographer of all three albums, so each album credits them, confirmed, and the name links to their YouTube channel (ADR 0046) |
 | C4 | Odunde | The 2027 edition (date, hours, cost, venue line, schedule, vendor fees and dates, permit note); the two unnamed zones and each zone's line; plan-your-visit facts; 2026 attendance; partners; "What Odunde is"; confirm six captions' marks | Launch | T38, T05 | open |
 | C5 | Gala | The 2026 edition: date, doors, venue, dress, running order, ticket tiers with prices and what each includes, the Eventbrite link, sponsor levels, honorees | Launch | T38, T03, T06 | open |
 | C6 | Programs | Cadence and ages on each card; Kids & STEM ages and what the STEM Hub builds; everything about Cultural Exchange with two photographs; when each program runs | Launch | T40 | open |
@@ -134,7 +134,7 @@ Answered on 26 September 2026; the spec lists each answer.
 | E16 | Accept Chromatic baselines at 375 and 1440 with the owner | D16 | Launch | QUALITY section 2 | open |
 | E17 | Nightly `content-lint.yml` over the whole dataset | a read-token secret | Launch | QUALITY section 5 | open |
 | E18 | Seed `production`, or move the content there, once D3 is decided | D3 | Launch | HP2 | open |
-| E19 | Add real content through the Sanity MCP with the owner: a news post, an album, a person | E1, MCP sign-in | Launch | Phase 10 | open |
+| E19 | Add real content through the Sanity MCP with the owner: a news post, an album, a person | E1 | Launch | Phase 10 | doing: the claude.ai Sanity connector is signed in as the owner and writes; the album credits went in through it on 28 Sep (C3). The project's own MCP (`.mcp.json`) still needs `/mcp`, which this no longer waits for |
 | E20 | Normalise Yoruba text to NFC on save | none | Later | HP1 | open |
 | E21 | Storybook accessibility checks in CI (a new dependency) | owner's yes | Later | phase 1 ticket 05 | open |
 | E22 | Review leftovers kept on purpose: the mosaic's spans, two caption rules, the Lightbox's closing flags, duplicated swipe code (PR 9); outcome kinds, program anchors, unused ContactBlock variants (HP7); `rowKinds` parsing GROQ, TypeGen unions on four queries (HP6) | none | Later | PR 9, HP6, HP7 | open |

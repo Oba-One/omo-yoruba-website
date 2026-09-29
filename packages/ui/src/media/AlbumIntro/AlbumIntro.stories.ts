@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'astro/types';
+import { LINKED_ALBUM_CREDIT } from '../../fixtures/event-pages';
 import { GALA_ALBUM, GALLERY_PENDING } from '../../fixtures/gallery';
 import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
 import AlbumIntro from './AlbumIntro.astro';
@@ -19,7 +20,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "What an album page says before its photographs: the way back to the gallery and to the edition's page, the photo credit with its chip until confirmed, and the album's consent note when it has one.",
+          "What an album page says before its photographs: the way back to the gallery and to the edition's page, the photo credit with its chip until confirmed and its link to the photographer's page, and the album's consent note when it has one.",
       },
     },
   },
@@ -39,6 +40,15 @@ export const WithoutEdition: Story = {
 /** A confirmed credit, and a consent note in the placeholder form for the owner's words. */
 export const ConfirmedWithNote: Story = {
   args: { confirmed: true, consentNote: '[ What this album says about faces and permission ]' },
+};
+
+/** The credit confirmed and linked to the photographer's page, as the three albums hold it since 28 September 2026. */
+export const LinkedCredit: Story = {
+  args: {
+    credit: LINKED_ALBUM_CREDIT.credit,
+    creditHref: LINKED_ALBUM_CREDIT.href,
+    confirmed: LINKED_ALBUM_CREDIT.confirmed,
+  },
 };
 
 /** No album could be read: no credit line. */

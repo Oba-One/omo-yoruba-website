@@ -12,6 +12,12 @@ import { expect, type Locator, type Page } from '@playwright/test';
 export const PLACEHOLDER_PROJECT = process.env.PUBLIC_SANITY_PROJECT_ID === 'placeholder';
 
 /**
+ * The photographer's page the three albums' credits link to in `development` since 28 September 2026 (ADR 0046): the
+ * dataset's value, not the seed's, so a seeded run expects it and a placeholder run never meets it.
+ */
+export const PHOTOGRAPHER_PAGE = 'https://www.youtube.com/@redcarpetfilmshollywood';
+
+/**
  * The Viewer token the dev server reads, for a spec that signs the draft session as the enable route
  * would (ADR 0044): the process env first (the placeholder command in the runbook sets it empty),
  * else the one variable from `packages/web/.env`, parsed without loading the rest into the test

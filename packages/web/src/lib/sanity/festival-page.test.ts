@@ -379,6 +379,27 @@ describe('buildFestivalPage', () => {
     expect(buildFestivalPage(counted, options).past.attendance).toBe('[ 0 ] people came.');
   });
 
+  it("links the past album's credit to its photographer's page once the Studio holds one (ADR 0046)", () => {
+    expect(buildFestivalPage(seeded, options).past.album?.creditHref).toBeUndefined();
+    const linked = {
+      ...seeded,
+      editions: seeded.editions?.map((event) =>
+        event?.album
+          ? {
+              ...event,
+              album: {
+                ...event.album,
+                creditUrl: 'https://www.youtube.com/@redcarpetfilmshollywood',
+              },
+            }
+          : event,
+      ),
+    } as FestivalPageData;
+    expect(buildFestivalPage(linked, options).past.album?.creditHref).toBe(
+      'https://www.youtube.com/@redcarpetfilmshollywood',
+    );
+  });
+
   it('shows no past album, credit or attendance chip when no past edition has photographs', () => {
     const bare = {
       ...seeded,

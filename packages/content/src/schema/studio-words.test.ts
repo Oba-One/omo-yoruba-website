@@ -77,6 +77,32 @@ function hiddenAlong(type: string, path: string): boolean {
   return false;
 }
 
+/** The fields a field holds: its own, else its named type's. */
+const fieldsOf = (field: Field) =>
+  field.fields ?? (field.type ? TYPES.get(field.type)?.fields : undefined) ?? [];
+
+/** A list's members: its own, else its named array type's (Portable Text's blocks and pull quotes). */
+const membersOf = (field: Field) =>
+  field.of ?? (field.type ? TYPES.get(field.type)?.of : undefined) ?? [];
+
+/**
+ * Whether a path as `RETIRED_FIELDS` writes it ("header.image", "yearStrip[].event") names a field the schema still
+ * has: named types are walked into, and every member of a list is tried.
+ */
+function liveField(type: string, path: string): boolean {
+  let scope = TYPES.get(type)?.fields ?? [];
+  const steps = path.split('.');
+  for (const [at, step] of steps.entries()) {
+    const list = step.endsWith('[]');
+    const name = list ? step.slice(0, -2) : step;
+    const found = scope.filter((field) => field.name === name);
+    if (found.length === 0) return false;
+    if (at === steps.length - 1) return true;
+    scope = (list ? found.flatMap(membersOf) : found).flatMap(fieldsOf);
+  }
+  return false;
+}
+
 describe("the Studio in the site's words", () => {
   it('gives every choice a title, never a raw stored value', () => {
     expect(
@@ -136,7 +162,6 @@ describe('inputs that change nothing are hidden, or gone (ADR 0042)', () => {
     'siteSettings.logo',
     'siteSettings.wordmarkLine2',
     'siteSettings.footerBlurb',
-    'photographer.url',
     'stat.asOf',
     'festivalPage.layout.takepart',
     'galaPage.layout.emphasis',
@@ -145,6 +170,29 @@ describe('inputs that change nothing are hidden, or gone (ADR 0042)', () => {
     expect(find(path), path).toBeUndefined();
     const [type, ...field] = path.split('.');
     expect(RETIRED_FIELDS[type as string], path).toContain(field.join('.'));
+  });
+
+  // The seed and the `retired-fields` migration unset these on every document of the type, so none may be a field
+  // the Studio still has: a name back in use, as the photographer's link is (ADR 0046), leaves the list (R99).
+  it('retires no field the schema still has', () => {
+    const live = Object.entries(RETIRED_FIELDS).flatMap(([type, paths]) =>
+      paths.filter((path) => liveField(type, path)).map((path) => `${type}.${path}`),
+    );
+    expect(live).toEqual([]);
+  });
+
+  it('reads a retired path through named types and every member of a list', () => {
+    for (const [type, path] of [
+      ['photographer', 'url'],
+      ['festivalPage', 'header.image'],
+      ['album', 'photos[].credit'],
+      ['programsPage', 'yearStrip[].when'],
+      ['programsPage', 'kidsStem.subprograms[].name'],
+      ['festivalPage', 'whatItIs[].quote'],
+    ] as const) {
+      expect(liveField(type, path), `${type}.${path}`).toBe(true);
+    }
+    expect(liveField('photographer', 'website')).toBe(false);
   });
 
   it('reads a path as the form shows it on each page', () => {

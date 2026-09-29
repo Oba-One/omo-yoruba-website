@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './AlbumIntro.stories';
 
-const { Default, WithoutEdition, ConfirmedWithNote, Pending } = composeStories(stories);
+const { Default, WithoutEdition, ConfirmedWithNote, LinkedCredit, Pending } =
+  composeStories(stories);
 
 describe('AlbumIntro', () => {
   it("offers the way back to the gallery and to the edition's page, without a back arrow glyph", async () => {
@@ -29,6 +30,14 @@ describe('AlbumIntro', () => {
     );
     expect(text(noted.querySelector('.oy-album-intro-note'))).toBe(
       '[ What this album says about faces and permission ]',
+    );
+  });
+
+  it("links the credit to the photographer's page (ADR 0046)", async () => {
+    const line = (await renderToBody(LinkedCredit)).querySelector('.oy-credit-line');
+    expect(text(line)).toBe('Photographs: Red Carpet Films.');
+    expect(line?.querySelector('a')?.getAttribute('href')).toBe(
+      'https://www.youtube.com/@redcarpetfilmshollywood',
     );
   });
 

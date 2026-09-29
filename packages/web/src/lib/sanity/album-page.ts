@@ -3,11 +3,12 @@
  * page's `?photo=` (`18 Photo Gallery.dc.html`'s album and viewer states, spec Q1, Q9 to Q12 and Q16 of Phase 8,
  * ADR 0037, ADR 0039). Pure, so a test drives it with a fixture: whether the album exists, the slim header with the
  * gallery's kicker, the album's title and its facts (its year, or the year's chip, and the count), the links to the
- * gallery and the edition's page, the credit with its chip and the consent note, the photographs as tiles linking
- * to their photo addresses, the Lightbox's photographs with each one's credit and the photograph served open, the
- * credit and permissions section, and the `data-sanity` attributes in draft mode. Keys, the slug and the `?photo=`
- * value are cleaned of stega before they become an address or a comparison. While the gallery holds the albums
- * (`state: soon`, ADR 0043) the view carries no photograph, only the gallery's soon sentence.
+ * gallery and the edition's page, the credit with its chip, its photographer's link (ADR 0046) and the consent
+ * note, the photographs as tiles linking to their photo addresses, the Lightbox's photographs with each one's
+ * credit and link and the photograph served open, the credit and permissions section, and the `data-sanity`
+ * attributes in draft mode. Keys, the slug, the links and the `?photo=` value are cleaned of stega before they
+ * become an address or a comparison. While the gallery holds the albums (`state: soon`, ADR 0043) the view
+ * carries no photograph, only the gallery's soon sentence.
  */
 import { albumLine, albumYear } from '@oy/content/albums';
 import { withLayoutDefaults } from '@oy/content/layout';
@@ -69,6 +70,7 @@ export function buildAlbumPage(
   const edition = editionPage(cleanText(album?.edition?.kind));
   const soon = held ? soonNotice() : undefined;
   const albumConfirmed = album?.creditConfirmed === true;
+  const albumCreditHref = cleanText(album?.creditUrl);
 
   return {
     found: album !== null,
@@ -101,6 +103,7 @@ export function buildAlbumPage(
     },
     credit: {
       credit: album?.credit ?? undefined,
+      creditHref: albumCreditHref,
       confirmed: albumConfirmed,
       pending: ALBUM_CREDIT_PENDING,
       edit: albumEdit('credit'),
@@ -136,6 +139,7 @@ export function buildAlbumPage(
       album: slug,
       openKey,
       photos: photos.map(({ key, photo, edit: photoEdit }) => {
+        // A credit of its own links only through a photographer of its own, never to the album's.
         const own = cleanText(photo.credit);
         return {
           key,
@@ -143,6 +147,7 @@ export function buildAlbumPage(
           alt: photo.alt ?? '',
           caption: photo.caption ?? undefined,
           credit: own ? photo.credit : (album?.credit ?? undefined),
+          creditHref: own ? cleanText(photo.creditUrl) : albumCreditHref,
           confirmed: own ? photo.creditConfirmed === true : albumConfirmed,
           creditPending: own ? PHOTO_CREDIT_PENDING : ALBUM_CREDIT_PENDING,
           edit: photoEdit,

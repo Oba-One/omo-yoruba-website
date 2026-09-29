@@ -31,12 +31,13 @@ export const galleryPageQuery = defineQuery(`*[_type == "galleryPage" && _id == 
 }`);
 
 /**
- * One album page in one read (ROUTES section 1, ADR 0037, ADR 0039): the album by its slug with its credit and
- * whether the photographer confirmed it, its consent note, its edition's year and kind (the facts line and the
- * link to the edition's page, from the edition it names) and every photograph in order
- * with its alt, caption and any credit of its own; the gallery singleton's kicker, the owner's consent policy and
- * the `captions` option, and the `state` that holds the album's photographs while it is `soon` (ADR 0043); and
- * the settings' general inbox. No album for the slug answers `album: null`, which the route serves as a 404.
+ * One album page in one read (ROUTES section 1, ADR 0037, ADR 0039): the album by its slug with its credit,
+ * the photographer's link (ADR 0046) and whether the photographer confirmed it, its consent note, its edition's
+ * year and kind (the facts line and the link to the edition's page, from the edition it names) and every
+ * photograph in order with its alt, caption and any credit of its own, linked only when that credit names a
+ * photographer, never for a written credit; the gallery singleton's kicker, the owner's consent policy and the
+ * `captions` option, and the `state` that holds the album's photographs while it is `soon` (ADR 0043); and the
+ * settings' general inbox. No album for the slug answers `album: null`, which the route serves as a 404.
  */
 export const albumPageQuery = defineQuery(`{
   "album": *[_type == "album" && slug.current == $slug][0]{
@@ -47,6 +48,7 @@ export const albumPageQuery = defineQuery(`{
     consentNote,
     creditConfirmed,
     "credit": coalesce(credit->defaultCredit, credit->name),
+    "creditUrl": credit->url,
     "edition": event->{"year": edition, kind},
     "photos": photos[]{
       _key,
@@ -57,7 +59,8 @@ export const albumPageQuery = defineQuery(`{
       crop,
       asset,
       creditConfirmed,
-      "credit": coalesce(credit->defaultCredit, credit->name, creditNote)
+      "credit": coalesce(credit->defaultCredit, credit->name, creditNote),
+      "creditUrl": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)
     }
   },
   "page": *[_type == "galleryPage" && _id == "galleryPage"][0]{

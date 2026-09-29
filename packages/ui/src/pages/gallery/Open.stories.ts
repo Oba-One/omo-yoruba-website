@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The `open` option: where an album's tile on the gallery leads, and so how the album page arrives. Under `viewer` (the default) the tile is the album's first photo address, so the album page arrives with the Lightbox open on its first photograph; closing it shows the album's photographs. Under `grid` the tile is the album page. The three albums the dataset holds, and End-of-Year Gala 2025's six photographs with their credit unconfirmed.",
+          "The `open` option: where an album's tile on the gallery leads, and so how the album page arrives. Under `viewer` (the default) the tile is the album's first photo address, so the album page arrives with the Lightbox open on its first photograph; closing it shows the album's photographs. Under `grid` the tile is the album page. The three albums the dataset holds, and End-of-Year Gala 2025's six photographs with their credit as the seed writes it, unconfirmed.",
       },
     },
   },

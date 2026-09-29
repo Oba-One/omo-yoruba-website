@@ -1,9 +1,10 @@
-import { ALBUM_CREDIT_PENDING, pendingWhat } from '@oy/content/pending';
+import { pendingWhat } from '@oy/content/pending';
 import { expect, type Page, type Request, test } from '@playwright/test';
 import {
   axeViolations,
   galleryHeld,
   goldSharingAView,
+  PHOTOGRAPHER_PAGE,
   PLACEHOLDER_PROJECT,
   settle,
   swipe,
@@ -75,7 +76,7 @@ function pageRequests(page: Page): string[] {
 }
 
 test.describe('an album page', () => {
-  test('carries its blocks in order, one h1, the credit owed and nothing open on its own address', async ({
+  test('carries its blocks in order, one h1, its credits and nothing open on its own address', async ({
     page,
   }) => {
     const response = await page.goto(ALBUM);
@@ -117,9 +118,11 @@ test.describe('an album page', () => {
       /End-of-Year Gala/,
     ]);
     await expect(page.locator('.oy-album-intro-links a').last()).toHaveAttribute('href', '/gala');
-    await expect(page.locator('.oy-album-intro .oy-credit-line')).toContainText(
-      `Photographs: Members and volunteers Pending: ${ALBUM_CREDIT_PENDING}`,
-    );
+    // The credit as the dataset holds it since 28 September 2026, not as the seed writes it: confirmed by the
+    // owner, its name linking to the photographer's page (ADR 0046).
+    const albumCredit = page.locator('.oy-album-intro .oy-credit-line');
+    await expect(albumCredit).toHaveText('Photographs: Red Carpet Films.');
+    await expect(albumCredit.locator('a')).toHaveAttribute('href', PHOTOGRAPHER_PAGE);
     await expect(page.locator('.oy-photo-grid a[data-photo]')).toHaveCount(6);
     // A tile reads its caption once: the image beside the same words stays silent.
     await expect(tile(page, KEYS[0] as string).locator('img')).toHaveAttribute('alt', '');
@@ -154,6 +157,24 @@ test.describe('an album page', () => {
     // A held modifier belongs to the browser.
     await page.keyboard.press('Shift+ArrowRight');
     await expect(count(page)).toHaveText('2 of 6');
+  });
+
+  test("keeps focus in the Lightbox when a credit's link has it and the photograph moves (ADR 0046)", async ({
+    page,
+  }) => {
+    if (!(await albumPage(page))) return;
+    await tile(page, KEYS[0] as string).click();
+    await expect(dialog(page)).toHaveAttribute('open', '');
+    // The shown caption's credit link, whichever photograph is on screen.
+    const creditLink = page.locator('.oy-lb-cap > p[data-active="true"] .oy-credit-line a');
+    await creditLink.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(count(page)).toHaveText('2 of 6');
+    await expect(creditLink).toBeFocused();
+    // Focus stayed in the dialog, so the arrows still move it.
+    await page.keyboard.press('ArrowLeft');
+    await expect(count(page)).toHaveText('1 of 6');
+    await expect(creditLink).toBeFocused();
   });
 
   test('Back closes the Lightbox onto the tile of the photograph on screen, Forward reopens it, with no page load', async ({

@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'astro/types';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { LINKED_ALBUM_CREDIT } from '../../fixtures/event-pages';
 import { GALA_ALBUM, GALA_ALBUM_PHOTOS, OWN_CREDIT_PHOTO } from '../../fixtures/gallery';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import Lightbox from './Lightbox.astro';
@@ -64,6 +65,22 @@ export const ConfirmedUnnamed: Story = {
       confirmed: true,
     })),
   },
+};
+
+const linkedPhotos = GALA_ALBUM_PHOTOS.slice(0, 2).map((photo) => ({
+  ...photo,
+  credit: LINKED_ALBUM_CREDIT.credit,
+  creditHref: LINKED_ALBUM_CREDIT.href,
+  confirmed: LINKED_ALBUM_CREDIT.confirmed,
+}));
+
+/** The album's credit confirmed and linked to the photographer's page (ADR 0046): the name a link in the bar. */
+export const LinkedCredit: Story = { ...desktop, args: { photos: linkedPhotos } };
+
+/** A linked credit, then a photograph's own credit with no page: moving on, focus has no link to land on. */
+export const LinkedThenOwnCredit: Story = {
+  ...desktop,
+  args: { photos: [...linkedPhotos.slice(0, 1), OWN_CREDIT_PHOTO] },
 };
 
 /** One photograph: no previous or next. */

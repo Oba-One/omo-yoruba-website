@@ -59,9 +59,10 @@ is `docs/research/online-giving-options.md`.
 4. **Zeffy:** create the donation form, turn on automatic tax receipts, decide on monthly giving, and paste the
    embed URL into Site settings, Zeffy embed URL. Review the Zeffy pull request.
 5. **Invite an Editor account.** The member view, the guide's screenshots and the member test need it.
-6. **Sign in the Sanity MCP** (`/mcp` in an interactive session) for real content (E19).
+6. **Sign in the Sanity MCP** (`/mcp` in an interactive session) for real content (E19). Since 28 September E19
+   no longer waits for it: the claude.ai Sanity connector writes as the owner.
 7. **The gallery's facts (C3):** the event photographer's name as each album's credit should read, and the consent
-   policy in your words.
+   policy in your words. The credits were done on 28 September (Red Carpet Films, ADR 0046); the policy remains.
 8. **Decide:** R47, R110, R142 (a repository setting) and R143; D2, D7, D11 and D15 as wanted.
 9. **Confirm** pull request 15's three 404 doors (the homepage, Get Involved, Programs), or name others.
 10. **E1:** prove that a publish purges a page, with the runbook's probe.

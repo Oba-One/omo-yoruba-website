@@ -17,8 +17,8 @@
  * closes it and Forward reopens it: the site layout's history guard hands a traverse between two addresses of
  * this album page to the element (`window.oyHistoryGuard`) before the router would fetch the page again, and
  * without the layout the element hears `popstate` itself. Focus returns to the tile of the photograph on
- * screen. Each move announces the count and the
- * caption; a photograph that fails to load shows its caption in the frame; opening announces
+ * screen. Each move announces the count and the caption, and focus on a credit's link moves to the shown
+ * caption's link (ADR 0046); a photograph that fails to load shows its caption in the frame; opening announces
  * `lightbox_opened`, held until the page has parsed when the page arrives open, so the site's listener hears
  * it. The frame fades in over 0.2s, not at all under reduced motion. Each frame carries its photograph's
  * `data-sanity` attribute, since a photo address covers the tiles that carry it too.
@@ -35,6 +35,8 @@ export interface LightboxPhoto {
   caption?: string | null;
   /** The photograph's own credit, else the album's. */
   credit?: string | null;
+  /** That credit's photographer's page, which its name links to (ADR 0046). */
+  creditHref?: string | null;
   confirmed?: boolean | null;
   /** The registry's wording while that credit is unconfirmed. */
   creditPending?: string;
@@ -150,6 +152,7 @@ const creditShown = (photo: LightboxPhoto) =>
               <CreditLine
                 as="span"
                 credit={photo.credit}
+                href={photo.creditHref}
                 confirmed={photo.confirmed}
                 pending={photo.creditPending}
               />
@@ -237,6 +240,10 @@ const creditShown = (photo: LightboxPhoto) =>
 
       const show = (index) => {
         const to = wrap(index);
+        // Focus on a credit's link (ADR 0046) would vanish with its caption and leave the dialog, and the arrows
+        // with it: it moves to the shown caption's link, else to the next control.
+        const from = captions[state.current];
+        const carried = from !== captions[to] && Boolean(from && from.contains(document.activeElement));
         frames.forEach((frame, at) => {
           if (at === to) {
             if (frame.hidden) {
@@ -253,6 +260,10 @@ const creditShown = (photo: LightboxPhoto) =>
           if (at === to) caption.dataset.active = 'true';
           else delete caption.dataset.active;
         });
+        if (carried) {
+          const target = (captions[to] && captions[to].querySelector('a[href]')) || next || prev;
+          if (target) target.focus({ preventScroll: true });
+        }
         if (count) count.textContent = frames[to].dataset.position || '';
         if (prev) prev.setAttribute('href', addressFor(keys[wrap(to - 1)]));
         if (next) next.setAttribute('href', addressFor(keys[wrap(to + 1)]));

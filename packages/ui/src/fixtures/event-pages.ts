@@ -277,9 +277,16 @@ export const GALA_PAST_SLIDES = [
   slide('gala-2025-attendees-getting-food', PHOTOS.galaGettingFood),
 ];
 
-/** The albums' credits as the dataset holds them, neither confirmed yet. */
+/** The albums' credits as the seed writes them, the register's guesses, neither confirmed. */
 export const ODUNDE_ALBUM_CREDIT = { credit: 'Red Carpet Media', confirmed: false };
 export const GALA_ALBUM_CREDIT = { credit: 'Members and volunteers', confirmed: false };
+
+/** The three albums' credit since 28 September 2026: confirmed, the name linking to the photographer's page (ADR 0046). */
+export const LINKED_ALBUM_CREDIT = {
+  credit: 'Red Carpet Films',
+  confirmed: true,
+  href: 'https://www.youtube.com/@redcarpetfilmshollywood',
+};
 
 export const GALA_HEADER = {
   kicker: { yo: 'Àsè ọdún', en: "The year's celebration" },

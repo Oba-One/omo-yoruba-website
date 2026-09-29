@@ -751,6 +751,12 @@ export const photographer = defineType({
       description: 'As printed under a photo.',
       validation: voice.text,
     }),
+    defineField({
+      name: 'url',
+      title: 'Link',
+      type: 'url',
+      description: 'Their own page. The name in their credits links to it.',
+    }),
   ],
   preview: { select: { title: 'name', subtitle: 'defaultCredit' } },
 });

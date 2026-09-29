@@ -129,6 +129,8 @@ interface AlbumLike {
   _id: string;
   creditConfirmed: boolean | null;
   credit: string | null;
+  /** The photographer's page, which the credit's name links to (ADR 0046). */
+  creditUrl: string | null;
   photos: ({ _key: string; alt: string | null; caption: string | null } & ImageLike)[] | null;
 }
 
@@ -138,8 +140,8 @@ const hasPhotos = (event: { album?: AlbumLike | null }) => (event.album?.photos?
 /**
  * Past years (Phase 5 spec, Q8): the newest past edition of the kind with photographs, and the `view` of
  * its album the carousel and the credit line take: each photograph resolved at the stage's width with
- * its alt and caption, the registry's wording for no album, and the credit with its confirmation and
- * the edit attribute on the album.
+ * its alt and caption, the registry's wording for no album, and the credit with its confirmation, its
+ * photographer's link and the edit attribute on the album.
  */
 export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }>(
   editions: readonly T[],
@@ -165,6 +167,7 @@ export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }
       album: album
         ? {
             credit: album.credit ?? undefined,
+            creditHref: cleanText(album.creditUrl),
             confirmed: album.creditConfirmed === true,
             pending: ALBUM_CREDIT_PENDING,
             edit: edit('photos', album._id, 'album'),

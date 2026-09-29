@@ -5,8 +5,8 @@ import { defineQuery } from 'groq';
  * actions, glance facts, Portable Text, plan-your-visit facts and take-part rows; every festival edition with the
  * facts the page reads (the page picks the next one and the past one, ADR 0024), its schedule with
  * the zone names, its vendor terms and attendance, and the first eight photographs of its album (the
- * first album made that names the edition and holds a photograph, ADR 0042) with the album's credit;
- * the zones in order; the partners scoped to Odunde. Images project the
+ * first album made that names the edition and holds a photograph, ADR 0042) with the album's credit and its
+ * photographer's link (ADR 0046); the zones in order; the partners scoped to Odunde. Images project the
  * asset reference, the hotspot and the crop, never a URL string (ADR 0022). Layout values come back
  * as stored; the page fills the schema defaults (`withLayoutDefaults`). The gallery's `state` comes
  * too: while it holds the albums, past years show no photograph (ADR 0043).
@@ -48,6 +48,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
       "slug": slug.current,
       creditConfirmed,
       "credit": coalesce(credit->defaultCredit, credit->name),
+      "creditUrl": credit->url,
       "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}
     }
   },
@@ -120,6 +121,7 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
       "slug": slug.current,
       creditConfirmed,
       "credit": coalesce(credit->defaultCredit, credit->name),
+      "creditUrl": credit->url,
       "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}
     }
   },

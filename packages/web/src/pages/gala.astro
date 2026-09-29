@@ -185,6 +185,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
           {page.past.album && (
             <CreditLine
               credit={page.past.album.credit}
+              href={page.past.album.creditHref}
               confirmed={page.past.album.confirmed}
               pending={page.past.album.pending}
             />

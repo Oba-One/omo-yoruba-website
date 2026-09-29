@@ -1,5 +1,7 @@
 # The gallery's content model: an album's year, what the gallery shows, and the owner's policy
 
+Amended by ADR 0046: a credit's name links to its photographer's page when the Studio holds one.
+
 Decided with the owner on 13 September 2026 (Phase 8 grill, `docs/tickets/phase-8/spec.md`, Q4 to Q16). The
 gallery is the page most full of identifiable faces, children's included, and it had the least content the
 owner has confirmed: three seeded albums without a date or a confirmed credit, captions that are the

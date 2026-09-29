@@ -1,5 +1,7 @@
 # The Studio follows the site: roles, held-back switches, one place per fact and a To do view
 
+Amended by ADR 0046: the photographer's link is no longer retired, since the credit's name now links to it.
+
 Decided with the owner on 26 September 2026 in the weeks 1 and 2 decisions session
 (`docs/tickets/studio-simplification/spec.md`), from the Studio review of 13 September (open-work section 3)
 and the four-week plan's principles for the Studio. Members of the organization manage the site's content after
