@@ -331,8 +331,9 @@ The photograph an album shows on its tile on the gallery; the album's first phot
 _Avoid_: thumbnail, hero image
 
 **Photo credit**:
-Who took an album's photographs, printed as "Photographs:" and the name, with its chip until the photographer
-confirms it. A photograph carries its own only where it differs from the album's.
+Who took an album's photographs, printed as "Photographs:" and the name, with its chip until the owner confirms
+it; the name links to the photographer's page when the Studio holds one (ADR 0046). A photograph carries its own
+only where it differs from the album's.
 _Avoid_: attribution, byline, copyright line
 
 **Consent note**:

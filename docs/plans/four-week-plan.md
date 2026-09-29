@@ -78,7 +78,8 @@ Agent sessions (Phase 10 for the simplified Studio):
   screenshots.
 - Refresh the `oy-content-ops` and `oy-release` skills to match.
 - Set up the roles the owner chose, and the preview host if D15 says yes.
-- Once the Sanity MCP is signed in, add real content from the owner's instructions (E19).
+- Add real content from the owner's instructions through the Sanity MCP (E19); the claude.ai connector writes as
+  the owner, so this does not wait for `/mcp` (28 September).
 
 The owner, with one or two members:
 - **A usability test.** Each member does the five common tasks with the guide, and the owner notes where they

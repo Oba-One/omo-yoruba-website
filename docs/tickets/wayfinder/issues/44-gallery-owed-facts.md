@@ -45,3 +45,10 @@ recipe and the gallery policy are in `oy-content-ops`):
   behind the prepared-albums sentence (since ADR 0043 it also holds the album pages' photographs and the event
   pages' past photographs). Ticket 37's answers 2 to 5 (the carousel's dots, chevrons, count and eight
   photographs) are still yours.
+
+## Comments
+
+- 28 September 2026: the credits are done. The owner named the event photographer, Red Carpet Films, as the
+  photographer of all three albums; each album credits them, confirmed, with the name linking to their YouTube
+  channel (ADR 0046). Consent was confirmed on 27 September (open-work D5). The policy in the owner's words, the
+  general inbox, the summer camp's year, the captions and the header line remain.

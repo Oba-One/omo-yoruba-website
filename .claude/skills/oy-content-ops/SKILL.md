@@ -5,8 +5,9 @@ description: Recipes for adding or changing site content through the Sanity MCP 
 
 # Content operations
 
-The owner adds content from a Claude Code session through the Sanity MCP server in
-`.mcp.json` (OAuth on first use). Shapes come from the schema in `@oy/content`; the decisions
+The owner adds content from a Claude Code session through the Sanity MCP server: the project's own in
+`.mcp.json` (OAuth on first use), or the same server as the claude.ai Sanity connector, signed in as the
+owner (it wrote the album credits on 28 September 2026). Shapes come from the schema in `@oy/content`; the decisions
 that shaped it are ADR 0013 to ADR 0017. Editor-facing version: `docs/content-ops.md`
 (Phase 10). Copy rules: the `oy-voice` skill. The site and the Studio read `development` until
 the owner settles the datasets (open-work D3); the seed (`bun seed`) fills it with the confirmed
@@ -48,8 +49,9 @@ rather than duplicates. Ids never contain a period.
   under past years the first album made that names it and holds a photograph; `date` only when there is no
   edition or the day matters), the cover
   (else the first photograph shows), photos in the order the album page and the Lightbox show them, each with
-  `alt` (who, doing what, where) and a caption, the album-level `credit` (a `photographer` document),
-  `creditConfirmed` only once the photographer confirms, and a `consentNote` for anything specific to the
+  `alt` (who, doing what, where) and a caption, the album-level `credit` (a `photographer` document, whose
+  `url` the credit's name links to, ADR 0046), `creditConfirmed` only on the owner's word, and a
+  `consentNote` for anything specific to the
   album's faces. A photo sets its own `credit` or `creditNote` only where it differs. Each photo's `_key` is its
   photo address (`/gallery/<slug>?photo=<key>`, ADR 0037): keep the key when replacing an image so shared links
   still open it. The gallery shows an album only with a photograph, newest year first (ADR 0039); an album with

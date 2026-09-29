@@ -165,6 +165,9 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   form, Every.org and Give Lively, ranked with sources (27 September 2026).
 - Consent for faces (D5): the organization has consent; its event photographer took the photographs (27 September
   2026). `development` holds the real content through launch, and `production` is made private (D3, the same day).
+- [A photo credit links to the photographer's page](../adr/0046-a-photo-credit-links-to-the-photographers-page.md):
+  the three albums credit the event photographer, Red Carpet Films, confirmed, the name linking to their YouTube
+  channel (28 September 2026). A later album's photographer is the owner's word again.
 
 ## Frontier
 
@@ -181,7 +184,7 @@ open-work row and priority. Details in each ticket.
 | 11 | Storybook hosting: separate Vercel project or a path under the site | A shareable Storybook (D20: Later) |
 | 02 | EIN, mailing address, phone, routing email per enquiry kind | Enquiry routing and the organization's facts on every page (C1: Now); tickets 38, 42 and 44 |
 | 05 | The two unnamed festival zones | Odunde's zones (C4: Launch) |
-| 09 | Photo credits to confirm: the event photographer's name as each album's credit should read | The gallery's credits (C3: Now) |
+| 09 | The summer camp's year (the credits were confirmed on 28 September, ADR 0046) | The summer camp album's year (C3: Now) |
 | 03 | Zeffy embed URL and Eventbrite event URL | The Give Dialog's form (C1: Now) and the Gala's ticket buttons (C5: Launch); Zeffy, embedded, chosen on 27 September from `docs/research/online-giving-options.md` |
 | 25 | Create the Sanity webhook on the public host | Edits on the site within a minute (E1: Now): one exists on the stand-in host; the purge check and the move with D2 remain |
 | 27 | Put the recap post's title back to "Odunde 2026: the recap" in `development` | The homepage's news card (C2: Now) |
@@ -196,7 +199,7 @@ open-work row and priority. Details in each ticket.
 | 38 | The event pages' owed facts (Odunde 2027, Gala 2026, albums) | Their Pending chips (C4, C5: Launch) |
 | 40 | The program pages' owed facts (the teacher, the Lessons answers, the initiatives, the Collective's argument and voice) | Their Pending chips (C6 to C8: Launch) |
 | 42 | The trust pages' owed facts (the EIN and contacts, sources, outcomes, governance, people, the Zeffy form, giving levels) | Their Pending chips (C9 to C12: Launch) |
-| 44 | The gallery's owed facts (the consent policy, the general inbox, the credits, the summer camp's year, captions; consent for faces is settled, D5) | Its Pending chips (C3: Now) |
+| 44 | The gallery's owed facts (the consent policy, the general inbox, the summer camp's year, captions, the header line; consent for faces is settled, D5, and the credits, ADR 0046) | Its Pending chips (C3: Now) |
 | 07 | Our Story's timeline: show it once its entries are confirmed, keep it hidden, or drop it | The timeline block (D21: Later) |
 | 10 | Old site URLs for redirects | The redirects (D18, E11: Launch) |
 | 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | The enforced CSP (D13, E9: Launch) |

@@ -14,3 +14,7 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+- 28 September 2026: the RETIRED_FIELDS half is done with the photo credit link (ADR 0046), the first time a
+  retired name came back into use. `studio-words.test.ts` now walks every RETIRED_FIELDS path against the schema,
+  through named types and every member of a list, and fails when one is live. The LINT_TYPES half remains.

@@ -24,3 +24,8 @@ Studio's To do lists each one by page. Before launch they need, in the Studio:
   `agbada` in four (Gala 2025, two in Odunde 2026, Summer Camp), `fila` (Summer Camp), `shekere` and
   `akara` (Odunde 2026). Write agbádá, fìlà, ṣẹ̀kẹ̀rẹ̀ and àkàrà in the Studio; the seed marks them now
   but fills only missing fields, and `bun seed -- --replace` would overwrite every edit.
+
+## Comments
+
+- 28 September 2026: both albums' credits are done. The owner named the event photographer, Red Carpet Films, for
+  all three albums; each credit is confirmed, and the name links to their YouTube channel (ADR 0046).
