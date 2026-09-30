@@ -56,8 +56,9 @@ describe('enquiry', () => {
 describe('singletons and documents', () => {
   const names = documentTypes.map((type) => type.name);
 
-  it('registers the thirteen singletons, galleryPage among them', () => {
-    expect(SINGLETON_NAMES).toHaveLength(13);
+  it('registers the twelve singletons, galleryPage among them and no News page (ADR 0048)', () => {
+    expect(SINGLETON_NAMES).toHaveLength(12);
+    expect(SINGLETON_NAMES).not.toContain('newsPage');
     expect(SINGLETON_NAMES).toContain('galleryPage');
     expect(SINGLETON_NAMES).not.toContain('gallerySettings');
     for (const name of SINGLETON_NAMES) expect(names).toContain(name);
@@ -73,7 +74,6 @@ describe('singletons and documents', () => {
       'program',
       'person',
       'testimonial',
-      'newsPost',
       'album',
       'photographer',
       'partner',

@@ -352,8 +352,8 @@ facts; the settings with drastic effects are an administrator's (ADR 0042).
 _Avoid_: user, editor (the role's name), volunteer (a person group)
 
 **Administrator**:
-The owner and whoever they trust with Organization details, the News page, the Inbox, the Vision tool and the
-held-back switches.
+The owner and whoever they trust with Organization details, the Inbox, the Vision tool and the held-back
+switches.
 _Avoid_: admin user, superuser, owner (one person; there may be more administrators)
 
 **Member voice**:

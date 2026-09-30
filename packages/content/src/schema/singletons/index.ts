@@ -3,7 +3,6 @@ import { EVENT_LIST_TITLES } from '../../edition-fields';
 import { OTHER_WAY_KINDS, OTHER_WAY_TITLES } from '../../giving';
 import { PAGE_LAYOUTS } from '../../layout-options';
 import { COLLECTIVE_NAME, EVENT_PAGE_NAMES } from '../../routes';
-import { forMembers } from '../../studio/roles';
 import { voice } from '../../validation/rules';
 import { facts, itemList, refs, text } from '../helpers';
 import { definePage } from './page';
@@ -92,7 +91,6 @@ export const homepage = definePage({
       type: 'bilingual',
       description: 'Yoruba first, then the English sense. Empty hides the line.',
     }),
-    text('newsIntro', 'News intro', 2),
     defineField({
       name: 'yearInLife',
       title: 'A year in the life',
@@ -637,16 +635,6 @@ export const galleryPage = definePage({
   layout: PAGE_LAYOUTS.galleryPage,
 });
 
-// No News page before launch (D22), so only an administrator changes it (studio/roles.ts).
-export const newsPage = definePage({
-  name: 'newsPage',
-  title: 'News & Events page',
-  actions: false,
-  fields: [],
-  layout: PAGE_LAYOUTS.newsPage,
-  readOnly: forMembers,
-});
-
 export const singletonTypes = [
   siteSettings,
   homepage,
@@ -660,7 +648,6 @@ export const singletonTypes = [
   storyPage,
   donatePage,
   galleryPage,
-  newsPage,
 ];
 
 /** The fixed document id of each singleton is its type name. */

@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 // The homepage blocks in the prototype's order (ROUTES section 4), each present whether the
 // Studio holds its content or renders Pending (CI runs with a placeholder project, so every read
 // answers null): the hero with one h1, the stat strip, the event band, programs, member voices,
-// news, the year in the life, raise your hand, and the footer. The doors open the Enquiry Modal.
+// the year in the life, raise your hand, and the footer. The doors open the Enquiry Modal.
 test.describe('the homepage', () => {
   test('carries every block in order, one h1 and nothing open on load', async ({ page }) => {
     await page.goto('/');
@@ -15,7 +15,7 @@ test.describe('the homepage', () => {
         .map((el) => el.id || el.className.split(' ')[0])
         .join(' '),
     );
-    expect(order).toBe('top impact lead-event programs voices news gallery get-involved');
+    expect(order).toBe('top impact lead-event programs voices gallery get-involved');
     await expect(page.locator('header.v2-hero .v2-hero-scrim')).toHaveCount(1);
     await expect(page.locator('#lead-event.oy-event-band')).toHaveCount(1);
     await expect(page.locator('#programs [data-columns="3"]')).toHaveCount(1);

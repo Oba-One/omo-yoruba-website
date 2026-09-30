@@ -1,6 +1,6 @@
 ---
 name: oy-content-ops
-description: Recipes for adding or changing site content through the Sanity MCP server. Use when the owner asks to add a news post, an event edition, an album, a person, an outcome, a governance document, a giving level, or to clear a Pending item.
+description: Recipes for adding or changing site content through the Sanity MCP server. Use when the owner asks to add an event edition, an album, a person, an outcome, a governance document, a giving level, or to clear a Pending item.
 ---
 
 # Content operations
@@ -28,11 +28,6 @@ rather than duplicates. Ids you create never contain a period.
 
 ## Recipes
 
-- **News post**: `newsPost` draft with title, slug, date (the first of the month when only the
-  month is known), bilingual kicker (Yoruba with marks, English), summary, image from an existing
-  asset or a new upload with `alt`, and tags. No body or author: there is no News page before
-  launch, so the Studio hides both (ADR 0042). Run the voice check. Publish, or leave as a draft
-  for review.
 - **Event edition**: drafts, published on the announce day; no Content Release (ADR 0042). The
   `event` with its kind, dates, venue and what its kind's form shows (`edition-fields.ts`): cost,
   schedule rows and vendor terms for the festival; doors, dress, tickets link and running order for

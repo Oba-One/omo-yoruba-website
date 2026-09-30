@@ -30,7 +30,6 @@ export type PageKey =
   | 'collective'
   | 'involved'
   | 'impact'
-  | 'news'
   | 'gallery'
   | 'about';
 
@@ -42,7 +41,6 @@ const PAGE_KEYS: ReadonlyArray<[prefix: string, key: PageKey]> = [
   ['/programs', 'programs'],
   ['/get-involved', 'involved'],
   ['/impact', 'impact'],
-  ['/news', 'news'],
   ['/gallery', 'gallery'],
   ['/our-story', 'about'],
 ];

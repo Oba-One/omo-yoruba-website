@@ -3,6 +3,7 @@ import type { Migration } from './core';
 import { inlineListsMigration } from './inline-lists';
 import { oneControlMigration } from './one-control';
 import { retiredFieldsMigration } from './retired-fields';
+import { retiredTypesMigration } from './retired-types';
 import { scopesMigration } from './scopes';
 import { teacherGroupMigration } from './teacher-group';
 
@@ -12,6 +13,7 @@ export const MIGRATIONS: readonly Migration[] = [
   inlineListsMigration,
   oneControlMigration,
   retiredFieldsMigration,
+  retiredTypesMigration,
   scopesMigration,
   teacherGroupMigration,
 ];

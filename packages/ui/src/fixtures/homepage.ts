@@ -110,34 +110,6 @@ export const PROGRAMS = [
 ];
 
 /** The three posts oldest first, as the homepage lists them, with the page each is tagged to. */
-export const NEWS = [
-  {
-    _id: 'news-odunde-2026-recap',
-    title: 'Odunde 2026: the recap',
-    slug: 'odunde-2026-recap',
-    date: '2026-07-01',
-    summary:
-      'Four zones, one village. Photos, video, and the numbers from our biggest festival yet.',
-    href: '/odunde',
-  },
-  {
-    _id: 'news-language-lessons-fall-term',
-    title: 'Language Lessons fall term',
-    slug: 'language-lessons-fall-term',
-    date: '2026-08-01',
-    summary: 'New learners welcome. Write to the teacher to find a time that suits your family.',
-    href: '/programs/yoruba-lessons',
-  },
-  {
-    _id: 'news-end-of-year-gala-2026',
-    title: 'End-of-Year Gala',
-    slug: 'end-of-year-gala-2026',
-    date: '2026-11-01',
-    summary: 'An evening of culture, community, and celebration. Tables available now.',
-    href: '/gala',
-  },
-];
-
 export const TILES = [
   { image: PHOTOS.processionZoomed, caption: 'Ọdúndé • Festival day at Leimert Park' },
   { image: PHOTOS.vendorSuya, caption: 'Oúnjẹ • Festival food at Ọjà Balógun' },

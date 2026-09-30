@@ -202,8 +202,4 @@ export const PAGE_LAYOUTS = {
       heldBack: true,
     },
   ],
-  newsPage: [
-    { name: 'order', title: 'Order', options: ['events-led', 'feed-led'] },
-    { name: 'filtersShown', title: 'Filters', options: ['shown', 'hidden'] },
-  ],
 } satisfies Record<string, readonly LayoutSpec[]>;

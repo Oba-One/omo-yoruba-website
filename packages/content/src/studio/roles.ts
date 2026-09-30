@@ -19,13 +19,12 @@ export const forMembers: ConditionalPropertyCallback = ({ currentUser }) =>
 export const ADMIN_TOOLS: ReadonlySet<string> = new Set(['vision']);
 
 /**
- * Documents only administrators change: the site settings, the News page, which has no page yet
- * (D22), and the Inbox's enquiries and subscribers. Members do not find them in the sidebar or the
+ * Documents only administrators change: Organization details (`siteSettings`) and the Inbox's
+ * enquiries and subscribers. Members do not find them in the sidebar or the
  * to-do list, open them read-only anywhere else, and get no actions on them.
  */
 export const ADMIN_ONLY_TYPES: ReadonlySet<string> = new Set([
   'siteSettings',
-  'newsPage',
   'enquiry',
   'subscriber',
 ]);

@@ -796,7 +796,7 @@ export const PENDING: readonly PendingEntry[] = [
   },
   ...takePartRows('storyPage', 'Our Story, take part'),
 
-  // Gallery. No News page before launch, so a post owes no body (ADR 0042).
+  // Gallery.
   {
     type: 'album',
     condition: 'creditConfirmed != true',

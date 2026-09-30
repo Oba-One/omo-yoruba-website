@@ -15,9 +15,9 @@ import { ORGANIZATION } from './todo';
 import { todoItem } from './todo-list';
 
 /*
- * The sidebar follows the site (ADR 0042, its names ADR 0047; the tree in
- * docs/tickets/studio-simplification/spec.md): To do, News posts, Events, Photos, People, Pages.
- * Administrators also get Organization details, the News page and the Inbox (`studio/roles.ts`).
+ * The sidebar follows the site (ADR 0042, its names ADR 0047, no news ADR 0048; the tree in
+ * docs/tickets/studio-simplification/spec.md): To do, Events, Photos, People, Pages.
+ * Administrators also get Organization details and the Inbox (`studio/roles.ts`).
  */
 
 const FESTIVAL_LISTS = ['zone'];
@@ -58,7 +58,6 @@ const LIST_TITLES: Readonly<Record<string, string>> = {
 
 /** Every type the tree places; a type added later and placed nowhere still shows at the end. */
 const PLACED: ReadonlySet<string> = new Set([
-  'newsPost',
   'event',
   ...FESTIVAL_LISTS,
   ...GALA_LISTS,
@@ -155,7 +154,7 @@ function singletonItem(S: StructureBuilder, type: string, title: string) {
 }
 
 /** Each page opens its document; a page that lists documents of its own opens them beside it. */
-function pagesItem(S: StructureBuilder, administrator: boolean) {
+function pagesItem(S: StructureBuilder) {
   const pages = SITE_PAGES.map(({ type, title }) => {
     const lists = PAGE_LISTS[type];
     if (!lists) return singletonItem(S, type, title);
@@ -172,17 +171,10 @@ function pagesItem(S: StructureBuilder, administrator: boolean) {
           ]),
       );
   });
-  // No News page before launch (D22): only an administrator changes its document.
-  const news = administrator ? [singletonItem(S, 'newsPage', 'News & Events page')] : [];
   return S.listItem()
     .id('pages')
     .title('Pages')
-    .child(
-      S.list()
-        .id('pages')
-        .title('Pages')
-        .items([...pages, ...news]),
-    );
+    .child(S.list().id('pages').title('Pages').items(pages));
 }
 
 function inboxItem(S: StructureBuilder) {
@@ -234,12 +226,11 @@ export const structure: StructureResolver = (S, context) => {
     .items([
       todoItem(S, context, administrator),
       S.divider(),
-      S.documentTypeListItem('newsPost').title('News posts'),
       eventsItem(S),
       typesItem(S, 'photos', 'Photos', PHOTOS),
       typesItem(S, 'people', 'People', PEOPLE),
       S.divider(),
-      pagesItem(S, administrator),
+      pagesItem(S),
       ...(forAdministrators.length > 0 ? [S.divider(), ...forAdministrators] : []),
       ...S.documentTypeListItems().filter((item) => {
         const id = item.getId() ?? '';

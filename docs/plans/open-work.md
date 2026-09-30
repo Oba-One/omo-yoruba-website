@@ -39,7 +39,7 @@ ticket holds the detail, the row links it and stays one line. New work goes into
 | D19 | The photo carousel's remaining answers (dots as tabs, drawn chevrons, the count's case, eight photographs) | The rules' answers | Styling only | Later | T37, ADR 0027 | open |
 | D20 | Storybook hosting | A separate Vercel project | A shareable component library | Later | T11 | open |
 | D21 | Our Story's timeline shown by default | Hidden until its entries are confirmed | The timeline block | Later | T07 | open |
-| D22 | News: a feed or a single kept list | Not built | Page 17 | Later | T08 | open: no News page before launch (26 Sep); the feed or list question waits |
+| D22 | News: a feed or a single kept list | Not built | Page 17 | Later | T08 | decided 30 Sep: no news at all (ADR 0048) |
 | D23 | Accept the em dash lint exemption for `docs/design/` | Exempt | Tooling only | Later | T18 | open |
 | D24 | A second Donate door for organizations beside "Partner or sponsor" | One door | Larger gifts | Later | T42, ADR 0034 | open |
 
@@ -63,7 +63,7 @@ To do until it is filled (the To do reads drafts). The launch gate
 | C10 | Impact | A source for each headline figure; How we work; four outcomes; 2026 attendance and vendors hosted; the 2027 cost; three voices; the Form 990, annual report and audit; partners and funders; confirm the captions | Launch | T42 | open |
 | C11 | Our Story | The 1997 story, the founders, the first year, the earliest photograph; timeline entries; the board, staff and volunteers | Launch | T42, T07 | open |
 | C12 | Donate | The Zeffy form itself and its embed address in Organization details (Zeffy stays, decided 27 Sep from `docs/research/online-giving-options.md`, ADR 0045); how the form handles fees, and whether it offers monthly giving and emails receipts; then the give-now blurb and the Gala's give row, Studio content that still promises monthly giving (the blurb an emailed receipt too, R38); the larger-scale intro; giving levels with what each pays for; other ways to give; the tax line | Launch | T42, T03 | open |
-| C13 | News | Waits for the cadence decision | Later | T08 | open |
+| C13 | News | None: the site has no news (ADR 0048) | Later | T08 | dropped (30 Sep) |
 
 ## 3. The Studio, simplified for members
 
@@ -116,6 +116,7 @@ Answered on 26 September 2026; the spec lists each answer.
 
 | # | Change | What a member gains | What changes in code | Size | Status |
 | --- | --- | --- | --- | --- | --- |
+| S17 | No news (ADR 0048): the news types, the News page, the `/news` routes and the homepage's News & events section go; `retired-types` deletes the three posts after the merge | Nothing to maintain that the site never shows | Schema, queries, the homepage, the seed, a migration, tests | M | doing |
 | S16 | Names members look for: no "Used on several pages" (programs, ways to get involved, headline figures and partners open beside their pages), Organization details for Site settings, the Collective in full, plural list titles, "way to get involved" and "member voice", the To do's leftover words | Finds each thing where the site shows it, under the site's words | The structure, type titles and registry wording; tests (ADR 0047) | S | doing |
 
 ## 4. Engineering and polish
@@ -140,7 +141,7 @@ Answered on 26 September 2026; the spec lists each answer.
 | E16 | Accept Chromatic baselines at 375 and 1440 with the owner | D16 | Launch | QUALITY section 2 | open |
 | E17 | Nightly `content-lint.yml` over the whole dataset | a read-token secret | Launch | QUALITY section 5 | open |
 | E18 | Seed `production`, or move the content there, once D3 is decided | D3 | Launch | HP2 | open |
-| E19 | Add real content through the Sanity MCP with the owner: a news post, an album, a person | E1 | Launch | Phase 10 | doing: the claude.ai Sanity connector is signed in as the owner and writes; the album credits went in through it on 28 Sep (C3). The project's own MCP (`.mcp.json`) still needs `/mcp`, which this no longer waits for |
+| E19 | Add real content through the Sanity MCP with the owner: an album, a person (no news, ADR 0048) | E1 | Launch | Phase 10 | doing: the claude.ai Sanity connector is signed in as the owner and writes; the album credits went in through it on 28 Sep (C3). The project's own MCP (`.mcp.json`) still needs `/mcp`, which this no longer waits for |
 | E20 | Normalise Yoruba text to NFC on save | none | Later | HP1 | open |
 | E21 | Storybook accessibility checks in CI (a new dependency) | owner's yes | Later | phase 1 ticket 05 | open |
 | E22 | Review leftovers kept on purpose: the mosaic's spans, two caption rules, the Lightbox's closing flags, duplicated swipe code (PR 9); outcome kinds, program anchors, unused ContactBlock variants (HP7); `rowKinds` parsing GROQ, TypeGen unions on four queries (HP6) | none | Later | PR 9, HP6, HP7 | open |

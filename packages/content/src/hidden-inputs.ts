@@ -1,8 +1,8 @@
 import { EDITION_FIELDS, editionFieldShown } from './edition-fields';
 
 /**
- * The inputs the Studio hides (ADR 0042): for good, kept for a later use (a news post's body and author
- * for a News page, the sharing image for link previews) or carried by a shared object that shows them
+ * The inputs the Studio hides (ADR 0042): for good, kept for a later use (the sharing image for link
+ * previews) or carried by a shared object that shows them
  * elsewhere (the header photo, a photograph's own credit); and on an event, the inputs its kind's pages
  * never read (`edition-fields.ts`). The content-lint function skips what this module names, so the
  * wording to check never names an input nobody can open; the schema reads its page-dependent rules
@@ -30,7 +30,6 @@ const PHOTO_CREDIT_FIELDS: ReadonlySet<string> = new Set([
  */
 export function hiddenForGood(documentType: string, fields: readonly string[]): boolean {
   const [first, second] = fields;
-  if (documentType === 'newsPost' && (first === 'body' || first === 'author')) return true;
   if (fields.some((field, at) => field === 'ogImage' && fields[at - 1] === 'seo')) return true;
   if (first === 'header' && second === 'image' && !headerPhotoShown(documentType)) return true;
   // Both of the rest sit inside an object, never at the top of a document: a sourced figure's

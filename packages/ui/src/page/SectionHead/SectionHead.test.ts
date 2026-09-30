@@ -34,7 +34,7 @@ describe('SectionHead', () => {
   });
 
   it('renders a single English kicker, or none', async () => {
-    expect(text((await renderToBody(SingleKicker)).querySelector('.oy-kicker'))).toBe('Stay close');
+    expect(text((await renderToBody(SingleKicker)).querySelector('.oy-kicker'))).toBe('Join us');
     expect((await renderToBody(NoKicker)).querySelector('.oy-kicker')).toBeNull();
   });
 

@@ -608,56 +608,6 @@ export const testimonial = defineType({
   preview: { select: { title: 'name', subtitle: 'relation' } },
 });
 
-export const newsPost = defineType({
-  name: 'newsPost',
-  title: 'News post',
-  type: 'document',
-  fields: [
-    defineField({
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-      validation: voice.requiredHeading,
-    }),
-    slug('title'),
-    defineField({
-      name: 'date',
-      title: 'Date',
-      type: 'date',
-      options: US_DATE,
-      description: 'Cards show the month and year.',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({ name: 'kicker', title: 'Kicker', type: 'bilingual' }),
-    text('summary', 'Summary', 3),
-    // No News page before launch (ADR 0042): the body and author wait, hidden.
-    defineField({ name: 'body', title: 'Body', type: 'blockContent', hidden: true }),
-    defineField({ name: 'image', title: 'Image', type: 'oyImage' }),
-    defineField({
-      name: 'tags',
-      title: 'Tags',
-      type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'program' }, { type: 'event' }] }],
-      description:
-        'The programs and events the post is about. Until the News page exists, Read more on the homepage opens the page of the first of them that has one (a festival or gala edition, a program); a post without one shows no Read more.',
-    }),
-    defineField({
-      name: 'author',
-      title: 'Author',
-      type: 'reference',
-      to: [{ type: 'person' }],
-      hidden: true,
-    }),
-  ],
-  orderings: [
-    { title: 'Newest first', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] },
-  ],
-  preview: {
-    select: { title: 'title', date: 'date', media: 'image' },
-    prepare: ({ title, date, media }) => ({ title, subtitle: calendarDate(date), media }),
-  },
-});
-
 export const album = defineType({
   name: 'album',
   title: 'Album',
@@ -1096,7 +1046,6 @@ export const contentDocumentTypes = [
   program,
   person,
   testimonial,
-  newsPost,
   album,
   photographer,
   partner,

@@ -74,7 +74,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
 - Yoruba Language Lessons (never "School"): one teacher, live online, times and fees agreed
   with her directly. No terms, no Saturdays, no venue.
 - Gallery: album mosaic, no filters, opening an album opens the Lightbox (the brief's viewer), credits per album.
-- News & Events (page 17) is wireframed but not built; schema ships, page waits for cadence.
+- No news: the site has no news posts, News page or homepage news section (ADR 0048). Page 17's
+  wireframe stays in the handoff only.
 - Full diacritics on every Yoruba word. The type must render the test string cleanly at
   every size: "Ẹ káàbọ̀ sí Ọjà Balógun, Àgbàlá Ọmọde àti Ẹgbẹ́ Ìbílẹ̀. Odún dé! Ẹ ṣeun."
 - Indigo carries 60 to 70 percent of visual weight. Gold is for actions and celebration

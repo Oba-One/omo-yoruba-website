@@ -132,8 +132,8 @@ The Studio is embedded at `/admin` (`@sanity/astro`, ADR 0017); it loads the con
 http://localhost:4321/admin and log in with the Sanity account that belongs to the project. The
 project's CORS origins must include `http://localhost:4321` and the public host's origin, both with
 credentials (wizard stage 1 adds the domain without them; see Hosting today), or the login loop
-never ends. The sidebar follows the site (ADR 0042, its names ADR 0047): To
-do, News posts, Events (the Odunde Festival with its editions and zones, the End-of-Year Gala with its
+never ends. The sidebar follows the site (ADR 0042, its names ADR 0047; no news, ADR 0048): To
+do, Events (the Odunde Festival with its editions and zones, the End-of-Year Gala with its
 editions, tiers, levels and honorees, and the Yoruba Cultural Collective events), Photos, People, Pages (each page;
 its own lists, such as Impact's outcomes and the Collective's initiatives, are in its form, and the documents it
 lists open beside it: the programs beside Programs, the ways to get involved beside Get Involved, and the headline
@@ -145,7 +145,7 @@ the organization's rows gather under Organization details (administrators only),
 festival or Gala edition not yet entered), and Wording to check lists the content-lint function's
 reports that have something to fix. One live query feeds it and reads drafts, as the Studio does: a
 row leaves once its documents are fixed, even in a draft, so an edition prepared as drafts for the
-announce day leaves nothing owed while the site still shows its Pending chips until it is published. Members (Sanity Editors) see everything but Organization details, the News page, the Inbox and
+announce day leaves nothing owed while the site still shows its Pending chips until it is published. Members (Sanity Editors) see everything but Organization details, the Inbox and
 the Vision tool (ADR 0042, `packages/content/src/studio/roles.ts`); those documents open read-only
 for them wherever else they turn up, and enquiries and subscribers stay out of search. The three
 held-back switches (the gallery's albums, Our Story's timeline, the Gala's awards) are read-only for

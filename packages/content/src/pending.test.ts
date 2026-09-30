@@ -571,10 +571,6 @@ describe('the to-do list after the Studio decisions (ADR 0042)', () => {
     expect(asked).toEqual([]);
   });
 
-  it('owes no news post body while there is no News page', () => {
-    expect(PENDING.filter((row) => row.type === 'newsPost')).toEqual([]);
-  });
-
   it('counts only honorees tied to a Gala edition', () => {
     const honorees = PRESENCE.find((row) => row.type === 'honoree');
     expect(honorees?.filter).toBe('event->kind == "gala"');

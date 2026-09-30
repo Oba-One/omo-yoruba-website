@@ -125,14 +125,7 @@ describe('who is an administrator', () => {
 
 describe('the sidebar follows the site', () => {
   it('opens with the To do, then the site, then what administrators keep', () => {
-    expect(ids(cached(EDITOR))).toEqual([
-      'todo',
-      'newsPost',
-      'events',
-      'photos',
-      'people',
-      'pages',
-    ]);
+    expect(ids(cached(EDITOR))).toEqual(['todo', 'events', 'photos', 'people', 'pages']);
     expect(ids(cached(ADMIN))).toEqual([...ids(cached(EDITOR)), 'siteSettings', 'inbox']);
     expect(
       items(cached(ADMIN))
@@ -211,10 +204,7 @@ describe('the sidebar follows the site', () => {
     }
     const homepage = child(pages, 'homepage') as unknown as DocumentBuilder;
     expect(homepage.getDocumentId()).toBe('homepage');
-    expect(ids(child(cached(ADMIN), 'pages'))).toEqual([
-      ...SITE_PAGES.map(({ type }) => type),
-      'newsPage',
-    ]);
+    expect(ids(child(cached(ADMIN), 'pages'))).toEqual(SITE_PAGES.map(({ type }) => type));
   });
 
   it('groups photos and people, and titles every list by the documents it holds', () => {
@@ -486,7 +476,7 @@ describe('tools, actions and templates per role', () => {
     );
 
   it("lets only administrators act on an administrator's documents", () => {
-    expect([...ADMIN_ONLY_TYPES]).toEqual(['siteSettings', 'newsPage', 'enquiry', 'subscriber']);
+    expect([...ADMIN_ONLY_TYPES]).toEqual(['siteSettings', 'enquiry', 'subscriber']);
     for (const type of ADMIN_ONLY_TYPES) expect(allowed(type, EDITOR), type).toEqual([]);
     expect(allowed('enquiry', ADMIN)).toContain('publish');
   });

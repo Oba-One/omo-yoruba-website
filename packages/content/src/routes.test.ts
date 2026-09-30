@@ -73,8 +73,6 @@ describe('PUBLIC_ROUTES', () => {
       '/donate',
       '/gallery',
       '/gallery/[album]',
-      '/news',
-      '/news/[slug]',
       '/404',
     ]);
   });
@@ -100,11 +98,6 @@ describe('TYPE_ROUTES and routesFor', () => {
       '/impact',
     ]);
     expect(routesFor('impactPage')).toEqual(['/impact', '/donate']);
-    expect(routesFor('newsPost', 'odunde-2026-recap')).toEqual([
-      '/news/odunde-2026-recap',
-      '/news',
-      '/',
-    ]);
     expect(routesFor('siteSettings')).toEqual(
       PUBLIC_ROUTES.filter((route) => !route.includes('[')),
     );
@@ -134,7 +127,6 @@ describe('tagsForRoute', () => {
       'type:event',
       'type:program',
       'type:testimonial',
-      'type:newsPost',
       'type:stat',
       'type:door',
     ]);

@@ -4,11 +4,11 @@ import { homepageQuery } from './homepage';
 describe('homepageQuery', () => {
   it('reads the singleton and every list the homepage shows in one query', () => {
     expect(homepageQuery.startsWith('*[_id == "homepage"][0]{')).toBe(true);
-    for (const list of ['"events"', '"stats"', '"programs"', '"voices"', '"news"', '"doors"']) {
+    for (const list of ['"events"', '"stats"', '"programs"', '"voices"', '"doors"']) {
       expect(homepageQuery).toContain(list);
     }
     expect(homepageQuery).toContain('kind in ["festival", "gala"]');
-    expect(homepageQuery).toContain('order(date desc)[0...3]');
+    expect(homepageQuery).not.toContain('newsPost');
     // The three program cards only: the highlight no longer reaches a fourth program (ADR 0042).
     expect(homepageQuery).toContain('*[_type == "program"] | order(order asc)[0...3]');
   });
