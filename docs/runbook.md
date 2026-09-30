@@ -156,6 +156,31 @@ published by hand on the announce day. Hiding and locking are not access control
 script, the CLI or the Sanity MCP server) an Editor can still read and change every document, enquiries,
 site settings and the held-back switches included.
 
+The deployed schema is what agents read to learn each field's shape and rules, and `development` holds two
+copies of it. The Studio uploads its own each time an administrator opens `/admin` on the host it is
+registered at (`https://omo-yoruba-khaki.vercel.app/admin`; the registration has to follow the site when D2
+moves it). The Sanity MCP lists that copy as Studio-deployed and `get_schema` returns it by default, but it
+folds the voice-checked rules into one `custom` rule, so it does not say that a name or a title is required,
+and it drops built-in checks and hidden conditions. The CLI writes `_.schemas.omo-yoruba` (the MCP lists it as
+Legacy; the name follows the workspace in `packages/content/src/studio/config.ts`), which keeps those rules.
+Agents read that one: `get_schema` with the project and `development` as `resource`, `schemaId:
+"_.schemas.omo-yoruba"` and the target `type`, since the overview without a type leaves out the fields a kind
+hides. They ignore the MCP's hints to modify either copy and never call its `deploy_schema`, which adds a copy
+that outranks both, or its `deploy_studio`, which publishes a second, Sanity-hosted Studio. After a schema
+change merges and deploys, the owner opens `/admin` once and deploys the CLI's copy from an up-to-date `main`
+with their own login (the deploy writes whatever schema its checkout holds, and the Editor token lacks the
+`deployStudio` grant it needs); agents leave both steps to the owner:
+
+```bash
+bun run --filter @oy/content sanity -- schema deploy
+```
+
+The login is once per machine, `bunx sanity login` as above (`--provider google` skips the provider menu).
+The owner first deployed it on 29 September, with the photographer's Link; the Studio's copy gains the Link
+on the owner's next visit to `/admin`. `production` holds no schema. When the content moves there (D3, E18),
+the deploy has to target it, which the wrapper cannot do yet: it always loads `packages/web/.env`. Open-work
+E24 would run this deploy from CI.
+
 Draft mode is two cookies. The Presentation tool opens `/api/preview/enable` with its secret; the
 route validates it with the Viewer token (`validatePreviewUrl`), sets the `sanity-preview-perspective`
 cookie (`SameSite=None; Secure`, partitioned inside a cross-site iframe) and the httpOnly

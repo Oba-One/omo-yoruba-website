@@ -139,6 +139,7 @@ Answered on 26 September 2026; the spec lists each answer.
 | E21 | Storybook accessibility checks in CI (a new dependency) | owner's yes | Later | phase 1 ticket 05 | open |
 | E22 | Review leftovers kept on purpose: the mosaic's spans, two caption rules, the Lightbox's closing flags, duplicated swipe code (PR 9); outcome kinds, program anchors, unused ContactBlock variants (HP7); `rowKinds` parsing GROQ, TypeGen unions on four queries (HP6) | none | Later | PR 9, HP6, HP7 | open |
 | E23 | The navigation defect: in draft mode the overlay drew a card 6266px below the footer after a client-side arrival (the white gap and the flashing); a footer or door trigger after such an arrival navigated as well as opening its dialog, and Safari and Firefox left it open but not modal; closing a dialog wiped the router's history state; the overlay never mounted under `astro dev` | none | Now | ADR 0041 | done: pull request 10, merged 27 September |
+| E24 | Deploy the schema from CI on each merge to `main` (`schema deploy` with a deploy token, skipping with a notice without the secret, as Chromatic does), so the copy agents read never lags a schema change; until then the owner deploys it after each schema change | a deploy token (the `deployStudio` grant) from the owner | Launch | runbook "Studio, preview and Visual Editing" | open |
 
 ## 5. Housekeeping
 

@@ -30,10 +30,9 @@ owner. Update docs/plans/open-work.md in the same pull request as each item land
 - **The page lists' reference reads.** Pull request 13's queries read both the old documents and the new page
   lists, for one deploy. Its migrations ran on 27 September, so the old reads can go: one small pull request,
   with the queries, TypeGen, the builders' tests and the seeded specs of the pages it touches.
-- **The schema deploy.** Ask whether the owner ran it (`bunx sanity login`, then `bun run --filter @oy/content
-  sanity -- schema deploy`); the project's Editor token cannot. The Sanity connector's `list_workspace_schemas`
-  shows the deployed schema. It must run again after the credit link change (ADR 0046) merges: on 28 September
-  the deployed `photographer` had no Link, so an agent reading it would leave a photographer's page out.
+- **The schema deploy.** Done on 29 September, after the credit link change (ADR 0046) merged. How agents read
+  it, and why by id, is in the runbook (Studio, preview and Visual Editing). After any later schema change, ask
+  the owner to open `/admin` on the public host and deploy it again from an up-to-date `main` (open-work E24).
 - **`production` private (D3).** Ask whether the owner changed its visibility; the connector's `list_datasets`
   shows each dataset's ACL. Then correct the runbook's "Hosting today".
 - **The migration snapshots** in `~/omo-yoruba-exports`: delete them once the owner says the site looks right.

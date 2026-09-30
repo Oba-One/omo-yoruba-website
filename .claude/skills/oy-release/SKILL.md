@@ -10,6 +10,7 @@ Prepares one edition of the festival or the Gala as drafts and publishes it on t
 there are no Content Releases (ADR 0042). Shapes: `docs/design/CONTENT-MODEL.md` sections 3 and 4 as
 amended by ADR 0013 and ADR 0042. Which inputs each kind of event shows:
 `packages/content/src/edition-fields.ts`. Content comes from the owner; nothing here is guessed.
+Before writing, read the deployed schema as `oy-content-ops` says (Before writing).
 
 1. Create the edition as a draft from its list (Events, then Odunde Festival or End-of-Year Gala,
    then Editions), so its kind is already set. Through the Sanity MCP server, set `kind` yourself

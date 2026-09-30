@@ -16,10 +16,15 @@ Inbox, the Vision tool and the three held-back switches (ADR 0042).
 
 ## Before writing
 
-Load the deployed schema with the MCP `get_schema` tool and read the target type. Query for an
-existing document first (deterministic ids from the seed: `siteSettings`, `event-odunde-2027`,
+Read the deployed schema with the MCP `get_schema`: the project and `development` as `resource`,
+`schemaId: "_.schemas.omo-yoruba"` and the target `type`. That copy shows which fields are required;
+without the id the tool returns the Studio's own copy, which folds most of those rules away (runbook,
+Studio, preview and Visual Editing). If it lacks a field that `packages/content/schema.json` on an
+up-to-date `main` has, the deploy is behind: ask the owner to deploy it rather than guess the shape.
+
+Query for an existing document first (deterministic ids from the seed: `siteSettings`, `event-odunde-2027`,
 `album-odunde-2026`, `program-yoruba-lessons`; slugs for posts and albums) so an edit patches
-rather than duplicates. Ids never contain a period.
+rather than duplicates. Ids you create never contain a period.
 
 ## Recipes
 

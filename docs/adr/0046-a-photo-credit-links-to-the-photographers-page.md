@@ -43,8 +43,9 @@ Facebook page, and chose the YouTube channel for the credit's link.
   the owner's values alone, but `bun seed -- --replace` puts the guesses back and unconfirms the credits.
 - The link went into the dataset before this change reached `main`, whose seed and `retired-fields` migration
   still unset it and whose Studio shows it as a field to remove. Until the merge, and from any older checkout
-  after it, run neither; if one runs, set the link again. The deployed schema that agents read (`get_schema`)
-  gains the Link only when the owner deploys the schema again after the merge.
+  after it, run neither; if one runs, set the link again. The owner deployed the schema on 29 September:
+  agents read the CLI's copy by id, which has the Link, while the Studio's own copy, which `get_schema` returns
+  by default, gains it on the owner's next visit to `/admin` (runbook, Studio, preview and Visual Editing).
 - The photographers "Members and volunteers" and "Omo Yorùbá archive" stay in the dataset with no album naming
   them, for a later album. Deleting them does not last: `bun seed` creates any seeded document that is missing.
 - The seeded runs of the album, Odunde and Gala specs (`packages/web/e2e/`) expect the credits and the link as the
