@@ -8,9 +8,9 @@ export const SOCIAL_NETWORKS = ['instagram', 'facebook', 'linkedin', 'youtube'] 
 
 export const siteSettings = defineType({
   name: 'siteSettings',
-  title: 'Site settings',
+  title: 'Organization details',
   type: 'document',
-  // Administrators only (ADR 0042): a member who reaches the settings sees them, locked.
+  // Administrators only (ADR 0042): a member who reaches them sees them, locked.
   readOnly: forMembers,
   groups: [
     { name: 'org', title: 'Organization', default: true },
@@ -134,5 +134,5 @@ export const siteSettings = defineType({
       group: 'services',
     },
   ],
-  preview: { prepare: () => ({ title: 'Site settings' }) },
+  preview: { prepare: () => ({ title: 'Organization details' }) },
 });

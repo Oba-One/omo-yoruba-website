@@ -275,7 +275,7 @@ describe('buildImpactPage', () => {
     expect(view.voices.pending).toBe('voices with permission to name');
     expect(view.photos.tiles[0]).toMatchObject({ caption: 'Odunde • 2026' });
     expect(view.how.caption).toBe('Àjọṣe • Partners and friends at the table');
-    expect(view.how.pending).toBe('your account of the organisation');
+    expect(view.how.pending).toBe('your account of the organization');
   });
 
   it('names every governance fact owed while the Studio holds no document, EIN, board or address', () => {

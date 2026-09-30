@@ -74,7 +74,7 @@ export const presentationOptions: PresentationPluginOptions = {
           .map((type) => [type, { locations: locationsFor(type) }]),
       ),
       siteSettings: {
-        message: 'Site settings show on every page.',
+        message: 'Organization details show on every page.',
         tone: 'caution',
         locations: PUBLIC_ROUTES.filter(isStatic).map(location),
       },

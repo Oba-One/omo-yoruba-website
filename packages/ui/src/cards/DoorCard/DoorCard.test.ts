@@ -28,7 +28,7 @@ describe('DoorCard', () => {
 
   it('shows the registry chip in place of missing bullets when the page asks for them', async () => {
     const card = (await renderToBody(WithBullets)).querySelector('.oy-card');
-    expect(text(card?.querySelector('.oy-pend'))).toBe('Pending: what this way in asks and gives');
+    expect(text(card?.querySelector('.oy-pend'))).toBe('Pending: what it asks and gives');
   });
 
   it('names the placeholder and the missing copy for a bare door', async () => {
@@ -63,7 +63,7 @@ describe('DoorCard', () => {
     expect(text(card?.querySelector('h3'))).toBe('Sell at Odunde');
     expect([...(card?.querySelectorAll('.oy-pend') ?? [])].map(text)).toEqual([
       'Pending: the blurb',
-      'Pending: what this way in asks and gives',
+      'Pending: what it asks and gives',
     ]);
     const button = card?.querySelector('a.oy-btn');
     expect(button?.getAttribute('data-enquiry')).toBe('vendor');

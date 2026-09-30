@@ -201,10 +201,7 @@ describe('presenceWhat', () => {
   });
 
   it("finds a row by kind as pendingWhat does, never answering one kind with another kind's row", () => {
-    expect(presenceWhat('event', 'collective')).toEqual({
-      what: 'the next Collective events',
-      minimum: 1,
-    });
+    expect(presenceWhat('event', 'collective')).toEqual({ what: 'the next events', minimum: 1 });
     expect(presenceWhat('event', 'gala')).toBeUndefined();
   });
 });
@@ -213,7 +210,7 @@ describe('the Collective events', () => {
   it("asks for a collective event's venue on its own row, and counts the events still to come", () => {
     expect(pendingWhat('event', 'venue.name', 'collective')).toBe('the venue');
     const row = PRESENCE.find((entry) => entry.filter?.includes('kind == "collective"'));
-    expect(row?.where).toBe('Collective, events');
+    expect(row?.where).toBe('Yoruba Cultural Collective');
     // Still to come as the Studio can read it (ADR 0030): an end ahead, or no end and a start within a day.
     // An event without a start never lists, so it never counts.
     expect(row?.filter).toContain('defined(start) &&');
@@ -406,8 +403,8 @@ describe('presenceFilter', () => {
 
 describe('Get Involved', () => {
   it('names an empty page of doors, the associations prose and the general contact the way the page shows them', () => {
-    expect(pendingWhat('getInvolvedPage', 'doors[]')).toBe('the ways in');
-    expect(pendingWhat('door', 'bullets[]')).toBe('what this way in asks and gives');
+    expect(pendingWhat('getInvolvedPage', 'doors[]')).toBe('the ways to get involved');
+    expect(pendingWhat('door', 'bullets[]')).toBe('what it asks and gives');
     expect(pendingWhat('getInvolvedPage', 'hometownAssociations.prose')).toBe(
       'what the associations are, in your words',
     );
@@ -540,7 +537,9 @@ describe('the gallery', () => {
 describe('Donate', () => {
   it("names the Zeffy form's facts, the doors, the tax line and a giving level's missing line and source", () => {
     expect(pendingWhat('donatePage', 'giveNow.facts')).toBe('how your Zeffy form handles this');
-    expect(pendingWhat('donatePage', 'largerScale.doors[]')).toBe('the doors for organizations');
+    expect(pendingWhat('donatePage', 'largerScale.doors[]')).toBe(
+      'the ways to get involved for organizations',
+    );
     expect(pendingWhat('donatePage', 'taxLine')).toBe('the tax-deductible line');
     expect(pendingWhat('donatePage', 'whatYourGiftDoes[]')).toBe(
       'the preset amounts and what each buys',

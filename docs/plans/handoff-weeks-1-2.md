@@ -58,7 +58,7 @@ is `docs/research/online-giving-options.md`.
 3. **Delete three lines** from `packages/web/.env.example`: `PUBLIC_ZEFFY_EMBED_URL`, `PUBLIC_EVENTBRITE_URL` and
    `SANITY_PREVIEW_SECRET` (agents cannot edit that file; none of the three is set in Vercel).
 4. **Zeffy:** create the donation form, turn on automatic tax receipts, decide on monthly giving, and paste the
-   embed URL into Site settings, Zeffy embed URL. Review the Zeffy pull request.
+   embed URL into Organization details (called Site settings before 30 September), Zeffy embed URL. Review the Zeffy pull request.
 5. **Invite an Editor account.** The member view, the guide's screenshots and the member test need it.
 6. **Sign in the Sanity MCP** (`/mcp` in an interactive session) for real content (E19). Since 28 September E19
    no longer waits for it: the claude.ai Sanity connector writes as the owner.

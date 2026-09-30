@@ -42,7 +42,7 @@ owner. Update docs/plans/open-work.md in the same pull request as each item land
 Write `docs/content-ops.md` for members, for the Studio as it is: an event edition prepared as drafts and published
 on its announce day, an album with its credits, consent note and photographs, a person, a news post (there is no
 News page before launch, D22, but the homepage's news card shows posts), a to-do item cleared, when to ask for help,
-and what never to do (the held-back switches, deleting, anything under Settings). Add screenshots as an Editor and
+and what never to do (the held-back switches, deleting, anything under Organization details). Add screenshots as an Editor and
 as an administrator; the owner invites an Editor account first (open-work, D4). Then refresh the `oy-content-ops`
 and `oy-release` skills to match. The guide says what the gallery's Coming soon switch does and does not do
 (ADR 0043), for the day consent is ever withdrawn (D5 has consent today).

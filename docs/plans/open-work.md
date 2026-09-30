@@ -62,7 +62,7 @@ To do until it is filled (the To do reads drafts). The launch gate
 | C9 | Get Involved | Bullets for the member, volunteer and vendor doors; the vendor door's blurb; a volunteer photograph; the general contact's name and response line | Launch | T42 | open |
 | C10 | Impact | A source for each headline figure; How we work; four outcomes; 2026 attendance and vendors hosted; the 2027 cost; three voices; the Form 990, annual report and audit; partners and funders; confirm the captions | Launch | T42 | open |
 | C11 | Our Story | The 1997 story, the founders, the first year, the earliest photograph; timeline entries; the board, staff and volunteers | Launch | T42, T07 | open |
-| C12 | Donate | The Zeffy form itself and its embed address in the site settings (Zeffy stays, decided 27 Sep from `docs/research/online-giving-options.md`, ADR 0045); how the form handles fees, and whether it offers monthly giving and emails receipts; then the give-now blurb and the Gala's give row, Studio content that still promises monthly giving (the blurb an emailed receipt too, R38); the larger-scale intro; giving levels with what each pays for; other ways to give; the tax line | Launch | T42, T03 | open |
+| C12 | Donate | The Zeffy form itself and its embed address in Organization details (Zeffy stays, decided 27 Sep from `docs/research/online-giving-options.md`, ADR 0045); how the form handles fees, and whether it offers monthly giving and emails receipts; then the give-now blurb and the Gala's give row, Studio content that still promises monthly giving (the blurb an emailed receipt too, R38); the larger-scale intro; giving levels with what each pays for; other ways to give; the tax line | Launch | T42, T03 | open |
 | C13 | News | Waits for the cadence decision | Later | T08 | open |
 
 ## 3. The Studio, simplified for members
@@ -111,6 +111,12 @@ unread fields are deleted or kept hidden for planned use; whether news posts get
 whether a Collective event may drop the required year, and whether the "Other" kind stays; which control wins for
 take-part order, the lead event and the gold button; whether members stage editions in Content Releases.
 Answered on 26 September 2026; the spec lists each answer.
+
+**After the owner's review** (30 September 2026)
+
+| # | Change | What a member gains | What changes in code | Size | Status |
+| --- | --- | --- | --- | --- | --- |
+| S16 | Names members look for: no "Used on several pages" (programs, ways to get involved, headline figures and partners open beside their pages), Organization details for Site settings, the Collective in full, plural list titles, "way to get involved" and "member voice", the To do's leftover words | Finds each thing where the site shows it, under the site's words | The structure, type titles and registry wording; tests (ADR 0047) | S | doing |
 
 ## 4. Engineering and polish
 

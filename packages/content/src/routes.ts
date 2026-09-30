@@ -46,6 +46,9 @@ export const EVENT_PAGE_NAMES = {
   gala: 'End-of-Year Gala',
 } as const;
 
+/** The Collective's name in full, as its page and the Studio say it. */
+export const COLLECTIVE_NAME = 'Yoruba Cultural Collective';
+
 export interface EditionPage {
   route: PublicRoute;
   /** What a link to the page reads. */
@@ -59,10 +62,7 @@ const EDITION_PAGES: Readonly<Record<string, EditionPage>> = {
     name: EVENT_PAGE_NAMES.festival,
   },
   gala: { route: ROUTE_SINGLETONS.galaPage as PublicRoute, name: EVENT_PAGE_NAMES.gala },
-  collective: {
-    route: ROUTE_SINGLETONS.collectivePage as PublicRoute,
-    name: 'Yoruba Cultural Collective',
-  },
+  collective: { route: ROUTE_SINGLETONS.collectivePage as PublicRoute, name: COLLECTIVE_NAME },
 };
 
 /**

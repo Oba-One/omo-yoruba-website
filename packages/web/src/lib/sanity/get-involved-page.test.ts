@@ -133,7 +133,7 @@ describe('buildGetInvolvedPage', () => {
   it('names an empty page of doors and leaves the give box out without a give door', () => {
     const empty = buildGetInvolvedPage({ ...seeded, doors: [] } as GetInvolvedPageData, options);
     expect(empty.doors.items).toEqual([]);
-    expect(empty.doors.pending).toBe('the ways in');
+    expect(empty.doors.pending).toBe('the ways to get involved');
     expect(empty.give).toBeUndefined();
   });
 

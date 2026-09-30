@@ -40,7 +40,6 @@ const REGISTER_PAGES: Readonly<Record<string, SitePage>> = {
   Lessons: 'lessonsPage',
   Collective: 'collectivePage',
   'Get Involved': 'getInvolvedPage',
-  Doors: 'getInvolvedPage',
   Impact: 'impactPage',
   'Our Story': 'storyPage',
   Donate: 'donatePage',

@@ -7,7 +7,7 @@ import {
   EVENT_KINDS,
   editionFieldShown,
 } from '../../edition-fields';
-import { EVENT_PAGE_NAMES } from '../../routes';
+import { COLLECTIVE_NAME, EVENT_PAGE_NAMES } from '../../routes';
 import {
   PARTNER_SCOPE_TITLES,
   PARTNER_SCOPES,
@@ -410,7 +410,7 @@ export const program = defineType({
       options: {
         list: titled(PROGRAM_PAGES, {
           lessons: 'Yoruba Language Lessons',
-          collective: 'Yoruba Cultural Collective',
+          collective: COLLECTIVE_NAME,
         }),
       },
     }),
@@ -575,7 +575,7 @@ export const TESTIMONIAL_CONTEXTS = ['lessons', 'festival', 'collective', 'gener
 
 export const testimonial = defineType({
   name: 'testimonial',
-  title: 'Testimonial',
+  title: 'Member voice',
   type: 'document',
   fields: [
     text('quote', 'Quote', 4),
@@ -899,16 +899,16 @@ export const stat = defineType({
 
 /**
  * One of the ways in, shown by the homepage, Get Involved and Donate (ADR 0013); the vendor door joined in
- * Phase 7 (ADR 0034).
+ * Phase 7 (ADR 0034). The Studio calls it a way to get involved.
  */
 export const door = defineType({
   name: 'door',
-  title: 'Door',
+  title: 'Way to get involved',
   type: 'document',
   fields: [
     defineField({
       name: 'key',
-      title: 'Door',
+      title: 'Kind',
       type: 'string',
       options: { list: titled(DOOR_KEYS, DOOR_CHIPS), layout: 'radio', direction: 'horizontal' },
       validation: (rule) => rule.required(),

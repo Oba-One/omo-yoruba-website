@@ -5,6 +5,7 @@
  * `<Pending what={pendingWhat(type, field)} />` when it finds the field empty, so the chip and the
  * row never disagree.
  */
+import { COLLECTIVE_NAME } from './routes';
 
 export interface PendingEntry {
   /** The document type; for a list row (`list`), the type of the list's items. */
@@ -567,16 +568,22 @@ export const PENDING: readonly PendingEntry[] = [
   {
     type: 'getInvolvedPage',
     fields: ['doors[]'],
-    where: 'Get Involved, doors',
-    what: 'the ways in',
+    where: 'Get Involved',
+    what: 'the ways to get involved',
   },
   // The give door closes Get Involved as a box, and no page draws its bullets (ADR 0034).
   {
     type: 'door',
     fields: ['bullets[]'],
     filter: 'key != "give"',
-    where: 'Get Involved, doors',
-    what: 'what this way in asks and gives',
+    where: 'Get Involved, ways to get involved',
+    what: 'what it asks and gives',
+  },
+  {
+    type: 'door',
+    fields: ['blurb'],
+    where: 'Get Involved, ways to get involved',
+    what: 'the blurb',
   },
   {
     type: 'getInvolvedPage',
@@ -631,7 +638,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'donatePage',
     fields: ['largerScale.doors[]'],
     where: 'Donate, giving at a larger scale',
-    what: 'the doors for organizations',
+    what: 'the ways to get involved for organizations',
   },
   {
     type: 'donatePage',
@@ -678,7 +685,7 @@ export const PENDING: readonly PendingEntry[] = [
     type: 'impactPage',
     fields: ['howWeWork'],
     where: 'Impact, how we work',
-    what: 'your account of the organisation',
+    what: 'your account of the organization',
   },
   {
     type: 'impactPage',
@@ -840,7 +847,6 @@ export const PENDING: readonly PendingEntry[] = [
     where: 'Homepage, raise your hand',
     what: 'the heading',
   },
-  { type: 'door', fields: ['blurb'], where: 'Doors', what: 'the blurb' },
 ];
 
 export const PRESENCE: readonly PresenceEntry[] = [
@@ -879,7 +885,7 @@ export const PRESENCE: readonly PresenceEntry[] = [
   {
     type: 'testimonial',
     minimum: 1,
-    where: 'Homepage, Impact, Collective',
+    where: `Homepage, Impact and the ${COLLECTIVE_NAME}`,
     what: 'member voices with permission to name',
   },
   // Our Story lists the board apart from the staff and volunteers, each with its own Pending line; the
@@ -898,7 +904,7 @@ export const PRESENCE: readonly PresenceEntry[] = [
     where: 'Our Story, staff and volunteers',
     what: 'the staff and volunteers to list',
   },
-  { type: 'partner', minimum: 1, where: 'Partner rows', what: 'partner and funder names' },
+  { type: 'partner', minimum: 1, where: 'Impact and Odunde', what: 'partner and funder names' },
   // The gallery and past years show an album only with a photograph, so an empty one does not count.
   {
     type: 'album',
@@ -936,8 +942,8 @@ export const PRESENCE: readonly PresenceEntry[] = [
     type: 'event',
     minimum: 1,
     filter: `${COLLECTIVE} && defined(start) && ((defined(end) && dateTime(end) > dateTime(now())) || (!defined(end) && dateTime(start) > dateTime(now()) - 60 * 60 * 24))`,
-    where: 'Collective, events',
-    what: 'the next Collective events',
+    where: COLLECTIVE_NAME,
+    what: 'the next events',
   },
 ];
 
@@ -1039,7 +1045,7 @@ export const IMPACT_OUTCOME_SLOTS: readonly OutcomeSlot[] = [
 export const COLLECTIVE_VOICE_SLOT: VoiceSlot = {
   quote:
     'Quote from a member of the Collective, two or three sentences on why culture and sustainability belong together.',
-  role: 'Member, Yoruba Cultural Collective',
+  role: `Member, ${COLLECTIVE_NAME}`,
   context: 'collective',
 };
 
