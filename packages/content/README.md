@@ -74,7 +74,7 @@ The spec is `docs/design/CONTENT-MODEL.md`. Where the built model differs, an AD
   photographs and facts, the vendor door, an outcome that names one subject, and a timeline entry
   that is a year and one line.
 - ADR 0039: the gallery singleton is `galleryPage`; an album's year comes from its date or edition.
-- ADR 0042: members are Editors, and administrators keep the settings, the News page and the Inbox;
+- ADR 0042: members are Editors, and administrators keep the settings and the Inbox (no News page since ADR 0048);
   outcomes, timeline entries, giving levels and initiatives are lists on their pages; one control
   per decision; an input no page reads is deleted, or named in `src/hidden-inputs.ts` if kept.
 - With no ADR of their own: `cta` has `kind` plus `enquiryKind`; `stat` stores its figure flat

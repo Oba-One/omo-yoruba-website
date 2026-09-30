@@ -132,19 +132,20 @@ The Studio is embedded at `/admin` (`@sanity/astro`, ADR 0017); it loads the con
 http://localhost:4321/admin and log in with the Sanity account that belongs to the project. The
 project's CORS origins must include `http://localhost:4321` and the public host's origin, both with
 credentials (wizard stage 1 adds the domain without them; see Hosting today), or the login loop
-never ends. The sidebar follows the site (ADR 0042): To
-do, News posts, Events (Odunde Festival with its editions and zones, the End-of-Year Gala with its
-editions, tiers, levels and honorees, Collective events), Photos, People, Pages (each page; its own
-lists, such as Impact's outcomes and the Collective's initiatives, are in its form, and Impact's
-governance filings open beside it), Used on several pages, and for administrators Site settings and
+never ends. The sidebar follows the site (ADR 0042, its names ADR 0047; no news, ADR 0048): To
+do, Events (the Odunde Festival with its editions and zones, the End-of-Year Gala with its
+editions, tiers, levels and honorees, and the Yoruba Cultural Collective events), Photos, People, Pages (each page;
+its own lists, such as Impact's outcomes and the Collective's initiatives, are in its form, and the documents it
+lists open beside it: the programs beside Programs, the ways to get involved beside Get Involved, and the headline
+figures, partners and governance documents beside Impact), and for administrators Organization details and
 the Inbox (enquiries by kind, unhandled first, and subscribers). The To do (`studio/todo.ts`, ADR
 0042) groups the registry's rows by the page that shows them, with counts, listing only what is owed:
-site settings rows gather under Organization details (administrators only), a row bound to an edition
+the organization's rows gather under Organization details (administrators only), a row bound to an edition
 (an event's facts, the Gala's tiers and levels) counts only the edition its page shows, Still to add lists the documents the site needs more of (and a next
 festival or Gala edition not yet entered), and Wording to check lists the content-lint function's
 reports that have something to fix. One live query feeds it and reads drafts, as the Studio does: a
 row leaves once its documents are fixed, even in a draft, so an edition prepared as drafts for the
-announce day leaves nothing owed while the site still shows its Pending chips until it is published. Members (Sanity Editors) see everything but site settings, the News page, the Inbox and
+announce day leaves nothing owed while the site still shows its Pending chips until it is published. Members (Sanity Editors) see everything but Organization details, the Inbox and
 the Vision tool (ADR 0042, `packages/content/src/studio/roles.ts`); those documents open read-only
 for them wherever else they turn up, and enquiries and subscribers stay out of search. The three
 held-back switches (the gallery's albums, Our Story's timeline, the Gala's awards) are read-only for
@@ -154,7 +155,7 @@ Publish. The Sanity CLI's config (`packages/content/sanity.config.ts`, `cli: tru
 as written, so a deployed schema (`sanity schema deploy`) tells agents what each field requires. Content Releases and scheduling are switched off: an edition is prepared as drafts and
 published by hand on the announce day. Hiding and locking are not access control: through the API (a
 script, the CLI or the Sanity MCP server) an Editor can still read and change every document, enquiries,
-site settings and the held-back switches included.
+Organization details and the held-back switches included.
 
 The deployed schema is what agents read to learn each field's shape and rules, and `development` holds two
 copies of it. The Studio uploads its own each time an administrator opens `/admin` on the host it is

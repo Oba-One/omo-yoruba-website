@@ -11,40 +11,67 @@ import { EVENT_PAGE_NAMES } from '../routes';
 import { STUDIO_HIDDEN_TYPES } from './document-options';
 import { isAdministrator } from './roles';
 import { SITE_PAGES, type SitePage } from './site-pages';
+import { ORGANIZATION } from './todo';
 import { todoItem } from './todo-list';
 
 /*
- * The sidebar follows the site (ADR 0042; the tree in docs/tickets/studio-simplification/spec.md):
- * To do, News posts, Events, Photos, People, Pages, Used on several pages. Administrators also get
- * Site settings, the News page and the Inbox (`studio/roles.ts`).
+ * The sidebar follows the site (ADR 0042, its names ADR 0047, no news ADR 0048; the tree in
+ * docs/tickets/studio-simplification/spec.md): To do, Events, Photos, People, Pages.
+ * Administrators also get Organization details and the Inbox (`studio/roles.ts`).
  */
 
 const FESTIVAL_LISTS = ['zone'];
 const GALA_LISTS = ['ticketTier', 'sponsorLevel', 'honoree'];
 const PHOTOS = ['album', 'photographer'];
 const PEOPLE = ['person', 'testimonial', 'hometownAssociation'];
-/** Documents more than one page reads. */
-const SHARED = ['program', 'stat', 'door', 'partner'];
 
 /**
- * The documents that open beside a page: Impact's governance filings, one document per filing. A
- * page's own lists (initiatives, outcomes, the timeline, the giving levels) live in its form (ADR 0042).
+ * The documents that open beside a page, one document each: Programs lists every program, Get Involved
+ * the ways to get involved, and Impact the headline figures, the partners and the governance documents. The
+ * homepage, Donate and the Odunde page pick from the same documents. A page's own lists (initiatives,
+ * outcomes, the timeline, the giving levels) live in its form (ADR 0042).
  */
 const PAGE_LISTS: Partial<Record<SitePage, readonly string[]>> = {
-  impactPage: ['governanceDoc'],
+  programsPage: ['program'],
+  getInvolvedPage: ['door'],
+  impactPage: ['stat', 'partner', 'governanceDoc'],
+};
+
+/** Each list's title, the documents it holds: a type's own title names one of them. */
+const LIST_TITLES: Readonly<Record<string, string>> = {
+  zone: 'Festival zones',
+  ticketTier: 'Ticket tiers',
+  sponsorLevel: 'Sponsor levels',
+  honoree: 'Honorees',
+  album: 'Albums',
+  photographer: 'Photographers',
+  person: 'People',
+  testimonial: 'Member voices',
+  hometownAssociation: 'Hometown associations',
+  program: 'Programs',
+  door: 'Ways to get involved',
+  stat: 'Headline figures',
+  partner: 'Partners',
+  governanceDoc: 'Governance documents',
+  subscriber: 'Subscribers',
 };
 
 /** Every type the tree places; a type added later and placed nowhere still shows at the end. */
 const PLACED: ReadonlySet<string> = new Set([
-  'newsPost',
   'event',
   ...FESTIVAL_LISTS,
   ...GALA_LISTS,
   ...PHOTOS,
   ...PEOPLE,
   ...Object.values(PAGE_LISTS).flat(),
-  ...SHARED,
 ]);
+
+/** A type's documents under the list's title, which its pane takes too. */
+function typeList(S: StructureBuilder, type: string) {
+  const item = S.documentTypeListItem(type);
+  const title = LIST_TITLES[type];
+  return title ? item.title(title) : item;
+}
 
 function typesItem(S: StructureBuilder, id: string, title: string, types: readonly string[]) {
   return S.listItem()
@@ -54,7 +81,7 @@ function typesItem(S: StructureBuilder, id: string, title: string, types: readon
       S.list()
         .id(id)
         .title(title)
-        .items(types.map((type) => S.documentTypeListItem(type))),
+        .items(types.map((type) => typeList(S, type))),
     );
 }
 
@@ -98,10 +125,7 @@ function eventItem(
       S.list()
         .id(id)
         .title(title)
-        .items([
-          editionsItem(S, kind, 'Editions'),
-          ...types.map((type) => S.documentTypeListItem(type)),
-        ]),
+        .items([editionsItem(S, kind, 'Editions'), ...types.map((type) => typeList(S, type))]),
     );
 }
 
@@ -116,6 +140,7 @@ function eventsItem(S: StructureBuilder) {
         .items([
           eventItem(S, 'odunde', 'festival', FESTIVAL_LISTS),
           eventItem(S, 'gala', 'gala', GALA_LISTS),
+          // One list, titled as its pane, so it never reads as the Collective's page under Pages.
           editionsItem(S, 'collective'),
         ]),
     );
@@ -129,7 +154,7 @@ function singletonItem(S: StructureBuilder, type: string, title: string) {
 }
 
 /** Each page opens its document; a page that lists documents of its own opens them beside it. */
-function pagesItem(S: StructureBuilder, administrator: boolean) {
+function pagesItem(S: StructureBuilder) {
   const pages = SITE_PAGES.map(({ type, title }) => {
     const lists = PAGE_LISTS[type];
     if (!lists) return singletonItem(S, type, title);
@@ -142,21 +167,14 @@ function pagesItem(S: StructureBuilder, administrator: boolean) {
           .title(title)
           .items([
             singletonItem(S, type, `${title} page`),
-            ...lists.map((list) => S.documentTypeListItem(list)),
+            ...lists.map((list) => typeList(S, list)),
           ]),
       );
   });
-  // No News page before launch (D22): only an administrator changes its document.
-  const news = administrator ? [singletonItem(S, 'newsPage', 'News & Events page')] : [];
   return S.listItem()
     .id('pages')
     .title('Pages')
-    .child(
-      S.list()
-        .id('pages')
-        .title('Pages')
-        .items([...pages, ...news]),
-    );
+    .child(S.list().id('pages').title('Pages').items(pages));
 }
 
 function inboxItem(S: StructureBuilder) {
@@ -194,33 +212,25 @@ function inboxItem(S: StructureBuilder) {
     .child(
       S.list()
         .title('Inbox')
-        .items([
-          unhandled,
-          S.divider(),
-          ...byKind,
-          S.divider(),
-          S.documentTypeListItem('subscriber'),
-        ]),
+        .items([unhandled, S.divider(), ...byKind, S.divider(), typeList(S, 'subscriber')]),
     );
 }
 
 export const structure: StructureResolver = (S, context) => {
   const administrator = isAdministrator(context.currentUser);
   const forAdministrators: ListItemBuilder[] = administrator
-    ? [singletonItem(S, 'siteSettings', 'Site settings'), inboxItem(S)]
+    ? [singletonItem(S, 'siteSettings', ORGANIZATION.title), inboxItem(S)]
     : [];
   return S.list()
     .title('Content')
     .items([
       todoItem(S, context, administrator),
       S.divider(),
-      S.documentTypeListItem('newsPost').title('News posts'),
       eventsItem(S),
       typesItem(S, 'photos', 'Photos', PHOTOS),
       typesItem(S, 'people', 'People', PEOPLE),
       S.divider(),
-      pagesItem(S, administrator),
-      typesItem(S, 'shared', 'Used on several pages', SHARED),
+      pagesItem(S),
       ...(forAdministrators.length > 0 ? [S.divider(), ...forAdministrators] : []),
       ...S.documentTypeListItems().filter((item) => {
         const id = item.getId() ?? '';

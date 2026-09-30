@@ -14,6 +14,7 @@
 import { collectiveEvents } from '@oy/content/lead-event';
 import { COLLECTIVE_VOICE_SLOT, pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { collectivePageQuery } from '@oy/content/queries';
+import { COLLECTIVE_NAME } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import { monthDay, weekdayTime } from '@oy/ui/content/edition-dates.ts';
 import type { ClientReturn } from '@sanity/client';
@@ -29,7 +30,7 @@ export interface CollectiveLayout extends Record<string, string> {
   events: 'shown' | 'hidden';
 }
 
-const PAGE_TITLE = 'Yoruba Cultural Collective';
+const PAGE_TITLE = COLLECTIVE_NAME;
 
 const pending = (field: string) => pendingWhat('collectivePage', field) ?? 'this part of the page';
 
@@ -157,7 +158,7 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
         venue: event.venue,
         edit: edit('title', event._id, 'event'),
       })),
-      pending: presenceWhat('event', 'collective')?.what ?? 'the next Collective events',
+      pending: presenceWhat('event', 'collective')?.what ?? 'the next events',
       venuePending: pendingWhat('event', 'venue.name', 'collective') ?? 'the venue',
       action: ASK_TO_JOIN,
     },

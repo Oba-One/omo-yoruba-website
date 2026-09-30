@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { buildSeed, RETIRED_FIELDS, type SeedAssets } from '../seed-data';
+import { documentTypes } from '../../src/schema';
+import { buildSeed, RETIRED_FIELDS, RETIRED_TYPES, type SeedAssets } from '../seed-data';
 import { albumLinkMigration } from './album-link';
 import { applyMutations, isDraft, type StoredDocument } from './core';
 import { MIGRATIONS } from './index';
 import { inlineListsMigration } from './inline-lists';
 import { oneControlMigration } from './one-control';
 import { retiredFieldsMigration } from './retired-fields';
+import { retiredTypesMigration } from './retired-types';
 import { scopesMigration } from './scopes';
 import { teacherGroupMigration } from './teacher-group';
 
@@ -44,6 +46,30 @@ describe('every migration', () => {
       expect(after.some(({ _id }) => isDraft(_id))).toBe(false);
     },
   );
+});
+
+describe('retired-types', () => {
+  it('deletes each document of a retired type and its lint report, guarded by its revision', () => {
+    const post = { _id: 'news-odunde-2026-recap', _type: 'newsPost', _rev: 'r3', title: 'Recap' };
+    const report = { _id: 'lint-news', _type: 'lintReport', documentId: post._id };
+    const kept = { _id: 'lint-album', _type: 'lintReport', documentId: 'album-gala-2025' };
+    const plan = retiredTypesMigration.plan([post, report, kept]);
+    expect(plan.mutations).toEqual([
+      { patch: { id: post._id, ifRevisionID: 'r3', unset: ['revisionGuard'] } },
+      { delete: { id: post._id } },
+      { delete: { id: 'lint-news' } },
+    ]);
+    expect(plan.notes).toEqual(['Deletes news-odunde-2026-recap.']);
+    expect(
+      retiredTypesMigration.plan(applyMutations([post, report, kept], plan.mutations)).mutations,
+    ).toEqual([]);
+  });
+
+  it('retires no type the schema still has, and the seed writes none', () => {
+    const live = new Set(documentTypes.map(({ name }) => name));
+    for (const type of RETIRED_TYPES) expect(live.has(type), type).toBe(false);
+    expect(SEED.some(({ _type }) => RETIRED_TYPES.includes(_type))).toBe(false);
+  });
 });
 
 describe('retired-fields', () => {

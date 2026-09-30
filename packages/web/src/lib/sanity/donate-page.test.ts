@@ -112,7 +112,7 @@ describe('buildDonatePage', () => {
     expect(two.layout).toBe('card');
     expect(buildDonatePage(withData({ largerScale: null }), options).larger).toMatchObject({
       doors: [],
-      pending: 'the doors for organizations',
+      pending: 'the ways to get involved for organizations',
     });
   });
 

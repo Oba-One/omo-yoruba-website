@@ -86,6 +86,10 @@ Used on several pages      programs, headline figures, doors, partners
 Administrators also see    Site settings, Inbox, the Vision tool
 ```
 
+Renamed on 30 September 2026 (ADR 0047): the Collective's events list as Yoruba Cultural Collective events, the lists take plural
+titles, programs open beside Programs, the ways to get involved (doors) beside Get Involved, and headline figures
+and partners beside Impact, so "Used on several pages" is gone; Site settings became Organization details.
+
 ## Work
 
 | Part | Tickets | Stored change | By |

@@ -20,7 +20,6 @@ describe('cachePage', () => {
           'type:event',
           'type:program',
           'type:testimonial',
-          'type:newsPost',
           'type:stat',
           'type:door',
         ],

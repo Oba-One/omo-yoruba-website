@@ -34,7 +34,7 @@ export const WithIntro: Story = {
 };
 
 export const SingleKicker: Story = {
-  args: { kicker: { en: 'Stay close' }, title: 'News & events' },
+  args: { kicker: { en: 'Join us' }, title: 'Raise your hand' },
 };
 
 export const NoKicker: Story = { args: { kicker: undefined, title: 'Raise your hand' } };

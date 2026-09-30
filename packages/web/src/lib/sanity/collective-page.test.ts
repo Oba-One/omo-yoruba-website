@@ -281,7 +281,7 @@ describe('buildCollectivePage', () => {
         venue: { name: '[ Venue ]' },
       });
       expect(view).toMatchObject({
-        pending: 'the next Collective events',
+        pending: 'the next events',
         venuePending: 'the venue',
         action: { label: 'Ask to join', kind: 'enquiry', enquiryKind: 'contact' },
       });

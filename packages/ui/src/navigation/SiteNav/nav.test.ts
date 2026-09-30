@@ -12,7 +12,6 @@ describe('nav', () => {
     expect(pageKeyFor('/get-involved')).toBe('involved');
     expect(pageKeyFor('/impact')).toBe('impact');
     expect(pageKeyFor('/our-story')).toBe('about');
-    expect(pageKeyFor('/news/a-post')).toBe('news');
     expect(pageKeyFor('/gallery/odunde-2026')).toBe('gallery');
     expect(pageKeyFor('/donate')).toBe('');
     expect(pageKeyFor('/odunde?enquiry=vendor#enquiry')).toBe('odunde');

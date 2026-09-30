@@ -7,7 +7,7 @@ import {
   EVENT_KINDS,
   editionFieldShown,
 } from '../../edition-fields';
-import { EVENT_PAGE_NAMES } from '../../routes';
+import { COLLECTIVE_NAME, EVENT_PAGE_NAMES } from '../../routes';
 import {
   PARTNER_SCOPE_TITLES,
   PARTNER_SCOPES,
@@ -410,7 +410,7 @@ export const program = defineType({
       options: {
         list: titled(PROGRAM_PAGES, {
           lessons: 'Yoruba Language Lessons',
-          collective: 'Yoruba Cultural Collective',
+          collective: COLLECTIVE_NAME,
         }),
       },
     }),
@@ -575,7 +575,7 @@ export const TESTIMONIAL_CONTEXTS = ['lessons', 'festival', 'collective', 'gener
 
 export const testimonial = defineType({
   name: 'testimonial',
-  title: 'Testimonial',
+  title: 'Member voice',
   type: 'document',
   fields: [
     text('quote', 'Quote', 4),
@@ -606,56 +606,6 @@ export const testimonial = defineType({
     }),
   ],
   preview: { select: { title: 'name', subtitle: 'relation' } },
-});
-
-export const newsPost = defineType({
-  name: 'newsPost',
-  title: 'News post',
-  type: 'document',
-  fields: [
-    defineField({
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-      validation: voice.requiredHeading,
-    }),
-    slug('title'),
-    defineField({
-      name: 'date',
-      title: 'Date',
-      type: 'date',
-      options: US_DATE,
-      description: 'Cards show the month and year.',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({ name: 'kicker', title: 'Kicker', type: 'bilingual' }),
-    text('summary', 'Summary', 3),
-    // No News page before launch (ADR 0042): the body and author wait, hidden.
-    defineField({ name: 'body', title: 'Body', type: 'blockContent', hidden: true }),
-    defineField({ name: 'image', title: 'Image', type: 'oyImage' }),
-    defineField({
-      name: 'tags',
-      title: 'Tags',
-      type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'program' }, { type: 'event' }] }],
-      description:
-        'The programs and events the post is about. Until the News page exists, Read more on the homepage opens the page of the first of them that has one (a festival or gala edition, a program); a post without one shows no Read more.',
-    }),
-    defineField({
-      name: 'author',
-      title: 'Author',
-      type: 'reference',
-      to: [{ type: 'person' }],
-      hidden: true,
-    }),
-  ],
-  orderings: [
-    { title: 'Newest first', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] },
-  ],
-  preview: {
-    select: { title: 'title', date: 'date', media: 'image' },
-    prepare: ({ title, date, media }) => ({ title, subtitle: calendarDate(date), media }),
-  },
 });
 
 export const album = defineType({
@@ -899,16 +849,16 @@ export const stat = defineType({
 
 /**
  * One of the ways in, shown by the homepage, Get Involved and Donate (ADR 0013); the vendor door joined in
- * Phase 7 (ADR 0034).
+ * Phase 7 (ADR 0034). The Studio calls it a way to get involved.
  */
 export const door = defineType({
   name: 'door',
-  title: 'Door',
+  title: 'Way to get involved',
   type: 'document',
   fields: [
     defineField({
       name: 'key',
-      title: 'Door',
+      title: 'Kind',
       type: 'string',
       options: { list: titled(DOOR_KEYS, DOOR_CHIPS), layout: 'radio', direction: 'horizontal' },
       validation: (rule) => rule.required(),
@@ -1096,7 +1046,6 @@ export const contentDocumentTypes = [
   program,
   person,
   testimonial,
-  newsPost,
   album,
   photographer,
   partner,

@@ -147,12 +147,9 @@ describe("the Studio in the site's words", () => {
 describe('inputs that change nothing are hidden, or gone (ADR 0042)', () => {
   const find = (path: string) => FIELDS.get(path);
 
-  it.each(['seo.ogImage', 'newsPost.body', 'newsPost.author', 'sourcedFigure.asOf'])(
-    '%s is hidden from everyone',
-    (path) => {
-      expect(find(path)?.hidden, path).toBe(true);
-    },
-  );
+  it.each(['seo.ogImage', 'sourcedFigure.asOf'])('%s is hidden from everyone', (path) => {
+    expect(find(path)?.hidden, path).toBe(true);
+  });
 
   it.each([
     'event.heroImage',
@@ -207,15 +204,8 @@ describe('inputs that change nothing are hidden, or gone (ADR 0042)', () => {
   // one the module names; this list fails first when one is added on one side only.
   it('hides with a fixed rule only the inputs hidden-inputs.ts names', () => {
     const fixed = matching((field) => field.hidden === true);
-    expect(fixed.sort()).toEqual([
-      'newsPost.author',
-      'newsPost.body',
-      'seo.ogImage',
-      'sourcedFigure.asOf',
-    ]);
+    expect(fixed.sort()).toEqual(['seo.ogImage', 'sourcedFigure.asOf']);
     for (const [type, fields] of [
-      ['newsPost', ['author']],
-      ['newsPost', ['body']],
       ['homepage', ['seo', 'ogImage']],
       ['event', ['attendance', 'asOf']],
     ] as const) {
@@ -229,9 +219,6 @@ describe('inputs that change nothing are hidden, or gone (ADR 0042)', () => {
     ['impactPage', 'header.image.alt'],
     ['storyPage', 'header.image.creditNote'],
     ['homepage', 'seo.ogImage.alt'],
-    ['newsPost', 'body'],
-    ['newsPost', 'author'],
-    ['newsPost', 'summary'],
     ['album', 'photos[].creditNote'],
     ['album', 'cover.creditNote'],
     ['album', 'cover.alt'],

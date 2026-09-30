@@ -1,7 +1,7 @@
 import { createImageSet } from '@oy/content/images';
 import { HOMEPAGE_VOICE_SLOTS } from '@oy/content/pending';
 import { describe, expect, it } from 'vitest';
-import { buildHomepage, type HomepageData, newsHref } from './homepage';
+import { buildHomepage, type HomepageData } from './homepage';
 
 const imageSet = createImageSet({ projectId: 'abc123', dataset: 'development' });
 const image = (alt: string) => ({
@@ -81,36 +81,6 @@ const data = {
   voices: null,
   voicesIntro: null,
   voicesProverb: null,
-  newsIntro: null,
-  news: [
-    {
-      _id: 'gala',
-      title: 'End-of-Year Gala',
-      slug: 'gala',
-      date: '2026-11-01',
-      summary: null,
-      image: null,
-      tags: [{ _type: 'event', kind: 'gala', page: null }],
-    },
-    {
-      _id: 'recap',
-      title: 'Odunde 2026: the recap',
-      slug: 'recap',
-      date: '2026-07-01',
-      summary: null,
-      image: null,
-      tags: [{ _type: 'event', kind: 'festival', page: null }],
-    },
-    {
-      _id: 'fall',
-      title: 'Language Lessons fall term',
-      slug: 'fall',
-      date: '2026-08-01',
-      summary: null,
-      image: null,
-      tags: null,
-    },
-  ],
   yearInLife: [
     {
       _key: 'tile-1',
@@ -148,20 +118,6 @@ const data = {
   },
   seo: null,
 } as unknown as HomepageData;
-
-describe('newsHref', () => {
-  it('opens the page of the first tag that has one', () => {
-    expect(newsHref([{ _type: 'event', kind: 'festival' }])).toBe('/odunde');
-    expect(newsHref([{ _type: 'event', kind: 'gala' }])).toBe('/gala');
-    expect(newsHref([{ _type: 'program', page: 'lessons' }])).toBe('/programs/yoruba-lessons');
-    expect(newsHref([{ _type: 'program', page: null }])).toBe('/programs');
-    expect(
-      newsHref([{ _type: 'event', kind: 'other' }, null, { _type: 'event', kind: 'gala' }]),
-    ).toBe('/gala');
-    expect(newsHref(null)).toBeUndefined();
-    expect(newsHref([{ _type: 'event', kind: 'other' }])).toBeUndefined();
-  });
-});
 
 describe('buildHomepage', () => {
   it('fills the layout defaults and drives the body attributes from them', () => {
@@ -276,15 +232,6 @@ describe('buildHomepage', () => {
     expect(view.stats.map((stat) => stat.label)).toEqual([
       'years serving SoCal',
       'hometown associations',
-    ]);
-  });
-
-  it('lists the news oldest first with Read more on the page each post is tagged to', () => {
-    const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
-    expect(view.news.map(({ post, href }) => [post._id, href])).toEqual([
-      ['recap', '/odunde'],
-      ['fall', undefined],
-      ['gala', '/gala'],
     ]);
   });
 

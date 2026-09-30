@@ -121,7 +121,6 @@ describe('buildSeed', () => {
       ['initiative-1', 'Solar Hub'],
       ['initiative-2', 'Green Goods'],
     ]);
-    expect(docs.filter((d) => d._type === 'newsPost')).toHaveLength(3);
     expect(docs.filter((d) => d._type === 'photographer')).toHaveLength(3);
     expect(docs.filter((d) => d._type === 'door')).toHaveLength(5);
   });
@@ -157,19 +156,6 @@ describe('buildSeed', () => {
       expect(album.cover).toBeDefined();
     }
     expect(byId.get('album-summer-camp')).not.toHaveProperty('date');
-  });
-
-  it('stores the three real news posts on the first of their month', () => {
-    const posts = docs.filter((d) => d._type === 'newsPost') as unknown as {
-      date: string;
-      slug: { current: string };
-    }[];
-    expect(posts.map((p) => p.date).sort()).toEqual(['2026-07-01', '2026-08-01', '2026-11-01']);
-    expect(posts.map((p) => p.slug.current).sort()).toEqual([
-      'end-of-year-gala-2026',
-      'language-lessons-fall-term',
-      'odunde-2026-recap',
-    ]);
   });
 });
 

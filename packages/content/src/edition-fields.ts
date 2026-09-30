@@ -1,4 +1,4 @@
-import { EVENT_PAGE_NAMES } from './routes';
+import { COLLECTIVE_NAME, EVENT_PAGE_NAMES } from './routes';
 
 /**
  * What each kind of event shows in the Studio (ADR 0042): the inputs that kind's pages read. A
@@ -11,14 +11,14 @@ export type EventKind = (typeof EVENT_KINDS)[number];
 export const EVENT_KIND_TITLES: Record<EventKind, string> = {
   festival: EVENT_PAGE_NAMES.festival,
   gala: EVENT_PAGE_NAMES.gala,
-  collective: 'Collective event',
+  collective: `${COLLECTIVE_NAME} event`,
 };
 
 /** The Events lists, one per kind. */
 export const EVENT_LIST_TITLES: Record<EventKind, string> = {
   festival: `${EVENT_PAGE_NAMES.festival} editions`,
   gala: `${EVENT_PAGE_NAMES.gala} editions`,
-  collective: 'Collective events',
+  collective: `${COLLECTIVE_NAME} events`,
 };
 
 /** Every event input beyond kind, title, start, end, the venue's name and the summary, which all kinds read. */

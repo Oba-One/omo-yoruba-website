@@ -20,6 +20,6 @@ describe('EventList', () => {
   it('shows the Pending line with nothing to come', async () => {
     const body = await renderToBody(Pending);
     expect(body.querySelector('ul')).toBeNull();
-    expect(text(body.querySelector('.oy-pend-line'))).toContain('the next Collective events');
+    expect(text(body.querySelector('.oy-pend-line'))).toContain('the next events');
   });
 });

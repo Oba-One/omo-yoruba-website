@@ -84,7 +84,7 @@ _Avoid_: badge, tag, progress
 **Collective event**:
 A one-off gathering the Collective hosts, listed on its page while it is dated and still to
 come. Never an edition: it has no season and no year before or after it, and the Studio asks for
-no edition year (ADR 0042).
+no edition year (ADR 0042). The Studio names it in full, a Yoruba Cultural Collective event (ADR 0047).
 _Avoid_: edition, meetup, class
 
 **Program**:
@@ -129,7 +129,8 @@ _Avoid_: green theme, collective mode
 **Door**:
 One of the Get Involved entry points (member, volunteer, vendor, partner, give), kept once as a
 `door` document and shown by the homepage, Get Involved and Donate. Renders as a card, a card
-laid out as a row, or a path row; on Get Involved the give door closes the page as a box.
+laid out as a row, or a path row; on Get Involved the give door closes the page as a box. The Studio
+calls it a way to get involved (ADR 0047).
 _Avoid_: tile, option, pathway
 
 **Glance strip**:
@@ -164,7 +165,7 @@ _Avoid_: noise, paper grain
 
 **Trust line**:
 The footer line "501(c)(3) nonprofit since 1997 • EIN XX-XXXXXXX • Los Angeles, CA"; the EIN
-reads XX-XXXXXXX until the site settings hold it.
+reads XX-XXXXXXX until Organization details hold it.
 _Avoid_: legal line, footer credits, disclaimer
 
 **Mobile menu**:
@@ -249,7 +250,7 @@ an enquiry: it becomes a `subscriber` document.
 _Avoid_: lead, submission, request, newsletter enquiry
 
 **Routing contact**:
-An entry in the site settings that receives one or more enquiry kinds: a role, a name, an
+An entry in Organization details that receives one or more enquiry kinds: a role, a name, an
 email, a phone and a response line. It names the person in a form's success copy; when it is
 empty the copy names the role instead.
 _Avoid_: named contact in code, hard-coded address, coordinator field
@@ -312,7 +313,7 @@ _Avoid_: donation tier, preset, amount selector
 **Other way to give**:
 A way to give besides the Give Dialog: by check, employer matching, in-kind goods, a donor-advised
 fund. The check row carries the mailing address, and the matching and fund rows the EIN and the legal
-name, from the site settings.
+name, from Organization details.
 _Avoid_: offline donation, alternative payment
 
 **Hometown association**:
@@ -351,9 +352,20 @@ facts; the settings with drastic effects are an administrator's (ADR 0042).
 _Avoid_: user, editor (the role's name), volunteer (a person group)
 
 **Administrator**:
-The owner and whoever they trust with site settings, the News page, the Inbox, the Vision tool and the held-back
+The owner and whoever they trust with Organization details, the Inbox, the Vision tool and the held-back
 switches.
 _Avoid_: admin user, superuser, owner (one person; there may be more administrators)
+
+**Member voice**:
+A quote from someone the organization serves (a parent, an elder, a vendor), kept as a `testimonial`
+document and shown with permission to name or as initials; the homepage heads them Member voices. Not a
+Member of the Studio (ADR 0047).
+_Avoid_: testimonial in copy, review, endorsement
+
+**Organization details**:
+The administrators' document (`siteSettings`) holding the organization's public facts, the routing contacts, the
+footer and the services (Zeffy, analytics, theme); the To do gathers its rows under the same name (ADR 0047).
+_Avoid_: site settings (its Studio name until 30 September 2026), globals, config
 
 **Held-back switch**:
 A layout option that publishes content waiting for an owner decision (the gallery's coming-soon state, which takes the
@@ -366,10 +378,6 @@ The Studio view listing what the site still owes, by page, with counts: only row
 to an edition only for the edition its page shows), what is still to add, and wording to check (ADR 0042). It replaced the
 Pending view.
 _Avoid_: Pending view, backlog, task list
-
-**Used on several pages**:
-The sidebar group for documents more than one page reads: programs, headline figures, doors, partners (ADR 0042).
-_Avoid_: shared content, globals, library
 
 **Wording to check**:
 The To do's list of lint reports with something to fix: published text that breaks the voice rules.

@@ -16,8 +16,6 @@ export const PUBLIC_ROUTES = [
   '/donate',
   '/gallery',
   '/gallery/[album]',
-  '/news',
-  '/news/[slug]',
   // The page for an address the site does not have: the chrome's site settings only. Never listed
   // anywhere a visitor browses (a sitemap, a menu).
   '/404',
@@ -37,7 +35,6 @@ export const ROUTE_SINGLETONS: Record<string, PublicRoute> = {
   storyPage: '/our-story',
   donatePage: '/donate',
   galleryPage: '/gallery',
-  newsPage: '/news',
 };
 
 /** The event pages' names, by the kind of edition they show: never with a year (ADR 0031). */
@@ -45,6 +42,9 @@ export const EVENT_PAGE_NAMES = {
   festival: 'Odunde Festival',
   gala: 'End-of-Year Gala',
 } as const;
+
+/** The Collective's name in full, as its page and the Studio say it. */
+export const COLLECTIVE_NAME = 'Yoruba Cultural Collective';
 
 export interface EditionPage {
   route: PublicRoute;
@@ -59,10 +59,7 @@ const EDITION_PAGES: Readonly<Record<string, EditionPage>> = {
     name: EVENT_PAGE_NAMES.festival,
   },
   gala: { route: ROUTE_SINGLETONS.galaPage as PublicRoute, name: EVENT_PAGE_NAMES.gala },
-  collective: {
-    route: ROUTE_SINGLETONS.collectivePage as PublicRoute,
-    name: 'Yoruba Cultural Collective',
-  },
+  collective: { route: ROUTE_SINGLETONS.collectivePage as PublicRoute, name: COLLECTIVE_NAME },
 };
 
 /**
@@ -73,7 +70,7 @@ export function editionPage(kind: string | null | undefined): EditionPage | unde
   return kind && Object.hasOwn(EDITION_PAGES, kind) ? EDITION_PAGES[kind] : undefined;
 }
 
-/** The route alone: the one answer the news cards, the event band and the Presentation tool share. */
+/** The route alone: the one answer the event band and the Presentation tool share. */
 export function editionRoute(kind: string | null | undefined): PublicRoute | undefined {
   return editionPage(kind)?.route;
 }
@@ -134,7 +131,6 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
     '/impact',
     '/gallery',
     '/gallery/[album]',
-    '/news',
   ],
   // The festival page draws the zones; the Gala's running order names a row's zone too.
   zone: ['/odunde', '/gala'],
@@ -147,7 +143,6 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   person: ['/our-story', '/programs/yoruba-lessons', '/impact'],
   // The slimmed Lessons page has no voices; a lessons testimonial fills the homepage's parent slot.
   testimonial: ['/', '/impact', '/programs/cultural-collective'],
-  newsPost: ['/news/[slug]', '/news', '/'],
   // Impact's civic cells come from the newest past festival edition whose album has photographs.
   album: ['/gallery/[album]', '/gallery', '/odunde', '/gala', '/impact'],
   // The credit line under an album and in the Lightbox; the gallery's tiles carry no credit (ADR 0039).

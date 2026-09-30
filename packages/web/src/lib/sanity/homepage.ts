@@ -4,8 +4,7 @@
  * lead edition from the season rule, the hero's own gold button whatever the highlight (ADR 0042;
  * the prototype swapped in the highlighted program's action), the strip's short labels, every
  * image resolved to a CDN set with its alt and hotspot framing, the voices padded to the
- * prototype's three placeholder slots while fewer exist, the news oldest first with Read more on
- * the page each post is tagged to, the body data attributes the options drive, the head's title
+ * prototype's three placeholder slots while fewer exist, the body data attributes the options drive, the head's title
  * and description cleaned of stega, and the `data-sanity` attributes for click-to-edit, only in
  * draft mode.
  */
@@ -13,7 +12,6 @@ import { withLayoutDefaults } from '@oy/content/layout';
 import { calendarKind, leadEvent, leadKindOf } from '@oy/content/lead-event';
 import { HOMEPAGE_VOICE_SLOTS, type VoiceSlot } from '@oy/content/pending';
 import type { homepageQuery } from '@oy/content/queries';
-import { editionRoute, programRoute } from '@oy/content/routes';
 import { usableAction } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
 import { type BuildOptions, cleanText, editAttributes, resolveImage } from './view';
@@ -33,24 +31,6 @@ export interface HomepageLayout extends Record<string, string> {
 }
 
 const ORG_NAME = 'Omo Yorùbá of Southern California';
-
-type NewsTag = { _type: string; kind?: string | null; page?: string | null } | null;
-
-/**
- * Where a post's Read more goes while the News page waits on its cadence (wayfinder ticket 08):
- * the page of the first tag that has one, an edition's event page or a program's page (the hub
- * for a program without its own). Undefined leaves the card without a link.
- */
-export function newsHref(tags: readonly NewsTag[] | null | undefined): string | undefined {
-  for (const tag of tags ?? []) {
-    if (tag?._type === 'event') {
-      const route = editionRoute(tag.kind);
-      if (route) return route;
-    }
-    if (tag?._type === 'program') return programRoute(tag.page);
-  }
-  return undefined;
-}
 
 export function buildHomepage(data: HomepageData | null, options: BuildOptions) {
   const { imageSet, now = new Date() } = options;
@@ -124,12 +104,6 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
     voicesIntro: data?.voicesIntro,
     voices,
     proverb: data?.voicesProverb,
-    newsIntro: data?.newsIntro,
-    // The three newest, read oldest first as the prototype lists them.
-    news: (data?.news ?? [])
-      .filter((post) => post !== null)
-      .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
-      .map((post) => ({ post, href: newsHref(post.tags) })),
     tiles: (data?.yearInLife ?? []).map((tile) => ({
       image: resolveImage(imageSet, tile, { width: 640 }),
       alt: tile.alt ?? '',

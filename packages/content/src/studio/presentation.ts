@@ -50,7 +50,7 @@ const unlisted = (message: string) => ({ message, tone: 'caution' as const, loca
  * Where each document shows, so click-to-edit and the locations banner work from /admin
  * (docs/design/CONTENT-MODEL.md section 5). Every type's list comes from src/routes.ts; the
  * resolvers below only reorder it by the document (an edition's kind, a program's page) or add
- * the document's own dynamic route (a post, an album).
+ * the document's own dynamic route (an album).
  */
 export const presentationOptions: PresentationPluginOptions = {
   previewUrl: {
@@ -63,7 +63,6 @@ export const presentationOptions: PresentationPluginOptions = {
     mainDocuments: defineDocuments([
       ...Object.entries(ROUTE_SINGLETONS).map(([type, route]) => ({ route, type })),
       { route: '/gallery/:slug', filter: '_type == "album" && slug.current == $slug' },
-      { route: '/news/:slug', filter: '_type == "newsPost" && slug.current == $slug' },
       // The 404 page reads nothing but the chrome's settings.
       { route: '/404', type: 'siteSettings' },
     ]),
@@ -74,7 +73,7 @@ export const presentationOptions: PresentationPluginOptions = {
           .map((type) => [type, { locations: locationsFor(type) }]),
       ),
       siteSettings: {
-        message: 'Site settings show on every page.',
+        message: 'Organization details show on every page.',
         tone: 'caution',
         locations: PUBLIC_ROUTES.filter(isStatic).map(location),
       },
@@ -112,15 +111,6 @@ export const presentationOptions: PresentationPluginOptions = {
             'testimonial',
             doc?.context === 'collective' ? '/programs/cultural-collective' : '/',
           ),
-        }),
-      }),
-      newsPost: defineLocations({
-        select: { title: 'title', slug: 'slug.current' },
-        resolve: (doc) => ({
-          locations: [
-            ...(doc?.slug ? [{ title: doc.title ?? 'This post', href: `/news/${doc.slug}` }] : []),
-            ...locationsFor('newsPost'),
-          ],
         }),
       }),
       album: defineLocations({

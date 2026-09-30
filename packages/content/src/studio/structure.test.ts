@@ -125,16 +125,13 @@ describe('who is an administrator', () => {
 
 describe('the sidebar follows the site', () => {
   it('opens with the To do, then the site, then what administrators keep', () => {
-    expect(ids(cached(EDITOR))).toEqual([
-      'todo',
-      'newsPost',
-      'events',
-      'photos',
-      'people',
-      'pages',
-      'shared',
-    ]);
+    expect(ids(cached(EDITOR))).toEqual(['todo', 'events', 'photos', 'people', 'pages']);
     expect(ids(cached(ADMIN))).toEqual([...ids(cached(EDITOR)), 'siteSettings', 'inbox']);
+    expect(
+      items(cached(ADMIN))
+        .slice(-2)
+        .map((item) => item.getTitle()),
+    ).toEqual(['Organization details', 'Inbox']);
   });
 
   it('places every document type once, the To do holding the wording to check', () => {
@@ -161,6 +158,12 @@ describe('the sidebar follows the site', () => {
   it('lists each event with its editions, and each kind starts new events as itself', () => {
     const events = child(cached(EDITOR), 'events');
     expect(ids(events)).toEqual(['odunde', 'gala', 'events-collective']);
+    // Each by its name in full; the Collective's one list says what it holds.
+    expect(items(events).map((item) => item.getTitle())).toEqual([
+      'Odunde Festival',
+      'End-of-Year Gala',
+      'Yoruba Cultural Collective events',
+    ]);
     expect(ids(child(events, 'odunde'))).toEqual(['events-festival', 'zone']);
     expect(ids(child(events, 'gala'))).toEqual([
       'events-gala',
@@ -181,33 +184,60 @@ describe('the sidebar follows the site', () => {
     }
   });
 
-  it('lists the pages as the site does, Impact with its governance filings beside it', () => {
+  it('lists the pages as the site does, each with the documents it lists beside it', () => {
     const pages = child(cached(EDITOR), 'pages');
     expect(ids(pages)).toEqual(SITE_PAGES.map(({ type }) => type));
     expect(items(pages).map((item) => item.getTitle())).toEqual(
       SITE_PAGES.map(({ title }) => title),
     );
-    expect(ids(child(pages, 'impactPage'))).toEqual(['impactPage', 'governanceDoc']);
+    expect(ids(child(pages, 'programsPage'))).toEqual(['programsPage', 'program']);
+    expect(ids(child(pages, 'getInvolvedPage'))).toEqual(['getInvolvedPage', 'door']);
+    expect(ids(child(pages, 'impactPage'))).toEqual([
+      'impactPage',
+      'stat',
+      'partner',
+      'governanceDoc',
+    ]);
     // A page's own lists (initiatives, the timeline, the giving levels) are in its form.
     for (const page of ['storyPage', 'donatePage', 'collectivePage']) {
       expect((child(pages, page) as unknown as DocumentBuilder).getDocumentId()).toBe(page);
     }
     const homepage = child(pages, 'homepage') as unknown as DocumentBuilder;
     expect(homepage.getDocumentId()).toBe('homepage');
-    expect(ids(child(cached(ADMIN), 'pages'))).toEqual([
-      ...SITE_PAGES.map(({ type }) => type),
-      'newsPage',
-    ]);
+    expect(ids(child(cached(ADMIN), 'pages'))).toEqual(SITE_PAGES.map(({ type }) => type));
   });
 
-  it('groups photos, people and the documents several pages read', () => {
+  it('groups photos and people, and titles every list by the documents it holds', () => {
+    const titles = (list: ListBuilder) => items(list).map((item) => item.getTitle());
+    const pages = child(cached(EDITOR), 'pages');
     expect(ids(child(cached(EDITOR), 'photos'))).toEqual(['album', 'photographer']);
+    expect(titles(child(cached(EDITOR), 'photos'))).toEqual(['Albums', 'Photographers']);
     expect(ids(child(cached(EDITOR), 'people'))).toEqual([
       'person',
       'testimonial',
       'hometownAssociation',
     ]);
-    expect(ids(child(cached(EDITOR), 'shared'))).toEqual(['program', 'stat', 'door', 'partner']);
+    expect(titles(child(cached(EDITOR), 'people'))).toEqual([
+      'People',
+      'Member voices',
+      'Hometown associations',
+    ]);
+    expect(titles(child(pages, 'getInvolvedPage'))).toEqual([
+      'Get Involved page',
+      'Ways to get involved',
+    ]);
+    expect(titles(child(pages, 'impactPage'))).toEqual([
+      'Impact page',
+      'Headline figures',
+      'Partners',
+      'Governance documents',
+    ]);
+    expect(titles(child(child(cached(EDITOR), 'events'), 'gala'))).toEqual([
+      'Editions',
+      'Ticket tiers',
+      'Sponsor levels',
+      'Honorees',
+    ]);
   });
 });
 
@@ -321,7 +351,7 @@ describe('the To do in the sidebar', () => {
       'Odunde, zones: the unnamed zones (2 of 4)',
       'Gala, seats and tables: three prices and what each includes',
       'Sponsorship: level names and amounts',
-      'Collective, events: the next Collective events',
+      'Yoruba Cultural Collective: the next events',
     ]);
     const next = (await open(still, 'next-gala')) as DocumentListBuilder;
     expect(templateIds(next)).toEqual(['event-gala']);
@@ -446,7 +476,7 @@ describe('tools, actions and templates per role', () => {
     );
 
   it("lets only administrators act on an administrator's documents", () => {
-    expect([...ADMIN_ONLY_TYPES]).toEqual(['siteSettings', 'newsPage', 'enquiry', 'subscriber']);
+    expect([...ADMIN_ONLY_TYPES]).toEqual(['siteSettings', 'enquiry', 'subscriber']);
     for (const type of ADMIN_ONLY_TYPES) expect(allowed(type, EDITOR), type).toEqual([]);
     expect(allowed('enquiry', ADMIN)).toContain('publish');
   });

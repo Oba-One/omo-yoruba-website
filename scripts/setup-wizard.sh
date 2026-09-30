@@ -305,7 +305,7 @@ if (( VERCEL_READY )) && confirm "Push the values from $ENV_FILE to Vercel now? 
 else
   SKIPPED+=("Vercel environment variables: push them later by re-running stage 3, or add them in the dashboard")
 fi
-note "The Zeffy donation form's link lives in the Studio's site settings, and the Gala's ticket link on the edition; neither is an environment variable."
+note "The Zeffy donation form's link lives in the Studio's Organization details, and the Gala's ticket link on the edition; neither is an environment variable."
 note "Public values are baked in at build time: redeploy after changing one."
 pause
 

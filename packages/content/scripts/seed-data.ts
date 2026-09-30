@@ -316,49 +316,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     edition: 2025,
   });
 
-  const posts = [
-    {
-      id: 'news-odunde-2026-recap',
-      title: 'Odunde 2026: the recap',
-      slug: 'odunde-2026-recap',
-      date: '2026-07-01',
-      summary:
-        'Four zones, one village. Photos, video, and the numbers from our biggest festival yet.',
-      tag: 'event-odunde-2026',
-      image: 'odunde-2026-procession-begins.jpg',
-    },
-    {
-      id: 'news-language-lessons-fall-term',
-      title: 'Language Lessons fall term',
-      slug: 'language-lessons-fall-term',
-      date: '2026-08-01',
-      summary: 'New learners welcome. Write to the teacher to find a time that suits your family.',
-      tag: 'program-yoruba-lessons',
-      image: 'odunde-2026-attendees-learning-yoruba.jpg',
-    },
-    {
-      id: 'news-end-of-year-gala-2026',
-      title: 'End-of-Year Gala',
-      slug: 'end-of-year-gala-2026',
-      date: '2026-11-01',
-      summary: 'An evening of culture, community, and celebration. Tables available now.',
-      tag: 'event-gala-2026',
-      image: 'gala-2025-attendees-sitting.jpg',
-    },
-  ];
-  for (const post of posts) {
-    docs.push({
-      _id: post.id,
-      _type: 'newsPost',
-      title: post.title,
-      slug: { _type: 'slug', current: post.slug },
-      date: post.date,
-      summary: post.summary,
-      image: image(assets, post.image),
-      tags: withKeys('tag', [ref(post.tag)]),
-    });
-  }
-
   for (const [albumId, album] of Object.entries(ALBUMS) as [AlbumId, (typeof ALBUMS)[AlbumId]][]) {
     const files = [...assets.entries()].filter(([, asset]) => asset.album === albumId);
     const photographer = files[0]?.[1].photographer;
@@ -946,8 +903,6 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     }),
   );
 
-  docs.push(page('newsPage', { header: { title: 'News and events' } }));
-
   return docs;
 }
 
@@ -965,8 +920,8 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   festivalPage: ['takePartOrder', 'layout.takepart'],
   // The tiers' own order and featured flag (ADR 0042); the edition fills all five glance facts.
   galaPage: ['takePartOrder', 'layout.emphasis', 'extraFacts'],
-  // The season option leads the event band (ADR 0042).
-  homepage: ['leadEvent'],
+  // The season option leads the event band (ADR 0042); the homepage has no news (ADR 0048).
+  homepage: ['leadEvent', 'newsIntro'],
   // The updates row always points at the newsletter (ADR 0042).
   collectivePage: ['keepsOwnList'],
   // The nav draws the wordmark and logo itself, and the footer draws no blurb (ADR 0042).
@@ -990,6 +945,12 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
   // first. No page reads an edition's hero image.
   event: ['album', 'heroImage'],
 };
+
+/**
+ * Document types a schema change retired: the `retired-types` migration deletes every document of one,
+ * with the content-lint function's report on it. The site has no news (ADR 0048).
+ */
+export const RETIRED_TYPES: readonly string[] = ['newsPost', 'newsPage'];
 
 /**
  * Retired fields a migration moves before they go (`scripts/migrations`), by `type.field`: the seed

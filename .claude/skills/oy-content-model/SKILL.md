@@ -58,7 +58,7 @@ with its minimum. The site renders `<Pending what={pendingWhat(type, field)} />`
 
 The Studio's To do (`src/studio/todo.ts`) groups the rows by the page their Where names: the
 words before its first comma must be one of the page labels in `REGISTER_PAGES` (`todo.test.ts`
-fails otherwise), and site settings rows go under Organization details. A row for an item of a page's
+fails otherwise), and `siteSettings` rows go under Organization details. A row for an item of a page's
 own list keeps the item's type and names the list (`list: { page, field }`), so the site asks for its chip
 as before and the To do asks the page. A row bound to an edition
 says which one it asks about (`edition: 'next'` or `'past'`): an event row asks the edition itself,

@@ -42,7 +42,9 @@ describe('the rows of the To do', () => {
       else expect(pages, `${entry.where}: ${entry.what}`).toContain(group);
     }
     expect(todoGroup(rowOf(ADMINISTRATORS, 'Sponsorship', 'the amount').entry)).toBe('galaPage');
-    expect(todoGroup(rowOf(ADMINISTRATORS, 'Doors', 'the blurb').entry)).toBe('getInvolvedPage');
+    expect(
+      todoGroup(rowOf(ADMINISTRATORS, 'Get Involved, ways to get involved', 'the blurb').entry),
+    ).toBe('getInvolvedPage');
     expect(() => todoGroup({ type: 'zone', where: 'Nowhere, at all', what: 'x' })).toThrow();
   });
 
@@ -261,7 +263,7 @@ describe('what the To do counts', () => {
     const two = counted(2, 0).find(({ add }) => add.id === zones.id);
     expect(two && missingRowTitle(two)).toBe('Odunde, zones: the unnamed zones (2 of 4)');
     const none = counted(2, 0).find(({ add }) => add.id === partners.id);
-    expect(none && missingRowTitle(none)).toBe('Partner rows: partner and funder names');
+    expect(none && missingRowTitle(none)).toBe('Impact and Odunde: partner and funder names');
     const full = counted(4, 1).map(({ add }) => add.id);
     expect(full).not.toContain(zones.id);
     expect(full).not.toContain(partners.id);

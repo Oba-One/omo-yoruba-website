@@ -58,19 +58,8 @@ describe('lintDocument', () => {
 
   it('skips the inputs the Studio hides for good, and checks the same inputs where they show', () => {
     const image = { alt: `Elders ${dash} dancing`, creditNote: `Photo ${dash} Ade` };
-    const post = {
-      _id: 'news-1',
-      _type: 'newsPost',
-      body: [
-        {
-          _type: 'block',
-          _key: 'b1',
-          children: [{ _type: 'span', _key: 's1', text: `a ${dash} b` }],
-        },
-      ],
-      seo: { ogImage: image },
-    };
-    expect(lintDocument(post)).toEqual([]);
+    const home = { _id: 'homepage', _type: 'homepage', seo: { ogImage: image } };
+    expect(lintDocument(home)).toEqual([]);
     const impact = { _id: 'impactPage', _type: 'impactPage', header: { image } };
     expect(lintDocument(impact)).toEqual([]);
     const festival = { _id: 'festivalPage', _type: 'festivalPage', header: { image } };
@@ -105,7 +94,7 @@ describe('lintDocument', () => {
 
   it('shortens a long excerpt around the finding', () => {
     const long = `${'Words '.repeat(30)}${dash}${' words'.repeat(30)}`;
-    const [finding] = lintDocument({ _id: 'x', _type: 'newsPost', summary: long });
+    const [finding] = lintDocument({ _id: 'x', _type: 'event', summary: long });
     expect(finding?.excerpt.length).toBeLessThan(120);
     expect(finding?.excerpt).toContain(dash);
   });
@@ -113,14 +102,14 @@ describe('lintDocument', () => {
 
 describe('buildReport and documentTitle', () => {
   it('writes one report per document with a period free id, empty when clean', () => {
-    const doc = { _id: 'drafts-free-id', _type: 'newsPost', _rev: 'r1', title: 'Fall term' };
+    const doc = { _id: 'drafts-free-id', _type: 'album', _rev: 'r1', title: 'Summer camp' };
     const report = buildReport(doc, lintDocument(doc), '2026-09-11T12:00:00Z');
     expect(report).toEqual({
       _id: 'lint-drafts-free-id',
       _type: 'lintReport',
       documentId: 'drafts-free-id',
-      documentType: 'newsPost',
-      title: 'Fall term',
+      documentType: 'album',
+      title: 'Summer camp',
       checkedRev: 'r1',
       checkedAt: '2026-09-11T12:00:00Z',
       findings: [],
@@ -161,7 +150,7 @@ describe('buildReport and documentTitle', () => {
 describe('LINT_TYPES and the Blueprint manifest', () => {
   it('lists every content type and never the enquiry, subscriber or lint report types', () => {
     expect(LINT_TYPES).toContain('siteSettings');
-    expect(LINT_TYPES).toContain('newsPost');
+    expect(LINT_TYPES).toContain('album');
     for (const type of ['enquiry', 'subscriber', 'lintReport'])
       expect(LINT_TYPES).not.toContain(type);
   });

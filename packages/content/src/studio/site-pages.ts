@@ -1,4 +1,4 @@
-import { EVENT_PAGE_NAMES } from '../routes';
+import { COLLECTIVE_NAME, EVENT_PAGE_NAMES } from '../routes';
 
 /**
  * The site's pages as the Studio names them, in the order the site's navigation walks them: the
@@ -10,7 +10,7 @@ export const SITE_PAGES = [
   { type: 'galaPage', title: EVENT_PAGE_NAMES.gala },
   { type: 'programsPage', title: 'Programs' },
   { type: 'lessonsPage', title: 'Yoruba Language Lessons' },
-  { type: 'collectivePage', title: 'Yoruba Cultural Collective' },
+  { type: 'collectivePage', title: COLLECTIVE_NAME },
   { type: 'getInvolvedPage', title: 'Get Involved' },
   { type: 'impactPage', title: 'Impact' },
   { type: 'storyPage', title: 'Our Story' },

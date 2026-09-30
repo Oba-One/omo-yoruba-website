@@ -1,6 +1,6 @@
 ---
 name: oy-content-ops
-description: Recipes for adding or changing site content through the Sanity MCP server. Use when the owner asks to add a news post, an event edition, an album, a person, an outcome, a governance document, a giving level, or to clear a Pending item.
+description: Recipes for adding or changing site content through the Sanity MCP server. Use when the owner asks to add an event edition, an album, a person, an outcome, a governance document, a giving level, or to clear a Pending item.
 ---
 
 # Content operations
@@ -11,8 +11,8 @@ owner (it wrote the album credits on 28 September 2026). Shapes come from the sc
 that shaped it are ADR 0013 to ADR 0017. Editor-facing version: `docs/content-ops.md`
 (Phase 10). Copy rules: the `oy-voice` skill. The site and the Studio read `development` until
 the owner settles the datasets (open-work D3); the seed (`bun seed`) fills it with the confirmed
-facts and the photographs. Members edit details and facts; administrators keep site settings, the
-Inbox, the Vision tool and the three held-back switches (ADR 0042).
+facts and the photographs. Members edit details and facts; administrators keep Organization details
+(`siteSettings`), the Inbox, the Vision tool and the three held-back switches (ADR 0042, ADR 0047).
 
 ## Before writing
 
@@ -28,17 +28,12 @@ rather than duplicates. Ids you create never contain a period.
 
 ## Recipes
 
-- **News post**: `newsPost` draft with title, slug, date (the first of the month when only the
-  month is known), bilingual kicker (Yoruba with marks, English), summary, image from an existing
-  asset or a new upload with `alt`, and tags. No body or author: there is no News page before
-  launch, so the Studio hides both (ADR 0042). Run the voice check. Publish, or leave as a draft
-  for review.
 - **Event edition**: drafts, published on the announce day; no Content Release (ADR 0042). The
   `event` with its kind, dates, venue and what its kind's form shows (`edition-fields.ts`): cost,
   schedule rows and vendor terms for the festival; doors, dress, tickets link and running order for
   the Gala, plus `ticketTier`, `sponsorLevel` and `honoree` documents that each name the Gala
   edition. The page singletons rarely change. Checklist: `/oy-release`.
-- **Collective event**: start it from Events, then Collective events, so the kind is set (through the
+- **Collective event**: start it from Events, then Yoruba Cultural Collective events, so the kind is set (through the
   Sanity MCP server, set `kind` to `collective` yourself): its title,
   `start` (and `end` when it has one), the one-line summary and `venue.name`. It needs no edition year
   (ADR 0030, ADR 0042), and the form shows nothing else. The Collective page lists it from the moment it is published until it
@@ -91,8 +86,8 @@ rather than duplicates. Ids you create never contain a period.
   the response line the success copy uses ("within five working days"). The `general` contact answers
   on Get Involved and Our Story; `partnerships` closes Impact.
 - **Clear pending**: open the To do in the Studio (rows come from `packages/content/src/pending.ts`,
-  grouped by the page that shows them; members see only the rows they can act on, and the site
-  settings rows sit under Organization details for administrators), open a row, fill the field and
+  grouped by the page that shows them; members see only the rows they can act on, and the
+  organization's rows sit under Organization details for administrators), open a row, fill the field and
   publish; the row leaves the To do, and the chip leaves the site after the purge. Still to add
   rows clear when enough documents exist. Through the Sanity MCP server there is no To do: query
   the row's filter (`pendingFilter` in `pending.ts`) with the drafts perspective, and for a row with

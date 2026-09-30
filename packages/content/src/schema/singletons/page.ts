@@ -11,7 +11,7 @@ export interface PageSpec {
   fields: FieldDefinition[];
   /** The tweak props from ROUTES section 5, same names and options as the prototype. */
   layout: readonly LayoutSpec[];
-  /** Pages without a gold action (the news page) skip the actions group. */
+  /** Pages without a gold action skip the actions group. */
   actions?: boolean;
   /** Pages without a header object (the homepage has a hero instead). */
   header?: boolean;

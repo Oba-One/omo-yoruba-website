@@ -14,7 +14,6 @@ import { pendingWhat } from '@oy/content/pending';
 import { homepageQuery } from '@oy/content/queries';
 import EventBand from '@oy/ui/bands/EventBand/EventBand.astro';
 import DoorCard from '@oy/ui/cards/DoorCard/DoorCard.astro';
-import NewsCard from '@oy/ui/cards/NewsCard/NewsCard.astro';
 import PathRow from '@oy/ui/cards/PathRow/PathRow.astro';
 import ProgramCard from '@oy/ui/cards/ProgramCard/ProgramCard.astro';
 import PullQuote from '@oy/ui/cards/PullQuote/PullQuote.astro';
@@ -94,20 +93,6 @@ cachePage(Astro, '/', { draft: preview, failed: Boolean(error) });
         ))}
       </CardGrid>
       <ProverbLine yo={home.proverb?.yo} en={home.proverb?.en} />
-    </Section>
-
-    <Section id="news" labelledby="news-heading">
-      <SectionHead
-        kicker={{ en: 'Stay close' }}
-        title="News & events"
-        intro={home.newsIntro}
-        id="news-heading"
-      />
-      <CardGrid columns={3}>
-        {home.news.map(({ post, href }) => (
-          <NewsCard post={post} href={href} />
-        ))}
-      </CardGrid>
     </Section>
 
     <Section id="gallery" ground="alt" labelledby="gallery-heading">

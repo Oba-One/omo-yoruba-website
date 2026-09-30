@@ -100,7 +100,7 @@ describe('the Collective page-section stories', () => {
     expect(shown?.querySelectorAll('#events li.oy-lrow--event')).toHaveLength(2);
     expect(shown?.querySelector('#top a[href="#events"]')).toBeInstanceOf(HTMLElement);
     const pending = (await renderToBody(Events.Pending)).querySelector('#events');
-    expect(text(pending?.querySelector('.oy-pend-line'))).toContain('the next Collective events');
+    expect(text(pending?.querySelector('.oy-pend-line'))).toContain('the next events');
     const hidden = (await renderToBody(Events.Hidden)).querySelector('.oy-home');
     expect(hidden?.getAttribute('data-events')).toBe('hidden');
     expect(hidden?.querySelector('#events')).toBeNull();

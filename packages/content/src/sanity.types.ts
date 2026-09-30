@@ -14,10 +14,6 @@
 
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
-type ArrayOf<T> = Array<T & {
-  _key: string;
-}>;
-
 // Source: schema.json
 export type Subscriber = {
   _id: string;
@@ -288,64 +284,6 @@ export type Slug = {
   source?: string;
 };
 
-export type ProgramReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "program";
-};
-
-export type PersonReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "person";
-};
-
-export type NewsPost = {
-  _id: string;
-  _type: "newsPost";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  slug?: Slug;
-  date?: string;
-  kicker?: Bilingual;
-  summary?: string;
-  body?: BlockContent;
-  image?: OyImage;
-  tags?: ArrayOf<ProgramReference | EventReference>;
-  author?: PersonReference;
-};
-
-export type BlockContent = Array<{
-  children?: Array<{
-    marks?: Array<string>;
-    text?: string;
-    _type: "span";
-    _key: string;
-  }>;
-  style?: "normal" | "h3" | "blockquote";
-  listItem?: never;
-  markDefs?: Array<{
-    href?: string;
-    _type: "link";
-    _key: string;
-  }>;
-  level?: number;
-  _type: "block";
-  _key: string;
-} | {
-  _key: string;
-} & PullQuote>;
-
-export type Bilingual = {
-  _type: "bilingual";
-  yo?: string;
-  en?: string;
-};
-
 export type Honoree = {
   _id: string;
   _type: "honoree";
@@ -430,35 +368,6 @@ export type SourcedFigure = {
   asOf?: string;
 };
 
-export type NewsPage = {
-  _id: string;
-  _type: "newsPage";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  header?: PageHeader;
-  layout?: {
-    order?: "events-led" | "feed-led";
-    filtersShown?: "shown" | "hidden";
-  };
-  seo?: Seo;
-};
-
-export type Seo = {
-  _type: "seo";
-  title?: string;
-  description?: string;
-  ogImage?: OyImage;
-};
-
-export type PageHeader = {
-  _type: "pageHeader";
-  kicker?: Bilingual;
-  title?: string;
-  line?: string;
-  image?: OyImage;
-};
-
 export type GalleryPage = {
   _id: string;
   _type: "galleryPage";
@@ -477,6 +386,21 @@ export type GalleryPage = {
     state?: "built" | "soon";
   };
   seo?: Seo;
+};
+
+export type Seo = {
+  _type: "seo";
+  title?: string;
+  description?: string;
+  ogImage?: OyImage;
+};
+
+export type PageHeader = {
+  _type: "pageHeader";
+  kicker?: Bilingual;
+  title?: string;
+  line?: string;
+  image?: OyImage;
 };
 
 export type DoorReference = {
@@ -564,6 +488,27 @@ export type StoryPage = {
   };
   seo?: Seo;
 };
+
+export type BlockContent = Array<{
+  children?: Array<{
+    marks?: Array<string>;
+    text?: string;
+    _type: "span";
+    _key: string;
+  }>;
+  style?: "normal" | "h3" | "blockquote";
+  listItem?: never;
+  markDefs?: Array<{
+    href?: string;
+    _type: "link";
+    _key: string;
+  }>;
+  level?: number;
+  _type: "block";
+  _key: string;
+} | {
+  _key: string;
+} & PullQuote>;
 
 export type StatReference = {
   _ref: string;
@@ -701,6 +646,13 @@ export type Testimonial = {
   context?: "lessons" | "festival" | "collective" | "general";
 };
 
+export type PersonReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "person";
+};
+
 export type LessonsPage = {
   _id: string;
   _type: "lessonsPage";
@@ -758,6 +710,13 @@ export type Person = {
   bioShort?: string;
   bioFull?: BlockContent;
   order?: number;
+};
+
+export type ProgramReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "program";
 };
 
 export type ProgramsPage = {
@@ -905,7 +864,6 @@ export type Homepage = {
     _key: string;
   } & TestimonialReference>;
   voicesProverb?: Bilingual;
-  newsIntro?: string;
   yearInLife?: Array<{
     _key: string;
   } & OyImage>;
@@ -926,6 +884,12 @@ export type Homepage = {
     motion?: "on" | "off";
   };
   seo?: Seo;
+};
+
+export type Bilingual = {
+  _type: "bilingual";
+  yo?: string;
+  en?: string;
 };
 
 export type SiteSettings = {
@@ -1200,7 +1164,7 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields | EnquiryVendorFields | EnquiryEnrolFields | EnquiryVolunteerFields | EnquiryMemberFields | EnquiryTableFields | EnquiryPerformerFields | EnquirySponsorFields | LintReport | SanityFileAssetReference | GovernanceDoc | HometownAssociation | Door | SanityImageAssetReference | PhotographerReference | OyImage | Cta | Partner | EventReference | Album | Slug | ProgramReference | PersonReference | NewsPost | BlockContent | Bilingual | Honoree | SponsorLevel | TicketTier | Event | SourcedFigure | NewsPage | Seo | PageHeader | GalleryPage | DoorReference | DonatePage | StoryPage | StatReference | TestimonialReference | ImpactPage | GetInvolvedPage | Stat | CollectivePage | Testimonial | LessonsPage | Person | ProgramsPage | GalaPage | FestivalPage | Homepage | SiteSettings | GivingLevel | TimelineEntry | Outcome | Program | Initiative | TakePartRow | PullQuote | ContactRole | FaqItem | ZoneReference | ScheduleItem | Zone | Fact | Photographer | SanityImageCrop | SanityImageHotspot | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
+export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields | EnquiryVendorFields | EnquiryEnrolFields | EnquiryVolunteerFields | EnquiryMemberFields | EnquiryTableFields | EnquiryPerformerFields | EnquirySponsorFields | LintReport | SanityFileAssetReference | GovernanceDoc | HometownAssociation | Door | SanityImageAssetReference | PhotographerReference | OyImage | Cta | Partner | EventReference | Album | Slug | Honoree | SponsorLevel | TicketTier | Event | SourcedFigure | GalleryPage | Seo | PageHeader | DoorReference | DonatePage | StoryPage | BlockContent | StatReference | TestimonialReference | ImpactPage | GetInvolvedPage | Stat | CollectivePage | Testimonial | PersonReference | LessonsPage | Person | ProgramReference | ProgramsPage | GalaPage | FestivalPage | Homepage | Bilingual | SiteSettings | GivingLevel | TimelineEntry | Outcome | Program | Initiative | TakePartRow | PullQuote | ContactRole | FaqItem | ZoneReference | ScheduleItem | Zone | Fact | Photographer | SanityImageCrop | SanityImageHotspot | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
 
 // Source: src/queries/event-pages.ts
 // Variable: festivalPageQuery
@@ -1311,133 +1275,6 @@ export type FestivalPageQueryResult = {
   seo: null;
 } | {
   header: null;
-  primaryAction: null;
-  secondaryActions: null;
-  extraFacts: null;
-  whatItIs: null;
-  whatItIsImage: null;
-  zonesIntro: null;
-  planYourVisit: null;
-  takePart: null;
-  pastYearsIntro: null;
-  galleryLayout: {
-    state: "built" | "soon" | null;
-  } | null;
-  partnersIntro: null;
-  editions: Array<{
-    _id: string;
-    kind: "festival";
-    title: string | null;
-    edition: number | null;
-    start: string | null;
-    end: string | null;
-    venue: {
-      name: string | null;
-      address: string | null;
-      line: string | null;
-    } | null;
-    cost: string | null;
-    summary: string | null;
-    schedule: Array<{
-      _key: string;
-      time: string | null;
-      day: string | null;
-      title: {
-        yo: string | null;
-        en: string | null;
-      } | null;
-      detail: string | null;
-      zone: {
-        yo: string | null;
-        en: string | null;
-      } | null;
-    }> | null;
-    vendorTerms: {
-      fees: string | null;
-      closeDate: string | null;
-      decisionDate: string | null;
-      permitNote: string | null;
-    } | null;
-    attendance: {
-      value: string | null;
-      label: string | null;
-      source: string | null;
-    } | null;
-    album: {
-      _id: string;
-      title: string | null;
-      slug: string | null;
-      creditConfirmed: boolean | null;
-      credit: string | null;
-      creditUrl: string | null;
-      photos: Array<{
-        _key: string;
-        _type: "oyImage";
-        alt: string | null;
-        caption: string | null;
-        hotspot: SanityImageHotspot | null;
-        crop: SanityImageCrop | null;
-        asset: SanityImageAssetReference | null;
-      }> | null;
-    } | null;
-  }>;
-  zones: Array<{
-    _id: string;
-    name: {
-      yo: string | null;
-      en: string | null;
-    } | null;
-    line: string | null;
-    image: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-  }>;
-  partners: Array<{
-    _id: string;
-    name: string | null;
-    url: string | null;
-    kind: "funder" | "partner" | "sponsor" | null;
-    logo: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-  }>;
-  layout: {
-    phead: null;
-    zones: null;
-    schedule: null;
-    labels: null;
-  } | null;
-  seo: {
-    title: string | null;
-    description: string | null;
-  } | null;
-} | {
-  header: {
-    kicker: {
-      yo: string | null;
-      en: string | null;
-    } | null;
-    title: string | null;
-    line: string | null;
-    image: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-  } | null;
   primaryAction: null;
   secondaryActions: null;
   extraFacts: null;
@@ -2362,123 +2199,6 @@ export type GalaPageQueryResult = {
       asset: SanityImageAssetReference | null;
     } | null;
   } | null;
-  primaryAction: null;
-  secondaryActions: null;
-  eveningIntro: null;
-  tiersIntro: null;
-  sponsorIntro: null;
-  honoreesIntro: null;
-  pastIntro: null;
-  galleryLayout: {
-    state: "built" | "soon" | null;
-  } | null;
-  takePart: null;
-  editions: Array<{
-    _id: string;
-    kind: "gala";
-    title: string | null;
-    edition: number | null;
-    start: string | null;
-    end: string | null;
-    doors: string | null;
-    venue: {
-      name: string | null;
-      address: string | null;
-      line: string | null;
-    } | null;
-    dress: string | null;
-    ticketsUrl: string | null;
-    schedule: Array<{
-      _key: string;
-      time: string | null;
-      day: string | null;
-      title: {
-        yo: string | null;
-        en: string | null;
-      } | null;
-      detail: string | null;
-      zone: {
-        yo: string | null;
-        en: string | null;
-      } | null;
-    }> | null;
-    tiers: Array<{
-      _id: string;
-      name: string | null;
-      price: string | null;
-      includes: Array<string> | null;
-      variant: "buyNow" | "enquiry" | null;
-      featured: boolean | null;
-    }>;
-    album: {
-      _id: string;
-      title: string | null;
-      slug: string | null;
-      creditConfirmed: boolean | null;
-      credit: string | null;
-      creditUrl: string | null;
-      photos: Array<{
-        _key: string;
-        _type: "oyImage";
-        alt: string | null;
-        caption: string | null;
-        hotspot: SanityImageHotspot | null;
-        crop: SanityImageCrop | null;
-        asset: SanityImageAssetReference | null;
-      }> | null;
-    } | null;
-  }>;
-  sponsorLevels: Array<{
-    _id: string;
-    name: string | null;
-    amount: string | null;
-    recognition: Array<string> | null;
-    eventId: string | null;
-  }>;
-  honorees: Array<{
-    _id: string;
-    name: string | null;
-    award: string | null;
-    blurb: string | null;
-    image: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-    eventId: string | null;
-  }>;
-  layout: {
-    treatment: null;
-    tiers: null;
-    awards: null;
-    schedule: null;
-    past: null;
-    labels: null;
-  } | null;
-  seo: {
-    title: string | null;
-    description: string | null;
-  } | null;
-} | {
-  header: {
-    kicker: {
-      yo: string | null;
-      en: string | null;
-    } | null;
-    title: string | null;
-    line: string | null;
-    image: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-  } | null;
   primaryAction: {
     label: string | null;
     kind: "anchor" | "enquiry" | "give" | "url" | null;
@@ -3122,7 +2842,7 @@ export type AlbumPageQueryResult = {
 
 // Source: src/queries/homepage.ts
 // Variable: homepageQuery
-// Query: *[_id == "homepage"][0]{  hero{    kicker{yo, en},    title,    emphasis,    sub,    blessing{yo, en},    image{_type, alt, caption, hotspot, crop, asset},    primaryAction{label, kind, enquiryKind, href, newTab},    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}  },  "events": *[_type == "event" && kind in ["festival", "gala"]] | order(edition desc){    _id, kind, title, edition, start, end, "venueName": venue.name, summary  },  "stats": stats[]->{_id, value, label, shortLabel, source},  programsIntro,  "programs": *[_type == "program"] | order(order asc)[0...3]{    _id, name, "slug": slug.current, kicker{yo, en}, blurb,    image{_type, alt, caption, hotspot, crop, asset},    cadence, ages, page,    action{label, kind, enquiryKind, href, newTab}  },  "voices": voices[]->{_id, quote, name, relation, permissionToName, context},  voicesIntro,  voicesProverb{yo, en},  newsIntro,  "news": *[_type == "newsPost"] | order(date desc)[0...3]{    _id, title, "slug": slug.current, date, kicker{yo, en}, summary,    image{_type, alt, caption, hotspot, crop, asset},    "tags": tags[]->{_type, kind, page}  },  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},  raiseYourHand{    title,    blurb,    "doors": doors[]->{      _id, key, title, blurb, bullets,      action{label, kind, enquiryKind, href, newTab},      image{_type, alt, caption, hotspot, crop, asset}    }  },  layout{season, highlight, gallery, involved, newsletter, pattern, motion},  seo{title, description}}
+// Query: *[_id == "homepage"][0]{  hero{    kicker{yo, en},    title,    emphasis,    sub,    blessing{yo, en},    image{_type, alt, caption, hotspot, crop, asset},    primaryAction{label, kind, enquiryKind, href, newTab},    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}  },  "events": *[_type == "event" && kind in ["festival", "gala"]] | order(edition desc){    _id, kind, title, edition, start, end, "venueName": venue.name, summary  },  "stats": stats[]->{_id, value, label, shortLabel, source},  programsIntro,  "programs": *[_type == "program"] | order(order asc)[0...3]{    _id, name, "slug": slug.current, kicker{yo, en}, blurb,    image{_type, alt, caption, hotspot, crop, asset},    cadence, ages, page,    action{label, kind, enquiryKind, href, newTab}  },  "voices": voices[]->{_id, quote, name, relation, permissionToName, context},  voicesIntro,  voicesProverb{yo, en},  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},  raiseYourHand{    title,    blurb,    "doors": doors[]->{      _id, key, title, blurb, bullets,      action{label, kind, enquiryKind, href, newTab},      image{_type, alt, caption, hotspot, crop, asset}    }  },  layout{season, highlight, gallery, involved, newsletter, pattern, motion},  seo{title, description}}
 export type HomepageQueryResult = {
   hero: null;
   events: Array<{
@@ -3168,35 +2888,6 @@ export type HomepageQueryResult = {
   voices: null;
   voicesIntro: null;
   voicesProverb: null;
-  newsIntro: null;
-  news: Array<{
-    _id: string;
-    title: string | null;
-    slug: string | null;
-    date: string | null;
-    kicker: {
-      yo: string | null;
-      en: string | null;
-    } | null;
-    summary: string | null;
-    image: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-    tags: Array<{
-      _type: "event";
-      kind: "collective" | "festival" | "gala" | null;
-      page: null;
-    } | {
-      _type: "program";
-      kind: null;
-      page: "collective" | "lessons" | null;
-    }> | null;
-  }>;
   yearInLife: null;
   raiseYourHand: null;
   layout: null;
@@ -3246,35 +2937,6 @@ export type HomepageQueryResult = {
   voices: null;
   voicesIntro: null;
   voicesProverb: null;
-  newsIntro: null;
-  news: Array<{
-    _id: string;
-    title: string | null;
-    slug: string | null;
-    date: string | null;
-    kicker: {
-      yo: string | null;
-      en: string | null;
-    } | null;
-    summary: string | null;
-    image: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-    tags: Array<{
-      _type: "event";
-      kind: "collective" | "festival" | "gala" | null;
-      page: null;
-    } | {
-      _type: "program";
-      kind: null;
-      page: "collective" | "lessons" | null;
-    }> | null;
-  }>;
   yearInLife: null;
   raiseYourHand: null;
   layout: {
@@ -3348,35 +3010,6 @@ export type HomepageQueryResult = {
   }> | null;
   voicesIntro: null;
   voicesProverb: null;
-  newsIntro: null;
-  news: Array<{
-    _id: string;
-    title: string | null;
-    slug: string | null;
-    date: string | null;
-    kicker: {
-      yo: string | null;
-      en: string | null;
-    } | null;
-    summary: string | null;
-    image: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-    tags: Array<{
-      _type: "event";
-      kind: "collective" | "festival" | "gala" | null;
-      page: null;
-    } | {
-      _type: "program";
-      kind: null;
-      page: "collective" | "lessons" | null;
-    }> | null;
-  }>;
   yearInLife: null;
   raiseYourHand: null;
   layout: {
@@ -3488,35 +3121,6 @@ export type HomepageQueryResult = {
     yo: string | null;
     en: string | null;
   } | null;
-  newsIntro: string | null;
-  news: Array<{
-    _id: string;
-    title: string | null;
-    slug: string | null;
-    date: string | null;
-    kicker: {
-      yo: string | null;
-      en: string | null;
-    } | null;
-    summary: string | null;
-    image: {
-      _type: "oyImage";
-      alt: string | null;
-      caption: string | null;
-      hotspot: SanityImageHotspot | null;
-      crop: SanityImageCrop | null;
-      asset: SanityImageAssetReference | null;
-    } | null;
-    tags: Array<{
-      _type: "event";
-      kind: "collective" | "festival" | "gala" | null;
-      page: null;
-    } | {
-      _type: "program";
-      kind: null;
-      page: "collective" | "lessons" | null;
-    }> | null;
-  }>;
   yearInLife: Array<{
     _key: string;
     _type: "oyImage";
@@ -4406,7 +4010,7 @@ declare global {
     "*[_id == \"galaPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  eveningIntro,\n  tiersIntro,\n  sponsorIntro,\n  honoreesIntro,\n  pastIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  takePart[]{_key, way, chip, title, line, label},\n  \"editions\": *[_type == \"event\" && kind == \"gala\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    doors,\n    venue{name, address, line},\n    dress,\n    ticketsUrl,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    \"tiers\": *[_type == \"ticketTier\" && event._ref == ^._id] | order(order asc){\n      _id,\n      name,\n      price,\n      includes,\n      variant,\n      featured\n    },\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url,\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"sponsorLevels\": *[_type == \"sponsorLevel\" && scope in [\"gala\", \"org\"]] | order(order asc){\n    _id,\n    name,\n    amount,\n    recognition,\n    \"eventId\": event._ref\n  },\n  \"honorees\": *[_type == \"honoree\" && event->kind == \"gala\"] | order(name asc){\n    _id,\n    name,\n    award,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"eventId\": event._ref\n  },\n  layout{treatment, tiers, awards, schedule, past, labels},\n  seo{title, description}\n}": GalaPageQueryResult;
     "*[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  creditsAndConsent,\n  \"albums\": *[_type == \"album\" && defined(slug.current) && count(photos) > 0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    \"editionYear\": event->edition,\n    cover{_type, alt, caption, hotspot, crop, asset},\n    \"firstPhoto\": photos[0]{_key, _type, alt, caption, hotspot, crop, asset},\n    \"count\": count(photos)\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail},\n  layout{open, captions, state},\n  seo{title, description}\n}": GalleryPageQueryResult;
     "{\n  \"album\": *[_type == \"album\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    consentNote,\n    creditConfirmed,\n    \"credit\": coalesce(credit->defaultCredit, credit->name),\n    \"creditUrl\": credit->url,\n    \"edition\": event->{\"year\": edition, kind},\n    \"photos\": photos[]{\n      _key,\n      _type,\n      alt,\n      caption,\n      hotspot,\n      crop,\n      asset,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name, creditNote),\n      \"creditUrl\": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)\n    }\n  },\n  \"page\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n    header{kicker{yo, en}},\n    creditsAndConsent,\n    layout{captions, state}\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail}\n}": AlbumPageQueryResult;
-    "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc)[0...3]{\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  newsIntro,\n  \"news\": *[_type == \"newsPost\"] | order(date desc)[0...3]{\n    _id, title, \"slug\": slug.current, date, kicker{yo, en}, summary,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"tags\": tags[]->{_type, kind, page}\n  },\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
+    "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc)[0...3]{\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_type == \"programsPage\" && _id == \"programsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  takePart[]{_key, way, chip, title, line, label},\n  kidsStem{\n    title,\n    blurb,\n    subprograms[]{\n      _key, name, blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      facts[]{_key, label, value, note},\n      action{label, kind, enquiryKind, href, newTab}\n    }\n  },\n  culturalExchange{\n    title, blurb, cadence, eligibility, howToJoin,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  yearStrip[]{_key, when, kind, note, \"program\": program->name},\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  layout{cards, inline, yearstrip},\n  seo{title, description}\n}": ProgramsPageQueryResult;
     "*[_type == \"lessonsPage\" && _id == \"lessonsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  glance[]{_key, label, value, note},\n  \"teacher\": teacher->{\n    _id, name, role, bioShort,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  teacherIntro,\n  learn,\n  levels[]{_key, name, blurb},\n  oneLesson[]{_key, step, title, detail},\n  faq[]{_key, question, answer},\n  takePart[]{_key, way, chip, title, line, label},\n  \"teacherEmail\": *[_id == \"siteSettings\"][0].contacts[role == \"teacher\"][0].email,\n  layout{lesson, portraits, faq},\n  seo{title, description}\n}": LessonsPageQueryResult;
     "*[_type == \"collectivePage\" && _id == \"collectivePage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  argument,\n  \"photo\": *[_type == \"program\" && page == \"collective\"] | order(order asc)[0]{\n    _id,\n    name,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"initiatives\": initiatives[_type != \"reference\" || defined(@->)]{\n    _key,\n    ...coalesce(@->, @){\n      name,\n      memberLed,\n      status,\n      statusLine,\n      blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      serves,\n      since,\n      next\n    }\n  },\n  \"voice\": voice->{_id, quote, name, relation, permissionToName},\n  \"events\": *[_type == \"event\" && kind == \"collective\" && defined(start)] | order(start asc){\n    _id,\n    kind,\n    title,\n    start,\n    end,\n    summary,\n    venue{name}\n  },\n  takePart[]{_key, way, chip, title, line, label},\n  layout{initiatives, green, status, events},\n  seo{title, description}\n}": CollectivePageQueryResult;

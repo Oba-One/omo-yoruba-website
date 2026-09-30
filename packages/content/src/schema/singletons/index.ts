@@ -2,8 +2,7 @@ import { defineField } from 'sanity';
 import { EVENT_LIST_TITLES } from '../../edition-fields';
 import { OTHER_WAY_KINDS, OTHER_WAY_TITLES } from '../../giving';
 import { PAGE_LAYOUTS } from '../../layout-options';
-import { EVENT_PAGE_NAMES } from '../../routes';
-import { forMembers } from '../../studio/roles';
+import { COLLECTIVE_NAME, EVENT_PAGE_NAMES } from '../../routes';
 import { voice } from '../../validation/rules';
 import { facts, itemList, refs, text } from '../helpers';
 import { definePage } from './page';
@@ -92,7 +91,6 @@ export const homepage = definePage({
       type: 'bilingual',
       description: 'Yoruba first, then the English sense. Empty hides the line.',
     }),
-    text('newsIntro', 'News intro', 2),
     defineField({
       name: 'yearInLife',
       title: 'A year in the life',
@@ -108,7 +106,7 @@ export const homepage = definePage({
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
         text('blurb', 'Blurb', 2),
-        refs('doors', 'Doors', 'door', 'Which doors show, in order.'),
+        refs('doors', 'Ways to get involved', 'door', 'The ones this section shows, in order.'),
       ],
     }),
   ],
@@ -372,8 +370,8 @@ export const lessonsPage = definePage({
 
 export const collectivePage = definePage({
   name: 'collectivePage',
-  pointer: `Each Collective event, with its date and venue, lives under Events, then ${EVENT_LIST_TITLES.collective}.`,
-  title: 'Yoruba Cultural Collective page',
+  pointer: `Each event, with its date and venue, lives under Events, then ${EVENT_LIST_TITLES.collective}.`,
+  title: `${COLLECTIVE_NAME} page`,
   fields: [
     defineField({
       name: 'argument',
@@ -399,9 +397,9 @@ export const getInvolvedPage = definePage({
   fields: [
     refs(
       'doors',
-      'Doors',
+      'Ways to get involved',
       'door',
-      'The ways in, in order: the member, volunteer, vendor and partner doors show as cards, and the give door closes the page as a box.',
+      'In order: member, volunteer, vendor and partner show as cards, and Give closes the page as a box.',
     ),
     defineField({
       name: 'hometownAssociations',
@@ -475,7 +473,7 @@ export const impactPage = definePage({
       title: 'Fund the next year',
       type: 'object',
       description:
-        'The dark band that closes the page. Its line names the partnerships lead from the site settings, and how soon they answer.',
+        'The dark band that closes the page. Its line names the partnerships lead and how soon they answer, from Organization details, which administrators keep.',
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
       ],
@@ -555,9 +553,9 @@ export const donatePage = definePage({
         text('blurb', 'Blurb', 2),
         refs(
           'doors',
-          'Doors',
+          'Ways to get involved',
           'door',
-          'For organizations: one door fills the width, two or more show as cards.',
+          'For organizations: one fills the width, two or more show as cards.',
         ),
       ],
     }),
@@ -582,7 +580,7 @@ export const donatePage = definePage({
               title: 'Kind',
               type: 'string',
               description:
-                'A check shows the mailing address, and employer matching and a donor-advised fund show the EIN and the legal name, from the site settings.',
+                'A check shows the mailing address, and employer matching and a donor-advised fund show the EIN and the legal name, from Organization details, which administrators keep.',
               options: {
                 list: OTHER_WAY_KINDS.map((kind) => ({
                   title: OTHER_WAY_TITLES[kind],
@@ -637,16 +635,6 @@ export const galleryPage = definePage({
   layout: PAGE_LAYOUTS.galleryPage,
 });
 
-// No News page before launch (D22), so only an administrator changes it (studio/roles.ts).
-export const newsPage = definePage({
-  name: 'newsPage',
-  title: 'News & Events page',
-  actions: false,
-  fields: [],
-  layout: PAGE_LAYOUTS.newsPage,
-  readOnly: forMembers,
-});
-
 export const singletonTypes = [
   siteSettings,
   homepage,
@@ -660,7 +648,6 @@ export const singletonTypes = [
   storyPage,
   donatePage,
   galleryPage,
-  newsPage,
 ];
 
 /** The fixed document id of each singleton is its type name. */

@@ -14,7 +14,7 @@ oy-release, oy-content-model and oy-voice skills. If the Zeffy pull request (bra
 open, read it and its ADR.
 
 The goal for the week:
-- A member can add an edition, an album with its credits and consent, a person and a news post, and clear a to-do
+- A member can add an edition, an album with its credits and consent, and a person, and clear a to-do
   item, with `docs/content-ops.md` and without help.
 - Real content goes in through the Sanity MCP (the claude.ai connector writes as the owner), the organization's
   facts first, into `development` (D3).
@@ -40,9 +40,8 @@ owner. Update docs/plans/open-work.md in the same pull request as each item land
 ## Part 2: the member guide and the recipes
 
 Write `docs/content-ops.md` for members, for the Studio as it is: an event edition prepared as drafts and published
-on its announce day, an album with its credits, consent note and photographs, a person, a news post (there is no
-News page before launch, D22, but the homepage's news card shows posts), a to-do item cleared, when to ask for help,
-and what never to do (the held-back switches, deleting, anything under Settings). Add screenshots as an Editor and
+on its announce day, an album with its credits, consent note and photographs, a person (the site has no news, ADR 0048), a to-do item cleared, when to ask for help,
+and what never to do (the held-back switches, deleting, anything under Organization details). Add screenshots as an Editor and
 as an administrator; the owner invites an Editor account first (open-work, D4). Then refresh the `oy-content-ops`
 and `oy-release` skills to match. The guide says what the gallery's Coming soon switch does and does not do
 (ADR 0043), for the day consent is ever withdrawn (D5 has consent today).
