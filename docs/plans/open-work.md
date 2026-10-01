@@ -130,7 +130,7 @@ Answered on 26 September 2026; the spec lists each answer.
 | E5 | The performer form's blurb says "Five questions" and asks six | none | Now | `enquiry-kinds.ts` | done: pull request 15; "Six questions", and a test holds every counted blurb to its form |
 | E6 | Remove `PUBLIC_ZEFFY_EMBED_URL` from the env schema, the runbook and the wizard (the Zeffy link lives in site settings) | none | Now | HP3, runbook | done: pull request 15 removes it from the env schema, the runbook and the wizard, and retires `SANITY_PREVIEW_SECRET` the same way; none of the three was set in Vercel (checked 27 Sep); left for the owner: delete the three lines from `packages/web/.env.example` |
 | E7 | Correct AGENTS.md where the build differs: the menu overlay starts under 880px, the hero sizes follow the tokens (after D11) | D11 for the sizes | Now | inventory | doing: pull request 15 corrects the overlay to 880px in AGENTS.md; the hero sizes wait for D11 |
-| E8 | The editor guide `docs/content-ops.md`, written for members after the simplification | D6 | Now | Phase 10 | open |
+| E8 | The editor guide `docs/content-ops.md`, written for members after the simplification | D6 | Now | Phase 10 | doing: guide and eight task screenshots written 30 Sep, now accessible through an embedded Studio Member guide tab; Editor-account walkthrough remains |
 | E9 | Enforce the CSP with hashes, proven in Playwright; security headers | D13 | Launch | Phase 9 | open |
 | E10 | Sitemap, robots, canonical links and share images | D17 | Launch | Phase 9 | open |
 | E11 | Redirects in `astro.config.ts` from `docs/redirects.md` | D18 | Launch | Phase 9 | open |

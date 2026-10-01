@@ -9,6 +9,7 @@ import { structureTool } from 'sanity/structure';
 import { STUDIO_API_VERSION } from '../api-version';
 import { authoredSchemaTypes, schemaTypes } from '../schema';
 import { documentActions, newDocumentOptions, studioTools } from './document-options';
+import { memberGuideTool } from './member-guide';
 import { presentationOptions } from './presentation';
 import { defaultDocumentNode, structure } from './structure';
 import { studioTemplates } from './templates';
@@ -53,8 +54,8 @@ export function createStudioConfig({ projectId, dataset, previewOrigin, cli = fa
       presentationTool(presentation),
       visionTool({ defaultApiVersion: STUDIO_API_VERSION }),
     ],
-    // Members get the structure and Presentation; Vision is for administrators (ADR 0042).
-    tools: studioTools,
+    // The guide is hosted by Astro; the CLI has no guide route. Vision stays administrator-only.
+    tools: (prev, context) => studioTools(cli ? prev : [...prev, memberGuideTool], context),
     // Editions are prepared as drafts and published by hand on the announce day: nothing is
     // staged in a release or scheduled to publish itself (ADR 0042).
     releases: { enabled: false },

@@ -1,0 +1,23 @@
+---
+import { Content, getHeadings } from '../../../../docs/content-ops.md';
+import '@oy/tokens';
+import ReadingGuide from '@oy/ui/content/ReadingGuide/ReadingGuide.astro';
+
+const sections = getHeadings().filter(({ depth }) => depth === 2);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="/member-guide" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Member guide | Omo Yorùbá</title>
+  </head>
+  <body>
+    <ReadingGuide sections={sections}>
+      <Content />
+    </ReadingGuide>
+  </body>
+</html>
