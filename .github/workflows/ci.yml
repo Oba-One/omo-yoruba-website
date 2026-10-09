@@ -175,6 +175,8 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-js
       - name: Chromium with its system dependencies (Playwright recommends no cache)
+        # From packages/web, where the pinned Playwright is linked (docs/runbook.md, Playwright and axe).
+        working-directory: packages/web
         run: bunx playwright install --with-deps chromium
       - name: bun e2e (starts astro dev on 4322, docs/research/phase-3-playwright-and-axe.md)
         run: bun e2e

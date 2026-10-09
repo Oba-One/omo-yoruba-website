@@ -1,7 +1,7 @@
 # 149: CI installs Chromium for whatever Playwright is newest on npm, not the pinned 1.63.0
 
 Labels: bug
-Status: open
+Status: resolved
 Blocked by: none
 
 **Finding** (R149 in `docs/plans/review-alignment-and-quality.md`; .github/workflows/ci.yml (e2e job); minor; correctness): When a Playwright release changes the browser revision, CI will download that browser while the tests launch 1.63.0's, and 'Playwright and axe' will fail with a missing executable on an unrelated pull request. It also runs an unpinned npm package on every run, against the repo's frozen-lockfile and SHA-pinning practice. Verified from the CI log and the bin folders.
@@ -10,7 +10,14 @@ Blocked by: none
 
 **What to build:** Run the install with working-directory packages/web (its node_modules/.bin/playwright is the pinned 1.63.0), and say where to run it in the runbook and the web README. Size S.
 
-- [ ] The fix, with a test that fails before it where the behaviour can be tested
-- [ ] `bun check` green; Playwright in both data modes where a page changes
+- [x] The fix, with a test that fails before it where the behaviour can be tested
+- [x] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+**Triage, 9 October 2026:** Fixed in the pull request that carries this comment. The failure the finding predicted
+arrived with Playwright 1.64.0: on pull request 24, run 37974007511 installed browser build 1248 at the root and all 60
+tests failed with "Executable doesn't exist at .../chromium_headless_shell-1243/...". The install step now runs with
+`working-directory: packages/web`, and the runbook, the web README, the Playwright config's comment and the Phase 3
+research note say where to run it. No unit test can hold this; the job itself is the test, red before and green
+after. No page changed, so there is no second data mode to run.

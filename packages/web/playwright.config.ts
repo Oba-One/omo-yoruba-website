@@ -33,8 +33,8 @@ export default defineConfig({
         hasTouch: true,
       },
     },
-    // Local only, after `bunx playwright install webkit`: the engine whose persisted elements
-    // leave the top layer on a swap (ADR 0041). CI installs Chromium alone.
+    // Local only, after `bunx playwright install webkit` from this package: the engine whose persisted
+    // elements leave the top layer on a swap (ADR 0041). CI installs Chromium alone.
     ...(process.env.PLAYWRIGHT_WEBKIT === '1'
       ? [
           {
