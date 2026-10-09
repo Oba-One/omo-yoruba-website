@@ -152,7 +152,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Publish to Chromatic (snapshots at 375 and 1440 from parameters.chromatic.modes)
         if: env.CHROMATIC_PROJECT_TOKEN != ''
-        uses: chromaui/action@2a0b63f30233c48591844a46d451b9cf68128186 # v18.7.2
+        uses: chromaui/action@38afd264ef2241136f12d039093c2724748bec08 # v18.11.0
         with:
           projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
           workingDir: packages/ui
