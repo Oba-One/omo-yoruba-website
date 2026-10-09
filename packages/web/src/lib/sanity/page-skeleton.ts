@@ -44,6 +44,12 @@ export interface PageSingletonLike {
   seo?: { title?: string | null; description?: string | null } | null;
 }
 
+/**
+ * The cell Impact and Donate open their trust cells with: the tax status, and the founding year as its
+ * own fact, never the status "since" a year (ADR 0049).
+ */
+export const TAX_STATUS_CELL = { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' };
+
 /** One cell of the glance strip, as `GlanceStrip` takes it. */
 export interface GlanceFactView {
   label: string;

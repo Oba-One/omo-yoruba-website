@@ -12,7 +12,7 @@ import { otherWaySetting } from '@oy/content/giving';
 import { pendingWhat } from '@oy/content/pending';
 import type { donatePageQuery } from '@oy/content/queries';
 import type { ClientReturn } from '@sanity/client';
-import { glanceFacts, pageSkeleton } from './page-skeleton';
+import { glanceFacts, pageSkeleton, TAX_STATUS_CELL } from './page-skeleton';
 import { type BuildOptions, cleanText, oneLine, present, resolveImage, textOr } from './view';
 
 export type DonatePageData = NonNullable<ClientReturn<typeof donatePageQuery, unknown>>;
@@ -125,7 +125,7 @@ export function buildDonatePage(data: DonatePageData | null, options: BuildOptio
     },
     trust: {
       cells: [
-        { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+        TAX_STATUS_CELL,
         { label: 'EIN', value: ein, pending: EIN_PENDING },
         { label: 'Deductible', value: data?.taxLine ?? undefined, pending: pending('taxLine') },
         // The receipt is the give-now fact of that name; a page without one leaves the cell out.

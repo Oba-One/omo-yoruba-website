@@ -28,7 +28,9 @@ and "yours" for the reader. Action verbs open buttons. Never corporate, never ge
 - Framing line for the festival: Odunde sits alongside Lunar New Year, Diwali and Nowruz,
   "communities that pause the world for a day to celebrate who they are" (the Odunde
   prototype's words, which the seed carries).
-- Trust line: "501(c)(3) nonprofit since 1997 • EIN XX-XXXXXXX • Los Angeles, CA".
+- Trust line: "501(c)(3) nonprofit • Founded 1997 • EIN XX-XXXXXXX • Los Angeles, CA". The tax
+  status carries no year (ADR 0049), whatever the confirmed list says; "since 1997" speaks of the
+  organization or its work only.
 - Alt text describes the moment (who, doing what, where), Yoruba names with marks; no
   "image of".
 

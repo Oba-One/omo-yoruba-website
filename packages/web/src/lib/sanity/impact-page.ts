@@ -26,7 +26,7 @@ import type { impactPageQuery } from '@oy/content/queries';
 import { EVENT_PAGE_NAMES, editionRoute, programHref } from '@oy/content/routes';
 import type { ActionLike } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
-import { pageSkeleton } from './page-skeleton';
+import { pageSkeleton, TAX_STATUS_CELL } from './page-skeleton';
 import { type BuildOptions, cleanText, oneLine, present, resolveImage, textOr } from './view';
 
 export type ImpactPageData = NonNullable<ClientReturn<typeof impactPageQuery, unknown>>;
@@ -269,7 +269,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
     },
     governance: {
       cells: [
-        { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+        TAX_STATUS_CELL,
         {
           label: 'EIN',
           value: cleanText(settings?.ein),
