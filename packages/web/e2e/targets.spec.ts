@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openEnquiry } from './helpers';
+import { GALA_2025_FIRST_PHOTO, galleryHeld, openEnquiry, PLACEHOLDER_PROJECT } from './helpers';
 
 // The elder test at 375: every control a finger can reach has a 44px box (QUALITY.md section 2).
 // Inline links in running text are the one exception WCAG allows.
@@ -47,9 +47,13 @@ test('every visible control on the event, program, trust and gallery pages is at
     '/gallery',
     '/gallery/gala-2025',
     // The Lightbox served open: its controls are measured on screen.
-    '/gallery/gala-2025?photo=gala-2025-attendees-group-photo',
+    `/gallery/gala-2025?photo=${GALA_2025_FIRST_PHOTO}`,
   ]) {
     await page.goto(route);
+    // A photo address the album no longer holds serves the page with nothing open, and nothing to measure.
+    if (route.includes('?photo=') && !PLACEHOLDER_PROJECT && !(await galleryHeld(page))) {
+      await expect(page.locator('dialog.oy-lightbox'), route).toHaveAttribute('open', '');
+    }
     expect(await page.evaluate(small), route).toEqual([]);
   }
 });
