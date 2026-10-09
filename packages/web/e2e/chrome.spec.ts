@@ -8,7 +8,7 @@ test.describe('site chrome', () => {
     await expect(page.locator('dialog[open]')).toHaveCount(0);
     // The EIN reads XX-XXXXXXX until the settings hold it; either way the line is there.
     await expect(page.locator('footer.oy-footer .oy-footer-trust')).toContainText(
-      '501(c)(3) nonprofit since 1997 • EIN ',
+      '501(c)(3) nonprofit • Founded 1997 • EIN ',
     );
     await expect(page.locator('footer.oy-footer .oy-footer-trust')).toContainText(
       'Los Angeles, CA',

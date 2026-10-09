@@ -9,7 +9,7 @@ describe('SiteFooter', () => {
   it('reads the EIN placeholder and Pending chips while the settings are empty', async () => {
     const body = await renderToBody(Pending);
     expect(text(body.querySelector('.oy-footer-trust'))).toContain(
-      '501(c)(3) nonprofit since 1997 • EIN XX-XXXXXXX • Los Angeles, CA',
+      '501(c)(3) nonprofit • Founded 1997 • EIN XX-XXXXXXX • Los Angeles, CA',
     );
     const chips = Array.from(body.querySelectorAll('.oy-pend')).map((chip) => text(chip));
     expect(chips).toEqual([

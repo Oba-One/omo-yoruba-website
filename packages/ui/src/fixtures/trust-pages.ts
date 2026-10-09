@@ -197,7 +197,7 @@ export const IMPACT_PHOTOS = [
 
 /** Governance as the development dataset stands: the tax status confirmed, everything else owed. */
 export const GOVERNANCE_CELLS = [
-  { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+  { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' },
   { label: 'EIN', pending: owed('siteSettings', 'ein') },
   { label: 'Board', pending: missing('person', 'board') },
   { label: 'Financials', pending: missing('governanceDoc', 'annualReport') },
@@ -361,7 +361,7 @@ export const GIFTS_PENDING = {
 export const OTHER_WAYS_PENDING = owed('donatePage', 'otherWays[]');
 
 export const TRUST_CELLS = [
-  { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+  { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' },
   { label: 'EIN', pending: owed('siteSettings', 'ein') },
   { label: 'Deductible', value: 'To the extent allowed by law' },
   { label: 'Receipt', pending: owed('donatePage', 'giveNow.facts') },

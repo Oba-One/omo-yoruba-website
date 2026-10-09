@@ -164,8 +164,8 @@ The chosen card texture, `data-card="grain-dots"` on the page root.
 _Avoid_: noise, paper grain
 
 **Trust line**:
-The footer line "501(c)(3) nonprofit since 1997 • EIN XX-XXXXXXX • Los Angeles, CA"; the EIN
-reads XX-XXXXXXX until Organization details hold it.
+The footer line "501(c)(3) nonprofit • Founded 1997 • EIN XX-XXXXXXX • Los Angeles, CA"; the EIN
+reads XX-XXXXXXX until Organization details hold it. The tax status carries no year (ADR 0049).
 _Avoid_: legal line, footer credits, disclaimer
 
 **Mobile menu**:

@@ -281,7 +281,7 @@ describe('buildImpactPage', () => {
   it('names every governance fact owed while the Studio holds no document, EIN, board or address', () => {
     const view = buildImpactPage(seeded, options).governance;
     expect(view.cells).toEqual([
-      { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+      { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' },
       { label: 'EIN', value: undefined, pending: 'EIN' },
       { label: 'Board', value: undefined, pending: "the board's names, roles and bios" },
       { label: 'Financials', value: undefined, pending: 'the annual report position' },

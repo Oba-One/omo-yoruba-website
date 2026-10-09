@@ -71,7 +71,7 @@ export const NoteLink: Story = {
   args: {
     band: false,
     facts: [
-      { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+      { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' },
       { label: 'Board', value: 'Listed', note: 'Our Story', noteHref: '/our-story#board' },
     ],
   },

@@ -1,10 +1,11 @@
 ---
 /**
  * The site footer (ROUTES section 2, Site Footer.dc.html): the indigo band with the drifting
- * àdìrẹ dot field, the light lockup, the trust line ("501(c)(3) nonprofit since 1997 • EIN
- * XX-XXXXXXX • Los Angeles, CA", the EIN placeholder until the settings hold it), the general
- * email, phone and mailing address (Pending chips while empty), the social marks for the
- * networks the settings list, the newsletter block with `NewsletterForm`, and the two link
+ * àdìrẹ dot field, the light lockup, the trust line ("501(c)(3) nonprofit • Founded 1997 • EIN
+ * XX-XXXXXXX • Los Angeles, CA", the EIN placeholder until the settings hold it; the tax status
+ * carries no year, ADR 0049), the general email, phone and mailing address (Pending chips while
+ * empty), the social marks for the networks the settings list, the newsletter block with
+ * `NewsletterForm`, and the two link
  * columns the prototype polished (Take part, Learn more; Contact lives here only). Volunteer and
  * Contact are enquiry triggers, Donate a Give trigger. Renders once, last in the layout, and no
  * page adds its own newsletter band. Where the prototype's SVG marks and two columns differ from
@@ -85,7 +86,7 @@ const socials = (settings.socials ?? []).flatMap((social) => {
     <div>
       <Logo variant="light" />
       <p class="oy-footer-trust">
-        501(c)(3) nonprofit since 1997 • EIN <span data-ein>{ein}</span> • Los Angeles, CA<br />
+        501(c)(3) nonprofit • Founded 1997 • EIN <span data-ein>{ein}</span> • Los Angeles, CA<br />
         {email ? <a href={`mailto:${email}`}>{email}</a> : <Pending what="the general inbox" />}
         {phone && <span> • <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a></span>}
       </p>
