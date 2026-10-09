@@ -15,6 +15,9 @@ docs/design/design/
 [yoruba] packages/content/functions/content-lint/*.test.ts
 [yoruba] packages/content/functions/content-lint/example-event.json
 
+# The album import's test feeds its manifest check one bare form, to see it refused.
+[yoruba] packages/content/scripts/album-import.test.ts
+
 # Third-party skill, copied as published.
 .claude/skills/git-guardrails-claude-code/
 
