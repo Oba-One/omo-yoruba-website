@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 // The port is plain CSS, so these tests guard the facts a browser would only reveal at runtime:
 // the layer order that lets oy-components.css win, the files each @import and url() points at,
-// and the decisions the interaction layer made over the design system (docs/design/README.md
-// section 3).
+// the decisions the interaction layer made over the design system (docs/design/README.md
+// section 3), and the muted grey a list row's detail line reads on the indigo tint.
 
 const src = new URL('./', import.meta.url);
 const read = (file: string) => readFileSync(new URL(file, src), 'utf8');
@@ -117,5 +117,33 @@ describe('fonts.css', () => {
       new RegExp(`${name}:\\s*([^;]+);`).exec(fonts)?.[1]?.replace(/\s+/g, ' ').trim() ?? '';
     expect(stack('--font-display')).toMatch(/^"OY Yoruba Serif", "Source Serif 4",/);
     expect(stack('--font-body')).toMatch(/^"OY Yoruba Sans", "Source Sans 3",/);
+  });
+});
+
+describe('muted text on the indigo tint', () => {
+  const colors = read('tokens/colors.css');
+  const hex = (token: string) =>
+    new RegExp(`--${token}:\\s*#([0-9a-f]{6})`).exec(colors)?.[1] ?? '';
+  const luminance = (colour: string) => {
+    const [red = 0, green = 0, blue = 0] = [0, 2, 4].map((at) => {
+      const channel = Number.parseInt(colour.slice(at, at + 2), 16) / 255;
+      return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  };
+  const contrast = (text: string, ground: string) => {
+    const [lighter = 0, darker = 0] = [luminance(text), luminance(ground)].sort((a, b) => b - a);
+    return (lighter + 0.05) / (darker + 0.05);
+  };
+
+  it('keeps the grey the alternate ground swaps in at AA for small text', () => {
+    expect(contrast(hex('text-muted-on-tint'), hex('indigo-100'))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("reads that grey in a list row's detail line, which sits on the ground itself (R24)", () => {
+    // The alternate ground remaps --text-muted only; a rule that reads --muted keeps 4.45:1 there.
+    expect(read('oy-components.css')).toMatch(
+      /\.oy-lrow-body \.oy-lrow-where\s*\{[^}]*[\s;{]color:\s*var\(--text-muted\)/,
+    );
   });
 });

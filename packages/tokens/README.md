@@ -64,8 +64,8 @@ prototype, and it is the same open call (ADR 0023, wayfinder ticket 30).
 ## Checks
 
 `src/index.test.ts` guards the import order, that every `@import` and pattern `url()` resolves
-inside the package, the 6px radius, the no-lift overrides and the omissions above; `bun run test`
-runs it. Biome's `noDescendingSpecificity` and `noImportantStyles` are off for `src/**/*.css`,
+inside the package, the 6px radius, the no-lift overrides, the omissions above and the grey a list
+row's detail line reads on the indigo tint (AA for small text); `bun run test` runs it. Biome's `noDescendingSpecificity` and `noImportantStyles` are off for `src/**/*.css`,
 because the design system's cascade order and its reduced-motion rules are deliberate, and the
 vendored SVGs are not linted. Both exemptions live in `biome.json`. The visual rules are in the
 `oy-design-system` skill.
