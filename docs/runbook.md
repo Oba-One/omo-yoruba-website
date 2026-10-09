@@ -369,15 +369,20 @@ Since Phase 3 (`docs/research/phase-3-playwright-and-axe.md`). `bun e2e` runs th
 `packages/web/e2e` with `@playwright/test` against its own `astro dev` on port 4322 (the Vercel
 adapter has no `astro preview`; a `bun dev` on 4321 stays untouched), in Chromium at 1440 and at
 a 375 wide mobile project. `PLAYWRIGHT_WEBKIT=1` adds a WebKit project at 1440 locally, after
-`bunx playwright install webkit`: the engine whose persisted elements leave the top layer on a page
+`bunx playwright install webkit` from `packages/web`: the engine whose persisted elements leave the top layer on a page
 swap (ADR 0041); CI installs Chromium alone. `navigation.spec.ts` sets the perspective cookie and signs a
 draft session with the Viewer token for its draft-mode case, which skips without
 `SANITY_API_READ_TOKEN` in `packages/web/.env` (CI's placeholder project has none), and proves that a
-perspective cookie set by hand, without the session, reads as published. Install the browser once per machine, with Node 22 on `PATH`:
+perspective cookie set by hand, without the session, reads as published. Install the browser once per machine, and
+again after a Playwright upgrade, with Node 22 on `PATH`:
 
 ```bash
-bunx playwright install chromium
+(cd packages/web && bunx playwright install chromium)
 ```
+
+Run it from `packages/web`, as CI does. Bun links the pinned `playwright` there and nowhere else, so at the root
+`bunx` finds no binary, fetches the newest release and installs that release's browser build, which the pinned
+tests cannot launch: every test fails with "Executable doesn't exist" (R149).
 
 The runner starts `node ./node_modules/astro/bin/astro.mjs dev --port 4322` itself with
 `PLAYWRIGHT=1` (the dev toolbar off: its shadow DOM carries headings and controls the specs and

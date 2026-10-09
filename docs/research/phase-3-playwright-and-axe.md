@@ -61,7 +61,9 @@ the primary docs named per bullet, and `gh api` for releases, tags, pull request
   execute the file"; `--bun` overrides. Verified: `bunx playwright --version` and `bun run e2e`
   (script `playwright test --list`) run on Node v22.22.1 (a probe binary printed the runtime), `bunx
   --bun` on Bun 1.4.2. So `bunx playwright install --with-deps chromium` and `bun run --filter @oy/web
-  e2e` work and need Node 22 on `PATH`, like `astro` and `vitest`. Sources:
+  e2e` work and need Node 22 on `PATH`, like `astro` and `vitest`. Corrected 9 October 2026 (R149): the
+  install works from the package that pins Playwright; at the repository root `bunx` finds no linked
+  binary and fetches the newest release (1.64.0 that day, against the pinned 1.63.0). Sources:
   https://bun.com/docs/cli/bunx, https://bun.com/docs/cli/run, the scratch install.
 - Bun as runtime is unsupported upstream: issues #27139 and #38121 (2026-05-12) closed "not planned"
   ("As of today Bun is not Node.js compatible"). PR #38599 (merged 2025-12-19, in 1.58.0) skips the ESM
@@ -227,7 +229,8 @@ the primary docs named per bullet, and `gh api` for releases, tags, pull request
 
 - Node 22.22.1 satisfies `>=20`; Bun 1.4.2 installs both exact pins with no peer warning; the `e2e`
   script becomes `playwright test` (Node under `bun run`), and CI adds one step after `setup-js`:
-  `bunx playwright install --with-deps chromium` (Ubuntu 24.04 is supported). Two Chromium projects:
+  `bunx playwright install --with-deps chromium`, run from `packages/web` (R149; Ubuntu 24.04 is
+  supported). Two Chromium projects:
   desktop 1440x900 from `Desktop Chrome`, mobile 375x667 with `browserName: 'chromium'` after any
   iPhone spread. Against the preview the job needs `VERCEL_AUTOMATION_BYPASS_SECRET` as a repository
   secret (absent on fork PRs, like `CHROMATIC_PROJECT_TOKEN`) and an event carrying the URL:

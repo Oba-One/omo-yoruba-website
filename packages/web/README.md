@@ -57,7 +57,8 @@ From the repo root:
 
 `bun e2e` starts its own dev server on port 4322, leaving a `bun dev` on 4321 alone, and runs every
 spec in two Chromium projects: desktop at 1440 and mobile at 375. Install the browser once per
-machine with `bunx playwright install chromium`. Locally, `bun e2e --workers=1` avoids stalls.
+machine with `bunx playwright install chromium`, run from `packages/web` (runbook, Playwright and
+axe). Locally, `bun e2e --workers=1` avoids stalls.
 
 The specs must pass in both data modes:
 
