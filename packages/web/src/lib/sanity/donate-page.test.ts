@@ -217,7 +217,7 @@ describe('buildDonatePage', () => {
 
   it('builds the trust block from the settings, the tax line and the receipt fact', () => {
     expect(buildDonatePage(seeded, options).trust.cells).toEqual([
-      { label: 'Tax status', value: '501(c)(3)', note: 'Since 1997' },
+      { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' },
       { label: 'EIN', value: undefined, pending: 'EIN' },
       {
         label: 'Deductible',

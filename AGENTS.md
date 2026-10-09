@@ -59,6 +59,11 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
 - "Odunde" is one word in all display text (decision of 1 September 2026). The design
   system readme still spells it as two words; ignore that. The nav shows it with marks:
   "Ọdúndé Festival". Lowercase `odunde` in URLs and file names.
+- The tax status carries no year (decision of 9 October 2026, ADR 0049): the trust line reads
+  "501(c)(3) nonprofit • Founded 1997 • EIN XX-XXXXXXX • Los Angeles, CA", and the Tax status
+  cell on Impact and Donate reads "501(c)(3)" with the note "Founded 1997". The handoff writes
+  "501(c)(3) since 1997"; ignore that. "Since 1997" stays where it speaks of the organization
+  or its work.
 - Cards: 6px radius, paper ground, indigo hairline, 8px aṣọ òkè top edge, grain-dots
   texture (`data-card="grain-dots"` on the page root). Not 14px.
 - No hover lift anywhere. Buttons darken or fill and settle 1.5% on press. Cards change
