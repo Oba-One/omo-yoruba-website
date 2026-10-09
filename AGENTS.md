@@ -27,6 +27,7 @@ at `/admin` (ADR 0017); Storybook via `@storybook-astro/framework`; Bun workspac
 | `bun seed` | seeds the `development` dataset with the confirmed facts and photographs (`-- --dry-run`, `-- --replace`); needs an Editor token |
 | `bun run export` | saves a dataset as NDJSON outside the repo (`OY_EXPORT_DIR`), the first step of a migration day |
 | `bun run migrate -- <name>` | a stored-content migration's dry run; `--from <export>` rehearses, `--apply` writes, `restore <snapshot>` undoes (runbook, Migrations) |
+| `bun run import-album -- <manifest>` | an album's photographs from a folder, as a dry run; `--apply` uploads the files and saves the album as a draft (`packages/content/scripts/import-album.ts`) |
 | `bun run --filter @oy/content sanity -- <args>` | the Sanity CLI with `packages/web/.env` loaded (`documents`, `datasets`, `functions test`) |
 | `bun check` | typecheck, lint, unit tests, toolchain pins; pre-push and CI run this |
 | `bun run build` | production build of `packages/web` (`bun build` is Bun's bundler) |
@@ -106,7 +107,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   library parts and own no component styling. Colours come from `@oy/tokens` only.
 - Content: never invent content (no dates, prices, figures, names, quotes). Empty renders
   Pending, and every required-for-launch field is registered in `packages/content/src/pending.ts`.
-  Use the Sanity MCP for content and the schema for shape.
+  Use the Sanity MCP for content and the schema for shape; an album's photographs in bulk go through
+  `bun run import-album`, which saves a draft for the owner to publish.
 - Storybook: `.astro` components only. If the framework blocks a component, stop and ask
   the owner before any pivot. Same for anything in `docs/design/AGENT-DOCS.md` section 8.
 - Conflicts: `oy-components.css` beats `_ds/`; the Build Brief's polish passes beat the

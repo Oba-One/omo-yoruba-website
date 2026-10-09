@@ -56,6 +56,14 @@ rather than duplicates. Ids you create never contain a period.
   photo address (`/gallery/<slug>?photo=<key>`, ADR 0037): keep the key when replacing an image so shared links
   still open it. The gallery shows an album only with a photograph, newest year first (ADR 0039); an album with
   neither a date nor an edition shows the year's chip.
+- **Album, many photographs**: more than a handful, or web copies to swap for the photographer's originals,
+  go through `bun run import-album -- <manifest.json>` (a dry run; `--apply` uploads and saves the album as a
+  draft). The manifest lists the album's id, the source folder and each photograph's key, file, alt text and
+  caption, the keys to remove and the cover; `create` gives a new album its title, slug, date or edition and
+  credit. A key the album holds takes the new file and keeps its place, its words and its framing, so a photo
+  address survives and a second run never undoes an edit made in the Studio; new words must pass the voice
+  rules. Keep manifests outside the repo (`~/omo-yoruba-imports`). The owner reviews the draft, confirms the
+  credit and publishes; page images that showed a replaced photograph are re-pointed by hand.
 - **Gallery policy**: `galleryPage.creditsAndConsent` is the owner's own consent and removal policy in plain
   text; the page never drafts it. Removal requests go to `siteSettings.generalEmail`.
 - **Person**: `person` with `group` (board, staff, volunteer; none for the teacher) and `order`, the `role`, the short

@@ -13,10 +13,10 @@
  * unset (`RETIRED_FIELDS`); a value still exactly as an earlier seed wrote it moves to this seed's
  * (`buildRevisions`, ADR 0035); assets are matched by SHA-1.
  */
-import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ClientError, type SanityClient } from '@sanity/client';
+import { imageAssetsBySha1, sha1 } from './assets';
 import { fail, writeClient } from './dataset';
 import { PHOTOS_DIR, REGISTER_PATH, type RegisterPhoto, registerPhotos } from './register';
 import {
@@ -48,10 +48,6 @@ function parseArgs(argv: string[]): Options {
   return options;
 }
 
-function sha1(bytes: Buffer): string {
-  return createHash('sha1').update(bytes).digest('hex');
-}
-
 async function ensureAssets(
   client: SanityClient,
   photos: RegisterPhoto[],
@@ -62,11 +58,7 @@ async function ensureAssets(
     bytes: readFileSync(join(PHOTOS_DIR, photo.file)),
   }));
   const hashes = files.map((file) => sha1(file.bytes));
-  const existing = await client.fetch<{ _id: string; sha1hash: string }[]>(
-    '*[_type == "sanity.imageAsset" && sha1hash in $hashes]{_id, sha1hash}',
-    { hashes },
-  );
-  const byHash = new Map(existing.map((asset) => [asset.sha1hash, asset._id]));
+  const byHash = await imageAssetsBySha1(client, hashes);
   const assets: SeedAssets = new Map();
   let uploaded = 0;
   for (const [index, { photo, bytes }] of files.entries()) {
