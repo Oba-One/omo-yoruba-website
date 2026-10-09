@@ -5,6 +5,7 @@ import {
   bodyOption,
   expectEnquiryRoundTrip,
   expectNoMockWhileOwed,
+  GALA_2025_FIRST_PHOTO,
   goldSharingAView,
   PLACEHOLDER_PROJECT,
   settle,
@@ -13,7 +14,8 @@ import {
 // The gallery in the prototype's order (ROUTES section 4, ADR 0039): the slim header, the albums in the mosaic
 // newest year first (or the soon sentence), photography credit and permissions. CI runs with a placeholder
 // project, where every read answers null and the albums are the Pending line. None of the prototype's inventions
-// (the consent rows, the soon sentence's delivery, the camp's college, the old inbox) stands in.
+// (the consent rows, the soon sentence's delivery, the camp's college) stands in, nor its inbox while the Studio
+// holds none.
 
 /** The prototype's soon sentence waits on a delivery the dataset already holds. */
 const SOON_INVENTION = /delivers the 2026 set|stays out of the navigation/;
@@ -64,8 +66,8 @@ test.describe('the gallery', () => {
     ]);
     await expect(tiles.locator('.oy-album-line')).toHaveText([
       '43 photographs',
-      '6 photographs',
-      `19 photographs Pending: ${ALBUM_YEAR_PENDING}`,
+      '35 photographs',
+      `14 photographs Pending: ${ALBUM_YEAR_PENDING}`,
     ]);
     const open = await bodyOption(page, 'open');
     const hrefs = await tiles.evaluateAll((links) =>
@@ -75,7 +77,7 @@ test.describe('the gallery', () => {
       open === 'viewer'
         ? [
             '/gallery/odunde-2026?photo=odunde-2026-kid-playing-with-elder',
-            '/gallery/gala-2025?photo=gala-2025-attendees-group-photo',
+            `/gallery/gala-2025?photo=${GALA_2025_FIRST_PHOTO}`,
             '/gallery/summer-camp?photo=community-dance',
           ]
         : ['/gallery/odunde-2026', '/gallery/gala-2025', '/gallery/summer-camp'],
@@ -153,9 +155,10 @@ test.describe('the gallery', () => {
     const text = await section.innerText();
     expectNoMockWhileOwed(text, [
       [/Signs at every entrance|written consent at registration/i, CONSENT_PENDING],
-      [/info@omoyorubaofsocal\.org/, INBOX_PENDING],
+      // The prototype's inbox is the organization's own since 9 October 2026: an invention only while one is owed.
+      [/omoyorubaofsocal/, INBOX_PENDING],
     ]);
-    expect(text).not.toMatch(/Many festival sets|omoyorubaofsocal/);
+    expect(text).not.toMatch(/Many festival sets/);
     await expectEnquiryRoundTrip(page, section.locator('a[data-enquiry="contact"]'));
   });
 
