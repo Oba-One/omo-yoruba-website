@@ -146,6 +146,12 @@ _Avoid_: eyebrow, overline, tagline
 The dialog every Donate button opens; wraps the Zeffy embed with a fallback.
 _Avoid_: donate modal, checkout
 
+**Join Dialog**:
+The dialog a button set to the membership form opens, once Organization details hold that form: wraps Zeffy's
+membership form, where a member chooses a membership and pays the dues, with a fallback to the member enquiry.
+Until the form is there, such a button opens the member enquiry. A handoff: the membership is Zeffy's record.
+_Avoid_: membership modal, dues checkout, signup
+
 **Enquiry Modal**:
 The one dialog shell every owned form opens in, with eight field sets.
 _Avoid_: contact form, popup

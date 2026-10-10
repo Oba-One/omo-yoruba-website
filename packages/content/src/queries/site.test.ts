@@ -5,7 +5,15 @@ import { enquiryCountByEmailQuery, siteSettingsQuery, subscriberByEmailQuery } f
 
 describe('queries', () => {
   it('reads the site settings the chrome needs in one query', () => {
-    for (const field of ['ein', 'address', 'contacts[]', 'socials[]', 'zeffyEmbedUrl', 'theme']) {
+    for (const field of [
+      'ein',
+      'address',
+      'contacts[]',
+      'socials[]',
+      'zeffyEmbedUrl',
+      'zeffyMembershipUrl',
+      'theme',
+    ]) {
       expect(siteSettingsQuery).toContain(field);
     }
   });

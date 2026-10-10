@@ -111,10 +111,18 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'zeffyEmbedUrl',
-      title: 'Zeffy embed URL',
+      title: 'Zeffy donation form URL',
       type: 'url',
       description:
         "The donation form every Donate button opens. Paste the form's address from Zeffy's embed code or its pop-up button code: it starts https://www.zeffy.com/ and has /embed/donation-form/ in it.",
+      group: 'services',
+    }),
+    defineField({
+      name: 'zeffyMembershipUrl',
+      title: 'Zeffy membership form URL',
+      type: 'url',
+      description:
+        "The membership form a button set to open the membership form shows. Paste the form's address from Zeffy's embed code: it starts https://www.zeffy.com/ and has /embed/ticketing/ in it. While this is empty such a button opens the member form instead.",
       group: 'services',
     }),
     defineField({

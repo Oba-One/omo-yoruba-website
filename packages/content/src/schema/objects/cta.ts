@@ -3,17 +3,18 @@ import { ENQUIRY_KINDS, KIND_TITLES } from '../../enquiry-kinds';
 import { voice } from '../../validation/rules';
 import { titled } from '../helpers';
 
-export const CTA_KINDS = ['enquiry', 'give', 'url', 'anchor'] as const;
+export const CTA_KINDS = ['enquiry', 'give', 'join', 'url', 'anchor'] as const;
 
 const OPENS: Record<(typeof CTA_KINDS)[number], string> = {
   enquiry: 'An enquiry form',
   give: 'The donation form',
+  join: 'The membership form',
   url: 'A link',
   anchor: 'A section on this page',
 };
 
 /**
- * A button: an enquiry kind, the Give Dialog, a link or an anchor on the page. No field has a
+ * A button: an enquiry kind, the Give Dialog, the Join Dialog, a link or an anchor on the page. No field has a
  * default: Sanity would then create a button on every new document that can hold one, and its
  * missing label would block Publish.
  */

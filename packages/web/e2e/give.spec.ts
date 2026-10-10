@@ -18,7 +18,7 @@ test('a Donate trigger opens the Give Dialog, Escape closes it and focus returns
   const dialog = page.locator('dialog#give');
   await expect(dialog).toHaveAttribute('open', '');
   await expect(page.locator('#give-title')).toHaveText('Give to Omo Yorùbá');
-  const mode = await page.locator('oy-give-dialog').getAttribute('data-mode');
+  const mode = await page.locator('oy-zeffy-dialog[data-form="give"]').getAttribute('data-mode');
   if (mode === 'pending') {
     await expect(dialog.locator('[data-embed] .oy-pend')).toHaveText('Pending: the Zeffy link');
     await expect(dialog.locator('[data-heading]')).toHaveText(
