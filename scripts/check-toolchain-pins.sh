@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # The Node and Bun versions are pinned in several places (.node-version, .mise.toml, the
 # engines fields, packageManager). They must agree, or local, Vercel and CI drift apart.
+# Vercel reads Node from engines, but its build image brings its own Bun, so each vercel.json
+# must send its install and its build through scripts/pinned-bun.sh.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
@@ -29,4 +31,24 @@ if [[ "$mise_bun" != "$pm_bun" ]]; then
   echo "Bun version differs between .mise.toml ($mise_bun) and packageManager ($pm_bun)" >&2
   status=1
 fi
+
+# One call of the script and nothing chained after it, where a plain bun could run again.
+one_pinned_call='^bash \.\./\.\./scripts/pinned-bun\.sh [^;&|]+$'
+if [[ ! -f scripts/pinned-bun.sh ]]; then
+  echo "scripts/pinned-bun.sh is missing, and each vercel.json calls it" >&2
+  status=1
+fi
+for config in packages/*/vercel.json; do
+  [[ -f "$config" ]] || continue
+  through_pinned_bun=yes
+  for key in installCommand buildCommand; do
+    vercel_command=$(sed -n "s/.*\"$key\": \"\([^\"]*\)\".*/\1/p" "$config")
+    if [[ ! "$vercel_command" =~ $one_pinned_call ]]; then
+      echo "$config: $key must be one call of bash ../../scripts/pinned-bun.sh, or Vercel runs its image's Bun (found: ${vercel_command:-nothing})" >&2
+      through_pinned_bun=no
+      status=1
+    fi
+  done
+  echo "vercel: $config install and build through scripts/pinned-bun.sh=$through_pinned_bun"
+done
 exit $status

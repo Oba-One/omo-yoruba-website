@@ -30,7 +30,8 @@ and no GROQ.
 - `src/components/`: `FormBridge.astro` (hands a form to the actions), `ZeffyEmbed.astro` (the Give
   Dialog's server island) and `Analytics.astro` (PostHog, once a key is set).
 - `e2e/` with `playwright.config.ts`: the end-to-end specs. `lighthouserc.cjs` holds the Lighthouse
-  budgets, and `vercel.json` pins Vercel's install and build commands.
+  budgets, and `vercel.json` pins Vercel's install and build commands, which run the pinned Bun
+  through `scripts/pinned-bun.sh` (`docs/runbook.md`, Deploy).
 
 ## Draft mode
 
