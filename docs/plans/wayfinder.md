@@ -192,7 +192,7 @@ open-work row and priority. Details in each ticket.
 | 29 | A preview host for editors | Drafts in the Presentation tool on the public host (D15: Launch) |
 | 30 | Photo hero heading on phones: the prototype's 34px or the brief's 44px | The type tokens and AGENTS.md's sizes (D11: Launch; the sizes half of E7) |
 | 31 | A photograph of the Yoruba Cultural Collective | The Collective's photograph on the homepage, Programs and Collective pages (C2: Now) |
-| 32 | The favicon | The favicon files and best practices 100 (D7, E3: Now) |
+| 32 | The favicon: confirm the icon that went in on 10 October, or pick another of its five options | Nothing waits: the files are in (D7: Now; E3 is done) |
 | 04 | Gala tables: enquiry or purchase | The Gala's tables block and its copy (D9: Launch) |
 | 06 | Gala awards: yes or no | The Gala's honorees block (D10: Launch) |
 | 37 | The photo carousel's controls, answers 2 to 5 (ADR 0027) | Styling only (D19: Later) |
