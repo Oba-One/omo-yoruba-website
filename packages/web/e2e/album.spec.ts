@@ -2,6 +2,7 @@ import { pendingWhat } from '@oy/content/pending';
 import { expect, type Page, type Request, test } from '@playwright/test';
 import {
   axeViolations,
+  GALA_2025_FIRST_PHOTO,
   galleryHeld,
   goldSharingAView,
   PHOTOGRAPHER_PAGE,
@@ -12,22 +13,26 @@ import {
 
 // An album's page and its Lightbox (ROUTES sections 1 and 3, ADR 0037, ADR 0038): the page in the prototype's
 // order, the photo address served open and shareable, Back closing the Lightbox and Forward reopening it without
-// a new page, focus back on the photograph's tile, and a swipe on touch. End-of-Year Gala 2025 has six
-// photographs in `development`. CI runs with a placeholder project, where the read fails: the route answers 503
-// with its Pending form and no Lightbox, which every Lightbox spec asserts before it stops.
+// a new page, focus back on the photograph's tile, and a swipe on touch. End-of-Year Gala 2025 holds the
+// photographer's set in `development` since 9 October 2026, as the dataset holds it, not as the seed writes it:
+// `PHOTOGRAPHS` of them, and `KEYS` are the first six. CI runs with a placeholder project, where the read fails:
+// the route answers 503 with its Pending form and no Lightbox, which every Lightbox spec asserts before it stops.
 
 const ALBUM = '/gallery/gala-2025';
+const PHOTOGRAPHS = 35;
 const KEYS = [
-  'gala-2025-attendees-group-photo',
-  'gala-2025-three-friends-selfie',
-  'gala-2025-attendees-smiling',
-  'gala-2025-group-photo',
-  'gala-2025-attendees-sitting',
-  'gala-2025-attendees-getting-food',
+  GALA_2025_FIRST_PHOTO,
+  'gala-2025-tables-set',
+  'gala-2025-centerpiece',
+  'gala-2025-puff-puff',
+  'gala-2025-suya',
+  'gala-2025-couple-in-royal-blue',
 ];
 
 const dialog = (page: Page) => page.locator('dialog.oy-lightbox');
-const count = (page: Page) => page.locator('.oy-lb-count');
+/** The Lightbox's count reads the place of the photograph on screen among the album's. */
+const expectPlace = (page: Page, position: number) =>
+  expect(page.locator('.oy-lb-count')).toHaveText(`${position} of ${PHOTOGRAPHS}`);
 const tile = (page: Page, key: string) => page.locator(`a[data-photo="${key}"]`);
 
 /**
@@ -112,7 +117,7 @@ test.describe('an album page', () => {
       await expectHeld(page);
       return;
     }
-    await expect(page.locator('header#top')).toContainText('6 photographs');
+    await expect(page.locator('header#top')).toContainText(`${PHOTOGRAPHS} photographs`);
     await expect(page.locator('.oy-album-intro-links a')).toHaveText([
       'All albums',
       /End-of-Year Gala/,
@@ -123,7 +128,7 @@ test.describe('an album page', () => {
     const albumCredit = page.locator('.oy-album-intro .oy-credit-line');
     await expect(albumCredit).toHaveText('Photographs: Red Carpet Films.');
     await expect(albumCredit.locator('a')).toHaveAttribute('href', PHOTOGRAPHER_PAGE);
-    await expect(page.locator('.oy-photo-grid a[data-photo]')).toHaveCount(6);
+    await expect(page.locator('.oy-photo-grid a[data-photo]')).toHaveCount(PHOTOGRAPHS);
     // A tile reads its caption once: the image beside the same words stays silent.
     await expect(tile(page, KEYS[0] as string).locator('img')).toHaveAttribute('alt', '');
   });
@@ -144,19 +149,19 @@ test.describe('an album page', () => {
     await tile(page, KEYS[1] as string).click();
     await expect(dialog(page)).toHaveAttribute('open', '');
     await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
-    await expect(count(page)).toHaveText('2 of 6');
+    await expectPlace(page, 2);
     await expect(page.getByRole('link', { name: 'Close' })).toBeFocused();
     expect(await page.evaluate(() => history.length)).toBe(before + 1);
     await page.keyboard.press('ArrowRight');
-    await expect(count(page)).toHaveText('3 of 6');
+    await expectPlace(page, 3);
     await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[2]}`);
     await page.getByRole('link', { name: 'Previous photo' }).click();
-    await expect(count(page)).toHaveText('2 of 6');
+    await expectPlace(page, 2);
     // Moving replaces the entry: no step of history per photograph.
     expect(await page.evaluate(() => history.length)).toBe(before + 1);
     // A held modifier belongs to the browser.
     await page.keyboard.press('Shift+ArrowRight');
-    await expect(count(page)).toHaveText('2 of 6');
+    await expectPlace(page, 2);
   });
 
   test("keeps focus in the Lightbox when a credit's link has it and the photograph moves (ADR 0046)", async ({
@@ -169,11 +174,11 @@ test.describe('an album page', () => {
     const creditLink = page.locator('.oy-lb-cap > p[data-active="true"] .oy-credit-line a');
     await creditLink.focus();
     await page.keyboard.press('ArrowRight');
-    await expect(count(page)).toHaveText('2 of 6');
+    await expectPlace(page, 2);
     await expect(creditLink).toBeFocused();
     // Focus stayed in the dialog, so the arrows still move it.
     await page.keyboard.press('ArrowLeft');
-    await expect(count(page)).toHaveText('1 of 6');
+    await expectPlace(page, 1);
     await expect(creditLink).toBeFocused();
   });
 
@@ -183,7 +188,7 @@ test.describe('an album page', () => {
     if (!(await albumPage(page))) return;
     await tile(page, KEYS[0] as string).click();
     await page.keyboard.press('ArrowRight');
-    await expect(count(page)).toHaveText('2 of 6');
+    await expectPlace(page, 2);
     const loads = pageRequests(page);
     await page.goBack();
     await expect(dialog(page)).not.toHaveAttribute('open', '');
@@ -191,7 +196,7 @@ test.describe('an album page', () => {
     await expect(tile(page, KEYS[1] as string)).toBeFocused();
     await page.goForward();
     await expect(dialog(page)).toHaveAttribute('open', '');
-    await expect(count(page)).toHaveText('2 of 6');
+    await expectPlace(page, 2);
     await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
     // Neither traverse asked for the page again: no document, and no fetch by the router.
     expect(loads).toEqual([]);
@@ -210,7 +215,7 @@ test.describe('an album page', () => {
     // The photo address is still ahead in history, not replaced: Forward opens it again.
     await page.goForward();
     await expect(dialog(page)).toHaveAttribute('open', '');
-    await expect(count(page)).toHaveText('4 of 6');
+    await expectPlace(page, 4);
     // The corner of the overlay: no photograph, no control.
     await page.mouse.click(8, 8);
     await expect(dialog(page)).not.toHaveAttribute('open', '');
@@ -224,7 +229,7 @@ test.describe('an album page', () => {
     if (!(await albumPage(page, `${ALBUM}?photo=${KEYS[4]}`))) return;
     await expect(dialog(page)).toHaveAttribute('open', '');
     expect(await dialog(page).evaluate((el) => el.matches(':modal'))).toBe(true);
-    await expect(count(page)).toHaveText('5 of 6');
+    await expectPlace(page, 5);
     await page.getByRole('link', { name: 'Close' }).click();
     await expect(dialog(page)).not.toHaveAttribute('open', '');
     await expect(page).toHaveURL(ALBUM);
@@ -268,14 +273,14 @@ test.describe('the Lightbox on touch', () => {
     if (!(await albumPage(page, `${ALBUM}?photo=${KEYS[0]}`))) return;
     const stage = page.locator('dialog.oy-lightbox .oy-lb-stage');
     await swipe(stage, -120, 10);
-    await expect(count(page)).toHaveText('2 of 6');
+    await expectPlace(page, 2);
     await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
     await swipe(stage, 120, -8);
-    await expect(count(page)).toHaveText('1 of 6');
+    await expectPlace(page, 1);
     await swipe(stage, -30, 0);
-    await expect(count(page)).toHaveText('1 of 6');
+    await expectPlace(page, 1);
     await swipe(stage, -60, 140);
-    await expect(count(page)).toHaveText('1 of 6');
+    await expectPlace(page, 1);
   });
 });
 
@@ -297,10 +302,10 @@ test.describe('the Lightbox without JavaScript', () => {
       return;
     }
     await expect(dialog(page)).toHaveAttribute('open', '');
-    await expect(count(page)).toHaveText('1 of 6');
+    await expectPlace(page, 1);
     await page.getByRole('link', { name: 'Next photo' }).click();
     await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
-    await expect(count(page)).toHaveText('2 of 6');
+    await expectPlace(page, 2);
     await page.getByRole('link', { name: 'Close' }).click();
     await expect(page).toHaveURL(ALBUM);
     await expect(page.locator('dialog[open]')).toHaveCount(0);

@@ -18,6 +18,12 @@ export const PLACEHOLDER_PROJECT = process.env.PUBLIC_SANITY_PROJECT_ID === 'pla
 export const PHOTOGRAPHER_PAGE = 'https://www.youtube.com/@redcarpetfilmshollywood';
 
 /**
+ * The first photograph of End-of-Year Gala 2025 as `development` holds the album since 9 October 2026 (the
+ * photographer's set): the dataset's key, not the seed's, for the specs that open the album on a photo address.
+ */
+export const GALA_2025_FIRST_PHOTO = 'gala-2025-couple-in-gold-and-orange';
+
+/**
  * The Viewer token the dev server reads, for a spec that signs the draft session as the enable route
  * would (ADR 0044): the process env first (the placeholder command in the runbook sets it empty),
  * else the one variable from `packages/web/.env`, parsed without loading the rest into the test

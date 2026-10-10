@@ -1636,7 +1636,9 @@
 .oy-lrow-body .oy-lrow-where {
   margin-top: 6px;
   font-size: 13.5px;
-  color: var(--muted);
+  /* --text-muted, not --muted: the line sits on the ground itself, and on the alternate ground --muted reads
+     4.45:1 where Section swaps in --text-muted-on-tint, 5.3:1 (R24). */
+  color: var(--text-muted);
 }
 .oy-lrow--tier {
   grid-template-columns: 210px 1fr auto;
