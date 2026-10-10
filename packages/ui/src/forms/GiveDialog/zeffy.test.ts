@@ -35,6 +35,21 @@ describe('zeffyFrameSrc', () => {
       ),
     ).toBe(`https://www.zeffy.com/embed/donation-form/${HELP}?embedId=give&embed-version=v2`);
   });
+
+  // Zeffy's pop-up button code hands out the embed address this way (`zeffy-form-link="...?modal=true"`), and
+  // with it the form draws its own close button in a frame as narrow as the dialog's.
+  it("drops the pop-up code's modal parameter, whatever else the address carries", () => {
+    expect(zeffyFrameSrc(`https://www.zeffy.com/embed/donation-form/${HELP}?modal=true`)).toBe(
+      `https://www.zeffy.com/embed/donation-form/${HELP}?embed-version=v2&embedId=give`,
+    );
+    expect(
+      zeffyFrameSrc(
+        `https://www.zeffy.com/en-US/embed/donation-form/${SAMPLE}?utm_source=site&modal=true`,
+      ),
+    ).toBe(
+      `https://www.zeffy.com/en-US/embed/donation-form/${SAMPLE}?utm_source=site&embed-version=v2&embedId=give`,
+    );
+  });
 });
 
 describe('zeffyPageHref', () => {
@@ -50,10 +65,24 @@ describe('zeffyPageHref', () => {
     );
   });
 
-  it("keeps the address's own parameters", () => {
+  it("keeps the address's own parameters and fragment, as they were typed", () => {
     expect(
       zeffyPageHref(`https://www.zeffy.com/en-US/embed/donation-form/${SAMPLE}?utm_source=site`),
     ).toBe(`https://www.zeffy.com/en-US/donation-form/${SAMPLE}?utm_source=site`);
+    expect(
+      zeffyPageHref(`https://www.zeffy.com/embed/donation-form/${HELP}?note=a%20b&mark=~#top`),
+    ).toBe(`https://www.zeffy.com/donation-form/${HELP}?note=a%20b&mark=~#top`);
+  });
+
+  it("drops the pop-up code's modal parameter from the page link too, and nothing else", () => {
+    expect(zeffyPageHref(`https://www.zeffy.com/embed/donation-form/${HELP}?modal=true`)).toBe(
+      `https://www.zeffy.com/donation-form/${HELP}`,
+    );
+    expect(
+      zeffyPageHref(
+        `https://www.zeffy.com/en-US/embed/donation-form/${SAMPLE}?modal=true&utm_source=site#top`,
+      ),
+    ).toBe(`https://www.zeffy.com/en-US/donation-form/${SAMPLE}?utm_source=site#top`);
   });
 
   it('answers nothing for any other address, so the dialog draws no link', () => {
