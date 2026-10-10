@@ -21,3 +21,8 @@ the stand-in host and the dataset the site reads. Its one delivery, at 22:37 UTC
 answered 200, so it signs with the site's `SANITY_WEBHOOK_SECRET`. What is left: the purge check after
 the next publish, and moving the webhook's URL and dataset when D2 or D3 changes them. Its triggers,
 filter and projection were not read (`docs/runbook.md`, Hosting today).
+- 10 October 2026: the purge is proven (open-work E1; the runbook's Hosting today has the timings).
+  A publish showed on the live page about five seconds later. Two things are left for the owner in
+  sanity.io/manage, which is why this stays open: `purge-site-cache` is not limited to publishes (it
+  delivered after each of five draft writes with nothing published), and a second webhook,
+  `purge-site-cache2`, posts to the bare domain, which only redirects, and its log is empty.
