@@ -56,6 +56,23 @@ the public host until the domain works (see Hosting today). Public
 since Phase 2 the production build stops without `PUBLIC_SANITY_PROJECT_ID` and
 `PUBLIC_SANITY_DATASET`.
 
+Bun on Vercel: the build image runs its own Bun for the install, 1.3.14 on 9 October 2026 (the
+`bun install v` line of a build log), not the 1.4.2 that `packageManager` pins. Vercel's
+documentation, read that day, gives no way to choose the installer's version except the install
+command. Corepack, its other override, manages only npm, pnpm and Yarn. `bunVersion` in
+`vercel.json` selects the Bun runtime for Functions (`1.x`, which is 1.3.14, or `1.4.x`) and would
+move the site off Node 22; whether it also changes the installer was not tried. So
+`packages/web/vercel.json` and `packages/ui/vercel.json` send their install and their build through
+`scripts/pinned-bun.sh`, which runs the `packageManager` version: when the Bun on PATH is another
+one, npm installs the pinned release under the repo root's `node_modules/.cache/pinned-bun/`, and a
+later call reuses it. Each such call writes a `pinned-bun:` line to the build log naming both
+versions, and the install line names the Bun that ran. `bun check` fails if either `vercel.json`
+stops calling the script. The reason is the lockfile, which is `lockfileVersion` 1 today and
+readable by both. Bun 1.4 writes version 3 as soon as the root `package.json` has an override
+scoped to a parent or a version (Bun's documentation on overrides), and Bun 1.3.14 stops on that
+file with "Unknown lockfile version" (reproduced on 9 October), which would end every deployment
+at install.
+
 Domain: `omoyorubasocal.org`, bought on 11 September 2026 (the old `omoyorubaofsocal.org` is
 not in the owner's hands; wayfinder ticket 10 covers its redirects). Its DNS is at Cloudflare.
 Both names are attached under the project's Domains, with the apex redirecting to `www` (this

@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "installCommand": "bun install --frozen-lockfile",
-  "buildCommand": "bun run build-storybook",
+  "installCommand": "bash ../../scripts/pinned-bun.sh install --frozen-lockfile",
+  "buildCommand": "bash ../../scripts/pinned-bun.sh run build-storybook",
   "outputDirectory": "storybook-static"
 }

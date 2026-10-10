@@ -1,5 +1,5 @@
 {
   "framework": "astro",
-  "installCommand": "bun install --frozen-lockfile",
-  "buildCommand": "bun run build"
+  "installCommand": "bash ../../scripts/pinned-bun.sh install --frozen-lockfile",
+  "buildCommand": "bash ../../scripts/pinned-bun.sh run build"
 }
