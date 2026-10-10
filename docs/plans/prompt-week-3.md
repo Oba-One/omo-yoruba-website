@@ -64,7 +64,7 @@ Ask one at a time, each with your recommendation and today's default:
 - **Giving (decided: Zeffy, embedded, 27 September):** once the owner's Zeffy form exists, confirm how it handles
   fees, receipts and monthly giving (C12), then the dialog copy the Zeffy pull request held back (review R38).
 - **The review's owner tickets:** R47 (a reopened form keeps what was typed?), R110 (what the 17px floor covers),
-  R142 (require TypeGen drift and Playwright and axe), R143 (the advisories to accept).
+  R142 (require TypeGen drift and Playwright and axe). R143 was settled on 9 October (open-work D27).
 - **D2, D7, D11, D15** as the owner wants.
 
 ## Part 5: the review's ready groups, as time allows
