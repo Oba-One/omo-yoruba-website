@@ -64,14 +64,14 @@ command. Corepack, its other override, manages only npm, pnpm and Yarn. `bunVers
 move the site off Node 22; whether it also changes the installer was not tried. So
 `packages/web/vercel.json` and `packages/ui/vercel.json` send their install and their build through
 `scripts/pinned-bun.sh`, which runs the `packageManager` version: when the Bun on PATH is another
-one, npm installs the pinned release under the repo root's `node_modules/.cache/pinned-bun/`, and a
-later call reuses it. Each such call writes a `pinned-bun:` line to the build log naming both
+one, npm installs the pinned release under the repo root's `node_modules/.cache/pinned-bun/`, and
+later calls reuse it, as do later builds, since Vercel's build cache keeps it. Each such call writes a `pinned-bun:` line to the build log naming both
 versions, and the install line names the Bun that ran. `bun check` fails if either `vercel.json`
-stops calling the script. The reason is the lockfile, which is `lockfileVersion` 1 today and
-readable by both. Bun 1.4 writes version 3 as soon as the root `package.json` has an override
-scoped to a parent or a version (Bun's documentation on overrides), and Bun 1.3.14 stops on that
-file with "Unknown lockfile version" (reproduced on 9 October), which would end every deployment
-at install.
+stops calling the script. The reason is the lockfile, which is `lockfileVersion` 3 since the
+overrides of 9 October (CI and merging). Bun 1.4 writes version 3 as soon as the root
+`package.json` has an override scoped to a parent or a version (Bun's documentation on overrides),
+and Bun 1.3.14 stops on that file with "Unknown lockfile version" (reproduced on 9 October), which
+would end every deployment at install.
 
 Domain: `omoyorubasocal.org`, bought on 11 September 2026 (the old `omoyorubaofsocal.org` is
 not in the owner's hands; wayfinder ticket 10 covers its redirects). Its DNS is at Cloudflare.
@@ -560,10 +560,27 @@ GitHub: https://github.com/Oba-One/omo-yoruba-website (public). Workflows in `.g
   (`TypeGen drift`: runs `bun typegen` offline and fails when `packages/content/schema.json` or
   `packages/content/src/sanity.types.ts` differ from the commit). None is path filtered, so all
   six can be required checks.
-- `audit.yml` Mondays 06:23 UTC and on demand: `bun audit --audit-level=high`.
+- `audit.yml` Mondays 06:23 UTC and on demand: `bun run check:audit`, which is `bun audit
+  --audit-level=high` less the advisories accepted in `scripts/check-audit.sh`, each with its
+  reason and the condition for removing it.
 - Dependabot updates the pinned action SHAs monthly; package updates stay with Bun.
 - Actions are pinned to commit SHAs with the version in a comment, and the shared setup
   lives in `.github/actions/setup-js`.
+
+The dependency audit (review ticket R143): a red run means an advisory nobody has looked at. Take
+the first of three steps that fits. `bun audit fix` upgrades a vulnerable package inside its
+dependents' ranges and changes only `bun.lock`. When a dependency pins the vulnerable version, the
+root `package.json` overrides it for that parent alone, so no other package's copy moves: today
+`@module-federation/dts-plugin` (adm-zip, undici) and `@vercel/frameworks` (js-yaml, smol-toml),
+both under the Sanity CLI. Drop an entry once `bun why` shows its parent asking for the fixed
+version itself; `sanity` 6.18.0 does that for the first. When no fix can be taken and the code is
+not in a path a visitor reaches, accept the advisory in `scripts/check-audit.sh` with its reason,
+with the owner's agreement. One entry there, path-to-regexp, could take an override and is
+accepted all the same; its comment says why. After a build, the `//#region` markers in
+`packages/web/.vercel/output/functions/_render.func` name every package the Vercel function
+bundles. An override scoped to a parent makes Bun write `lockfileVersion` 3, which Bun 1.3 cannot
+read: every machine needs the pinned Bun, and Vercel gets it through `scripts/pinned-bun.sh`
+(Deploy).
 
 Branch protection on `main` (enabled 5 September 2026): the CI jobs are required status
 checks, the branch must be up to date before merging, the rule applies to administrators
