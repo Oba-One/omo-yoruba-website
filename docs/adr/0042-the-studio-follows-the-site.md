@@ -3,7 +3,7 @@
 Amended by ADR 0046: the photographer's link is no longer retired, since the credit's name now links to it.
 Amended by ADR 0047: the sidebar's names; the documents several pages read open beside the page that lists them.
 Amended by ADR 0048: the site has no news, so there is no News page for administrators to keep.
-Amended by ADR 0055: a ticket tier on its own carries the block's gold button when it sells the seat, featured or not.
+Amended by ADR 0056: a ticket tier on its own carries the block's gold button when it sells the seat, featured or not.
 
 Decided with the owner on 26 September 2026 in the weeks 1 and 2 decisions session
 (`docs/tickets/studio-simplification/spec.md`), from the Studio review of 13 September (open-work section 3)

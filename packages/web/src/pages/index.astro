@@ -1,7 +1,8 @@
 ---
 /**
  * The homepage (`02 Homepage.dc.html`, ROUTES sections 1, 4 and 5): composed from the one
- * homepage query through `loadQuery`, with the lead edition from the season rule and the seven
+ * homepage query through `loadQuery`, with the lead edition from the season rule, the two events'
+ * cards under its band (ADR 0057, added after the handoff) and the seven
  * layout options read from the singleton and filled with the schema defaults. The page arranges
  * library parts and owns its copy (the section kickers and headings the prototype carries) and
  * its layout; every fact comes from the Studio or renders Pending. The forms seam opens from the
@@ -14,6 +15,7 @@ import { pendingWhat } from '@oy/content/pending';
 import { homepageQuery } from '@oy/content/queries';
 import EventBand from '@oy/ui/bands/EventBand/EventBand.astro';
 import DoorCard from '@oy/ui/cards/DoorCard/DoorCard.astro';
+import EventCard from '@oy/ui/cards/EventCard/EventCard.astro';
 import PathRow from '@oy/ui/cards/PathRow/PathRow.astro';
 import ProgramCard from '@oy/ui/cards/ProgramCard/ProgramCard.astro';
 import PullQuote from '@oy/ui/cards/PullQuote/PullQuote.astro';
@@ -64,6 +66,18 @@ cachePage(Astro, '/', { draft: preview, failed: Boolean(error) });
     />
     <StatStrip stats={home.stats} id="impact" />
     <EventBand event={home.lead.event} kind={home.lead.kind} edit={home.edit.season} id="lead-event" />
+
+    <Section id="events" ground="alt" labelledby="events-heading">
+      <SectionHead
+        kicker={{ yo: 'Ọdún kan', en: 'One year' }}
+        title="Our two celebrations"
+        intro="Odunde marks the Yoruba new year each June. The Gala gathers the community again in November or December."
+        id="events-heading"
+      />
+      <CardGrid columns={2}>
+        {home.eventCards.map(({ event, imageEdit }) => <EventCard event={event} imageEdit={imageEdit} />)}
+      </CardGrid>
+    </Section>
 
     <Section id="programs" labelledby="programs-heading" data-sanity={home.edit.highlight}>
       <SectionHead

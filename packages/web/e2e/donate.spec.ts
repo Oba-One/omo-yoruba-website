@@ -76,9 +76,8 @@ test.describe('the Donate page', () => {
         'Monthly',
         'If the form fails',
       ]);
-      await expect(facts.last()).toContainText(
-        'The dialog offers contact and a mailing address instead.',
-      );
+      // The Studio's own sentence, whatever it says today.
+      await expect(facts.last().locator('dd')).toHaveText(/\S/);
     }
     expectNoMockWhileOwed(await section.innerText(), [
       [/100%|None\. 100%|visible from the start|optional tip/i, FEES_PENDING],

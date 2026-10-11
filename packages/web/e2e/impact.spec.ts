@@ -41,8 +41,8 @@ test.describe('the Impact page', () => {
       'voices',
       'photographs',
       'governance',
-      ...(funders === 'shown' ? ['funders'] : []),
-      'fund',
+      // The ask is a card at the foot of the partners, or a section of its own with them hidden (ADR 0057).
+      funders === 'shown' ? 'funders' : 'fund',
     ]);
     expect(await body(page, 'stats')).toMatch(/^(four|six)$/);
     expect(await body(page, 'sources')).toMatch(/^(shown|hidden)$/);
@@ -187,10 +187,19 @@ test.describe('the Impact page', () => {
       return;
     }
     await expect(section.locator('h2')).toHaveText('Partners and funders');
-    if ((await section.locator('.oy-partners li').count()) === 0) {
+    const cards = section.locator('.oy-partner-card');
+    if ((await cards.count()) === 0) {
       await expect(section.locator('.oy-pend-line')).toContainText(
         presenceWhat('partner')?.what ?? '',
       );
+    }
+    // Each partner is a card by name; one with a site links out to it, worded by the site's address.
+    for (const card of await cards.all()) {
+      await expect(card.locator('h3')).toHaveText(/\S/);
+      for (const link of await card.locator('a').all()) {
+        await expect(link).toHaveAttribute('href', /^https?:\/\//);
+        await expect(link).toHaveAttribute('rel', /noopener/);
+      }
     }
     expectNoMockWhileOwed(await section.innerText(), [
       [
@@ -200,20 +209,26 @@ test.describe('the Impact page', () => {
     ]);
   });
 
-  test('closes on the dark band with the partnerships lead, opening the sponsor form', async ({
+  test('closes on the ask as a card, with the partnerships lead, opening the sponsor form', async ({
     page,
   }) => {
     await page.goto('/impact');
-    const band = page.locator('#fund');
-    await expect(band).toHaveClass(/oy-dark/);
-    await expect(band.locator('h2')).toHaveText(/\S/);
-    const line = await band.locator('.oy-sec-intro').innerText();
+    // One anchor, on a card: among the partners, or alone in its section with them hidden. No dark band
+    // ends the page above the dark footer (ADR 0057).
+    await expect(page.locator('#fund')).toHaveCount(1);
+    await expect(page.locator('main .oy-section.oy-dark')).toHaveCount(0);
+    const shown = (await body(page, 'funders')) === 'shown';
+    const ask = page.locator(
+      shown ? '#funders aside.oy-ask-card#fund' : 'section#fund .oy-ask-card',
+    );
+    await expect(ask.locator(shown ? 'h3' : 'h2')).toHaveText(/\S/);
+    const line = await ask.locator('.oy-ask-card-copy p').innerText();
     expect(line).toMatch(/partnerships lead/i);
     expectNoMockWhileOwed(line, [
       [/Adebayo Ogunlesi|within a working day/i, PARTNERSHIPS_RESPONDS_PENDING],
     ]);
-    await expect(band.locator('.oy-btn--primary')).toHaveCount(1);
-    await expectEnquiryRoundTrip(page, band.locator('a[data-enquiry="sponsor"]'));
+    await expect(ask.locator('.oy-btn--primary')).toHaveCount(1);
+    await expectEnquiryRoundTrip(page, ask.locator('a[data-enquiry="sponsor"]'));
   });
 
   test('keeps one gold action per screen view, and the header opens its two forms', async ({

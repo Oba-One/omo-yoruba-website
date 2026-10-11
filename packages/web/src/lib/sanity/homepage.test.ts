@@ -53,6 +53,13 @@ const data = {
       summary: null,
     },
   ],
+  festivalHeader: {
+    kicker: { yo: 'Ọdúndé', en: 'The year has arrived' },
+    title: 'Odunde Festival',
+    line: 'One day in Leimert Park.',
+    image: image('Dancers in the plaza'),
+  },
+  galaHeader: null,
   stats: [
     {
       _id: 's',
@@ -172,6 +179,56 @@ describe('buildHomepage', () => {
     expect(withTable?.tables).toBe(true);
     expect(withTable).not.toHaveProperty('tiers');
     expect(withTable?.title).toBe('End-of-Year Gala 2026');
+  });
+
+  it("introduces the two events from their pages' own headers, with the next edition's day and venue", () => {
+    const options = { imageSet, draft: false, studioUrl: '/admin', now };
+    const [festival, gala, ...more] = buildHomepage(data, options).eventCards;
+    expect(more).toEqual([]);
+    expect(festival?.event).toMatchObject({
+      kind: 'festival',
+      href: '/odunde',
+      kicker: { yo: 'Ọdúndé', en: 'The year has arrived' },
+      title: 'Odunde Festival',
+      line: 'One day in Leimert Park.',
+      where: 'Leimert Park',
+    });
+    // An edition with no day yet shows its venue alone.
+    expect(festival?.event.when).toBeUndefined();
+    expect(festival?.event.image).toMatchObject({ width: 520, alt: 'Dancers in the plaza' });
+    expect(festival?.imageEdit).toBeUndefined();
+    // A page whose header the Studio does not hold yet still has its card: the kind and the address.
+    expect(gala?.event).toMatchObject({ kind: 'gala', href: '/gala' });
+    expect(gala?.event.title).toBeUndefined();
+    expect(gala?.event.image).toBeUndefined();
+    expect(gala?.event.where).toBeUndefined();
+
+    // The day is the next edition's own, in Los Angeles time; an edition that is over gives none.
+    const withEditions = (events: unknown[]) =>
+      buildHomepage({ ...data, events } as unknown as HomepageData, options).eventCards;
+    const dated = withEditions(
+      data.events.map((event) =>
+        event._id === 'gala-2026'
+          ? { ...event, start: '2026-11-29T02:00:00.000Z', venueName: 'The hall' }
+          : event,
+      ),
+    );
+    expect(dated[1]?.event).toMatchObject({ when: 'Saturday 28 November 2026', where: 'The hall' });
+    const over = withEditions([
+      { ...data.events[0], _id: 'odunde-2026', edition: 2026, start: '2026-06-06T17:00:00.000Z' },
+    ]);
+    expect(over[0]?.event.when).toBeUndefined();
+    expect(over[0]?.event.where).toBeUndefined();
+
+    const draft = buildHomepage(data, { ...options, draft: true }).eventCards;
+    expect(draft.map((card) => card.imageEdit)).toEqual([
+      'id=festivalPage;type=festivalPage;path=header.image;base=%2Fadmin',
+      'id=galaPage;type=galaPage;path=header.image;base=%2Fadmin',
+    ]);
+    expect(buildHomepage(null, options).eventCards.map((card) => card.event.href)).toEqual([
+      '/odunde',
+      '/gala',
+    ]);
   });
 
   it('resolves every image to a CDN set carrying its alt, uncropped, with the hotspot framing', () => {

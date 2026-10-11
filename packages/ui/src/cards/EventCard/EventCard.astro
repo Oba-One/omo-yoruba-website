@@ -1,0 +1,100 @@
+---
+/**
+ * One of the two events the year turns on, as the homepage introduces them (added after the handoff,
+ * which gives the homepage the lead edition's band and nothing on the other event; ADR 0057).
+ * The event page's own photograph, kicker, name and line on the card base, so the card and the page it
+ * opens never say two things, with when and where the next edition is once the Studio holds them (the
+ * tokens' `.pg-when`, as a program card sets its cadence) and one
+ * quiet link to the page. A missing photograph shows the placeholder that names it; a missing line draws
+ * nothing, as the page's own header does. The name is the page's, never with a year (ADR 0031).
+ */
+import { EVENT_PAGE_NAMES } from '@oy/content/routes';
+import Button from '../../core/Button/Button.astro';
+import type { BilingualText } from '../../core/Kicker/Kicker.astro';
+import ImagePlaceholder from '../../media/ImagePlaceholder/ImagePlaceholder.astro';
+import type { ImageInput } from '../../media/image';
+import Card from '../Card/Card.astro';
+
+export type EventCardKind = keyof typeof EVENT_PAGE_NAMES;
+
+export interface EventCardLike {
+  kind: EventCardKind;
+  /** The event page's address. */
+  href: string;
+  /** The page header's own words and photograph. */
+  kicker?: BilingualText | null;
+  title?: string | null;
+  line?: string | null;
+  image?: ImageInput | null;
+  /** When the next edition is, in words ("Saturday 28 November 2026"); none while it has no date. */
+  when?: string | null;
+  /** Where the next edition is held, by the venue's name. */
+  where?: string | null;
+}
+
+interface Props {
+  event: EventCardLike;
+  /** A `data-sanity` attribute for the photograph. */
+  imageEdit?: string;
+  class?: string;
+}
+
+/** The link's words: the page by what a reader calls it. */
+const LINK: Record<EventCardKind, string> = {
+  festival: 'See the festival',
+  gala: 'See the Gala',
+};
+const MEDIA_HEIGHT = 240;
+
+const { event, imageEdit, class: className } = Astro.props;
+const name = event.title?.trim() || EVENT_PAGE_NAMES[event.kind];
+const facts = [event.when?.trim(), event.where?.trim()].filter(Boolean);
+const line = event.line?.trim();
+---
+
+<Card
+  title={name}
+  kicker={event.kicker}
+  image={event.image}
+  imageEdit={imageEdit}
+  alt=""
+  mediaHeight={MEDIA_HEIGHT}
+  sizes="(min-width: 1100px) 520px, (min-width: 860px) 50vw, 100vw"
+  class:list={['oy-event-card', className]}
+  data-event={event.kind}
+  style={`--event-media-height: ${MEDIA_HEIGHT}px`}
+>
+  {
+    !event.image && (
+      <ImagePlaceholder
+        slot="media"
+        what={`a photograph of ${name}`}
+        aspect={`520 / ${MEDIA_HEIGHT}`}
+        class="oy-event-card-placeholder"
+      />
+    )
+  }
+  {
+    facts.length > 0 && (
+      <div class="pg-when oy-event-card-when">
+        {facts.map((fact) => (
+          <span>{fact}</span>
+        ))}
+      </div>
+    )
+  }
+  {line && <p>{event.line}</p>}
+  <Button variant="quiet" href={event.href} arrow class="oy-event-card-link">{LINK[event.kind]}</Button>
+</Card>
+
+<style>
+  /* Both rules name the card twice over, so they outrank the card base's own whatever order the two
+     stylesheets load in: the router adds a page's styles after the ones it already holds. */
+  :global(.oy-card.oy-event-card) > :global(.oy-event-card-placeholder) {
+    height: var(--event-media-height, 240px);
+    aspect-ratio: auto;
+  }
+  :global(.oy-card.oy-event-card) :global(h3) {
+    font-size: 24px;
+  }
+</style>

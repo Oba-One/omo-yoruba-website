@@ -535,17 +535,25 @@ describe('buildFestivalPage', () => {
     });
   });
 
-  it('carries the partners with their logos resolved, or the registry wording for none', () => {
+  it('carries the partners with their kind, line and logo, or the registry wording for none', () => {
     const withPartners = {
       ...seeded,
       partnersIntro: 'The day is open because these organizations help pay for it.',
       partners: [
-        { _id: 'partner-1', name: '[ Partner name ]', url: null, kind: 'partner', logo: null },
+        {
+          _id: 'partner-1',
+          name: '[ Partner name ]',
+          url: null,
+          kind: 'partner',
+          line: null,
+          logo: null,
+        },
         {
           _id: 'partner-2',
           name: '[ Funder name ]',
           url: 'https://example.org',
           kind: 'funder',
+          line: '[ What they do with us ]',
           logo: image('[ Funder name ]'),
         },
       ],
@@ -557,6 +565,11 @@ describe('buildFestivalPage', () => {
     expect(view.partners.items.map((partner) => partner.name)).toEqual([
       '[ Partner name ]',
       '[ Funder name ]',
+    ]);
+    // What each is to us heads its card, and the line follows the name where the Studio holds one.
+    expect(view.partners.items.map(({ kind, line, url }) => ({ kind, line, url }))).toEqual([
+      { kind: 'partner', line: undefined, url: undefined },
+      { kind: 'funder', line: '[ What they do with us ]', url: 'https://example.org' },
     ]);
     expect(view.partners.items[0]?.logo).toBeUndefined();
     expect(view.partners.items[1]?.logo?.alt).toBe('[ Funder name ]');

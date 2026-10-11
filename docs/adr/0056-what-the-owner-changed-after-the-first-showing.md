@@ -8,6 +8,10 @@ Amends ADR 0024 and ADR 0028 (the festival's zone count), ADR 0029 (the give and
 ADR 0042 (which tier carries the gold), ADR 0045 (where a Zeffy dialog scrolls), ADR 0051 (how many
 videos an event page shows) and ADR 0053 (the Programs page's fixed card count), each noted there.
 
+This record merged as ADR 0055 in pull request 51, the same afternoon the hero photographs' record took
+that number in pull request 49. It was renumbered in the next pull request, so pull request 51's own
+description and commit message say 0055 where they mean this record.
+
 ## Decision
 
 - **A dialog sits in the middle of the screen and never outgrows it.** "We need to center our

@@ -1,7 +1,9 @@
 # QA pass after the first showing, 11 October 2026
 
 The owner showed the site to the members and sent twenty notes "as I do QA". This is the record of what
-each became. The rules the notes changed are in ADR 0055.
+each became. The rules the notes changed are in ADR 0056, and the three sections the notes added in
+ADR 0057. (ADR 0056 merged as 0055 in pull request 51 and was renumbered in the second pull request: the
+hero photographs' record took 0055 the same afternoon.)
 
 ## The notes, and where each stands
 
@@ -16,17 +18,17 @@ each became. The rules the notes changed are in ADR 0055.
 | "The videos sections on our events pages need to be full width or have 2 videos present" | done, first pull request: two side by side, a lone one fills the width |
 | "Since there is only general admission for the gala we need to better design the section showing tickets" | done, first pull request |
 | "Reach us section on our story the send us a message block does not look well designed and too much whitespace below it" | done, first pull request |
-| Odunde's zones "should be three we are missing the Egbe-Ibile section" | code done, first pull request; the third zone's document, its line and photograph follow the deploy |
+| Odunde's zones "should be three we are missing the Egbe-Ibile section" | done: code in the first pull request; the third zone published once it deployed, with a line and a photograph for each zone |
 | "We should high cultural exchange as a program it is not active" | done, first pull request |
 | "Volunteer is missing a photo we should add one on the get involved page" | done: published |
-| Quotes from the Odunde videos on the homepage and wherever quotes show | homepage done: published; Impact follows the second pull request, whose page copy names a parent, an elder and a vendor |
+| Quotes from the Odunde videos on the homepage and wherever quotes show | homepage done: published; Impact's three follow the second pull request's deploy, since its line promised "a parent, an elder, and a vendor" until then |
 | "add myself, temitope, simi ogunleye, joyce and others as staff and volunteers" | the four named are published; the others the notes suggest wait for the owner's word |
 | "We need to add the detail for our story do deep research" | published: how it began, the first president, seven dated entries (the timeline itself stays hidden until the owner switches it on) |
 | "Odunde we need to fill the missing details" | part published: the 2027 date, free entry, the venue line, two visit facts, the hour-by-hour section hidden; the rest is not in the notes |
 | "We need to fill out the pending details on the programs page" | part published: when the lessons and Kids & STEM run; ages, and how often the Collective meets, are not in the notes |
-| Add WEFA to Odunde's partners, and give the partners section more detail and links | WEFA published; the section's redesign is the second pull request |
-| "The homepage does not have a section highlighting the core events Odunde and End of Year Gala" | second pull request |
-| "Fund next year section does not look good with it background similar to the footer", combine it with Partners and funders | second pull request |
+| Add WEFA to Odunde's partners, and give the partners section more detail and links | WEFA published; the cards are done, second pull request; a line, a link and a logo for each partner are the organization's to add |
+| "The homepage does not have a section highlighting the core events Odunde and End of Year Gala" | done, second pull request |
+| "Fund next year section does not look good with it background similar to the footer", combine it with Partners and funders | done, second pull request |
 | "Programs should be a" | the note was cut off; asked, the owner chose "Skip it for now" |
 
 ## First pull request
@@ -51,6 +53,25 @@ each became. The rules the notes changed are in ADR 0055.
   the seed revises its own earlier "four" in four places.
 - Programs: Cultural Exchange is left out by name (`NOT_RUNNING` in `programs-page.ts`), and
   `FIXED_LAYOUTS.programsPage.cards` is `three`.
+
+## Second pull request
+
+Three parts the handoff does not draw (ADR 0057), each a component in `@oy/ui` with its story and test.
+
+- `EventCard` and the homepage's section under the band, "Our two celebrations": the festival and the
+  Gala side by side, each card the event page's own header (photograph, kicker, heading, line) with the
+  next edition's day and venue and a quiet link. The homepage query reads the two page singletons'
+  headers, so `TYPE_ROUTES` sends a publish of either page to the homepage too, and the Studio lists
+  the homepage as a second place each page shows.
+- `PartnerCards` on Odunde and Impact: what the partner is to us, its name, one line, a link worded by
+  its site's address, the logo when there is one. Three across, two on a tablet, a short last row in
+  the middle. The partner gained one optional field, `line` ("What they do with us"). `PartnerRow`
+  stays for a list of names alone.
+- `AskCard`: Impact's "Fund the next year" as a card at the foot of Partners and funders, on the
+  section's own ground, keeping the anchor `#fund`. With the partners hidden it stands alone in its
+  section. No dark band sits on the dark footer any more.
+- Impact's voices say "What people say about the work, in their own words."
+- The first batch's record is renumbered to ADR 0056, with every reference the first pull request added.
 
 ## Published
 
@@ -80,6 +101,13 @@ published with the draft's own revision. The owner's answers through the questio
 - Two plan-your-visit facts: the plaza's corner, and the Metro K Line's Leimert Park station beside it.
 - `program-kids-stem.cadence` "At Odunde, each June", and the year strip's "All year" for the lessons
   and "June" for Kids & STEM.
+- The zones, once the first pull request was live: `zone-egbe-ibile` (Ẹgbẹ́ Ìbílẹ̀, "The hometown
+  associations", third in order) with the line "Where the Yoruba hometown associations and the elders
+  gather.", which says no more than the owner's note does, and a photograph from the Odunde 2026 album;
+  a line for the market and for the children's yard, each from what its own photograph shows.
+- `programsPage.header.line` now ends "Kids & STEM is described in full below.", where it said "The
+  rest are described in full below." with one program left under the cards. The seed keeps the earlier
+  sentence; it leaves a stored line alone.
 
 ## Checked
 
@@ -95,6 +123,15 @@ published with the draft's own revision. The owner's answers through the questio
   about 135px under the pinned head.
 - The seeded browser tests on desktop and phone sizes for the pages touched, with two new tests for the
   dialog shell.
+- The second pull request: `bun check` (1,250 tests in 171 files); by eye at 375, 700, 820 and 1440
+  wide, the three new sections on the homepage, Impact and Odunde against the real dataset; and the
+  whole browser suite against the real dataset, 340 tests on desktop and phone sizes: 322 passed, 14
+  skipped as the suite intends, and two tests failed at both sizes. One was this change's: the event
+  card's heading and placeholder rules had the card base's own specificity, so the homepage stood 5px
+  taller (9px on a phone) after an in-site navigation than on a fresh load, where the router adds a
+  page's styles after the ones it holds. The rules now name the card twice. The other was the Donate
+  spec pinning the fourth give-now fact's sentence, which the organization reworded that day; the
+  seeded check now asks only that the fact says something. Both pass on a rerun with the homepage spec.
 
 ## What the Drive notes hold, and what they contradict
 
@@ -117,10 +154,16 @@ does not list stay out of this repository.
 
 ## Left
 
-- The second pull request: the homepage's section for the two events, partners as cards with a line
-  each, Impact's partners and its closing ask in one section, and Impact's voices.
-- After the first pull request deploys: the third zone's document and the three zones' lines.
+- After the second pull request deploys: three of the film's voices on Impact, and a line for each
+  partner the notes describe.
 - For the owner: names for the six voices; whether the other organizers the notes name join the list;
   whether the timeline shows; the founders and the earliest photograph; the festival's hours, parking,
   accessibility and vendor terms for 2027; ages for each program; how often the Collective meets.
 - The Studio's To do still asks for Cultural Exchange's facts (open-work E27).
+- From the second pull request's review, left for a follow-up so the merge did not wait: `Section`'s
+  story and comment and the trust query's comment still say Impact closes on a dark band; `Handoff`'s
+  story still says "join this row"; `PartnerCards` words a link from any address with a host, so
+  `mailto://` and `tel://` forms pass where only http and https should (the Studio's link field takes
+  neither); the event card's link reads "See the festival", which the glossary's Odunde entry asks to
+  avoid without the name; `SectionHead`'s `swatch` has no page left that uses it; and the ask is an
+  `aside`, a second landmark of the section's name when it stands alone.

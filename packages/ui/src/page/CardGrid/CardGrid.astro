@@ -6,7 +6,7 @@
  * (`13 Get Involved.dc.html`, the doors as rows). Children are the cards; the page only chooses the
  * count, and may close the grid with a short muted note (the Programs hub's line under its cards).
  * With `center` a last row that is not full sits in the middle, each card the width of the others
- * (the board's seven and the staff and volunteers on Our Story, ADR 0055).
+ * (the board's seven and the staff and volunteers on Our Story, ADR 0056).
  */
 interface Props {
   columns?: 1 | 2 | 3 | 4 | 5;
@@ -79,7 +79,7 @@ const { columns = 3, center = false, note, class: className, ...rest } = Astro.p
     }
   }
   /* Centred: the same columns as a wrapping row, so the cards of a short last row keep their width
-     and sit in the middle (ADR 0055). */
+     and sit in the middle (ADR 0056). */
   .oy-card-grid[data-center] {
     display: flex;
     flex-wrap: wrap;

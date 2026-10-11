@@ -837,7 +837,7 @@ export const PRESENCE: readonly PresenceEntry[] = [
   // The page shows active zones only (festivalPageQuery), so the count skips the inactive ones.
   {
     type: 'zone',
-    // Three (ADR 0055): the market, the children's yard and the hometown associations.
+    // Three (ADR 0056): the market, the children's yard and the hometown associations.
     minimum: 3,
     filter: 'active != false',
     where: 'Odunde, zones',

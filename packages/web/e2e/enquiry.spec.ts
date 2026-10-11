@@ -64,7 +64,7 @@ for (const kind of ENQUIRY_KINDS) {
   });
 }
 
-// The panel never outgrows the screen (ADR 0055, review ticket R78): a short form sits in the middle of it, a long
+// The panel never outgrows the screen (ADR 0056, review ticket R78): a short form sits in the middle of it, a long
 // one fills it and scrolls inside, and the page behind does not move however far the wheel turns.
 test('a dialog sits in the middle of the screen, a long form scrolls inside it and the page stays put', async ({
   page,

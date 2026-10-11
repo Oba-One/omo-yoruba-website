@@ -96,6 +96,7 @@ export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "i
     name,
     url,
     kind,
+    line,
     logo{_type, alt, caption, hotspot, crop, asset}
   },
   fundersIntro,
