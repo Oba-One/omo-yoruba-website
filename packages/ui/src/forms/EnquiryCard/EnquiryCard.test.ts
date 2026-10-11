@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './EnquiryCard.stories';
 
-const { Default, Secondary, WithNext, WithEmail, EmailPending } = composeStories(stories);
+const { Default, Secondary, WithNext, WithNote, WithEmail, EmailPending } = composeStories(stories);
 
 describe('EnquiryCard', () => {
   it('explains the vendor form from the spec and opens it through a link trigger', async () => {
@@ -30,6 +30,14 @@ describe('EnquiryCard', () => {
     expect(text(body.querySelector('.oy-enquiry-card-meta'))).toBe(
       '8 questions • Dues are agreed with our membership lead',
     );
+  });
+
+  it("closes the card with the page's note, and draws none without one", async () => {
+    const body = await renderToBody(WithNote);
+    expect(text(body.querySelector('.oy-enquiry-card-action + p.oy-enquiry-card-note'))).toBe(
+      'If it is urgent, calling reaches a person faster than email does.',
+    );
+    expect((await renderToBody(Default)).querySelector('.oy-enquiry-card-note')).toBeNull();
   });
 
   it("offers the page's own address beside the trigger, or the registry's chip while it is owed", async () => {

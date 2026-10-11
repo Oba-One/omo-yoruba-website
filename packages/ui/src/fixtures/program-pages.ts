@@ -32,7 +32,7 @@ export const PROGRAMS_HEADER = {
   kicker: { yo: 'Ohun tí a ń ṣe', en: 'What we do' },
   title: 'Our programs',
   line: 'What runs through the year, for children, teenagers, and adults, across Los Angeles. Two programs have their own page. The rest are described in full below.',
-  actions: [{ label: 'Enrol a learner', kind: 'enquiry', enquiryKind: 'enrol' }],
+  actions: [{ label: 'Enroll a learner', kind: 'enquiry', enquiryKind: 'enrol' }],
 };
 
 /** The registry's wording for a sub-program's fact the Studio holds no value for. */
@@ -103,7 +103,7 @@ export const PROGRAMS_TAKE_PART = [
     way: 'enrol',
     title: 'Start Yoruba lessons',
     line: 'Online lessons for children and adults, scheduled with the teacher. Write to her to start.',
-    label: 'Enrol a learner',
+    label: 'Enroll a learner',
   },
   {
     _key: 'way-2',

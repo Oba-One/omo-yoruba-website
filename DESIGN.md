@@ -281,7 +281,7 @@ Primary and secondary set Source Sans 3 at 15px bold with 11px 26px padding. Pre
 
 ### Path rows
 
-`cards/PathRow`, stacked two to four in `page/TakePartBand` as a page's closing ask: a chip naming the way in, a title and one line, and one action (outline by default, gold once per view, quiet for the give and updates rows). Card ground, hairline and 6px corners with 22px 24px padding, but no top edge and no rule; on hover the border deepens and the → slides. The chip is 12px bold uppercase with 0.12em tracking, fully round, indigo 700 on indigo 100 by default. Each way in tints its chip: vendor terracotta, sponsor amber, performer, enrol and member indigo, volunteer green, table purple, give and updates neutral. Under 720px the row wraps and its button fills the width.
+`cards/PathRow`, stacked two to four in `page/TakePartBand` as a page's closing ask: a chip naming the way in, a title and one line, and one action (outline by default, gold once per view, and never gold on the give or updates rows, so a band shows one shape of button). Card ground, hairline and 6px corners with 22px 24px padding, but no top edge and no rule; on hover the border deepens and the → slides. The chip is 12px bold uppercase with 0.12em tracking, fully round, indigo 700 on indigo 100 by default. Each way in tints its chip: vendor terracotta, sponsor amber, performer, enrol and member indigo, volunteer green, table purple, give and updates neutral. Under 720px the row wraps and its button fills the width.
 
 ### Enquiry Modal and bottom sheet
 
@@ -293,7 +293,7 @@ Under 720px the same dialog is the bottom sheet: full width, pinned to the botto
 
 ### Give Dialog
 
-`forms/GiveDialog`: every Donate button opens it, and `#give` in the URL opens it on load. The same shell at 520px: the aṣọ òkè edge, title, lead line and the Zeffy embed (up to 640px or 70 percent of the viewport high, 6px corners). If the embed has not loaded after 4 seconds, a paper panel offers the fallback: write to us, send a check to the mailing address (Pending until the settings hold it), Contact us, or Try again.
+`forms/GiveDialog`: every Donate button opens it, and `#give` in the URL opens it on load. The same shell at 520px: the aṣọ òkè edge, title, lead line and the Zeffy embed (as tall as Zeffy's form says it is, 6px corners). The panel sits in the middle of the screen and never outgrows it: its head stays put and its body scrolls. If the embed has not loaded after 4 seconds, a paper panel offers the fallback: write to us, send a check to the mailing address (Pending until the settings hold it), Contact us, or Try again.
 
 ### Site nav and mobile menu
 

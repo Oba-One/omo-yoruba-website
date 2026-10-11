@@ -21,7 +21,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'One column of cards as rows, or two, three, four or five across at the content width. Three and two collapse to one column under 860px; four goes to two under 1000px and to one under 600px; five goes to two under 1000px.',
+          'One column of cards as rows, or two, three, four or five across at the content width. Three and two collapse to one column under 860px; four goes to two under 1000px and to one under 600px; five goes to two under 1000px. With `center` a last row that is not full sits in the middle.',
       },
     },
   },
@@ -49,6 +49,17 @@ export const Five: Story = {
 
 export const Four: Story = {
   args: { columns: 4, slots: { default: [card('One'), card('Two'), card('Three'), card('Four')] } },
+};
+
+/** Seven cards four across with `center`: the last row's three sit in the middle, each as wide as the cards above (Our Story's board). */
+export const Centered: Story = {
+  args: {
+    columns: 4,
+    center: true,
+    slots: {
+      default: ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'].map(card),
+    },
+  },
 };
 
 const programs = (count: number) =>

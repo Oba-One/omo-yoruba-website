@@ -18,7 +18,8 @@ export const FIXED_LAYOUTS: Readonly<Record<string, Readonly<Record<string, stri
     labels: 'column',
   },
   programsPage: {
-    cards: 'four',
+    // Three across since ADR 0055: three programs run, and the Programs page leaves out the fourth.
+    cards: 'three',
     inline: 'expanded',
   },
   lessonsPage: {
@@ -128,7 +129,7 @@ export const PAGE_ACTIONS: Readonly<Record<string, readonly PageAction[]>> = {
     {
       enquiryKind: 'enrol',
       kind: 'enquiry',
-      label: 'Enrol a learner',
+      label: 'Enroll a learner',
     },
   ],
   storyPage: [],
@@ -207,7 +208,7 @@ export const TAKE_PART_WORDS: Readonly<Record<string, Readonly<Record<string, Ro
   programsPage: {
     enrol: {
       title: 'Start Yoruba lessons',
-      label: 'Enrol a learner',
+      label: 'Enroll a learner',
     },
     volunteer: {
       title: 'Help with a program',
@@ -239,7 +240,7 @@ const WAY_WORDS: Readonly<Record<string, RowWords>> = {
   volunteer: { title: 'Volunteer with us', label: 'Volunteer' },
   table: { title: 'Arrange a table', label: 'Ask about a table' },
   give: { title: 'Give toward the programs', label: 'Donate' },
-  enrol: { title: 'Enrol a learner', label: 'Enrol a learner' },
+  enrol: { title: 'Enroll a learner', label: 'Enroll a learner' },
   member: { title: 'Become a member', label: 'Become a member' },
   updates: { title: 'Stay in touch', label: 'Get updates' },
 };

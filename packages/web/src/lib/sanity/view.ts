@@ -5,7 +5,7 @@
  * parts a page singleton's view repeats (the header, the take-part rows, past years) are in
  * `page-skeleton.ts`.
  */
-import type { ImageSetBuilder } from '@oy/content/images';
+import type { ImageSetBuilder, ImageSetOptions } from '@oy/content/images';
 import type { ResolvedImage } from '@oy/ui/media/image.ts';
 import { stegaClean } from '@sanity/client/stega';
 import { dataAttribute } from './data-attribute';
@@ -20,6 +20,16 @@ export interface BuildOptions {
 }
 
 export type ImageLike = Parameters<ImageSetBuilder>[0] & { alt?: string | null };
+
+/**
+ * How the photograph behind a band of copy is built (the homepage hero, an event page's header):
+ * the four widths of a 1440px set, 720 to 2880px, at quality 50 where the builder's own is 80. A
+ * phone draws the photograph about three screens wide and so asks for the 2880px file
+ * (`photoBandSizes` in `@oy/ui`). Behind the scrim, at two to three image pixels to the CSS pixel,
+ * the lighter file is hard to tell from the heavier at two fifths of the bytes, which takes back
+ * most of what the wider file costs the page's largest paint (ADR 0055).
+ */
+export const BAND_PHOTOGRAPH = { width: 1440, quality: 50 } as const satisfies ImageSetOptions;
 
 export function resolveImage(
   imageSet: ImageSetBuilder,

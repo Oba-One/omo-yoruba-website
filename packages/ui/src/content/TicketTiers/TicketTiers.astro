@@ -3,9 +3,12 @@
  * The seats and tables block (`09 End-of-Year Gala.dc.html`): the next edition's ticket tiers as cards
  * in columns or rows by the page's `tiers` option, in the Studio's order, the one control for which
  * tier leads (ADR 0042). The first featured tier carries the block's gold button; every featured tier
- * keeps its ring. No tiers renders the registry's Pending line. While no tier is a buy-now one, so no card
- * carries the ticket link, the block draws its own Get tickets button once the edition holds the link:
- * Zeffy's ticket form lists the tickets itself (ADR 0052).
+ * keeps its ring. A lone tier lies across the width as a ticket (its name and price as the stub, what it
+ * includes beside them, the button at the far end), since one card in a row of three left the rest of the
+ * row empty (ADR 0055); when it is the tier that sells the seat it carries the gold button, featured or
+ * not, since no other card can. No tiers renders the registry's Pending line. While no tier is a buy-now
+ * one, so no card carries the ticket link, the block draws its own Get tickets button once the edition
+ * holds the link: Zeffy's ticket form lists the tickets itself (ADR 0052).
  */
 import TicketTierCard, { type TierLike } from '../../cards/TicketTierCard/TicketTierCard.astro';
 import { ticketsTrigger } from '../../cards/TicketTierCard/tickets';
@@ -40,9 +43,13 @@ const {
 } = Astro.props;
 
 const ordered = (tiers ?? []).filter((tier) => tier !== null);
-const goldAt = ordered.findIndex((tier) => tier.featured);
+/** A buy-now tier sells the seat through the ticket link; an enquiry tier opens the table form. */
+const sellsSeat = (tier: TierLike) => tier.variant !== 'enquiry';
+// The first featured tier carries the gold; a tier on its own does too when it sells the seat.
+const lone = ordered.length === 1 ? ordered[0] : undefined;
+const goldAt = lone && sellsSeat(lone) ? 0 : ordered.findIndex((tier) => tier.featured);
 // The ticket link needs a button somewhere: a buy-now tier's card, else the block's own.
-const sold = ordered.some((tier) => tier.variant !== 'enquiry');
+const sold = ordered.some(sellsSeat);
 const tickets = sold ? undefined : ticketsTrigger(ticketsUrl);
 ---
 
@@ -52,7 +59,12 @@ const tickets = sold ? undefined : ticketsTrigger(ticketsUrl);
       <Pending variant="line" what={pending} />
     </div>
   ) : (
-    <div class:list={['oy-tiers', className]} data-layout={layout} data-sanity={edit}>
+    <div
+      class:list={['oy-tiers', className]}
+      data-layout={layout}
+      data-count={ordered.length}
+      data-sanity={edit}
+    >
       {ordered.map((tier, at) => (
         <TicketTierCard
           tier={tier}

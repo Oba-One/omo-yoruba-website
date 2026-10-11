@@ -39,7 +39,7 @@ describe('EventBand', () => {
     expect(text(band?.querySelector('a.oy-btn'))).toContain('Vendors & sponsors');
     // After the date's chip the summary starts its own line; no generic band class on the root.
     expect(band?.querySelector('.oy-band-summary--apart')?.textContent).toBe(
-      'One village, four zones, one family.',
+      'One village, three zones, one family.',
     );
     expect(band?.classList.contains('oy-band')).toBe(false);
   });
@@ -47,7 +47,7 @@ describe('EventBand', () => {
   it('writes the date in words in Los Angeles time and appends the summary', async () => {
     const line = (await renderToBody(Filled)).querySelector('.oy-band-line');
     // One sentence after the date, as the prototype writes it.
-    expect(text(line)).toContain('Saturday 12 June 2027. One village, four zones, one family.');
+    expect(text(line)).toContain('Saturday 12 June 2027. One village, three zones, one family.');
     expect(line?.querySelector('.oy-band-summary--apart')).toBeNull();
     expect(line?.querySelector('.oy-pend')).toBeNull();
   });

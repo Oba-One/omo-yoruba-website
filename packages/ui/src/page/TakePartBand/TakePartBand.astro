@@ -6,12 +6,13 @@
  * Dialog for `member`, the page's newsletter form for `updates`) with the row's own title, line and
  * button label, and its chip the way in's unless the row names its own ("Partner" on a sponsor row). The rows show in the Studio's order, the one control
  * for which way in leads (ADR 0042), and the label style is the page's `labels` option. The first row
- * with a working button carries the band's one gold action; the give and updates rows' are quiet.
+ * with a working button carries the band's one gold action, never the give or the updates row; every
+ * other button is the outline, so a band shows one shape of button (ADR 0055).
  * With `vendorTerms` the vendor row's line goes on with the edition's terms (`vendorTermsText`) and
  * the registry's chip while the fees or either date is missing, since the vendor form says they are
  * on the festival page. No rows renders the registry's Pending line.
  */
-import { isQuietWay, isWayIn, WAY_CHIPS, wayAction } from '@oy/content/take-part';
+import { canCarryGold, isWayIn, WAY_CHIPS, wayAction } from '@oy/content/take-part';
 import PathRow from '../../cards/PathRow/PathRow.astro';
 import PathRows from '../../content/PathRows/PathRows.astro';
 import { type VendorTermsLike, vendorTermsText } from '../../content/vendor-terms';
@@ -64,7 +65,7 @@ const views = list.map((row) => {
   const way = isWayIn(row.way) ? row.way : undefined;
   return { row, way, action: way ? wayAction(way, row.label) : undefined };
 });
-const goldAt = views.findIndex((view) => view.action && !isQuietWay(view.way));
+const goldAt = views.findIndex((view) => view.action && canCarryGold(view.way));
 
 const { text: terms, missing: termsMissing } = vendorTermsText(vendorTerms);
 ---
@@ -84,7 +85,7 @@ const { text: terms, missing: termsMissing } = vendorTermsText(vendorTerms);
           line: row.line,
           action,
           pending: rowPending,
-          variant: isQuietWay(way) ? 'quiet' : at === goldAt ? 'primary' : 'secondary',
+          primary: at === goldAt,
           edit: row.edit,
         } as const;
         return way === 'vendor' && vendorTerms !== undefined ? (

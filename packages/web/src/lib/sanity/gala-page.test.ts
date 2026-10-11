@@ -309,6 +309,8 @@ describe('buildGalaPage', () => {
   it('resolves the header photograph, cleans the head and writes edit attributes only in draft', () => {
     const view = buildGalaPage(seeded, options);
     expect(view.header.image?.src).toContain('cdn.sanity.io');
+    // The header is a photo band, so its files are the lighter ones (ADR 0055).
+    expect(view.header.image?.srcset).toContain('q=50');
     expect(view.title).toBe('End-of-Year Gala');
     expect(view.edit.treatment).toBeUndefined();
     const draft = buildGalaPage(seeded, { ...options, draft: true });
@@ -515,12 +517,16 @@ describe('buildGalaPage', () => {
         ),
       }) as GalaPageData;
 
-    it("shows the first video of the newest past gala's album, its still the first photograph", () => {
+    it("shows the first two videos of the newest past gala's album, a still the first photograph", () => {
       const { videos } = buildGalaPage(
-        withVideos([video('toast', 'AbC_dEf-123'), video('dance', 'ZyX_wVu-987')]),
+        withVideos([
+          video('toast', 'AbC_dEf-123'),
+          video('dance', 'ZyX_wVu-987'),
+          video('close', 'QrS_tUv-456'),
+        ]),
         options,
       ).past;
-      expect(videos).toHaveLength(1);
+      expect(videos.map((item) => item.key)).toEqual(['toast', 'dance']);
       const [first] = videos;
       expect(first).toMatchObject({
         key: 'toast',

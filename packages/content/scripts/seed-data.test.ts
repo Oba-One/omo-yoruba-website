@@ -90,7 +90,7 @@ describe('buildSeed', () => {
       value: string;
       source?: string;
     }[];
-    expect(stats.map((s) => s.value).sort()).toEqual(['29', '3,000+', '4', '9']);
+    expect(stats.map((s) => s.value).sort()).toEqual(['29', '3', '3,000+', '9']);
     for (const stat of stats) expect(stat.source).toBeUndefined();
     const zones = docs.filter((d) => d._type === 'zone') as unknown as {
       name: { yo: string; en: string };
@@ -254,7 +254,7 @@ describe('missingFields', () => {
       action?: { label: string };
     };
     expect(lessons.image).toBeDefined();
-    expect(lessons.action?.label).toBe('Enrol a learner');
+    expect(lessons.action?.label).toBe('Enroll a learner');
     const exchange = byId.get('program-cultural-exchange') as { image?: unknown; action?: unknown };
     expect(exchange.image).toBeUndefined();
     expect(exchange.action).toBeUndefined();
@@ -304,7 +304,7 @@ describe('the take-part rows and the retired fields', () => {
       [
         'programsPage',
         [
-          ['enrol', undefined, 'Enrol a learner'],
+          ['enrol', undefined, 'Enroll a learner'],
           ['volunteer', 'Volunteer', 'Volunteer'],
           ['give', undefined, 'Donate'],
         ],
@@ -577,6 +577,42 @@ describe('Get Involved', () => {
     ]);
     const owners = { ...earlier, doors: earlier.doors.slice(0, 2) };
     expect(revisedFields('getInvolvedPage', owners, buildRevisions(assets)).set).toEqual({});
+  });
+});
+
+describe('the festival zones', () => {
+  it('moves the count from four to three only where the earlier seed still stands', () => {
+    const revisions = buildRevisions(assets);
+    expect(revisedFields('stat', { _id: 'stat-zones', value: '4' }, revisions).set).toEqual({
+      value: '3',
+    });
+    expect(
+      revisedFields(
+        'event',
+        { _id: 'event-odunde-2027', summary: 'One village, four zones, one family.' },
+        revisions,
+      ).set,
+    ).toEqual({ summary: 'One village, three zones, one family.' });
+    const earlier = {
+      header: {
+        line: 'A day of Yoruba culture at Leimert Park, held each June. Four zones, one village, open to everyone.',
+      },
+    };
+    expect(revisedFields('festivalPage', earlier, revisions).set['header.line']).toBe(
+      'A day of Yoruba culture at Leimert Park, held each June. Three zones, one village, open to everyone.',
+    );
+    // An editor's own wording, and another edition's, keep theirs.
+    expect(
+      revisedFields('festivalPage', { header: { line: 'Our own line, four zones.' } }, revisions)
+        .set,
+    ).toEqual({});
+    expect(
+      revisedFields(
+        'event',
+        { _id: 'event-odunde-2026', summary: 'One village, four zones, one family.' },
+        revisions,
+      ).set,
+    ).toEqual({});
   });
 });
 

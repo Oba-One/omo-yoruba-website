@@ -261,10 +261,10 @@ describe('what the To do counts', () => {
         },
       }).stillToAdd;
     const two = counted(2, 0).find(({ add }) => add.id === zones.id);
-    expect(two && missingRowTitle(two)).toBe('Odunde, zones: the unnamed zones (2 of 4)');
+    expect(two && missingRowTitle(two)).toBe('Odunde, zones: the unnamed zones (2 of 3)');
     const none = counted(2, 0).find(({ add }) => add.id === partners.id);
     expect(none && missingRowTitle(none)).toBe('Impact and Odunde: partner and funder names');
-    const full = counted(4, 1).map(({ add }) => add.id);
+    const full = counted(3, 1).map(({ add }) => add.id);
     expect(full).not.toContain(zones.id);
     expect(full).not.toContain(partners.id);
   });

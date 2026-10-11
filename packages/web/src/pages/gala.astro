@@ -158,7 +158,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
             id="honorees-heading"
           />
           {page.honorees.items.length > 0 ? (
-            <CardGrid columns={3}>
+            <CardGrid columns={3} center>
               {page.honorees.items.map((person) => (
                 <PersonCard person={person} edit={person.edit} />
               ))}

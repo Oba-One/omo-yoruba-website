@@ -10,14 +10,13 @@
  * accent follows the way in through the tokens (`data-accent`; enrol and member share the performer
  * accent, updates the give accent); the border deepens on hover, no rule, no lift. The default slot
  * follows the line inside its paragraph (the festival's vendor terms). The action is outline by
- * default, gold once per view, quiet for the give and updates rows. The door chips and accents come
+ * default and gold once per view. The door chips and accents come
  * from `@oy/content/doors`, one chip per door across the site (ADR 0034).
  */
 import { DOOR_ACCENTS, DOOR_CHIPS, isDoorKey } from '@oy/content/doors';
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import { type ActionLike, resolveAction } from '../../core/ActionButton/action';
-import type { ButtonVariant } from '../../core/Button/Button.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import type { DoorLike } from '../DoorCard/DoorCard.astro';
 
@@ -32,16 +31,14 @@ interface Props {
   action?: ActionLike | null;
   /** The registry's wording where a take-part row is missing its way in, title or button label. */
   pending?: string;
-  /** The gold action: once per view. */
+  /** The gold action: once per view. Every other row's action is the outline. */
   primary?: boolean;
-  /** The action's look; overrides `primary` (the give row's action is quiet). */
-  variant?: ButtonVariant;
   /** A `data-sanity` attribute, so click-to-edit reaches the row. */
   edit?: string;
   class?: string;
 }
 
-const { door, primary = false, variant, edit, class: className } = Astro.props;
+const { door, primary = false, edit, class: className } = Astro.props;
 const key = door?.key ?? '';
 const known = isDoorKey(key) ? key : undefined;
 const row = door
@@ -109,7 +106,7 @@ const actionReady = resolveAction(row.action)?.ok === true;
   </div>
   {
     actionReady ? (
-      <ActionButton action={row.action} variant={variant ?? (primary ? 'primary' : 'secondary')} />
+      <ActionButton action={row.action} variant={primary ? 'primary' : 'secondary'} />
     ) : (
       row.rowPending && <Pending what={row.rowPending} />
     )

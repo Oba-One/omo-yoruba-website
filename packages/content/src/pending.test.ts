@@ -20,6 +20,7 @@ import {
   pendingTitle,
   pendingWhat,
   presenceFilter,
+  presenceTotal,
   presenceWhat,
   rowDocumentType,
   TEACHER_EMAIL_PENDING,
@@ -155,7 +156,7 @@ describe('PRESENCE', () => {
       expect(typeByName(type)?.type, type).toBe('document');
       expect(byType[type], type).toBeGreaterThanOrEqual(1);
     }
-    expect(byType.zone).toBe(4);
+    expect(byType.zone).toBe(3);
   });
 
   it('never asks for what is optional: the association names are listed only if the owner adds them', () => {
@@ -193,9 +194,19 @@ describe('pendingFilter', () => {
   });
 });
 
+describe('presenceTotal', () => {
+  it('pads the listed documents to the count the registry expects, and never trims', () => {
+    expect(presenceTotal('zone', 0)).toBe(3);
+    expect(presenceTotal('zone', 2)).toBe(3);
+    expect(presenceTotal('zone', 5)).toBe(5);
+    // A type the registry does not count draws what is listed.
+    expect(presenceTotal('door', 2)).toBe(2);
+  });
+});
+
 describe('presenceWhat', () => {
   it('answers the presence row wording and the count the page expects', () => {
-    expect(presenceWhat('zone')).toEqual({ what: 'the unnamed zones', minimum: 4 });
+    expect(presenceWhat('zone')).toEqual({ what: 'the unnamed zones', minimum: 3 });
     expect(presenceWhat('ticketTier')?.what).toBe('three prices and what each includes');
     expect(presenceWhat('album')?.what).toBe('the photo albums');
   });

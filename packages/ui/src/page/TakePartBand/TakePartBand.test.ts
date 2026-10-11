@@ -55,7 +55,7 @@ describe('TakePartBand', () => {
     expect(sponsor?.querySelector('.oy-pend')).toBeNull();
   });
 
-  it('draws the Gala rows with the table form and the quiet give row, and no vendor terms', async () => {
+  it('draws the Gala rows with the table form and the give row as an outline, and no vendor terms', async () => {
     const body = await renderToBody(Gala);
     const rows = rowsOf(body);
     expect(rows.map((row) => row.getAttribute('data-way'))).toEqual([
@@ -66,7 +66,7 @@ describe('TakePartBand', () => {
     ]);
     expect(rows[1]?.querySelector('a.oy-btn')?.getAttribute('data-enquiry')).toBe('table');
     const give = rows[3]?.querySelector('a.oy-btn');
-    expect(give?.className).toContain('oy-btn--quiet');
+    expect(give?.className).toContain('oy-btn--secondary');
     expect(give?.hasAttribute('data-give')).toBe(true);
     expect(body.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
     expect(body.querySelector('.oy-pend')).toBeNull();
@@ -80,7 +80,7 @@ describe('TakePartBand', () => {
       'give',
     ]);
     expect(programs.map((row) => text(row.querySelector('.oy-path-chip')))).toEqual([
-      'Enrol',
+      'Enroll',
       'Volunteer',
       'Give',
     ]);
@@ -104,7 +104,7 @@ describe('TakePartBand', () => {
     expect(lessons[2]?.querySelector('.oy-path-body p')).toBeNull();
   });
 
-  it("puts a row's own chip in place of its way in's, and sends Updates quietly to the newsletter form", async () => {
+  it("puts a row's own chip in place of its way in's, and sends Updates to the newsletter form", async () => {
     const body = await renderToBody(Collective);
     const rows = rowsOf(body);
     expect(rows.map((row) => row.getAttribute('data-way'))).toEqual([
@@ -121,8 +121,9 @@ describe('TakePartBand', () => {
     const updates = rows[2]?.querySelector('a.oy-btn');
     expect(updates?.getAttribute('href')).toBe('#subscribe');
     expect(updates?.hasAttribute('data-enquiry')).toBe(false);
-    expect(updates?.className).toContain('oy-btn--quiet');
+    expect(updates?.className).toContain('oy-btn--secondary');
     expect(body.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
+    expect(body.querySelector('.oy-btn--quiet')).toBeNull();
   });
 
   it('carries the label style on the column', async () => {

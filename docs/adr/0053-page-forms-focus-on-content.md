@@ -1,5 +1,7 @@
 # Page forms focus on content
 
+Amended by ADR 0055: the Programs page's fixed card count is three, which leaves Cultural Exchange off the page.
+
 Accepted 11 October 2026. The owner found too many fields on each page and approved
 the [CMS simplification review](../plans/handoff-cms-simplification-review.md).
 This amends ADR 0006 and ADR 0042: the Studio keeps editorial choices, while code

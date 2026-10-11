@@ -173,7 +173,9 @@ test.describe('the End-of-Year Gala page', () => {
     ).toHaveAttribute('href', '/odunde');
   });
 
-  test('closes with the take-part rows, one gold action, the give row quiet', async ({ page }) => {
+  test('closes with the take-part rows, one gold action, the give row an outline', async ({
+    page,
+  }) => {
     await page.goto('/gala');
     const section = page.locator('#take-part');
     await expect(section.locator('h2')).toHaveText('Take part');
@@ -184,7 +186,7 @@ test.describe('the End-of-Year Gala page', () => {
     }
     await expect(section.locator('.oy-btn--primary')).toHaveCount(1);
     const give = section.locator('.oy-path[data-way="give"] a.oy-btn');
-    if ((await give.count()) === 1) await expect(give).toHaveClass(/oy-btn--quiet/);
+    if ((await give.count()) === 1) await expect(give).toHaveClass(/oy-btn--secondary/);
     const dialog = page.locator('dialog#enquiry');
     for (const trigger of await section.locator('.oy-takepart a[data-enquiry]').all()) {
       const kind = (await trigger.getAttribute('data-enquiry')) as EnquiryKind;

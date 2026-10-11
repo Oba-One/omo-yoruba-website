@@ -8,11 +8,13 @@
  * The `person` shape puts a 320px card in the first column beside the second at full height, stacking
  * under 860px, as `11 Yoruba Language School.dc.html` sets the teacher beside her form. `align="center"`
  * centres the two columns on each other, as `16 Donate.dc.html` sets the give-now copy beside its facts.
+ * `align="stretch"` gives both columns one height and lets what stands in the aside fill it, so a card beside
+ * a list ends where the list ends (Our Story's Reach us).
  */
 interface Props {
   shape?: 'copy' | 'person';
-  /** The columns' vertical alignment: from the top, or centred on each other. */
-  align?: 'start' | 'center';
+  /** The columns' vertical alignment: from the top, centred on each other, or both at one height. */
+  align?: 'start' | 'center' | 'stretch';
   class?: string;
 }
 
@@ -22,7 +24,7 @@ const { shape = 'copy', align = 'start', class: className, ...rest } = Astro.pro
 <div
   class:list={['oy-split', className]}
   data-shape={shape === 'person' ? 'person' : undefined}
-  data-align={align === 'center' ? 'center' : undefined}
+  data-align={align === 'start' ? undefined : align}
   {...rest}
 >
   <div class="oy-split-main"><slot /></div>
@@ -38,6 +40,16 @@ const { shape = 'copy', align = 'start', class: className, ...rest } = Astro.pro
   }
   .oy-split[data-align='center'] {
     align-items: center;
+  }
+  .oy-split[data-align='stretch'] {
+    align-items: stretch;
+  }
+  .oy-split[data-align='stretch'] > .oy-split-aside {
+    display: flex;
+    flex-direction: column;
+  }
+  .oy-split[data-align='stretch'] > .oy-split-aside > :global(*) {
+    flex: 1;
   }
   .oy-split[data-shape='person'] {
     grid-template-columns: 320px 1fr;

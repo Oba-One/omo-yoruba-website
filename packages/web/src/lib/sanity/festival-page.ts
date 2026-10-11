@@ -10,7 +10,7 @@
  * from `pageSkeleton`.
  */
 import { pageEdition } from '@oy/content/lead-event';
-import { pendingWhat, presenceWhat } from '@oy/content/pending';
+import { pendingWhat, presenceTotal, presenceWhat } from '@oy/content/pending';
 import type { festivalPageQuery } from '@oy/content/queries';
 import { EVENT_PAGE_NAMES } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
@@ -79,6 +79,19 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     ...glanceFacts('festivalPage', 'extraFacts', data?.extraFacts),
   ].slice(0, GLANCE_MAX);
 
+  // The zones in order, framed by their hotspots; the block pads the owed ones.
+  const zones = (data?.zones ?? [])
+    .filter((zone) => zone !== null)
+    .map((zone) => ({
+      _id: zone._id,
+      name: zone.name,
+      line: zone.line,
+      image: resolveImage(imageSet, zone.image, { width: 720 }),
+      imageEdit: edit('image', zone._id, 'zone'),
+    }));
+  // The heading counts the zones the block draws: those listed, padded to the number the festival has.
+  const zoneCount = presenceTotal('zone', zones.length);
+
   return {
     title: page.title,
     description: page.description,
@@ -96,17 +109,9 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     },
     glance,
     whatItIs: data?.whatItIs && data.whatItIs.length > 0 ? data.whatItIs : undefined,
+    zonesTitle: `${countWord(zoneCount)} zones, one village`,
     zonesIntro: data?.zonesIntro ?? undefined,
-    // The zones in order, framed by their hotspots; the block pads the owed ones.
-    zones: (data?.zones ?? [])
-      .filter((zone) => zone !== null)
-      .map((zone) => ({
-        _id: zone._id,
-        name: zone.name,
-        line: zone.line,
-        image: resolveImage(imageSet, zone.image, { width: 720 }),
-        imageEdit: edit('image', zone._id, 'zone'),
-      })),
+    zones,
     schedule: {
       shown: layout.schedule !== 'hidden',
       open: layout.schedule === 'shown',

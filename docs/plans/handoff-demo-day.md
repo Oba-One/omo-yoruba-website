@@ -80,8 +80,8 @@ Two private pages, shared from their own Share menu:
 
 ## Left
 
-- The Gala: when doors open, the dress code, the running order, and the honorees (C5, D10). Asked for
-  a suggestion, the owner was offered doors at 5pm, the start the ticket form already gives. Not decided.
+- The Gala: the dress code, the running order, and the honorees (C5, D10). Doors at 5pm were published
+  later that afternoon, at the owner's word.
 - Membership dues, each role's contact and response line (who answers the general inbox, and how
   soon), and what each preset amount on the donation form pays for (C1, C12).
 - The officers' names, which the owner will look over, and their portraits, which the owner will

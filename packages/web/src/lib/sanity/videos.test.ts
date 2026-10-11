@@ -111,17 +111,17 @@ describe('videoViews', () => {
     expect(videoViews({}, options, noEdit)).toEqual([]);
   });
 
-  it("takes the video's own still, else the album's cover, else its first photograph, framed 16:9 at 720 wide", () => {
+  it("takes the video's own still, else the album's cover, else its first photograph, framed 16:9 at 1052 wide", () => {
     const withCover = album([video('highlights', { still: still('own') }), video('teaser')], {
       cover: image('cover'),
       photos: [image('first')],
     });
     const [own, covered] = videoViews(withCover, options, noEdit);
     expect(own?.still?.src).toContain('/own-1600x900.jpg');
-    expect(own?.still).toMatchObject({ width: 720, height: 405 });
+    expect(own?.still).toMatchObject({ width: 1052, height: 592 });
     expect(own?.still?.src).toContain('fit=crop');
     expect(covered?.still?.src).toContain('/cover-1600x900.jpg');
-    expect(covered?.still).toMatchObject({ width: 720, height: 405 });
+    expect(covered?.still).toMatchObject({ width: 1052, height: 592 });
     const uncovered = album([video('teaser')], { photos: [image('first'), image('second')] });
     expect(videoViews(uncovered, options, noEdit)[0]?.still?.src).toContain('/first-1600x900.jpg');
   });
