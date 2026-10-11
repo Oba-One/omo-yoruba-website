@@ -101,7 +101,7 @@ test.describe('the End-of-Year Gala page', () => {
     expect(await seats.locator('.oy-btn--primary').count()).toBeLessThanOrEqual(1);
     for (const link of await seats.locator('article[data-variant="buyNow"] a.oy-btn').all()) {
       if ((await link.getAttribute('data-tickets')) !== null) {
-        // A Zeffy ticket form opens in the Tickets Dialog; the link is Zeffy's own page for it (ADR 0051).
+        // A Zeffy ticket form opens in the Tickets Dialog; the link is Zeffy's own page for it (ADR 0052).
         await expect(link).toHaveAttribute('href', /^https:\/\/www\.zeffy\.com\//);
         await expect(page.locator('dialog#tickets')).toHaveCount(1);
         continue;

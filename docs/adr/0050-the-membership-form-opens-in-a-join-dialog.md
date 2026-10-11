@@ -1,6 +1,6 @@
 # The membership form opens in a Join Dialog, and every Zeffy form shares one dialog shell
 
-Amended by ADR 0051: a third dialog, the Tickets Dialog, frames the Gala edition's ticket form; the Gala page
+Amended by ADR 0052: a third dialog, the Tickets Dialog, frames the Gala edition's ticket form; the Gala page
 mounts it, and `#tickets` opens it on load.
 
 Built on 10 October 2026 at the owner's request: they gave the embed code of the organization's Zeffy membership

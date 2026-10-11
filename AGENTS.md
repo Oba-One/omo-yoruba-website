@@ -79,7 +79,7 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   the member enquiry until then. `#join` in the URL opens the dialog on load (ADR 0050). Zeffy
   is a frame in our own dialog, never a script.
 - The Gala's Get tickets buttons open the Tickets Dialog on the Gala page while the edition's
-  ticket link is a Zeffy ticket form (`#tickets` opens it on load, ADR 0051); any other ticket
+  ticket link is a Zeffy ticket form (`#tickets` opens it on load, ADR 0052); any other ticket
   link opens in a new tab.
 - Every form opens the Enquiry Modal (dialog on desktop, bottom sheet under 720px) from a
   card that first explains what it asks. Eight kinds: sponsor, performer, table, member,

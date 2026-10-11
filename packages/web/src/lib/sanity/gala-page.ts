@@ -123,7 +123,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
   const tiersPending = presenceWhat('ticketTier')?.what ?? 'the ticket tiers';
   // The edition's ticket link (ADR 0024). `ticketsTrigger` decides what a Get tickets button does, for
   // the cards and here: only when it opens the Tickets Dialog does the page mount one, around the same
-  // address, which the policy must frame (ADR 0051). Any other link opens in a new tab.
+  // address, which the policy must frame (ADR 0052). Any other link opens in a new tab.
   const ticketsUrl = cleanText(edition?.ticketsUrl);
   const tickets = ticketsTrigger(ticketsUrl);
   const ticketsForm = tickets?.dialog ? framableSrc(ticketsUrl) : undefined;

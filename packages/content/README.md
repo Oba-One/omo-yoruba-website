@@ -80,7 +80,7 @@ The spec is `docs/design/CONTENT-MODEL.md`. Where the built model differs, an AD
   per decision; an input no page reads is deleted, or named in `src/hidden-inputs.ts` if kept.
 - ADR 0050: a `cta` can open Zeffy's membership form (`kind: 'join'`), and `siteSettings` holds that form's
   address (`zeffyMembershipUrl`) beside the donation form's (`zeffyEmbedUrl`).
-- ADR 0051: an edition's `ticketsUrl` is its ticket link, a Zeffy ticket form's embed address or any other
+- ADR 0052: an edition's `ticketsUrl` is its ticket link, a Zeffy ticket form's embed address or any other
   link, and no longer Eventbrite's alone.
 - With no ADR of their own: `cta` has `kind` plus `enquiryKind`; `stat` stores its figure flat
   (`value`, `label`, `source`); `scheduleItem.title` is `bilingual` with English required; and

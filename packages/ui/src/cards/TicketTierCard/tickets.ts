@@ -11,12 +11,12 @@ export interface TicketsTrigger {
   };
   /** The one-line notice of where the button leads. */
   notice: string;
-  /** The edition's ticket link is a Zeffy form, which opens on the page (ADR 0051). */
+  /** The edition's ticket link is a Zeffy form, which opens on the page (ADR 0052). */
   dialog: boolean;
 }
 
 /**
- * The trigger for an edition's ticket link (ADR 0024, ADR 0051), the one place that decides what a Get
+ * The trigger for an edition's ticket link (ADR 0024, ADR 0052), the one place that decides what a Get
  * tickets button does: the tier cards, the seats block and the Gala page's dialog all ask here. A Zeffy
  * form's embed address opens in the Tickets Dialog: the button carries `data-tickets`, and its link, for a
  * reader without JavaScript, goes to Zeffy's own page for the form. Any other link (Eventbrite, or Zeffy's

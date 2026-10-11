@@ -26,7 +26,7 @@ which an administrator enters in the Studio and the Give Dialog's server island 
 Zeffy membership form's is `siteSettings.zeffyMembershipUrl`, which the layout reads, mounting the Join
 Dialog only while it holds an address on `www.zeffy.com` (ADR 0050); each gala edition holds its
 ticket link as `ticketsUrl` (ADR 0024): a Zeffy ticket form's embed address opens in the Tickets Dialog
-on the Gala page (ADR 0051), any other link, such as Eventbrite, in a new tab. Remove any
+on the Gala page (ADR 0052), any other link, such as Eventbrite, in a new tab. Remove any
 `PUBLIC_ZEFFY_EMBED_URL` or `PUBLIC_EVENTBRITE_URL` left in Vercel or a local env file.
 Since ADR 0045 the island adds Zeffy's v2 parameters (`embed-version=v2&embedId=give`) to the
 frame's address, so the form reports its readiness, its height and its thank-you page to the

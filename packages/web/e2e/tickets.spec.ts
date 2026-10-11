@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-// The Tickets Dialog (ADR 0051) is on the Gala page only while the next edition's ticket link is a Zeffy
+// The Tickets Dialog (ADR 0052) is on the Gala page only while the next edition's ticket link is a Zeffy
 // ticket form. Without one (CI's placeholder content, an Eventbrite link, or no link) `#tickets` opens
 // nothing. With one, the seats block's Get tickets button opens the dialog around the form's frame, whose
 // address names the form `tickets`, Escape closes it and focus returns to the button; `#tickets` opens it
