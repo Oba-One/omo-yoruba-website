@@ -73,7 +73,7 @@ describe('enquiryHandler', () => {
         },
         submittedAt: '2026-09-11T12:00:00.000Z',
         source: '/odunde',
-        handled: false,
+        status: 'new',
       },
     ]);
   });

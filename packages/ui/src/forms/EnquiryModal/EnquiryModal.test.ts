@@ -75,7 +75,9 @@ describe('EnquiryModal', () => {
     const section = body.querySelector('section[data-kind="member"]');
     expect(section?.querySelector('[data-success]')?.hasAttribute('hidden')).toBe(false);
     expect(section?.querySelector('form')?.hasAttribute('hidden')).toBe(true);
-    expect(text(section?.querySelector('[data-success] b'))).toBe('Ẹ ṣé! ✓ Welcome.');
+    expect(text(section?.querySelector('[data-success] b'))).toBe(
+      'Ẹ ṣé! ✓ We have your membership enquiry.',
+    );
     expect(text(section?.querySelector('[data-success] p'))).toContain('Our membership lead');
     expect(text(section?.querySelector('[data-success] [data-close]'))).toBe('Close');
   });

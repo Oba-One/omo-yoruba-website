@@ -163,7 +163,7 @@ export async function enquiryHandler(
       [kind]: fields,
       submittedAt: now.toISOString(),
       source: sourceFrom(formData),
-      handled: false,
+      status: 'new',
     });
   } catch (error) {
     console.error('[forms] enquiry write failed', error instanceof Error ? error.message : error);

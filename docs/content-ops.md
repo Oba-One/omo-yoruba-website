@@ -118,19 +118,39 @@ under **Pages → Yoruba Language Lessons → Teacher**.
 
 Use the create button at the top right, beside the menu.
 
-## Clear a To do item
+## Finish missing content
 
-1. Open **To do**, choose a page, then the item that needs attention.
-2. Open the page or listed document and fill the missing information.
-3. Check it and **Publish** when it is ready.
+1. Open **Missing content**. Choose a page to focus the list.
+2. Expand a document's missing details, then open its title to edit it.
+3. Fill in confirmed information, check it and **Publish** when ready.
 
-**Still to add** asks for a new item. **Wording to check** asks for a text
-correction. To do also reads drafts: a row disappearing does not mean your
-changes are published. Check the public page too.
+Each document appears once, with its missing fields together. The next festival
+and Gala essentials come first. Other site content follows, then owner decisions
+and items to add. **Wording to check** holds text corrections across the site.
 
-<img src="screenshots/member-guide/todo.jpg" alt="To do page counts and the Photo Gallery items that need attention" width="702" height="455" loading="lazy" />
+The checklist includes saved drafts. A task disappearing means its draft has
+the details, not that the changes are published. Check the public page too.
 
-Choose a page to see what it still needs. Counts change as you fill in details.
+<img src="screenshots/member-guide/missing-content.jpg" alt="Missing content filtered to the Gala, with its three remaining details and the edition editor beside it" loading="lazy" />
+
+## Manage messages in the Inbox
+
+Administrators can open **Inbox → New** to read website enquiries. Open the
+document actions menu at the bottom right. **Start handling** moves a message
+to **In progress**. Use the **Reply to** email link to open your
+email app, and add a note naming who is handling it and the next step. Notes save
+automatically. Choose **Mark handled** when finished, or **Move to new** to reopen
+it. These actions do not send another notification.
+
+**Not emailed** lists enquiries without an email receipt. Open one to see any
+problem. After fixing its cause, choose **Retry email notification** from the
+document actions. An old uncertain result needs a check in Resend first to avoid
+sending twice. **Email accepted** means Resend accepted it; check Resend for final
+delivery if needed. Replies happen in your email app and are not copied into CMS
+notes automatically.
+
+**Subscribers** keeps newsletter sign-ups. It does not send newsletters. The
+live CMS has no Vision tab; it was a developer query tool, not an editing step.
 
 ## Before you publish
 

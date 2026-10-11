@@ -151,7 +151,7 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     blurb:
       'Four questions, then we send the deck and the impact numbers. One enquiry covers Odunde, the Gala, the Collective, or all of it.',
     submit: 'Send enquiry',
-    ok: 'Ẹ ṣé! ✓ The deck is on its way.',
+    ok: 'Ẹ ṣé! ✓ We have your enquiry.',
     okBody:
       '{contact} sends the deck and the impact numbers{responds} and follows up to talk through levels and recognition.',
     role: 'partnerships',
@@ -206,9 +206,9 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     title: 'Reserve a table of ten',
     blurb: 'Tell us who is coming and we place your table. Nothing is charged here.',
     submit: 'Reserve a table',
-    ok: 'Ẹ ṣé! ✓ Your table is held.',
+    ok: 'Ẹ ṣé! ✓ We have your table enquiry.',
     okBody:
-      'We hold it for you and send an invoice by email{responds}. Check or card is fine, and seating is arranged with you in the week before the night.',
+      '{contact} will write{responds} to confirm availability and payment details. Sending this form does not reserve a table.',
     role: 'tables',
     contactNamed: '{name}, who places the tables,',
     contactUnnamed: 'The person who places the tables',
@@ -227,9 +227,9 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     blurb:
       'Eight questions, about two minutes. Dues are not paid here. We tell you exactly what happens next.',
     submit: 'Become a member',
-    ok: 'Ẹ ṣé! ✓ Welcome.',
+    ok: 'Ẹ ṣé! ✓ We have your membership enquiry.',
     okBody:
-      'Dues are not paid here. {contact} will call or write{responds} to arrange payment, and you are on the members list from today.',
+      'Dues are not paid here. {contact} will call or write{responds} about payment and the next steps to join.',
     role: 'membership',
     contactNamed: '{name}, our membership lead,',
     contactUnnamed: 'Our membership lead',
@@ -274,7 +274,7 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     blurb:
       'Lessons are arranged directly with our teacher. Tell her about the learner and she replies with a level, a time that works, and a start date.',
     submit: 'Send to the teacher',
-    ok: 'Ẹ ṣé! ✓ Your message is with the teacher.',
+    ok: 'Ẹ ṣé! ✓ We have your message.',
     okBody:
       '{contact} replies{responds} with a level, a time, and the link for the call. Nothing is charged online: fees are agreed with her and settled after the first lesson.',
     role: 'teacher',

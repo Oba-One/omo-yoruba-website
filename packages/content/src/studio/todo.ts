@@ -46,6 +46,15 @@ const REGISTER_PAGES: Readonly<Record<string, SitePage>> = {
   Gallery: 'galleryPage',
 };
 
+/** Presence entries can name several pages; the same registry labels drive their filter. */
+export const todoPages = (where: string): string[] => [
+  ...new Set(
+    Object.entries(REGISTER_PAGES)
+      .filter(([label]) => where.includes(label))
+      .map(([, page]) => page),
+  ),
+];
+
 /** The event kinds whose page shows one next edition; the To do asks for it while none is entered. */
 const NEXT_EDITION_KINDS = ['festival', 'gala'] as const;
 
@@ -91,6 +100,8 @@ interface EditionFacts extends LeadCandidate {
 export interface Found {
   _id: string;
   edition?: string | null;
+  title?: string | null;
+  draft?: boolean;
 }
 
 /** What `todoQuery` answers. */
@@ -206,7 +217,8 @@ export function wordingFilter(plan: TodoPlan): string {
 
 /** The edition a document belongs to: an event is one, a ticket tier or sponsor level names one. */
 const EDITION_OF = 'select(_type == "event" => _id, event._ref)';
-const found = (filter: string) => `*[${filter}]{_id, "edition": ${EDITION_OF}}`;
+const found = (filter: string) =>
+  `*[${filter}]{_id, "edition": ${EDITION_OF}, "title": coalesce(title.en, title, name.en, name, label), "draft": _originalId in path("drafts.**")}`;
 
 /**
  * The To do's one query, run with the `drafts` perspective so a document counts once, as it stands

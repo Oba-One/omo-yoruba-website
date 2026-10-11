@@ -33,6 +33,9 @@ export type Enquiry = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  status?: "new" | "in-progress" | "handled";
+  notes?: string;
+  notifyError?: string;
   kind?: "sponsor" | "performer" | "table" | "member" | "volunteer" | "enrol" | "vendor" | "contact";
   sponsor?: EnquirySponsorFields;
   performer?: EnquiryPerformerFields;
@@ -45,9 +48,11 @@ export type Enquiry = {
   submittedAt?: string;
   source?: string;
   notifiedAt?: string;
-  notifyError?: string;
+  notificationId?: string;
+  notifyAttemptAt?: string;
+  notifyAttemptCount?: number;
+  notifyRequestedAt?: string;
   handled?: boolean;
-  notes?: string;
 };
 
 export type EnquiryContactFields = {

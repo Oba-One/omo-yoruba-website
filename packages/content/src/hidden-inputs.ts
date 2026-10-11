@@ -31,6 +31,7 @@ const PHOTO_CREDIT_FIELDS: ReadonlySet<string> = new Set([
  */
 export function hiddenForGood(documentType: string, fields: readonly string[]): boolean {
   const [first, second] = fields;
+  if (documentType === 'enquiry' && first === 'handled') return true;
   if (documentType === 'person' && first === 'bioFull') return true;
   if (documentType === 'lessonsPage' && first === 'glance') return true;
   if (documentType === 'donatePage' && first === 'giveNow' && second === 'facts') return true;

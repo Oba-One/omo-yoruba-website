@@ -74,7 +74,7 @@ describe('form sentences', () => {
       responds: 'within a week',
     });
     expect(successCopy('member', byRole.membership).body).toBe(
-      'Dues are not paid here. Our membership lead will call or write within a week to arrange payment, and you are on the members list from today.',
+      'Dues are not paid here. Our membership lead will call or write within a week about payment and the next steps to join.',
     );
   });
 });
