@@ -1,5 +1,8 @@
 # The trust pages follow their prototypes, except where a repo rule outranks them
 
+Amended by ADR 0057: Impact's partners are cards, and the page closes on its ask as a card among them,
+where the prototype closes on a dark band.
+
 Decided on 13 September 2026 (Phase 7, ticket 15), after comparing `/get-involved`, `/impact`, `/our-story`
 and `/donate` with `13 Get Involved.dc.html`, `14 Impact.dc.html`, `15 People and History.dc.html` and
 `16 Donate.dc.html` section by section at 375 and 1440 (full-page captures in `test-results/phase7-compare/`,

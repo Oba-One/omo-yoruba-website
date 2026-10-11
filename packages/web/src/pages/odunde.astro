@@ -12,7 +12,7 @@ import { createImageSet } from '@oy/content/images';
 import { pendingWhat } from '@oy/content/pending';
 import { festivalPageQuery } from '@oy/content/queries';
 import FactList from '@oy/ui/content/FactList/FactList.astro';
-import PartnerRow from '@oy/ui/content/PartnerRow/PartnerRow.astro';
+import PartnerCards from '@oy/ui/content/PartnerCards/PartnerCards.astro';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
 import Schedule from '@oy/ui/content/Schedule/Schedule.astro';
 import ZoneGrid from '@oy/ui/content/ZoneGrid/ZoneGrid.astro';
@@ -200,11 +200,11 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
         intro={page.partners.intro}
         id="partners-heading"
       />
-      <PartnerRow partners={page.partners.items} pending={page.partners.pending} />
+      <PartnerCards partners={page.partners.items} pending={page.partners.pending} />
       <Handoff
         shape="box"
         variant="primary"
-        text="Want the day to happen again next June? Give now, or sponsor and join this row."
+        text="Want the day to happen again next June? Give now, or sponsor and join them."
         action={{ label: 'Donate', kind: 'give' }}
         secondAction={{ label: 'Sponsor Odunde', kind: 'enquiry', enquiryKind: 'sponsor' }}
       />

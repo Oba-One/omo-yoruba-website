@@ -15,7 +15,7 @@ Blocked by: none
 
 ## Comments
 
-11 October 2026: fixed by the dialog shell of ADR 0055, another way than the ticket proposed. The panel no
+11 October 2026: fixed by the dialog shell of ADR 0056, another way than the ticket proposed. The panel no
 longer outgrows the screen, so the scrim has nothing to scroll: the panel's body scrolls and keeps its own
 overscroll, and the page is held while a dialog is open (`html:has(dialog.oy-modal-scrim[open])`), since a
 wheel over the scrim or the pinned head would otherwise pass to it. `e2e/enquiry.spec.ts` covers both sizes:

@@ -1,0 +1,106 @@
+---
+/**
+ * An ask set as a card at the foot of a section (added after the handoff, whose `14 Impact.dc.html`
+ * closes on a dark band of its own; ADR 0057). The kicker, the heading and one line on the left, with the registry's
+ * chip after the line while a fact in it is owed, and the gold button with an optional outline beside it
+ * on the right; under 760px the buttons fall under the words. The card treatment is the tokens'
+ * `.oy-card`: paper ground, hairline, the aṣọ òkè top edge. One gold action per view: the page gives the
+ * card the view's only one. The heading is an `h3` under a section's own heading, or the section's `h2`
+ * where the card stands alone (`level`).
+ */
+import ActionButton from '../../core/ActionButton/ActionButton.astro';
+import type { ActionLike } from '../../core/ActionButton/action';
+import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
+import Pending from '../../core/Pending/Pending.astro';
+
+interface Props {
+  kicker?: BilingualText | null;
+  title: string;
+  /** The line under the heading. */
+  line?: string | null;
+  /** The registry's wording for a fact the line still owes, drawn after what it holds. */
+  linePending?: string;
+  /** The gold button. */
+  action?: ActionLike | null;
+  /** The outline beside it, without an arrow. */
+  secondAction?: ActionLike | null;
+  /** The anchor the card answers to. */
+  id?: string;
+  /** The heading's id, which a section may be labelled by; the card's id with `-heading` by default. */
+  headingId?: string;
+  /** The heading's level: 3 under a section's heading, 2 where the card is the section's own. */
+  level?: 2 | 3;
+  class?: string;
+}
+
+const {
+  kicker,
+  title,
+  line,
+  linePending,
+  action,
+  secondAction,
+  id,
+  headingId = `${id ?? 'ask'}-heading`,
+  level = 3,
+  class: className,
+} = Astro.props;
+const Heading = level === 2 ? 'h2' : 'h3';
+const text = line?.trim();
+---
+
+<aside class:list={['oy-card', 'oy-ask-card', className]} id={id} aria-labelledby={headingId}>
+  <div class="oy-card-body">
+    <div class="oy-ask-card-copy">
+      {kicker && (kicker.yo || kicker.en) && <Kicker yo={kicker.yo ?? undefined} en={kicker.en ?? undefined} />}
+      <Heading id={headingId}>{title}</Heading>
+      {
+        (text || linePending) && (
+          <p>
+            {text}
+            {text && linePending && ' '}
+            {linePending && <Pending what={linePending} />}
+          </p>
+        )
+      }
+    </div>
+    <div class="oy-ask-card-actions">
+      <ActionButton action={action} variant="primary" />
+      {secondAction && <ActionButton action={secondAction} variant="secondary" arrow={false} />}
+    </div>
+  </div>
+</aside>
+
+<style>
+  .oy-ask-card {
+    margin-top: 28px;
+  }
+  .oy-ask-card > .oy-card-body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 40px;
+    padding: 28px 30px 30px;
+  }
+  .oy-ask-card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1 1 320px;
+    min-width: 0;
+  }
+  .oy-ask-card-copy :is(h2, h3) {
+    margin: 0;
+    font-size: 26px;
+  }
+  .oy-ask-card-copy p {
+    margin: 0;
+    font-size: 17px;
+  }
+  .oy-ask-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

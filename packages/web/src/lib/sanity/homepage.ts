@@ -9,9 +9,11 @@
  * draft mode.
  */
 import { withLayoutDefaults } from '@oy/content/layout';
-import { calendarKind, leadEvent, leadKindOf } from '@oy/content/lead-event';
+import { calendarKind, leadEvent, leadKindOf, pageEdition } from '@oy/content/lead-event';
 import { HOMEPAGE_VOICE_SLOTS, type VoiceSlot } from '@oy/content/pending';
 import type { homepageQuery } from '@oy/content/queries';
+import { editionPage } from '@oy/content/routes';
+import { longDate } from '@oy/ui/content/edition-dates.ts';
 import { usableAction } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
 import { offersTable } from './gala-page';
@@ -47,6 +49,15 @@ function bandEvent<T extends { tiers?: Parameters<typeof offersTable>[0] }>(lead
   const { tiers, ...facts } = lead;
   return { ...facts, tables: offersTable(tiers) };
 }
+
+/**
+ * The two events the homepage introduces, in the year's order: each with the singleton its page is and
+ * the name the query gives that page's header.
+ */
+const EVENT_CARDS = [
+  { kind: 'festival', page: 'festivalPage', header: 'festivalHeader' },
+  { kind: 'gala', page: 'galaPage', header: 'galaHeader' },
+] as const;
 
 export function buildHomepage(data: HomepageData | null, options: BuildOptions) {
   const { imageSet, now = new Date() } = options;
@@ -103,6 +114,25 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       motion: layout.motion !== 'off',
     },
     lead: { event: lead ? bandEvent(lead) : undefined, kind: leadKind },
+    // The two events the year turns on (ADR 0057): each card is its own page's header, with the next
+    // edition's day and venue once the Studio holds them, so the card and the page never say two things.
+    eventCards: EVENT_CARDS.map(({ kind, page, header: field }) => {
+      const header = data?.[field];
+      const next = pageEdition(events, kind, { now });
+      return {
+        event: {
+          kind,
+          href: editionPage(kind)?.route ?? '/',
+          kicker: header?.kicker,
+          title: header?.title,
+          line: header?.line,
+          image: resolveImage(imageSet, header?.image, { width: 520 }),
+          when: longDate(next?.start),
+          where: next?.venueName ?? undefined,
+        },
+        imageEdit: edit('header.image', page, page),
+      };
+    }),
     // The strip's short label where the Studio holds one ("years serving SoCal").
     stats: (data?.stats ?? [])
       .filter((stat) => stat !== null)

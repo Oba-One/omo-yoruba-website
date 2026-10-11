@@ -35,7 +35,7 @@ event page (past galas on the Gala page). The only place a past edition appears 
 _Avoid_: recap, archive, previous events
 
 **Zone**:
-One of the festival's three areas (ADR 0055): Ọjà Balógun (the market), Àgbàlá Ọmọde (the
+One of the festival's three areas (ADR 0056): Ọjà Balógun (the market), Àgbàlá Ọmọde (the
 children's yard) and Ẹgbẹ́ Ìbílẹ̀ (the hometown associations). A zone the Studio does not hold yet
 shows as a placeholder, up to the three.
 _Avoid_: area, stage, village
@@ -93,7 +93,7 @@ _Avoid_: edition, meetup, class
 One of four: Lessons, Collective, Kids & STEM, Cultural Exchange. Only Lessons and the
 Collective have their own page; Kids & STEM and Cultural Exchange are inline programs,
 described in full on the Programs hub. Cultural Exchange is not running, so the hub leaves it
-out, card and section, until it is (ADR 0055).
+out, card and section, until it is (ADR 0056).
 _Avoid_: programme in code and copy (US spelling), course
 
 **Sub-program**:

@@ -752,9 +752,16 @@ export const partner = defineType({
       name: 'logo',
       title: 'Logo',
       type: 'oyImage',
-      description: 'Optional; a text chip shows without one.',
+      description: 'Optional; the card shows without one.',
     }),
     defineField({ name: 'url', title: 'Link', type: 'url' }),
+    defineField({
+      name: 'line',
+      title: 'What they do with us',
+      type: 'string',
+      description: 'One line on their card: what they bring or do. Optional.',
+      validation: voice.text,
+    }),
     defineField({
       name: 'kind',
       title: 'Kind',
