@@ -100,6 +100,7 @@ recipe and the gallery policy are in `oy-content-ops`):
   asked, which the question above asks for: that part stays owed. The photographer's channel holds a
   teaser and a highlights video for both fairs and for the 2022 to 2025 galas, and each went into its
   album, as Odunde 2026's had: seven albums show two videos each (ADR 0051), and the Gala page shows
-  the 2025 teaser under past years. In those six albums the highlights video takes a photograph of
-  its own album as its still; Odunde 2026's two videos have no still of their own, and both show the
-  album's cover.
+  the 2025 teaser under past years. In each of the seven albums the highlights video takes a
+  photograph of its own album as its still and the teaser shows the album's cover; Odunde 2026's
+  highlights video took its still last, when the owner asked ("Give the Odunde highlights video its
+  own still").
