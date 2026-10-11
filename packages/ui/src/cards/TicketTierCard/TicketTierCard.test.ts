@@ -3,15 +3,15 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './TicketTierCard.stories';
 
-const { BuyNow, BuyNowNoLink, Featured, Enquiry, Pending } = composeStories(stories);
+const { BuyNow, BuyNowZeffy, BuyNowNoLink, Featured, Enquiry, Pending } = composeStories(stories);
 
 describe('TicketTierCard', () => {
-  it('opens Eventbrite in a new tab with the notice on the card', async () => {
+  it('opens any other ticket link in a new tab with the notice on the card', async () => {
     const card = (await renderToBody(BuyNow)).querySelector('article.oy-tier');
     expect(card?.getAttribute('data-variant')).toBe('buyNow');
     expect(text(card?.querySelector('h3.oy-tier-name'))).toBe('[ A single seat ]');
     expect(text(card?.querySelector('.oy-tier-price'))).toBe('[ Price ]');
-    expect(text(card?.querySelector('.oy-tier-note'))).toBe('Opens Eventbrite in a new tab.');
+    expect(text(card?.querySelector('.oy-tier-note'))).toBe('Opens in a new tab.');
     const link = card?.querySelector('a.oy-btn');
     expect(link?.getAttribute('href')).toBe('https://www.eventbrite.com');
     expect(link?.getAttribute('target')).toBe('_blank');
@@ -20,12 +20,22 @@ describe('TicketTierCard', () => {
     expect(text(link)).toContain('Get tickets');
   });
 
+  it("opens a Zeffy ticket form on the page: a Tickets Dialog trigger that links Zeffy's own page", async () => {
+    const card = (await renderToBody(BuyNowZeffy)).querySelector('article.oy-tier');
+    expect(text(card?.querySelector('.oy-tier-note'))).toBe('Opens the ticket form on this page.');
+    const link = card?.querySelector('a.oy-btn');
+    expect(link?.hasAttribute('data-tickets')).toBe(true);
+    expect(link?.getAttribute('href')).toBe('https://www.zeffy.com/ticketing/a-gala');
+    expect(link?.hasAttribute('target')).toBe(false);
+    expect(text(link)).toContain('Get tickets');
+  });
+
   it('shows the registry chip where the button goes while the edition holds no link', async () => {
     const card = (await renderToBody(BuyNowNoLink)).querySelector('article.oy-tier');
     expect(card?.querySelector('a.oy-btn')).toBeNull();
     expect(card?.querySelector('.oy-tier-note')).toBeNull();
     expect(text(card?.querySelector('.oy-tier-owed--action .oy-pend'))).toBe(
-      'Pending: the Eventbrite link',
+      'Pending: the ticket link',
     );
   });
 

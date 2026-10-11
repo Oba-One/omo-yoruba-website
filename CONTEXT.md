@@ -14,7 +14,8 @@ marks in the nav (Ọdúndé); lowercase `odunde` in URLs and file names.
 _Avoid_: splitting it into two words (the older design system spelling), "the festival" without a name
 
 **Gala**:
-The End-of-Year Gala, November or December. Seats go to Eventbrite; tables are an enquiry.
+The End-of-Year Gala, November or December. Seats are bought through the edition's ticket link; tables are an
+enquiry.
 _Avoid_: dinner, banquet, fundraiser
 
 **Edition**:
@@ -44,7 +45,8 @@ One festival edition's booth fees, application close and decision dates, and per
 _Avoid_: vendor pricing, booth rates
 
 **Ticket tier**:
-One way into the Gala: seats bought through Eventbrite, or a table of ten arranged by enquiry.
+One way into the Gala: seats bought through the edition's ticket link (Zeffy's ticket form in the Tickets Dialog,
+or Eventbrite in a new tab), or a table of ten arranged by enquiry.
 _Avoid_: ticket type, package, price point
 
 **Sponsor level**:
@@ -151,6 +153,12 @@ The dialog a button set to Zeffy's membership form opens, once Organization deta
 form, where someone joining pays their dues, with a fallback to the member enquiry. Until the form is there, such
 a button opens the member enquiry. A handoff: the membership is Zeffy's record.
 _Avoid_: membership modal, dues checkout, signup
+
+**Tickets Dialog**:
+The dialog the Gala's Get tickets buttons open while the edition's ticket link is a Zeffy ticket form: wraps the
+form, where seats are chosen and paid for, with a fallback to the contact enquiry. On the Gala page only. A
+handoff: the order is Zeffy's record.
+_Avoid_: checkout, ticket modal, box office
 
 **Enquiry Modal**:
 The one dialog shell every owned form opens in, with eight field sets.

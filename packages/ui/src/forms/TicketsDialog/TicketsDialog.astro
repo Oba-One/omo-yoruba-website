@@ -1,0 +1,47 @@
+---
+/**
+ * The dialog the Gala's Get tickets buttons open (CONTEXT.md, Tickets Dialog; ADR 0051): Zeffy's ticket
+ * form for the edition, where seats are chosen and paid for, in the shell every Zeffy form opens in
+ * (`ZeffyDialog.astro`). These are the Tickets Dialog's own words. The Gala page mounts it only while the
+ * edition's ticket link is a Zeffy form, so it has no pending mode: any other link opens in a new tab,
+ * and no link shows the registry's chip. Its fallback hands over to the contact enquiry. `#tickets` in
+ * the URL opens the dialog on load. Announces `tickets_opened`, `tickets_embed_failed`,
+ * `tickets_completed` and `tickets_page_opened` as `oy:track` events (ADR 0018); `tickets_completed` is a
+ * sign in the browser, the order itself is Zeffy's record.
+ */
+import type { ZeffyDialogCopy, ZeffyDialogMode } from '../ZeffyDialog/dialog';
+import ZeffyDialog from '../ZeffyDialog/ZeffyDialog.astro';
+
+interface Props {
+  /** Renders the dialog open. The site opens it only for `#tickets`. */
+  open?: boolean;
+  /** The server state: the embed box or the fallback. */
+  mode?: Exclude<ZeffyDialogMode, 'pending'>;
+  /** Zeffy's own page for the form (`zeffyPageHref`), linked under the embed; none draws no link. */
+  pageHref?: string | null;
+  /** Milliseconds before the fallback shows; stories shorten it. */
+  timeout?: number;
+}
+
+const { open, mode, pageHref, timeout } = Astro.props;
+
+const COPY: ZeffyDialogCopy = {
+  title: 'Gala tickets',
+  lead: {
+    embed: 'Tickets and payment, all here.',
+    fallback: 'Another way to get tickets while the form is down.',
+  },
+  heading: 'The ticket form did not load.',
+  loading: 'Loading the ticket form...',
+  page: {
+    note: "Zeffy's own page has the same form. It opens in a new tab.",
+    label: "Get tickets on Zeffy's page",
+  },
+  enquiry: { kind: 'contact', label: 'Contact us' },
+};
+---
+
+<ZeffyDialog form="tickets" copy={COPY} open={open} mode={mode} pageHref={pageHref} timeout={timeout}>
+  <slot name="embed" slot="embed" />
+  <Fragment slot="fallback">Write to us and we will help you with your tickets.</Fragment>
+</ZeffyDialog>

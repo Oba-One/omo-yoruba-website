@@ -3,7 +3,15 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './TicketTiers.stories';
 
-const { Columns, Rows, NoLink, Pending } = composeStories(stories);
+const {
+  Columns,
+  Rows,
+  NoLink,
+  Pending,
+  PendingWithZeffyForm,
+  PendingWithLink,
+  TableOnlyWithZeffyForm,
+} = composeStories(stories);
 
 const variants = (body: HTMLElement) =>
   [...body.querySelectorAll('.oy-tiers > article')].map((card) =>
@@ -41,5 +49,34 @@ describe('TicketTiers', () => {
     expect(text(body.querySelector('.oy-tiers-owed .oy-pend-line'))).toContain(
       'three prices and what each includes',
     );
+  });
+
+  it("draws the block's own Get tickets button while no card carries the ticket link", async () => {
+    // No tiers, a Zeffy ticket form: the Pending line, then the button that opens the Tickets Dialog.
+    const owed = await renderToBody(PendingWithZeffyForm);
+    expect(owed.querySelector('.oy-tiers-owed .oy-pend-line')).not.toBeNull();
+    const trigger = owed.querySelector('.oy-tiers-tickets a.oy-btn--primary');
+    expect(trigger?.hasAttribute('data-tickets')).toBe(true);
+    expect(trigger?.getAttribute('href')).toBe('https://www.zeffy.com/ticketing/a-gala');
+    expect(text(owed.querySelector('.oy-tiers-tickets .oy-button-row-note'))).toBe(
+      'Opens the ticket form on this page.',
+    );
+    // No tiers, any other link: a new tab, and a notice that names no seller.
+    const linked = await renderToBody(PendingWithLink);
+    const link = linked.querySelector('.oy-tiers-tickets a.oy-btn');
+    expect(link?.getAttribute('target')).toBe('_blank');
+    expect(link?.hasAttribute('data-tickets')).toBe(false);
+    expect(text(linked.querySelector('.oy-tiers-tickets .oy-button-row-note'))).toBe(
+      'Opens in a new tab.',
+    );
+    // Only the table tier: its card opens the enquiry, so the ticket form still needs the block's button.
+    const table = await renderToBody(TableOnlyWithZeffyForm);
+    expect(table.querySelectorAll('.oy-tier')).toHaveLength(1);
+    expect(table.querySelector('.oy-tiers-tickets a[data-tickets]')).not.toBeNull();
+  });
+
+  it('leaves the ticket link to the cards once a buy-now tier is listed, and draws nothing without a link', async () => {
+    expect((await renderToBody(Columns)).querySelector('.oy-tiers-tickets')).toBeNull();
+    expect((await renderToBody(Pending)).querySelector('.oy-tiers-tickets')).toBeNull();
   });
 });

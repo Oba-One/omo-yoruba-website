@@ -80,7 +80,7 @@ test.describe('the End-of-Year Gala page', () => {
     }
   });
 
-  test('seats leave for Eventbrite in a new tab and the table tier opens its form, focus returning', async ({
+  test('seats open the ticket link, the form on the page or a new tab, and the table tier opens its form, focus returning', async ({
     page,
   }) => {
     await page.goto('/gala');
@@ -98,6 +98,12 @@ test.describe('the End-of-Year Gala page', () => {
     await expect(seats.locator('.oy-tiers')).toHaveAttribute('data-layout', layout ?? '');
     expect(await seats.locator('.oy-btn--primary').count()).toBeLessThanOrEqual(1);
     for (const link of await seats.locator('article[data-variant="buyNow"] a.oy-btn').all()) {
+      if ((await link.getAttribute('data-tickets')) !== null) {
+        // A Zeffy ticket form opens in the Tickets Dialog; the link is Zeffy's own page for it (ADR 0051).
+        await expect(link).toHaveAttribute('href', /^https:\/\/www\.zeffy\.com\//);
+        await expect(page.locator('dialog#tickets')).toHaveCount(1);
+        continue;
+      }
       await expect(link).toHaveAttribute('target', '_blank');
       await expect(link).toHaveAttribute('rel', /noopener/);
     }

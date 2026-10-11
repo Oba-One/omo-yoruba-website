@@ -1,5 +1,8 @@
 # Event pages show the next edition, with Pending between editions, and the last one as past years
 
+Amended by ADR 0051: the edition's `ticketsUrl` is its ticket link, and a Zeffy ticket form there opens in the
+Tickets Dialog on the Gala page; any other link still opens in a new tab.
+
 Decided with the owner on 12 September 2026 (Phase 5 grill, `docs/tickets/phase-5/spec.md`). `/odunde`
 and `/gala` each show the next edition of their kind: the nearest one still to come by the rule the
 homepage band already uses (`leadEvent` in `@oy/content`: a dated edition until it ends, an undated one
