@@ -104,7 +104,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
     <Section id="seats" ground="alt" labelledby="seats-heading">
       <SectionHead
         kicker={{ yo: 'Ìjókòó', en: 'Seats' }}
-        title="Seats and tables"
+        title={page.seats.tables ? 'Seats and tables' : 'Seats'}
         intro={page.seats.intro}
         id="seats-heading"
       />

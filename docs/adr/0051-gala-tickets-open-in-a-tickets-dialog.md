@@ -38,13 +38,17 @@ What this change builds:
 - The form inline in the seats block: it would load Zeffy's form for every visitor to the Gala page, where the
   dialog loads it only for someone who asks for tickets (ADR 0020).
 - Retiring the ticket tiers, since Zeffy's form lists them: the tiers also feed "Seats from" in the glance strip
-  and the table tier, which is an enquiry. The owner's to decide (open-work D9).
+  and, in a year that offers one, the table tier, which is an enquiry.
 
 ## Consequences
 
 - The Gala page's copy that names Eventbrite is Studio content (`galaPage.tiersIntro`) and the owner's to reword
   once the edition holds the Zeffy form. CONTEXT.md's Gala and Ticket tier no longer name one seller.
-- The Tickets Dialog's words are new and unconfirmed (open-work D31), as the Join Dialog's are (D29).
+- The Tickets Dialog's words are new; asked on 10 October 2026, the owner left them, and the Join Dialog's, to
+  the build ("wording do what you recommend", open-work D29 and D31).
+- The Gala of 2026 offers no tables (the owner, 10 October 2026, open-work D9). The seats section's heading
+  reads "Seats" unless the edition lists a table tier, and the table enquiry stays in the code for a year that
+  offers one.
 - Read in a browser on 10 October 2026, Zeffy's form shows the night's date, time and place and one ticket,
   General Admission. The site's own facts for
   the edition (date, doors, venue, tiers) are still owed in the Studio (open-work C5); nothing here copies them

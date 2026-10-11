@@ -323,6 +323,21 @@ describe('buildGalaPage', () => {
     expect(draft.seats.ticketsForm).toBeUndefined();
     expect(draft.seats.ticketsPage).toBeUndefined();
     expect(draft.seats.layout).toBe('rows');
+    // No table tier, so the section's heading names seats alone.
+    expect(view.seats.tables).toBe(false);
+    expect(draft.seats.tables).toBe(false);
+    const withTable = buildGalaPage(
+      {
+        ...seeded,
+        editions: [
+          edition('event-gala-2026', 2026, {
+            tiers: [tier('table', '[ table price ]', 'enquiry')],
+          }),
+        ],
+      } as unknown as GalaPageData,
+      options,
+    );
+    expect(withTable.seats.tables).toBe(true);
     expect(draft.seats.tiers[0]?.edit).toContain('id=seat;type=ticketTier;path=name');
   });
 

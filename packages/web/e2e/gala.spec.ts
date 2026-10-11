@@ -85,7 +85,9 @@ test.describe('the End-of-Year Gala page', () => {
   }) => {
     await page.goto('/gala');
     const seats = page.locator('#seats');
-    await expect(seats.locator('h2')).toHaveText('Seats and tables');
+    // The heading names tables only while the edition offers one (the Gala of 2026 offers none).
+    const tables = (await seats.locator('article[data-variant="enquiry"]').count()) > 0;
+    await expect(seats.locator('h2')).toHaveText(tables ? 'Seats and tables' : 'Seats');
     const cards = seats.locator('article.oy-tier');
     if ((await cards.count()) === 0) {
       // No tiers for the next gala (or CI's placeholder project): the registry's Pending line.

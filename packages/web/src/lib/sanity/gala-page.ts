@@ -176,6 +176,9 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       tiers: (edition?.tiers ?? [])
         .filter((tier) => tier !== null)
         .map((tier) => ({ ...tier, edit: edit('name', tier._id, 'ticketTier') })),
+      // Whether the edition offers a table: the section's heading names tables only then. The Gala of
+      // 2026 offers none (the owner, 10 October 2026).
+      tables: (edition?.tiers ?? []).some((tier) => tier?.variant === 'enquiry'),
       layout: layout.tiers,
       // The edition's own ticket link, the one source for seats (ADR 0024).
       ticketsUrl,
