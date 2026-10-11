@@ -1,11 +1,11 @@
 import { ALBUM_YEAR_PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
 import {
+  albumTiles,
   axeViolations,
   bodyOption,
   expectEnquiryRoundTrip,
   expectNoMockWhileOwed,
-  GALA_2025_FIRST_PHOTO,
   goldSharingAView,
   PLACEHOLDER_PROJECT,
   settle,
@@ -15,13 +15,20 @@ import {
 // newest year first (or the soon sentence), photography credit and permissions. CI runs with a placeholder
 // project, where every read answers null and the albums are the Pending line. None of the prototype's inventions
 // (the consent rows, the soon sentence's delivery, the camp's college) stands in, nor its inbox while the Studio
-// holds none.
+// holds none. Members edit `development`, so the albums are read from the page and checked for their shape and
+// order, never against a list of titles and counts (review ticket R136).
 
 /** The prototype's soon sentence waits on a delivery the dataset already holds. */
 const SOON_INVENTION = /delivers the 2026 set|stays out of the navigation/;
 
 const CONSENT_PENDING = pendingWhat('galleryPage', 'creditsAndConsent');
 const INBOX_PENDING = pendingWhat('siteSettings', 'generalEmail');
+/** The chip a tile's line ends with while its album has no year. */
+const YEAR_OWED = ` Pending: ${ALBUM_YEAR_PENDING}`;
+/** A tile's line before any chip: the year, unless the title carries it, then the count. */
+const YEAR_AND_COUNT = /^(?:(\d{4}) • )?\d+ photographs?$/;
+/** Every year a title names. */
+const YEARS_IN = /(?<!\d)\d{4}(?!\d)/g;
 
 test.describe('the gallery', () => {
   test('carries its blocks in order, one h1, the options on the body and nothing open', async ({
@@ -51,67 +58,78 @@ test.describe('the gallery', () => {
       await expect(page.locator('#albums')).toContainText('The albums are being prepared.');
       return;
     }
-    const tiles = page.locator('#albums a.oy-album');
-    if (PLACEHOLDER_PROJECT) {
-      await expect(tiles).toHaveCount(0);
+    const albums = await albumTiles(page);
+    // With the placeholder project every read answers null, so nothing is listed.
+    if (PLACEHOLDER_PROJECT) expect(albums).toEqual([]);
+    if (albums.length === 0) {
       await expect(page.locator('#albums .oy-pend-line')).toContainText(
         presenceWhat('album')?.what ?? '',
       );
       return;
     }
-    await expect(tiles.locator('h2')).toHaveText([
-      'Odunde 2026',
-      'End-of-Year Gala 2025',
-      'Summer camp',
-    ]);
-    await expect(tiles.locator('.oy-album-line')).toHaveText([
-      '43 photographs',
-      '35 photographs',
-      `14 photographs Pending: ${ALBUM_YEAR_PENDING}`,
-    ]);
+    // Under open: viewer a tile opens its album on the first photograph; under grid, on the album's page.
     const open = await bodyOption(page, 'open');
-    const hrefs = await tiles.evaluateAll((links) =>
-      links.map((link) => link.getAttribute('href')),
-    );
-    expect(hrefs).toEqual(
-      open === 'viewer'
-        ? [
-            '/gallery/odunde-2026?photo=odunde-2026-kid-playing-with-elder',
-            `/gallery/gala-2025?photo=${GALA_2025_FIRST_PHOTO}`,
-            '/gallery/summer-camp?photo=community-dance',
-          ]
-        : ['/gallery/odunde-2026', '/gallery/gala-2025', '/gallery/summer-camp'],
-    );
+    const address =
+      open === 'viewer' ? /^\/gallery\/[^/?#]+\?photo=[^&#]+$/ : /^\/gallery\/[^/?#]+$/;
+    const tiles = albums.map(({ title, line, href }) => {
+      expect(title, href).not.toBe('');
+      expect(href, title).toMatch(address);
+      const owed = line.endsWith(YEAR_OWED);
+      const shape = YEAR_AND_COUNT.exec(owed ? line.slice(0, -YEAR_OWED.length) : line);
+      expect(shape, `${title}: ${line}`).not.toBeNull();
+      const lineYear = shape?.[1];
+      const titleYears = title.match(YEARS_IN) ?? [];
+      if (owed) {
+        // An album that owes its year shows none in its line, nor the college and years the prototype's camp named.
+        expect(lineYear, line).toBeUndefined();
+        expectNoMockWhileOwed(`${title} ${line}`, [
+          [/Citrus College|2018|2019/, ALBUM_YEAR_PENDING],
+        ]);
+        return { owed, year: undefined };
+      }
+      // Every other tile shows its year once: in its line, or else in its title.
+      if (lineYear) expect(titleYears, title).not.toContain(lineYear);
+      else expect(titleYears.length, `${title}: ${line}`).toBeGreaterThan(0);
+      // A title that names several years does not say which is the album's, so it sits out the order check.
+      const year = lineYear ?? (titleYears.length === 1 ? titleYears[0] : undefined);
+      return { owed, year: year === undefined ? undefined : Number(year) };
+    });
+    // Newest year first, the albums that owe their year after the dated ones.
+    const firstOwed = tiles.findIndex((tile) => tile.owed);
+    if (firstOwed !== -1) expect(tiles.slice(firstOwed).every((tile) => tile.owed)).toBe(true);
+    const years = tiles.flatMap(({ year }) => (year === undefined ? [] : [year]));
+    expect(years).toEqual([...years].sort((a, b) => b - a));
     // The lead's cover is the page's largest paint: fetched at once and first.
-    await expect(tiles.first().locator('img')).toHaveAttribute('fetchpriority', 'high');
-    // The summer camp has no year the register confirms.
-    expect(await page.locator('#albums').innerText()).not.toMatch(/Citrus College|2018|2019/);
+    await expect(page.locator('#albums a.oy-album').first().locator('img')).toHaveAttribute(
+      'fetchpriority',
+      'high',
+    );
   });
 
   test('opens an album from its tile, its first photograph under open: viewer; closing shows the album and Back returns', async ({
     page,
   }) => {
     await page.goto('/gallery');
-    const tile = page.locator('#albums a.oy-album').first();
-    if ((await tile.count()) === 0) {
+    const [album] = await albumTiles(page);
+    if (!album) {
       // No album holds a photograph here (the placeholder project, or state: soon): nothing to open.
       await expect(page.locator('#albums .oy-pend-line, #albums .oy-prose').first()).toBeVisible();
       await expect(page.locator('dialog[open]')).toHaveCount(0);
       return;
     }
     const open = await bodyOption(page, 'open');
-    await tile.click();
-    await expect(page).toHaveURL(/\/gallery\/odunde-2026/);
-    await expect(page.locator('h1')).toHaveText('Odunde 2026');
+    await page.locator('#albums a.oy-album').first().click();
+    // The tile's own address: the album's page, or its first photograph under open: viewer.
+    await expect(page).toHaveURL(album.href);
+    await expect(page.locator('h1')).toHaveText(album.title);
     const lightbox = page.locator('dialog.oy-lightbox');
     if (open === 'viewer') {
       await expect(lightbox).toHaveAttribute('open', '');
-      await expect(page).toHaveURL(/photo=odunde-2026-kid-playing-with-elder/);
       await expect(page.locator('oy-lightbox')).toHaveAttribute('data-ready', 'true');
       // Closing keeps the album page, on its own address, with its photographs behind.
       await page.keyboard.press('Escape');
       await expect(lightbox).not.toHaveAttribute('open', '');
-      await expect(page).toHaveURL(/\/gallery\/odunde-2026$/);
+      await expect(page).toHaveURL(album.path);
       await expect(page.locator('.oy-photo-grid a[data-photo]').first()).toBeVisible();
     } else {
       await expect(page.locator('dialog[open]')).toHaveCount(0);

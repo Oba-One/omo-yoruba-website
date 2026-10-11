@@ -11,17 +11,71 @@ import { expect, type Locator, type Page } from '@playwright/test';
  */
 export const PLACEHOLDER_PROJECT = process.env.PUBLIC_SANITY_PROJECT_ID === 'placeholder';
 
-/**
- * The photographer's page the three albums' credits link to in `development` since 28 September 2026 (ADR 0046): the
- * dataset's value, not the seed's, so a seeded run expects it and a placeholder run never meets it.
- */
-export const PHOTOGRAPHER_PAGE = 'https://www.youtube.com/@redcarpetfilmshollywood';
+/** The address of an album no dataset holds: a 404, or a 503 while no read succeeds. */
+export const NO_SUCH_ALBUM = '/gallery/no-such-album';
+
+/** An album as its tile on the gallery shows it. */
+export interface ListedAlbum {
+  /** The album's own page: `/gallery/<slug>`. */
+  path: string;
+  /** Where the tile leads: the album's page, or its first photograph under `open: viewer`. */
+  href: string;
+  title: string;
+  /** The line under the title: the year unless the title carries it, the count, and the year's chip while owed. */
+  line: string;
+  /** The count the line reads. */
+  photographs: number;
+}
+
+/** The album tiles of the gallery a page is showing, in the gallery's order. */
+export const albumTiles = (page: Page): Promise<ListedAlbum[]> =>
+  page.locator('#albums a.oy-album').evaluateAll((links) =>
+    links.map((link) => {
+      const href = link.getAttribute('href') ?? '';
+      const line = (link.querySelector('.oy-album-line')?.textContent ?? '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return {
+        path: href.split('?')[0] ?? '',
+        href,
+        title: (link.querySelector('h2')?.textContent ?? '').trim(),
+        line,
+        photographs: Number(/(\d+) photographs?/.exec(line)?.[1] ?? 0),
+      };
+    }),
+  );
+
+/** An album a spec can open: its tile's facts and its photographs' keys in the album's order. */
+export interface OpenableAlbum extends ListedAlbum {
+  keys: string[];
+}
+
+/** The address that serves an album open on the photograph at this place, counted from one as the Lightbox counts. */
+export const photoAddress = (album: OpenableAlbum, place: number) =>
+  `${album.path}?photo=${album.keys[place - 1]}`;
 
 /**
- * The first photograph of End-of-Year Gala 2025 as `development` holds the album since 9 October 2026 (the
- * photographer's set): the dataset's key, not the seed's, for the specs that open the album on a photo address.
+ * The first album the gallery lists that holds at least this many photographs, with their keys. `development` is
+ * the dataset members edit, so a spec opens whichever album it holds and names no title, count or photograph
+ * (review ticket R136). The gallery and the album are read in a page of their own, which leaves the spec's page
+ * and its history untouched. Undefined when no album qualifies: CI's placeholder project, an empty dataset, every
+ * album too small, or the gallery holding the albums (ADR 0043).
  */
-export const GALA_2025_FIRST_PHOTO = 'gala-2025-couple-in-gold-and-orange';
+export async function albumToOpen(page: Page, atLeast = 1): Promise<OpenableAlbum | undefined> {
+  const reader = await page.context().newPage();
+  try {
+    await reader.goto('/gallery');
+    const album = (await albumTiles(reader)).find((tile) => tile.photographs >= atLeast);
+    if (!album) return undefined;
+    await reader.goto(album.path);
+    const keys = await reader
+      .locator('.oy-photo-grid a[data-photo]')
+      .evaluateAll((tiles) => tiles.map((tile) => tile.getAttribute('data-photo') ?? ''));
+    return { ...album, keys };
+  } finally {
+    await reader.close();
+  }
+}
 
 /**
  * The Viewer token the dev server reads, for a spec that signs the draft session as the enable route

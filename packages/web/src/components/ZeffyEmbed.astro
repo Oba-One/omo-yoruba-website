@@ -16,7 +16,7 @@ import { loadQuery } from '../lib/sanity/load-query';
 import ZeffyFrame from './ZeffyFrame.astro';
 
 const { data } = await loadQuery(siteSettingsQuery, {}, { cookies: Astro.cookies });
-// Only an address the policy frames becomes an iframe (a javascript: URL written through the API
+// Only an address on Zeffy's origin becomes an iframe (a javascript: URL written through the API
 // would run in the site's origin); anything else answers Pending, as an empty field does.
 const form = framableSrc(data?.zeffyEmbedUrl);
 ---

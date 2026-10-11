@@ -173,4 +173,14 @@ const when = event?.when?.trim();
   .oy-lrow-owed {
     margin: 0;
   }
+  /* Under 720px the ported rule gives every row a 72px first column and lets only a tier's name span
+     the row, which left what a sponsor level recognizes in that column, a word or two to a line
+     (review ticket R15). The prototype squeezes the same way; the Build Brief's "works at 375px"
+     outranks it, so the list, or its Pending chip, takes the row's full width under the name. */
+  @media (max-width: 720px) {
+    .oy-lrow--tier > .oy-incl,
+    .oy-lrow--tier > .oy-lrow-owed {
+      grid-column: 1 / -1;
+    }
+  }
 </style>

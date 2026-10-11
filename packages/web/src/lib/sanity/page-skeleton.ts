@@ -9,6 +9,7 @@ import { withLayoutDefaults } from '@oy/content/layout';
 import { type LeadCandidate, type LeadKind, pastEdition } from '@oy/content/lead-event';
 import { ALBUM_CREDIT_PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { ActionLike } from '@oy/ui/core/ActionButton/action.ts';
+import { type VideoLike, videoViews } from './videos';
 import {
   type BuildOptions,
   cleanText,
@@ -137,7 +138,10 @@ interface AlbumLike {
   credit: string | null;
   /** The photographer's page, which the credit's name links to (ADR 0046). */
   creditUrl: string | null;
+  /** What a video without a still of its own shows, before a photograph does (ADR 0051). */
+  cover?: ImageLike | null;
   photos: ({ _key: string; alt: string | null; caption: string | null } & ImageLike)[] | null;
+  videos?: (VideoLike | null)[] | null;
 }
 
 /** Whether an edition's album has photographs to show: the rule `pastEdition` picks by. */
@@ -147,7 +151,9 @@ const hasPhotos = (event: { album?: AlbumLike | null }) => (event.album?.photos?
  * Past years (Phase 5 spec, Q8): the newest past edition of the kind with photographs, and the `view` of
  * its album the carousel and the credit line take: each photograph resolved at the stage's width with
  * its alt and caption, the registry's wording for no album, and the credit with its confirmation, its
- * photographer's link and the edit attribute on the album.
+ * photographer's link and the edit attribute on the album. `videos` is the one video the page shows under the
+ * photographs (ADR 0051), as `VideoGrid` takes its list: the first the album holds that has a title and a
+ * readable YouTube address, or none, and none while the gallery holds the albums.
  */
 export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }>(
   editions: readonly T[],
@@ -179,6 +185,9 @@ export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }
             edit: edit('photos', album._id, 'album'),
           }
         : undefined,
+      videos: album
+        ? videoViews(album, options, (path) => edit(path, album._id, 'album')).slice(0, 1)
+        : [],
     },
   };
 }

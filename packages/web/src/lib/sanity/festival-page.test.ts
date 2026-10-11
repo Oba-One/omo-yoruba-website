@@ -427,6 +427,99 @@ describe('buildFestivalPage', () => {
     expect(buildFestivalPage(seeded, options).past.held).toBe(false);
   });
 
+  describe('the past album video (ADR 0051)', () => {
+    const channel = 'https://www.youtube.com/@redcarpetfilmshollywood';
+    const video = (key: string, id: string, extra: Record<string, unknown> = {}) => ({
+      _key: key,
+      title: `Odunde 2026 ${key}`,
+      url: `https://youtu.be/${id}`,
+      still: null,
+      credit: 'Red Carpet Films',
+      creditUrl: channel,
+      ...extra,
+    });
+    const highlights = video('highlights', 'AbC_dEf-123');
+    const teaser = video('teaser', 'ZyX_wVu-987');
+    /** The seeded festival with the past album holding these videos, and whatever else the album holds. */
+    const withVideos = (videos: unknown[] | null, extra: Record<string, unknown> = {}) =>
+      ({
+        ...seeded,
+        editions: seeded.editions?.map((event) =>
+          event?.album ? { ...event, album: { ...event.album, videos, ...extra } } : event,
+        ),
+      }) as FestivalPageData;
+
+    it('shows the first video of the album the photographs come from, with its credit and link', () => {
+      const { videos } = buildFestivalPage(withVideos([highlights, teaser]), options).past;
+      expect(videos).toHaveLength(1);
+      expect(videos[0]).toMatchObject({
+        key: 'highlights',
+        title: 'Odunde 2026 highlights',
+        watchHref: 'https://www.youtube.com/watch?v=AbC_dEf-123',
+        embedSrc: 'https://www.youtube-nocookie.com/embed/AbC_dEf-123?autoplay=1&rel=0',
+        credit: 'Red Carpet Films',
+        creditHref: channel,
+      });
+    });
+
+    it('shows no video for an album that holds none, nor for no past album', () => {
+      expect(buildFestivalPage(seeded, options).past.videos).toEqual([]);
+      expect(buildFestivalPage(withVideos(null), options).past.videos).toEqual([]);
+      expect(buildFestivalPage(withVideos([]), options).past.videos).toEqual([]);
+      expect(buildFestivalPage(null, options).past.videos).toEqual([]);
+    });
+
+    it('passes over a video the page cannot play for the next that it can', () => {
+      const unreadable = [
+        video('channel', 'AbC_dEf-123', { url: channel }),
+        video('untitled', 'AbC_dEf-123', { title: null }),
+        teaser,
+      ];
+      const { videos } = buildFestivalPage(withVideos(unreadable), options).past;
+      expect(videos.map((each) => each.key)).toEqual(['teaser']);
+    });
+
+    it("takes the video's own still, else the album's cover, else its first photograph", () => {
+      const cover = image('The procession');
+      const own = {
+        _type: 'image' as const,
+        hotspot: null,
+        crop: null,
+        asset: { _ref: 'image-9z8y7x-1600x900-jpg', _type: 'reference' },
+      };
+      const owned = buildFestivalPage(
+        withVideos([video('own', 'AbC_dEf-123', { still: own })], { cover }),
+        options,
+      );
+      expect(owned.past.videos[0]?.still?.src).toContain('/9z8y7x-1600x900.jpg');
+      const covered = buildFestivalPage(withVideos([highlights], { cover }), options);
+      expect(covered.past.videos[0]?.still?.src).toContain('/0a1b2c3d-1100x728.jpg');
+      expect(covered.past.videos[0]?.still).toMatchObject({ width: 720, height: 405 });
+      // No cover and no still of its own: the first photograph, which is the same file in this fixture.
+      const photographed = buildFestivalPage(withVideos([highlights]), options);
+      expect(photographed.past.videos[0]?.still?.src).toContain('/0a1b2c3d-1100x728.jpg');
+    });
+
+    it('keeps the video off the page while the gallery holds the albums (R01)', () => {
+      const held = {
+        ...withVideos([highlights]),
+        galleryLayout: { state: 'soon' },
+      } as FestivalPageData;
+      expect(buildFestivalPage(held, options).past.videos).toEqual([]);
+      expect(buildFestivalPage(withVideos([highlights]), options).past.videos).toHaveLength(1);
+    });
+
+    it("reaches the video from click-to-edit on the album's document in draft mode", () => {
+      const view = buildFestivalPage(withVideos([highlights]), { ...options, draft: true });
+      expect(view.past.videos[0]?.edit).toContain(
+        'id=album-odunde-2026;type=album;path=videos:highlights;',
+      );
+      expect(
+        buildFestivalPage(withVideos([highlights]), options).past.videos[0]?.edit,
+      ).toBeUndefined();
+    });
+  });
+
   it('carries the partners with their logos resolved, or the registry wording for none', () => {
     const withPartners = {
       ...seeded,

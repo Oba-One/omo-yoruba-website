@@ -26,7 +26,8 @@ Spec: `docs/design/CONTENT-MODEL.md`, amended by ADR 0013 to ADR 0017 (the delta
   options as the prototype, first option as initial value), `seo`.
 - Kickers are `bilingual` (`en` required, `yo` optional). Zone names are bilingual with marks.
 - `oyImage` always: hotspot image, `alt` required, `caption`, `credit`, `creditNote`,
-  `creditConfirmed`; albums carry the credit for every photo.
+  `creditConfirmed`; albums carry the credit for every photo. The one exception is a video's still, a plain
+  hotspot image: the tile draws it as decoration beside the play link's name, so it asks for no alt text (ADR 0051).
 - Portable Text is `blockContent`: normal, h3, blockquote; strong, em, link; `pullQuote` only.
 - Enquiries: change `src/enquiry-kinds.ts`, never the `enquiry` type by hand; the objects, the
   Zod schemas, the Inbox lists and the notify email all derive from it (ADR 0015, ADR 0016).

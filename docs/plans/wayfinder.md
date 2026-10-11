@@ -11,7 +11,7 @@ its prototype at 375 and 1440 with a named Pending chip wherever content is stil
 every component lives once in `@oy/ui` with a story; Visual Editing and cache purge work;
 the eight enquiry forms create a document and an email within a minute, and the newsletter
 stores its subscriber (it sends nothing, ticket 01); the quality bars in
-`docs/design/QUALITY.md` are met; and the owner adds a news post, an event and an album from
+`docs/design/QUALITY.md` are met; and the owner adds an event and an album from
 Claude Code without opening code. Full list: `docs/design/README.md` section 8.
 
 ## Notes
@@ -184,10 +184,9 @@ open-work row and priority. Details in each ticket.
 | 11 | Storybook hosting: separate Vercel project or a path under the site | A shareable Storybook (D20: Later) |
 | 02 | EIN, mailing address, phone, routing email per enquiry kind | Enquiry routing and the organization's facts on every page (C1: Now); tickets 38, 42 and 44 |
 | 05 | The two unnamed festival zones | Odunde's zones (C4: Launch) |
-| 09 | The summer camp's year (the credits were confirmed on 28 September, ADR 0046) | The summer camp album's year (C3: Now) |
+| 09 | The summer camp's year and photographer (the owner was not sure on 10 October; the other credits were confirmed on 28 September, ADR 0046) | The summer camp album's year (C3: Now) |
 | 03 | Zeffy embed URL and Eventbrite event URL | The Give Dialog's form (C1: Now) and the Gala's ticket buttons (C5: Launch); Zeffy, embedded, chosen on 27 September from `docs/research/online-giving-options.md` |
-| 25 | Create the Sanity webhook on the public host | Edits on the site within a minute (E1: Now): one exists on the stand-in host; the purge check and the move with D2 remain |
-| 27 | Put the recap post's title back to "Odunde 2026: the recap" in `development` | The homepage's news card (C2: Now) |
+| 25 | The Sanity webhook: stop it firing on draft saves, and delete the second one, which posts to a name that only redirects | Nothing waits: a publish reaches the site in seconds (E1: done 10 October) |
 | 28 | Lighthouse bypass secret (header or cookie route), required Lighthouse checks | Lighthouse on previews (D14, E14: Launch) |
 | 29 | A preview host for editors | Drafts in the Presentation tool on the public host (D15: Launch) |
 | 30 | Photo hero heading on phones: the prototype's 34px or the brief's 44px | The type tokens and AGENTS.md's sizes (D11: Launch; the sizes half of E7) |
@@ -203,18 +202,16 @@ open-work row and priority. Details in each ticket.
 | 07 | Our Story's timeline: show it once its entries are confirmed, keep it hidden, or drop it | The timeline block (D21: Later) |
 | 10 | Old site URLs for redirects | The redirects (D18, E11: Launch) |
 | 13 | CSP enforcement versus the `<ClientRouter />` cross-fade | The enforced CSP (D13, E9: Launch) |
-| 08 | News cadence: feed or list | The News page (D22, C13: Later) |
 
 A session works ticket 35 without the owner (the last 0.2 s of the mobile LCP and the event pages'
 font-swap shift, open-work E12). Resolved: 19 in Phase 1; 15, 20 and 21 in Phase 4; 33 and 34 in
-Phase 5; 12 on 27 September. The check-and-merge tickets are closed: 43 on 13 September with pull
-request 9, and 26, 36, 39 and 41 on 27 September, their pull requests (5 to 8) having merged on 12
-and 13 September. Each one's last comment says where its remaining calls went.
+Phase 5; 12 on 27 September. Tickets 08 and 27 closed with the news (ADR 0048). The check-and-merge
+tickets are closed: 43 on 13 September with pull request 9, and 26, 36, 39 and 41 on 27 September,
+their pull requests (5 to 8) having merged on 12 and 13 September. Each one's last comment says
+where its remaining calls went.
 
 ## Not yet specified
 
-- The News & Events page: feed or list, filter chips, calendar rows or cards. Waits on
-  ticket 08.
 - Agent Actions candidates (alt text drafts, Yoruba kicker suggestions): owner-triggered
   only; shape unknown until Phase 10.
 - Nightly `content-lint.yml` delivery: a summary in the Studio's To do, an email, or both.
@@ -225,7 +222,7 @@ and 13 September. Each one's last comment says where its remaining calls went.
 
 ## Out of scope
 
-- Building the News & Events page before the posting cadence is known (README section 3).
+- A News page, news posts or a homepage news section (ADR 0048).
 - Any React or framework component shipped to the site; islands only with owner approval.
 - remark or rehype plugins (Sätteri is the pipeline; no need has appeared).
 - A third-party form service or emailing straight from actions (ADR 0004).

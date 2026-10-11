@@ -18,7 +18,8 @@
     "./take-part": "./src/take-part.ts",
     "./doors": "./src/doors.ts",
     "./giving": "./src/giving.ts",
-    "./albums": "./src/albums.ts"
+    "./albums": "./src/albums.ts",
+    "./videos": "./src/videos.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",

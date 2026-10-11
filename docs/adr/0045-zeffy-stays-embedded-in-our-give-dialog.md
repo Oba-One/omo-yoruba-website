@@ -2,6 +2,8 @@
 
 Amended by ADR 0050: the dialog's shell, its listener and `zeffy.ts` are shared with the Join Dialog, which frames
 Zeffy's membership form; the element is `oy-zeffy-dialog`, and each dialog hears the form its key names.
+Amended by ADR 0051: the policy also frames YouTube's no-cookie player, for an album's videos; what the Give
+Dialog may frame stays Zeffy's origin alone.
 
 Decided on 27 September 2026 by the owner, from `docs/research/online-giving-options.md` (pull request 16), which
 ranked four ways to take gifts online: Zeffy embedded properly, Stripe behind our own form, Every.org behind our own

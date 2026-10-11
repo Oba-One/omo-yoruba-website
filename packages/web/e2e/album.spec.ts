@@ -1,79 +1,74 @@
+import { photographCount } from '@oy/content/albums';
 import { pendingWhat } from '@oy/content/pending';
+import { PUBLIC_ROUTES } from '@oy/content/routes';
 import { expect, type Page, type Request, test } from '@playwright/test';
 import {
+  albumToOpen,
   axeViolations,
-  GALA_2025_FIRST_PHOTO,
-  galleryHeld,
   goldSharingAView,
-  PHOTOGRAPHER_PAGE,
+  NO_SUCH_ALBUM,
+  type OpenableAlbum,
   PLACEHOLDER_PROJECT,
+  photoAddress,
   settle,
   swipe,
 } from './helpers';
 
 // An album's page and its Lightbox (ROUTES sections 1 and 3, ADR 0037, ADR 0038): the page in the prototype's
 // order, the photo address served open and shareable, Back closing the Lightbox and Forward reopening it without
-// a new page, focus back on the photograph's tile, and a swipe on touch. End-of-Year Gala 2025 holds the
-// photographer's set in `development` since 9 October 2026, as the dataset holds it, not as the seed writes it:
-// `PHOTOGRAPHS` of them, and `KEYS` are the first six. CI runs with a placeholder project, where the read fails:
-// the route answers 503 with its Pending form and no Lightbox, which every Lightbox spec asserts before it stops.
+// a new page, focus back on the photograph's tile, and a swipe on touch. The album is whichever the gallery
+// lists first with enough photographs to step through, read from the pages themselves (`albumToOpen`): members
+// edit `development`, so no title, count or key is named here (review ticket R136). CI runs with a placeholder
+// project, where the read fails: the route answers 503 with its Pending form and no Lightbox, which every
+// Lightbox spec asserts before it stops. In any other run with no album to open, a spec is skipped by name.
 
-const ALBUM = '/gallery/gala-2025';
-const PHOTOGRAPHS = 35;
-const KEYS = [
-  GALA_2025_FIRST_PHOTO,
-  'gala-2025-tables-set',
-  'gala-2025-centerpiece',
-  'gala-2025-puff-puff',
-  'gala-2025-suya',
-  'gala-2025-couple-in-royal-blue',
-];
+/** The Lightbox specs step as far as the fifth photograph, so the album they open holds at least five. */
+const PHOTOGRAPHS_NEEDED = 5;
 
 const dialog = (page: Page) => page.locator('dialog.oy-lightbox');
+/** The key of the photograph at this place in the album, counted from one as the Lightbox counts. */
+const keyAt = (album: OpenableAlbum, place: number) => album.keys[place - 1] as string;
+const photoTile = (page: Page, key: string) => page.locator(`a[data-photo="${key}"]`);
 /** The Lightbox's count reads the place of the photograph on screen among the album's. */
-const expectPlace = (page: Page, position: number) =>
-  expect(page.locator('.oy-lb-count')).toHaveText(`${position} of ${PHOTOGRAPHS}`);
-const tile = (page: Page, key: string) => page.locator(`a[data-photo="${key}"]`);
+const expectPlace = (page: Page, album: OpenableAlbum, place: number) =>
+  expect(page.locator('.oy-lb-count')).toHaveText(`${place} of ${album.keys.length}`);
 
 /**
- * The album page with its Lightbox wired. With the placeholder project the read fails: the page answers 503 with
- * nothing to open, and while the gallery holds the albums (ADR 0043) the page shows its sentence in place of the
- * photographs; either is asserted before the spec stops (false).
+ * Stops a spec that has no album to open. With CI's placeholder project the read fails, so the album route is
+ * first held to that: 503, no Lightbox, nothing open. In any other run the gallery lists no album with enough
+ * photographs (an empty dataset, small albums, or the albums held, ADR 0043, whose album page
+ * `album-page.test.ts` covers), and the spec is skipped by name, never passed.
  */
-async function albumPage(page: Page, address = ALBUM): Promise<boolean> {
+async function stopWithoutAlbum(page: Page, address = NO_SUCH_ALBUM): Promise<undefined> {
+  test.skip(!PLACEHOLDER_PROJECT, 'The gallery lists no album with enough photographs to open.');
   const response = await page.goto(address);
-  if (PLACEHOLDER_PROJECT) {
-    expect(response?.status()).toBe(503);
-    await expect(page.locator('oy-lightbox')).toHaveCount(0);
-    await expect(page.locator('dialog[open]')).toHaveCount(0);
-    return false;
-  }
-  if (await galleryHeld(page)) {
-    await expectHeld(page);
-    return false;
-  }
-  await expect(page.locator('oy-lightbox')).toHaveAttribute('data-ready', 'true');
-  return true;
+  expect(response?.status()).toBe(503);
+  await expect(page.locator('oy-lightbox')).toHaveCount(0);
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+  return undefined;
 }
 
-/** The album page while the gallery holds the albums: the sentence and both event pages, nothing to open. */
-async function expectHeld(page: Page) {
-  await expect(page.locator('oy-lightbox')).toHaveCount(0);
-  await expect(page.locator('a[data-photo]')).toHaveCount(0);
-  await expect(page.locator('dialog[open]')).toHaveCount(0);
-  await expect(page.locator('#photographs')).toContainText('The albums are being prepared.');
-  const links = await page
-    .locator('#photographs a')
-    .evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')));
-  expect(links).toEqual(['/odunde', '/gala']);
+/**
+ * An album's page with its Lightbox wired: on its own address, or served open on the photograph at `place`.
+ * Undefined when there is none to open, once `stopWithoutAlbum` has asserted why.
+ */
+async function openAlbum(page: Page, place?: number): Promise<OpenableAlbum | undefined> {
+  const album = await albumToOpen(page, PHOTOGRAPHS_NEEDED);
+  if (!album) return stopWithoutAlbum(page);
+  await page.goto(place === undefined ? album.path : photoAddress(album, place));
+  await expect(page.locator('oy-lightbox')).toHaveAttribute('data-ready', 'true');
+  return album;
 }
 
 /** Every page request for the album's own path from now on: a document, or the router's fetch of one. */
-function pageRequests(page: Page): string[] {
+function pageRequests(page: Page, album: OpenableAlbum): string[] {
   const seen: string[] = [];
   page.on('request', (request: Request) => {
     const url = new URL(request.url());
-    if (url.pathname === ALBUM && ['document', 'fetch', 'xhr'].includes(request.resourceType())) {
+    if (
+      url.pathname === album.path &&
+      ['document', 'fetch', 'xhr'].includes(request.resourceType())
+    ) {
       seen.push(request.url());
     }
   });
@@ -84,7 +79,9 @@ test.describe('an album page', () => {
   test('carries its blocks in order, one h1, its credits and nothing open on its own address', async ({
     page,
   }) => {
-    const response = await page.goto(ALBUM);
+    const album = await albumToOpen(page);
+    test.skip(!album && !PLACEHOLDER_PROJECT, 'The gallery lists no album to read.');
+    const response = await page.goto(album?.path ?? NO_SUCH_ALBUM);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('dialog[open]')).toHaveCount(0);
     const order = await page.evaluate(() =>
@@ -99,7 +96,7 @@ test.describe('an album page', () => {
       'Consent policy',
       'Removal requests',
     ]);
-    if (PLACEHOLDER_PROJECT) {
+    if (!album) {
       // The read failed: the Pending form, never cached, no Lightbox, no kicker the Studio did not give.
       expect(response?.status()).toBe(503);
       await expect(page.locator('#photographs .oy-pend-line')).toContainText(
@@ -110,33 +107,43 @@ test.describe('an album page', () => {
       return;
     }
     expect(response?.status()).toBe(200);
-    await expect(page.locator('h1')).toHaveText('End-of-Year Gala 2025');
-    if (await galleryHeld(page)) {
-      // Held (ADR 0043): the title stays, with no count of photographs the page does not show.
-      await expect(page.locator('header#top')).not.toContainText('photographs');
-      await expectHeld(page);
-      return;
+    // The page and the gallery's tile agree on the album: its title and how many photographs it holds.
+    await expect(page.locator('h1')).toHaveText(album.title);
+    await expect(page.locator('header#top')).toContainText(photographCount(album.photographs));
+    await expect(page.locator('.oy-photo-grid a[data-photo]')).toHaveCount(album.photographs);
+    expect(new Set(album.keys).size).toBe(album.photographs);
+    // Back to the gallery first; an album that belongs to an edition links its event page after it.
+    const links = page.locator('.oy-album-intro-links a');
+    await expect(links.first()).toHaveText('All albums');
+    await expect(links.first()).toHaveAttribute('href', '/gallery');
+    if ((await links.count()) > 1) {
+      expect(PUBLIC_ROUTES).toContain(await links.nth(1).getAttribute('href'));
     }
-    await expect(page.locator('header#top')).toContainText(`${PHOTOGRAPHS} photographs`);
-    await expect(page.locator('.oy-album-intro-links a')).toHaveText([
-      'All albums',
-      /End-of-Year Gala/,
-    ]);
-    await expect(page.locator('.oy-album-intro-links a').last()).toHaveAttribute('href', '/gala');
-    // The credit as the dataset holds it since 28 September 2026, not as the seed writes it: confirmed by the
-    // owner, its name linking to the photographer's page (ADR 0046).
+    // The album's credit is a name, linking out only to the photographer's own page (ADR 0046), with its chip
+    // beside it until the owner confirms it.
     const albumCredit = page.locator('.oy-album-intro .oy-credit-line');
-    await expect(albumCredit).toHaveText('Photographs: Red Carpet Films.');
-    await expect(albumCredit.locator('a')).toHaveAttribute('href', PHOTOGRAPHER_PAGE);
-    await expect(page.locator('.oy-photo-grid a[data-photo]')).toHaveCount(PHOTOGRAPHS);
-    // A tile reads its caption once: the image beside the same words stays silent.
-    await expect(tile(page, KEYS[0] as string).locator('img')).toHaveAttribute('alt', '');
+    if ((await albumCredit.count()) > 0) {
+      await expect(albumCredit).toHaveText(/^Photographs: \S/);
+      if ((await albumCredit.locator('a').count()) > 0) {
+        await expect(albumCredit.locator('a')).toHaveAttribute('href', /^https?:\/\//);
+      }
+    }
+    // A tile reads its caption once: an image beside words that say the same stays silent.
+    const altAndCaption = await page.locator('.oy-photo-grid a[data-photo]').evaluateAll((links) =>
+      links.map((link) => ({
+        alt: (link.querySelector('img')?.getAttribute('alt') ?? '').replace(/\s+/g, ' ').trim(),
+        caption: (link.querySelector('figcaption')?.textContent ?? '').replace(/\s+/g, ' ').trim(),
+      })),
+    );
+    for (const { alt, caption } of altAndCaption) {
+      expect(alt === '' || alt !== caption, caption).toBe(true);
+    }
   });
 
   test('answers 404 for an album the Studio does not hold, and 503 while the Studio cannot be read', async ({
     page,
   }) => {
-    const response = await page.goto('/gallery/no-such-album');
+    const response = await page.goto(NO_SUCH_ALBUM);
     // With the placeholder project no read succeeds, so the page cannot tell a missing album from a failure.
     expect(response?.status()).toBe(PLACEHOLDER_PROJECT ? 503 : 404);
   });
@@ -144,60 +151,71 @@ test.describe('an album page', () => {
   test('a tile opens the Lightbox on its photograph and writes its address; arrows move and replace it', async ({
     page,
   }) => {
-    if (!(await albumPage(page))) return;
+    const album = await openAlbum(page);
+    if (!album) return;
     const before = await page.evaluate(() => history.length);
-    await tile(page, KEYS[1] as string).click();
+    await photoTile(page, keyAt(album, 2)).click();
     await expect(dialog(page)).toHaveAttribute('open', '');
-    await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
-    await expectPlace(page, 2);
+    await expect(page).toHaveURL(photoAddress(album, 2));
+    await expectPlace(page, album, 2);
     await expect(page.getByRole('link', { name: 'Close' })).toBeFocused();
     expect(await page.evaluate(() => history.length)).toBe(before + 1);
     await page.keyboard.press('ArrowRight');
-    await expectPlace(page, 3);
-    await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[2]}`);
+    await expectPlace(page, album, 3);
+    await expect(page).toHaveURL(photoAddress(album, 3));
     await page.getByRole('link', { name: 'Previous photo' }).click();
-    await expectPlace(page, 2);
+    await expectPlace(page, album, 2);
     // Moving replaces the entry: no step of history per photograph.
     expect(await page.evaluate(() => history.length)).toBe(before + 1);
     // A held modifier belongs to the browser.
     await page.keyboard.press('Shift+ArrowRight');
-    await expectPlace(page, 2);
+    await expectPlace(page, album, 2);
   });
 
   test("keeps focus in the Lightbox when a credit's link has it and the photograph moves (ADR 0046)", async ({
     page,
   }) => {
-    if (!(await albumPage(page))) return;
-    await tile(page, KEYS[0] as string).click();
+    const album = await openAlbum(page);
+    if (!album) return;
+    await photoTile(page, keyAt(album, 1)).click();
     await expect(dialog(page)).toHaveAttribute('open', '');
+    // A credit links out only when its photographer has a page, and a photograph may carry its own credit, so
+    // the two photographs this visits must both hold a link for focus to stay on.
+    const bothLinked = await page
+      .locator('.oy-lb-cap > p')
+      .evaluateAll((captions) =>
+        captions.slice(0, 2).every((caption) => caption.querySelector('.oy-credit-line a')),
+      );
+    test.skip(!bothLinked, "The album's first two photographs do not both link their credit.");
     // The shown caption's credit link, whichever photograph is on screen.
     const creditLink = page.locator('.oy-lb-cap > p[data-active="true"] .oy-credit-line a');
     await creditLink.focus();
     await page.keyboard.press('ArrowRight');
-    await expectPlace(page, 2);
+    await expectPlace(page, album, 2);
     await expect(creditLink).toBeFocused();
     // Focus stayed in the dialog, so the arrows still move it.
     await page.keyboard.press('ArrowLeft');
-    await expectPlace(page, 1);
+    await expectPlace(page, album, 1);
     await expect(creditLink).toBeFocused();
   });
 
   test('Back closes the Lightbox onto the tile of the photograph on screen, Forward reopens it, with no page load', async ({
     page,
   }) => {
-    if (!(await albumPage(page))) return;
-    await tile(page, KEYS[0] as string).click();
+    const album = await openAlbum(page);
+    if (!album) return;
+    await photoTile(page, keyAt(album, 1)).click();
     await page.keyboard.press('ArrowRight');
-    await expectPlace(page, 2);
-    const loads = pageRequests(page);
+    await expectPlace(page, album, 2);
+    const loads = pageRequests(page, album);
     await page.goBack();
     await expect(dialog(page)).not.toHaveAttribute('open', '');
-    await expect(page).toHaveURL(ALBUM);
-    await expect(tile(page, KEYS[1] as string)).toBeFocused();
+    await expect(page).toHaveURL(album.path);
+    await expect(photoTile(page, keyAt(album, 2))).toBeFocused();
     await page.goForward();
     await expect(dialog(page)).toHaveAttribute('open', '');
-    await expectPlace(page, 2);
-    await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
+    await expectPlace(page, album, 2);
+    await expect(page).toHaveURL(photoAddress(album, 2));
     // Neither traverse asked for the page again: no document, and no fetch by the router.
     expect(loads).toEqual([]);
   });
@@ -205,35 +223,37 @@ test.describe('an album page', () => {
   test('Escape and the dark background close it; closing goes back one entry, so Forward reopens it', async ({
     page,
   }) => {
-    if (!(await albumPage(page))) return;
-    await tile(page, KEYS[3] as string).click();
+    const album = await openAlbum(page);
+    if (!album) return;
+    await photoTile(page, keyAt(album, 4)).click();
     await expect(dialog(page)).toHaveAttribute('open', '');
     await page.keyboard.press('Escape');
     await expect(dialog(page)).not.toHaveAttribute('open', '');
-    await expect(page).toHaveURL(ALBUM);
-    await expect(tile(page, KEYS[3] as string)).toBeFocused();
+    await expect(page).toHaveURL(album.path);
+    await expect(photoTile(page, keyAt(album, 4))).toBeFocused();
     // The photo address is still ahead in history, not replaced: Forward opens it again.
     await page.goForward();
     await expect(dialog(page)).toHaveAttribute('open', '');
-    await expectPlace(page, 4);
+    await expectPlace(page, album, 4);
     // The corner of the overlay: no photograph, no control.
     await page.mouse.click(8, 8);
     await expect(dialog(page)).not.toHaveAttribute('open', '');
-    await expect(page).toHaveURL(ALBUM);
+    await expect(page).toHaveURL(album.path);
   });
 
   test('a shared photo address loads open; closing keeps the page and Back leaves it', async ({
     page,
   }) => {
     await page.goto('/gallery');
-    if (!(await albumPage(page, `${ALBUM}?photo=${KEYS[4]}`))) return;
+    const album = await openAlbum(page, 5);
+    if (!album) return;
     await expect(dialog(page)).toHaveAttribute('open', '');
     expect(await dialog(page).evaluate((el) => el.matches(':modal'))).toBe(true);
-    await expectPlace(page, 5);
+    await expectPlace(page, album, 5);
     await page.getByRole('link', { name: 'Close' }).click();
     await expect(dialog(page)).not.toHaveAttribute('open', '');
-    await expect(page).toHaveURL(ALBUM);
-    await expect(tile(page, KEYS[4] as string)).toBeFocused();
+    await expect(page).toHaveURL(album.path);
+    await expect(photoTile(page, keyAt(album, 5))).toBeFocused();
     await page.goBack();
     await expect(page).toHaveURL(/\/gallery$/);
   });
@@ -241,25 +261,28 @@ test.describe('an album page', () => {
   test('a photo address the album does not hold serves the album with nothing open', async ({
     page,
   }) => {
-    await page.goto(`${ALBUM}?photo=a-removed-photograph`);
+    const album = await albumToOpen(page);
+    await page.goto(`${album?.path ?? NO_SUCH_ALBUM}?photo=a-removed-photograph`);
     await expect(page.locator('dialog[open]')).toHaveCount(0);
     await expect(page.locator('h1')).toHaveCount(1);
   });
 
   test('is clean for axe with the Lightbox closed and open', async ({ page }) => {
-    await page.goto(ALBUM);
+    const album = await albumToOpen(page);
+    await page.goto(album?.path ?? NO_SUCH_ALBUM);
     await settle(page);
     expect(await axeViolations(page)).toEqual([]);
-    // The placeholder project serves the Pending form, and a held gallery its sentence: no Lightbox to open.
-    if (PLACEHOLDER_PROJECT || (await galleryHeld(page))) return;
-    await tile(page, KEYS[0] as string).click();
+    // No album to open: the Pending form or the not-found page stood in for it, and is clean.
+    if (!album) return;
+    await photoTile(page, keyAt(album, 1)).click();
     await expect(dialog(page)).toHaveAttribute('open', '');
     await settle(page);
     expect(await axeViolations(page)).toEqual([]);
   });
 
   test('keeps one gold action per screen view', async ({ page }) => {
-    await page.goto(ALBUM);
+    const album = await albumToOpen(page);
+    await page.goto(album?.path ?? NO_SUCH_ALBUM);
     expect(await goldSharingAView(page)).toEqual([]);
   });
 });
@@ -270,17 +293,18 @@ test.describe('the Lightbox on touch', () => {
     isMobile,
   }) => {
     test.skip(!isMobile, 'Touch runs in the mobile project.');
-    if (!(await albumPage(page, `${ALBUM}?photo=${KEYS[0]}`))) return;
+    const album = await openAlbum(page, 1);
+    if (!album) return;
     const stage = page.locator('dialog.oy-lightbox .oy-lb-stage');
     await swipe(stage, -120, 10);
-    await expectPlace(page, 2);
-    await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
+    await expectPlace(page, album, 2);
+    await expect(page).toHaveURL(photoAddress(album, 2));
     await swipe(stage, 120, -8);
-    await expectPlace(page, 1);
+    await expectPlace(page, album, 1);
     await swipe(stage, -30, 0);
-    await expectPlace(page, 1);
+    await expectPlace(page, album, 1);
     await swipe(stage, -60, 140);
-    await expectPlace(page, 1);
+    await expectPlace(page, album, 1);
   });
 });
 
@@ -290,24 +314,17 @@ test.describe('the Lightbox without JavaScript', () => {
   test('a photo address serves it open, and its links step through the album and close it', async ({
     page,
   }) => {
-    const response = await page.goto(`${ALBUM}?photo=${KEYS[0]}`);
-    if (PLACEHOLDER_PROJECT) {
-      expect(response?.status()).toBe(503);
-      await expect(page.locator('dialog[open]')).toHaveCount(0);
-      return;
-    }
-    if (await galleryHeld(page)) {
-      // Held (ADR 0043): a photo address opens nothing.
-      await expect(page.locator('dialog[open]')).toHaveCount(0);
-      return;
-    }
+    const album = await albumToOpen(page, 2);
+    // With the placeholder project's failed read, a photo address opens nothing.
+    if (!album) return stopWithoutAlbum(page, `${NO_SUCH_ALBUM}?photo=any-photograph`);
+    await page.goto(photoAddress(album, 1));
     await expect(dialog(page)).toHaveAttribute('open', '');
-    await expectPlace(page, 1);
+    await expectPlace(page, album, 1);
     await page.getByRole('link', { name: 'Next photo' }).click();
-    await expect(page).toHaveURL(`${ALBUM}?photo=${KEYS[1]}`);
-    await expectPlace(page, 2);
+    await expect(page).toHaveURL(photoAddress(album, 2));
+    await expectPlace(page, album, 2);
     await page.getByRole('link', { name: 'Close' }).click();
-    await expect(page).toHaveURL(ALBUM);
+    await expect(page).toHaveURL(album.path);
     await expect(page.locator('dialog[open]')).toHaveCount(0);
   });
 });
