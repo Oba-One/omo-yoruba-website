@@ -6,7 +6,7 @@
  * and the tiers, sponsor levels, honorees and partners do not exist yet, as in the development
  * dataset.
  */
-import { PHOTOS } from './photos';
+import { PHOTOS, studioPhoto } from './photos';
 
 type Block = {
   _type: 'block';
@@ -34,6 +34,9 @@ export const FESTIVAL_HEADER = {
     { label: 'Apply as a vendor', kind: 'enquiry', enquiryKind: 'vendor' },
   ],
 };
+
+/** The header photograph as the site passes a Studio one, with the file's own width and height. */
+export const FESTIVAL_HEADER_STUDIO_PHOTO = studioPhoto(PHOTOS.processionDrummer, 1024, 683);
 
 /** The header line under the buttons for Odunde 2027 as the seed holds it: every fact Pending. */
 export const FESTIVAL_META = [

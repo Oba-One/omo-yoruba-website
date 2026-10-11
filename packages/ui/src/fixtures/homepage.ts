@@ -4,7 +4,7 @@
  * photographs and Pending states. No mock name, price, date or address: the editions carry no
  * date and there are no testimonials yet, as in the development dataset.
  */
-import { PHOTOS } from './photos';
+import { PHOTOS, studioPhoto } from './photos';
 
 export const HERO = {
   kicker: { yo: 'Ẹ káàbọ̀', en: 'Welcome' },
@@ -16,6 +16,9 @@ export const HERO = {
   primary: { label: 'See the Odunde Festival', kind: 'url', href: '/odunde' },
   secondary: [{ label: 'Get involved', kind: 'url', href: '/get-involved' }],
 };
+
+/** The hero photograph as the site passes a Studio one, with the file's own width and height. */
+export const HERO_STUDIO_PHOTO = studioPhoto(PHOTOS.communityDance, 1100, 728);
 
 export const GALA_2026 = {
   _id: 'event-gala-2026',

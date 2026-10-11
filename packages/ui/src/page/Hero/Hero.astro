@@ -14,7 +14,14 @@ import type { ActionLike } from '../../core/ActionButton/action';
 import Divider from '../../core/Divider/Divider.astro';
 import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
-import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
+import {
+  altOf,
+  type ImageInput,
+  imgAttributes,
+  photoBandSizes,
+  positionOf,
+} from '../../media/image';
+import { HERO_BAND } from '../photo-bands';
 import { splitEmphasis } from './emphasis';
 
 interface Props {
@@ -54,7 +61,8 @@ const {
   ...rest
 } = Astro.props;
 
-const img = imgAttributes(image, '100vw');
+// On a phone the photograph is drawn wider than the screen, so `sizes` comes from the band's height.
+const img = imgAttributes(image, photoBandSizes(image, HERO_BAND));
 const position = positionOf(image);
 const rise = motion ? 'v2-rise' : undefined;
 // The heading is rendered as stored (trimming could cut the edit link stega appends); the gold

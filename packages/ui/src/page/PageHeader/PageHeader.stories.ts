@@ -1,5 +1,9 @@
 import type { ComponentProps } from 'astro/types';
-import { FESTIVAL_HEADER, FESTIVAL_META } from '../../fixtures/event-pages';
+import {
+  FESTIVAL_HEADER,
+  FESTIVAL_HEADER_STUDIO_PHOTO,
+  FESTIVAL_META,
+} from '../../fixtures/event-pages';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import PageHeader from './PageHeader.astro';
 
@@ -36,6 +40,13 @@ type Story = StoryObj<Args>;
 export const Default: Story = {};
 
 export const Photo: Story = {};
+
+/**
+ * The photograph in the shape the site passes a Studio one, with its width, its height and a
+ * `srcset`: the band then tells the browser how wide it draws the photograph (`sizes`), which on a
+ * phone is wider than the screen because the photograph covers the band by its height.
+ */
+export const StudioPhotograph: Story = { args: { image: FESTIVAL_HEADER_STUDIO_PHOTO } };
 
 /** The same header on paper, without the photograph. */
 export const Slim: Story = { args: { variant: 'slim' } };

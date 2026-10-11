@@ -3,8 +3,16 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PageHeader.stories';
 
-const { Photo, Slim, MixedFacts, OneAction, PendingPhoto, PendingHeading, Still } =
-  composeStories(stories);
+const {
+  Photo,
+  Slim,
+  MixedFacts,
+  OneAction,
+  PendingPhoto,
+  PendingHeading,
+  Still,
+  StudioPhotograph,
+} = composeStories(stories);
 
 describe('PageHeader', () => {
   it('lays the copy over the photograph in the dark scope, with the scrim, dots and rule', async () => {
@@ -22,6 +30,13 @@ describe('PageHeader', () => {
     expect(text(header?.querySelector('.oy-kicker'))).toBe('Ọdúndé•The new year has arrived');
     expect(header?.querySelectorAll('h1')).toHaveLength(1);
     expect(text(header?.querySelector('h1'))).toBe('Odunde Festival');
+  });
+
+  it('tells the browser how wide it draws a photograph that covers the band by its height', async () => {
+    const img = (await renderToBody(StudioPhotograph)).querySelector('.oy-phead-media img');
+    expect(img?.getAttribute('srcset')).toContain(' 1024w');
+    // 1024 by 683 under a band 430px tall at 760 and under: 645px. Above, the band is the wider.
+    expect(img?.getAttribute('sizes')).toBe('(max-width: 645px) 645px, 100vw');
   });
 
   it('gives the first action the gold and the second the outline, each opening what it names', async () => {
