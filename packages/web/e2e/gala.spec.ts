@@ -2,13 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
-import {
-  expectNoMockWhileOwed,
-  galleryHeld,
-  PHOTOGRAPHER_PAGE,
-  PLACEHOLDER_PROJECT,
-  settle,
-} from './helpers';
+import { expectNoMockWhileOwed, galleryHeld, settle } from './helpers';
 
 // The End-of-Year Gala page in the prototype's order (ROUTES section 4), each block present whether
 // the Studio holds its content or renders Pending: CI runs with a placeholder project, where every
@@ -157,9 +151,10 @@ test.describe('the End-of-Year Gala page', () => {
       return;
     }
     await expect(past.locator('h2')).toHaveText('Past galas');
-    if (!PLACEHOLDER_PROJECT) {
-      // The Gala 2025 album's credit names its photographer's page as the dataset holds it (ADR 0046).
-      await expect(past.locator('.oy-credit-line a')).toHaveAttribute('href', PHOTOGRAPHER_PAGE);
+    // An album's credit links out only to its photographer's own page (ADR 0046).
+    const creditLink = past.locator('.oy-section-inner > .oy-credit-line a');
+    if ((await creditLink.count()) > 0) {
+      await expect(creditLink).toHaveAttribute('href', /^https:\/\//);
     }
     await expect(past.getByRole('link', { name: 'All gala albums' })).toHaveAttribute(
       'href',

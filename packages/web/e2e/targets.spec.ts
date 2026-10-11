@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { GALA_2025_FIRST_PHOTO, galleryHeld, openEnquiry, PLACEHOLDER_PROJECT } from './helpers';
+import { albumTiles, NO_SUCH_ALBUM, openEnquiry } from './helpers';
 
 // The elder test at 375: every control a finger can reach has a 44px box (QUALITY.md section 2).
 // Inline links in running text are the one exception WCAG allows.
@@ -34,6 +34,10 @@ test('every visible control on the event, program, trust and gallery pages is at
   isMobile,
 }) => {
   test.skip(!isMobile, 'measured at 375');
+  const measured = async (route: string) => {
+    await page.goto(route);
+    expect(await page.evaluate(small), route).toEqual([]);
+  };
   for (const route of [
     '/odunde',
     '/gala',
@@ -45,15 +49,20 @@ test('every visible control on the event, program, trust and gallery pages is at
     '/our-story',
     '/donate',
     '/gallery',
-    '/gallery/gala-2025',
-    // The Lightbox served open: its controls are measured on screen.
-    `/gallery/gala-2025?photo=${GALA_2025_FIRST_PHOTO}`,
   ]) {
-    await page.goto(route);
-    // A photo address the album no longer holds serves the page with nothing open, and nothing to measure.
-    if (route.includes('?photo=') && !PLACEHOLDER_PROJECT && !(await galleryHeld(page))) {
-      await expect(page.locator('dialog.oy-lightbox'), route).toHaveAttribute('open', '');
-    }
-    expect(await page.evaluate(small), route).toEqual([]);
+    await measured(route);
   }
+  // The album the gallery lists first, read while the gallery is on screen (review ticket R136); with none
+  // listed, the page the album route answers in its place.
+  const [album] = await albumTiles(page);
+  await measured(album?.path ?? NO_SUCH_ALBUM);
+  if (!album || album.photographs === 0) return;
+  // Then its Lightbox, served open on the album's first photograph, so its controls are measured on screen.
+  const first = await page
+    .locator('.oy-photo-grid a[data-photo]')
+    .first()
+    .getAttribute('data-photo');
+  await page.goto(`${album.path}?photo=${first}`);
+  await expect(page.locator('dialog.oy-lightbox')).toHaveAttribute('open', '');
+  expect(await page.evaluate(small), 'the Lightbox').toEqual([]);
 });
