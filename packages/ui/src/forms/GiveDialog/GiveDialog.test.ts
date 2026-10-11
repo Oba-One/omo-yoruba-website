@@ -1,8 +1,8 @@
 import { composeStories } from '@storybook-astro/framework/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderLive, renderToBody, text } from '../../test/stories';
+import { ZEFFY_ORIGIN } from '../ZeffyDialog/zeffy';
 import * as stories from './GiveDialog.stories';
-import { ZEFFY_EMBED_ID, ZEFFY_ORIGIN } from './zeffy';
 
 const {
   Default,
@@ -26,12 +26,13 @@ describe('GiveDialog', () => {
     expect(body.querySelector('[data-fallback]')?.hasAttribute('hidden')).toBe(true);
     // No promise that the donor never leaves the page: the link under the form opens Zeffy's own.
     expect(text(body.querySelector('[data-lead]'))).toBe('Amount and card details, all here.');
-    const host = body.querySelector('oy-give-dialog');
+    const host = body.querySelector('oy-zeffy-dialog');
     expect(host?.getAttribute('data-timeout')).toBe('8000');
     // The listener hears the origin and the form the island's address names (ADR 0045), under a name
     // Zeffy's own embed script would not take for one of its containers (`[data-zeffy-embed]`).
     expect(host?.getAttribute('data-zeffy-origin')).toBe(ZEFFY_ORIGIN);
-    expect(host?.getAttribute('data-zeffy-embed-id')).toBe(ZEFFY_EMBED_ID);
+    expect(host?.getAttribute('data-form')).toBe('give');
+    expect(host?.getAttribute('data-zeffy-embed-id')).toBe('give');
     expect(body.querySelector('[data-zeffy-embed]')).toBeNull();
   });
 
@@ -67,7 +68,7 @@ describe('GiveDialog', () => {
 
   it('states neither monthly giving nor emailed receipts in any mode, until the form confirms them (R38)', async () => {
     for (const story of [Default, Fallback, Pending]) {
-      const host = (await renderToBody(story)).querySelector('oy-give-dialog');
+      const host = (await renderToBody(story)).querySelector('oy-zeffy-dialog');
       expect(host?.outerHTML).not.toMatch(/monthly|receipt/i);
     }
   });
@@ -170,7 +171,7 @@ describe('GiveDialog, running its element', () => {
     vi.useFakeTimers();
     donate();
     return {
-      host: body.querySelector<HTMLElement>('oy-give-dialog'),
+      host: body.querySelector<HTMLElement>('oy-zeffy-dialog'),
       frame: body.querySelector<HTMLIFrameElement>('[data-mount] iframe'),
     };
   };
@@ -179,7 +180,7 @@ describe('GiveDialog, running its element', () => {
     const body = await renderLive(Closed);
     vi.useFakeTimers();
     donate();
-    const host = body.querySelector<HTMLElement>('oy-give-dialog');
+    const host = body.querySelector<HTMLElement>('oy-zeffy-dialog');
     expect(host?.dataset.state).toBe('loading');
     vi.advanceTimersByTime(7999);
     expect(host?.dataset.state).toBe('loading');
@@ -198,7 +199,7 @@ describe('GiveDialog, running its element', () => {
     vi.advanceTimersByTime(8000);
     expect(foot?.hasAttribute('hidden')).toBe(true);
     body.querySelector<HTMLButtonElement>('[data-retry]')?.click();
-    expect(body.querySelector<HTMLElement>('oy-give-dialog')?.dataset.state).toBe('loading');
+    expect(body.querySelector<HTMLElement>('oy-zeffy-dialog')?.dataset.state).toBe('loading');
     expect(foot?.hasAttribute('hidden')).toBe(false);
   });
 
@@ -366,7 +367,7 @@ describe('GiveDialog, running its element', () => {
   it('hears nothing before the form is mounted', async () => {
     const body = await renderLive(Closed);
     post({ type: 'zeffy-embed:connected', embedId: 'give' });
-    expect(body.querySelector<HTMLElement>('oy-give-dialog')?.dataset.state).toBeUndefined();
+    expect(body.querySelector<HTMLElement>('oy-zeffy-dialog')?.dataset.state).toBeUndefined();
   });
 
   it('keeps the one message listener it registered at definition across a reconnection (ADR 0041)', async () => {

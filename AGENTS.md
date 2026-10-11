@@ -74,6 +74,10 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   kept the CSS). Logo mark 40px plus the two-line wordmark; line two hides under 1060px.
 - Every Donate button opens the Give Dialog (Zeffy embed, fallback to Contact and the
   mailing address). `#give` in the URL opens it on load.
+- A button set to the membership form opens the Join Dialog (Zeffy's membership form in the
+  same shell, fallback to the member enquiry) once Organization details hold that form, and
+  the member enquiry until then. `#join` in the URL opens the dialog on load (ADR 0050). Zeffy
+  is a frame in our own dialog, never a script.
 - Every form opens the Enquiry Modal (dialog on desktop, bottom sheet under 720px) from a
   card that first explains what it asks. Eight kinds: sponsor, performer, table, member,
   volunteer, enrol, vendor, contact.
@@ -97,8 +101,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   happens next. Errors are sentences naming the field, never colour alone, and never clear
   what was typed. Every form shows a human fallback beside it.
 - Nothing opens on load: no entry pop-up, no scroll-triggered newsletter, no exit intent.
-  The URL-driven exceptions are `#give` and a photo address (`?photo=<key>` on an album page opens
-  the Lightbox on that photograph, ADR 0037).
+  The URL-driven exceptions are `#give`, `#join` and a photo address (`?photo=<key>` on an album
+  page opens the Lightbox on that photograph, ADR 0037).
 - Type: Source Serif 4 (headings 600 and 700), Source Sans 3 (body 400, 600, 700), fallback
   through Noto Serif and Noto Sans, then Georgia and system-ui. Hero 44 to 64px, H2 32 to 40,
   H3 20 to 24, body 17 to 18, kicker 12px uppercase 0.15em tracking bold. Line-height 1.15
