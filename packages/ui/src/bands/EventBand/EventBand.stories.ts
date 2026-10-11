@@ -40,7 +40,7 @@ export const Filled: Story = {
     event: {
       ...ODUNDE_2027,
       start: '2027-06-12T17:00:00.000Z',
-      summary: 'One village, four zones, one family.',
+      summary: 'One village, three zones, one family.',
     },
   },
 };

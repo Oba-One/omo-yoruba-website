@@ -36,7 +36,7 @@ export const ODUNDE_2027 = {
   start: null,
   end: null,
   venueName: 'Leimert Park',
-  summary: 'One village, four zones, one family.',
+  summary: 'One village, three zones, one family.',
 };
 
 /** The four figures as the seed writes them: the Impact page's label and the strip's short one. */
@@ -53,7 +53,7 @@ export const STATS: { _id: string; value: string; label: string; shortLabel?: st
     label: 'Yoruba community in Southern California',
     shortLabel: 'Yoruba community in SoCal',
   },
-  { _id: 'stat-zones', value: '4', label: 'festival zones at Odunde' },
+  { _id: 'stat-zones', value: '3', label: 'festival zones at Odunde' },
   {
     _id: 'stat-associations',
     value: '9',
@@ -77,7 +77,7 @@ export const PROGRAMS = [
     blurb:
       'Speaking, reading, and tone marks, taught over video call by our teacher. Times are set with her.',
     image: PHOTOS.learningYoruba,
-    action: { label: 'Enrol a learner', kind: 'url', href: '/programs/yoruba-lessons' },
+    action: { label: 'Enroll a learner', kind: 'url', href: '/programs/yoruba-lessons' },
   },
   {
     _id: 'program-cultural-collective',

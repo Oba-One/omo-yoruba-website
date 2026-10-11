@@ -11,7 +11,7 @@ const {
   Vendor,
   Pending,
   TakePartRow,
-  Quiet,
+  GiveRow,
   TakePartRowPending,
   Enrol,
   MemberRow,
@@ -76,9 +76,9 @@ describe('PathRow', () => {
     expect(button?.getAttribute('data-enquiry')).toBe('vendor');
   });
 
-  it('gives the give row the quiet action that opens the Give Dialog', async () => {
-    const button = (await renderToBody(Quiet)).querySelector('.oy-path a.oy-btn');
-    expect(button?.className).toContain('oy-btn--quiet');
+  it('gives the give row the outline action that opens the Give Dialog', async () => {
+    const button = (await renderToBody(GiveRow)).querySelector('.oy-path a.oy-btn');
+    expect(button?.className).toContain('oy-btn--secondary');
     expect(button?.hasAttribute('data-give')).toBe(true);
     expect(text(button)).toContain('Donate');
   });
@@ -94,12 +94,12 @@ describe('PathRow', () => {
   it("draws the program pages' ways in: enrol, member, updates, and a row's own chip", async () => {
     const enrol = (await renderToBody(Enrol)).querySelector('.oy-path');
     expect(enrol?.getAttribute('data-accent')).toBe('enrol');
-    expect(text(enrol?.querySelector('.oy-path-chip'))).toBe('Enrol');
+    expect(text(enrol?.querySelector('.oy-path-chip'))).toBe('Enroll');
     expect(enrol?.querySelector('a.oy-btn--primary')?.getAttribute('data-enquiry')).toBe('enrol');
     const member = (await renderToBody(MemberRow)).querySelector('.oy-path');
     expect(member?.querySelector('a.oy-btn--secondary')?.hasAttribute('data-join')).toBe(true);
     const updates = (await renderToBody(Updates)).querySelector('.oy-path');
-    const link = updates?.querySelector('a.oy-btn--quiet');
+    const link = updates?.querySelector('a.oy-btn--secondary');
     expect(link?.getAttribute('href')).toBe('#subscribe');
     expect(link?.hasAttribute('data-enquiry')).toBe(false);
     const own = (await renderToBody(OwnChip)).querySelector('.oy-path');

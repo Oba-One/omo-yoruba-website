@@ -41,8 +41,10 @@ stands for `docs/design/design/_ds/omo-yor-b-design-system-feb77d94-d2e7-43f8-9f
    Pattern URLs go through the tokens. Left out: the canvas-only helpers (`.cx-cardlab`,
    `.sc-host`), the retired AmountSelector and MultiStepForm blocks, and the homepage hero's
    `.v2-cta--*` switch. Changed: a chip keeps its own type and colour in a fact row and its own box
-   in a sponsor level's amount, the four-zone mosaic keeps its columns under 820px, and the Pending
-   chip has 16px corners. Added: the Gala page's style block (the warm treatment and the
+   in a sponsor level's amount, the four-zone mosaic keeps its columns under 820px, the Pending
+   chip has 16px corners, and since ADR 0055 a dialog's panel sits in the middle of the scrim and fits
+   the screen with the page behind it held, a take-part band's rows and a glance strip's cells share
+   their tracks, a lone ticket tier lies across the width and the mosaic lays out three zones. Added: the Gala page's style block (the warm treatment and the
    `.oy-seam`), ported to the end of the file with a vertical warm scrim under 760px (ADR 0028); the
    chips on the enrol, member and updates rows, the program cards' when line, the chips in the year
    strip and a list row's date block; and the Collective's block under `[data-scope="collective"]`:

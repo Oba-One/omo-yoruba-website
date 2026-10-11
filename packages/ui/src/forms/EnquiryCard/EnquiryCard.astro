@@ -6,7 +6,8 @@
  * modal open (`?enquiry=<kind>#enquiry`) that the Enquiry Modal intercepts when JavaScript runs
  * (ADR 0019). One gold action per screen view: pages pass `variant="secondary"` for the rest. A page
  * that gives an address (the Lessons page's teacher) shows it beside the trigger as a `mailto:` link,
- * or the registry's chip while the settings hold none.
+ * or the registry's chip while the settings hold none. A `note` from the page closes the card under a
+ * hairline (Our Story's line on calling when it is urgent).
  */
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { safeHref } from '../../core/ActionButton/action';
@@ -31,6 +32,8 @@ interface Props {
   email?: string | null;
   /** The registry's wording for the missing address. */
   emailPending?: string;
+  /** A closing line under the trigger, from the page's content; nothing invented here. */
+  note?: string | null;
   class?: string;
 }
 
@@ -43,6 +46,7 @@ const {
   variant = 'primary',
   email,
   emailPending,
+  note,
   class: className,
 } = Astro.props;
 const spec = ENQUIRY_SPECS[kind];
@@ -71,6 +75,7 @@ const mailto = address ? safeHref(`mailto:${address}`) : undefined;
         )
       }
     </div>
+    {note?.trim() && <p class="oy-enquiry-card-note">{note}</p>}
   </div>
 </article>
 
@@ -92,6 +97,14 @@ const mailto = address ? safeHref(`mailto:${address}`) : undefined;
   .oy-enquiry-card-email {
     margin: 0;
     font-size: 14.5px;
+    color: var(--text-muted);
+  }
+  .oy-enquiry-card-note {
+    margin: 16px 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 14.5px;
+    line-height: 1.55;
     color: var(--text-muted);
   }
 </style>

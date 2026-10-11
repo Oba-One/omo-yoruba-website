@@ -14,8 +14,12 @@ export interface ZeffyDialogCopy {
   pending?: { lead: string; heading: string };
   /** Shown in the embed box until the form is ready. */
   loading: string;
-  /** The link to Zeffy's own page for the form: the line beside it and its label. */
-  page: { note: string; label: string };
+  /**
+   * The link to Zeffy's own page for the form: the line beside it and its label. `phones` marks a line
+   * that speaks only to phones (the Give Dialog's, on Apple Pay and Google Pay), which a wider screen
+   * leaves out.
+   */
+  page: { note: string; label: string; phones?: boolean };
   /** The enquiry the fallback hands over to, and its button's label. */
   enquiry: { kind: EnquiryKind; label: string };
 }

@@ -277,6 +277,17 @@ describe('buildFestivalPage', () => {
     const view = buildFestivalPage(withDay, options);
     expect(view.zones).toHaveLength(1);
     expect(view.zones[0]?.image?.alt).toBe('Elders at the market');
+    // The heading counts the zones the block draws: one listed, padded to the festival's three.
+    expect(view.zonesTitle).toBe('Three zones, one village');
+    const five = Array.from({ length: 5 }, (_, at) => ({
+      ...withDay.zones?.[0],
+      _id: `zone-${at}`,
+    }));
+    expect(
+      buildFestivalPage({ ...withDay, zones: five } as unknown as FestivalPageData, options)
+        .zonesTitle,
+    ).toBe('Five zones, one village');
+    expect(buildFestivalPage(null, options).zonesTitle).toBe('Three zones, one village');
     expect(view.schedule).toMatchObject({
       shown: true,
       open: true,
@@ -449,9 +460,10 @@ describe('buildFestivalPage', () => {
         ),
       }) as FestivalPageData;
 
-    it('shows the first video of the album the photographs come from, with its credit and link', () => {
-      const { videos } = buildFestivalPage(withVideos([highlights, teaser]), options).past;
-      expect(videos).toHaveLength(1);
+    it('shows the first two videos of the album the photographs come from, each with its credit and link', () => {
+      const third = { ...teaser, _key: 'full', title: 'Odunde 2026 in full' };
+      const { videos } = buildFestivalPage(withVideos([highlights, teaser, third]), options).past;
+      expect(videos.map((item) => item.key)).toEqual(['highlights', 'teaser']);
       expect(videos[0]).toMatchObject({
         key: 'highlights',
         title: 'Odunde 2026 highlights',
@@ -494,7 +506,7 @@ describe('buildFestivalPage', () => {
       expect(owned.past.videos[0]?.still?.src).toContain('/9z8y7x-1600x900.jpg');
       const covered = buildFestivalPage(withVideos([highlights], { cover }), options);
       expect(covered.past.videos[0]?.still?.src).toContain('/0a1b2c3d-1100x728.jpg');
-      expect(covered.past.videos[0]?.still).toMatchObject({ width: 720, height: 405 });
+      expect(covered.past.videos[0]?.still).toMatchObject({ width: 1052, height: 592 });
       // No cover and no still of its own: the first photograph, which is the same file in this fixture.
       const photographed = buildFestivalPage(withVideos([highlights]), options);
       expect(photographed.past.videos[0]?.still?.src).toContain('/0a1b2c3d-1100x728.jpg');

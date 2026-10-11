@@ -6,6 +6,8 @@ import * as stories from './TicketTiers.stories';
 const {
   Columns,
   Rows,
+  One,
+  OneOwed,
   NoLink,
   Pending,
   PendingWithZeffyForm,
@@ -49,6 +51,27 @@ describe('TicketTiers', () => {
     expect(text(body.querySelector('.oy-tiers-owed .oy-pend-line'))).toContain(
       'three prices and what each includes',
     );
+  });
+
+  it('lays a lone tier across the width and gives it the gold button when it sells the seat', async () => {
+    const body = await renderToBody(One);
+    const block = body.querySelector('.oy-tiers');
+    expect(block?.getAttribute('data-count')).toBe('1');
+    const button = block?.querySelector('.oy-tier a.oy-btn');
+    expect(button?.className).toContain('oy-btn--primary');
+    expect(button?.hasAttribute('data-tickets')).toBe(true);
+    expect(body.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
+    // Still owed, the lone tier keeps its three parts: the price, the includes and the link as chips.
+    const owed = (await renderToBody(OneOwed)).querySelector('.oy-tiers[data-count="1"] .oy-tier');
+    expect(owed?.querySelectorAll('.oy-pend')).toHaveLength(3);
+    expect(owed?.querySelector('.oy-btn')).toBeNull();
+    // Three tiers keep their columns, and a lone table tier leaves the gold to the ticket button.
+    expect(
+      (await renderToBody(Columns)).querySelector('.oy-tiers')?.getAttribute('data-count'),
+    ).toBe('3');
+    const table = await renderToBody(TableOnlyWithZeffyForm);
+    expect(table.querySelector('.oy-tier .oy-btn--primary')).toBeNull();
+    expect(table.querySelector('.oy-tiers-tickets a.oy-btn--primary')).not.toBeNull();
   });
 
   it("draws the block's own Get tickets button while no card carries the ticket link", async () => {

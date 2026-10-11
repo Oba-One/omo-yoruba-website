@@ -58,7 +58,7 @@ rather than duplicates. Ids you create never contain a period.
   neither a date nor an edition shows the year's chip.
 - **Album, videos**: add an item to the album's `videos` with a `title`, the YouTube address the video's Share
   button gives, an optional still (else the cover, or the first photograph, shows) and who made it (a `photographer` document, so the name
-  links to their page). The album page shows them above the photographs and the edition's page the first one under
+  links to their page). The album page shows them above the photographs and the edition's page the first two under
   past years, and nothing loads from YouTube until a visitor presses play (ADR 0051).
 - **Album, many photographs**: more than a handful, or web copies to swap for the photographer's originals,
   go through `bun run import-album -- <manifest.json>` (a dry run; `--apply` uploads and saves the album as a

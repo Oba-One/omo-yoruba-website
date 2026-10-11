@@ -173,6 +173,9 @@ interface AlbumLike {
   videos?: (VideoLike | null)[] | null;
 }
 
+/** How many of the past edition's videos an event page shows, side by side; the album page shows them all. */
+const PAST_VIDEOS = 2;
+
 /** Whether an edition's album has photographs to show: the rule `pastEdition` picks by. */
 const hasPhotos = (event: { album?: AlbumLike | null }) => (event.album?.photos?.length ?? 0) > 0;
 
@@ -180,9 +183,9 @@ const hasPhotos = (event: { album?: AlbumLike | null }) => (event.album?.photos?
  * Past years (Phase 5 spec, Q8): the newest past edition of the kind with photographs, and the `view` of
  * its album the carousel and the credit line take: each photograph resolved at the stage's width with
  * its alt and caption, the registry's wording for no album, and the credit with its confirmation, its
- * photographer's link and the edit attribute on the album. `videos` is the one video the page shows under the
- * photographs (ADR 0051), as `VideoGrid` takes its list: the first the album holds that has a title and a
- * readable YouTube address, or none, and none while the gallery holds the albums.
+ * photographer's link and the edit attribute on the album. `videos` is what the page shows under the
+ * photographs (ADR 0051), as `VideoGrid` takes its list: the first two the album holds that have a title and a
+ * readable YouTube address, so the pair fills the width, or fewer, and none while the gallery holds the albums.
  */
 export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }>(
   editions: readonly T[],
@@ -215,7 +218,7 @@ export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }
           }
         : undefined,
       videos: album
-        ? videoViews(album, options, (path) => edit(path, album._id, 'album')).slice(0, 1)
+        ? videoViews(album, options, (path) => edit(path, album._id, 'album')).slice(0, PAST_VIDEOS)
         : [],
     },
   };

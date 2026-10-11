@@ -12,7 +12,7 @@ and "yours" for the reader. Action verbs open buttons. Never corporate, never ge
 ## Rules
 
 - Yoruba leads, English supports, always translated. Kicker pattern "Ẹ káàbọ̀ • Welcome".
-- Sentence case for headings and buttons ("Enrol a learner", "Raise your hand"). Kickers
+- Sentence case for headings and buttons ("Enroll a learner", "Raise your hand"). Kickers
   and path chips are the only uppercase text.
 - Punctuation: commas, periods, colons. No em dashes, no en dashes as dashes. Bullets "•"
   join short facts. Glyph set: • → ✓ ×. No emoji.

@@ -102,7 +102,7 @@ export const board = ({
       listed
         ? {
             component: CardGrid,
-            props: { columns: 4 },
+            props: { columns: 4, center: true },
             slots: {
               default: BOARD_PLACEHOLDERS.map((person) => ({
                 component: PersonCard,
@@ -134,7 +134,7 @@ export const staff = (listed = true): SlotValue => ({
       listed
         ? {
             component: CardGrid,
-            props: { columns: 5 },
+            props: { columns: 5, center: true },
             slots: {
               default: STAFF_PLACEHOLDERS.map((person) => ({
                 component: PersonCard,
@@ -161,20 +161,21 @@ export const reach: SlotValue = {
   component: Section,
   props: { id: 'contact', labelledby: 'contact-heading' },
   slots: {
-    default: {
-      component: Split,
-      slots: {
-        default: [
-          {
-            component: SectionHead,
-            props: {
-              kicker: { yo: 'Ẹ kàn sí wa', en: 'Reach us' },
-              title: REACH_US.title,
-              intro: REACH_US.intro,
-              id: 'contact-heading',
-            },
-          },
-          {
+    default: [
+      {
+        component: SectionHead,
+        props: {
+          kicker: { yo: 'Ẹ kàn sí wa', en: 'Reach us' },
+          title: REACH_US.title,
+          intro: REACH_US.intro,
+          id: 'contact-heading',
+        },
+      },
+      {
+        component: Split,
+        props: { align: 'stretch' },
+        slots: {
+          default: {
             component: ContactBlock,
             props: {
               part: 'facts',
@@ -183,20 +184,20 @@ export const reach: SlotValue = {
               namePending: TALK.namePending,
             },
           },
-          {
-            component: Handoff,
-            props: {
-              shape: 'box',
-              variant: 'quiet',
-              text: 'Governance, tax status, and financial documents.',
-              action: { label: 'Impact', kind: 'url', href: '/impact#governance' },
-            },
-          },
-        ],
-        // Outline: the member row's gold below shares a screen view with it (ticket 12).
-        aside: { component: EnquiryCard, props: { kind: 'contact', variant: 'secondary' } },
+          // Outline: the member row's gold below shares a screen view with it (ticket 12).
+          aside: { component: EnquiryCard, props: { kind: 'contact', variant: 'secondary' } },
+        },
       },
-    },
+      {
+        component: Handoff,
+        props: {
+          shape: 'box',
+          variant: 'quiet',
+          text: 'Governance, tax status, and financial documents.',
+          action: { label: 'Impact', kind: 'url', href: '/impact#governance' },
+        },
+      },
+    ],
   },
 };
 

@@ -108,7 +108,7 @@ export const zones = (layout: ZonesLayout): SlotValue => ({
         component: SectionHead,
         props: {
           kicker: { yo: 'Ìlú kan', en: 'One village' },
-          title: 'Four zones, one village',
+          title: 'Three zones, one village',
           intro:
             'The plaza is divided the way a Yoruba town is divided. Each zone has its own name, its own people, and its own reason to stand there all day.',
           id: 'zones-heading',
@@ -199,7 +199,7 @@ export const takePart = (labels: TakePartLabels): SlotValue => ({
       },
       {
         component: Handoff,
-        props: { shape: 'box', variant: 'quiet', ...FESTIVAL_GIVE_HANDOFF },
+        props: { shape: 'box', ...FESTIVAL_GIVE_HANDOFF },
       },
     ],
   },

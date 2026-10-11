@@ -18,7 +18,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The Gala's seats and tables: the tiers in the Studio's order as columns or rows, the first featured tier with the gold button. No tiers shows the registry's Pending line.",
+          "The Gala's seats and tables: the tiers in the Studio's order as columns or rows, the first featured tier with the gold button. A lone tier lies across the width as a ticket, with the gold button when it sells the seat. No tiers shows the registry's Pending line.",
       },
     },
   },
@@ -30,6 +30,30 @@ type Story = StoryObj<Args>;
 export const Columns: Story = {};
 
 export const Rows: Story = { args: { layout: 'rows' } };
+
+/** One tier, as the Gala of 2026 sells it: it lies across the width as a ticket and carries the gold button. */
+export const One: Story = {
+  args: {
+    tiers: [
+      {
+        _id: 'tier-general',
+        name: 'General admission',
+        price: '$100',
+        includes: ['Access to the full program and all main activities.'],
+        variant: 'buyNow',
+      },
+    ],
+    ticketsUrl: 'https://www.zeffy.com/embed/ticketing/a-gala',
+  },
+};
+
+/** One tier the Studio has only named: the price, what it includes and the link each show their chip in the ticket's three parts. */
+export const OneOwed: Story = {
+  args: {
+    tiers: [{ _id: 'tier-general', name: 'General admission', variant: 'buyNow' }],
+    ticketsUrl: null,
+  },
+};
 
 /** Before the edition holds its ticket link: every buy-now tier shows the chip. */
 export const NoLink: Story = { args: { ticketsUrl: null } };

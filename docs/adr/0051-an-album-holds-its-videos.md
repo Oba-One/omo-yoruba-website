@@ -1,5 +1,8 @@
 # An album holds its videos, and YouTube loads only on the visitor's press
 
+Amended by ADR 0055: an event page shows the first two videos of the past edition's album, and a lone video
+fills the column.
+
 Decided on 10 October 2026, at the owner's request of that day: "we need to pull in some video content from odunde
 2026, from youtube". The two videos named are the photographer's teaser and highlights of Odunde 2026, public on Red
 Carpet Films' channel. The design handoff draws no video anywhere, and `docs/design/AGENT-DOCS.md` section 8 lists a
@@ -12,8 +15,9 @@ withholds: an album's videos as well as its photographs), each noted there.
 
 - An album holds its videos (`album.videos`, the shared `video` object: a title, the YouTube address, an optional
   still, who made it), as it holds its photographs. The album page shows them above the photographs. An event page
-  shows the first video of the past edition's album under past years, where it already shows that album's
-  photographs.
+  shows the first two videos of the past edition's album under past years, where it already shows that album's
+  photographs. (It showed the first alone until 11 October 2026, when the owner asked that a video section fill
+  the page's width: two share it, and a lone video takes it whole.)
 - A page that shows a video asks YouTube for nothing until the visitor presses play. The tile is our own photograph
   (the video's still, else the album's cover, else its first photograph) with a play mark, and it is a plain link to the video on YouTube, so
   it works without JavaScript. On the press the link gives way to YouTube's player from `www.youtube-nocookie.com`,

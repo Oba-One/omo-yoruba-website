@@ -31,17 +31,21 @@ export const WAY_CHIPS: Readonly<Record<WayIn, string>> = {
   volunteer: 'Volunteers',
   table: 'Tables',
   give: 'Give',
-  enrol: 'Enrol',
+  enrol: 'Enroll',
   member: 'Membership',
   updates: 'Updates',
 };
 
-/** The ways in whose button is quiet: they ask nothing of a form. */
-const QUIET_WAYS: readonly WayIn[] = ['give', 'updates'];
+/** The ways in that never carry a band's gold action: they ask nothing of a form. */
+const SUPPORTING_WAYS: readonly WayIn[] = ['give', 'updates'];
 
-/** Whether a way in's button is quiet rather than an outline or the band's gold. */
-export const isQuietWay = (way: WayIn | undefined): boolean =>
-  way !== undefined && QUIET_WAYS.includes(way);
+/**
+ * Whether a way in may carry its band's one gold action. Give and updates never do: their button is an
+ * outline like every other row's, wherever the row stands (ADR 0055: one button shape in a band, where
+ * the prototypes drew those two as text links).
+ */
+export const canCarryGold = (way: WayIn | undefined): boolean =>
+  way !== undefined && !SUPPORTING_WAYS.includes(way);
 
 /** Whether a stored value is one of the ways in. */
 export const isWayIn = (value: unknown): value is WayIn =>

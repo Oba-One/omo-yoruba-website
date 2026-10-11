@@ -31,7 +31,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The closing take-part band's rows from the page singleton: the accent and what the button opens follow each way in (vendor, sponsor, performer, volunteer, table and enrol open their form, give opens the Give Dialog, member the Join Dialog, updates goes to the newsletter form on the page); the chip is the way in's unless the row names its own; the title, the line and the button label are the row's own. The first working row carries the one gold action; the give and updates rows' are quiet. The rows show in the Studio's order, and the label style is the page's `labels` option. On Odunde the vendor row adds the edition's vendor terms, Pending until the Studio holds them.",
+          "The closing take-part band's rows from the page singleton: the accent and what the button opens follow each way in (vendor, sponsor, performer, volunteer, table and enrol open their form, give opens the Give Dialog, member the Join Dialog, updates goes to the newsletter form on the page); the chip is the way in's unless the row names its own; the title, the line and the button label are the row's own. The first working row carries the one gold action, never the give or the updates row; every other button is the outline, so a band shows one shape of button. The rows show in the Studio's order, and the label style is the page's `labels` option. On Odunde the vendor row adds the edition's vendor terms, Pending until the Studio holds them.",
       },
     },
   },
@@ -43,7 +43,7 @@ type Story = StoryObj<Args>;
 /** Odunde's four rows as the seed writes them, the vendor row first and its terms Pending. */
 export const Default: Story = {};
 
-/** The Gala's four rows: sponsor, table, volunteer, and the give row with its quiet Donate. */
+/** The Gala's four rows: sponsor, table, volunteer, and the give row with its Donate, an outline like the rest. */
 export const Gala: Story = { args: { rows: GALA_TAKE_PART, vendorTerms: undefined } };
 
 export const Column: Story = {};
@@ -70,7 +70,7 @@ export const Programs: Story = { args: { rows: PROGRAMS_TAKE_PART, vendorTerms: 
 /** The Lessons page's rows: volunteer first with the gold, member on the performer accent, give without a line. */
 export const Lessons: Story = { args: { rows: LESSONS_TAKE_PART, vendorTerms: undefined } };
 
-/** The Collective's rows: "Partner" and "Skills" name sponsor and volunteer rows; Updates goes to the newsletter form, quiet. */
+/** The Collective's rows: "Partner" and "Skills" name sponsor and volunteer rows; Updates goes to the newsletter form. */
 export const Collective: Story = { args: { rows: COLLECTIVE_TAKE_PART, vendorTerms: undefined } };
 
 /** A row the Studio has not finished: the registry's chip where its title and its button go. */

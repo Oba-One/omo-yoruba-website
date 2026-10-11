@@ -5,27 +5,40 @@
  * two under 1000px and to one under 600px), or one column of cards laid out as rows, closer together
  * (`13 Get Involved.dc.html`, the doors as rows). Children are the cards; the page only chooses the
  * count, and may close the grid with a short muted note (the Programs hub's line under its cards).
+ * With `center` a last row that is not full sits in the middle, each card the width of the others
+ * (the board's seven and the staff and volunteers on Our Story, ADR 0055).
  */
 interface Props {
   columns?: 1 | 2 | 3 | 4 | 5;
+  /** A last row that is not full sits in the middle instead of at the left. */
+  center?: boolean;
   /** A line under the cards. */
   note?: string | null;
   class?: string;
 }
 
-const { columns = 3, note, class: className, ...rest } = Astro.props;
+const { columns = 3, center = false, note, class: className, ...rest } = Astro.props;
 ---
 
-<div class:list={['oy-card-grid', className]} data-columns={columns} {...rest}>
+<div
+  class:list={['oy-card-grid', className]}
+  data-columns={columns}
+  data-center={center ? '' : undefined}
+  {...rest}
+>
   <slot />
 </div>
 {note?.trim() && <p class="oy-card-grid-note">{note}</p>}
 
 <style>
+  /* One count and one gap drive both arrangements: the grid's columns, and the width of a card in the
+     centred row. The breakpoints change the count alone. */
   .oy-card-grid {
+    --across: 3;
+    --gap: 22px;
     display: grid;
-    gap: 22px;
-    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+    grid-template-columns: repeat(var(--across), minmax(0, 1fr));
   }
   .oy-card-grid-note {
     margin: 18px 0 0;
@@ -34,35 +47,46 @@ const { columns = 3, note, class: className, ...rest } = Astro.props;
     color: var(--text-muted);
   }
   .oy-card-grid[data-columns='1'] {
-    grid-template-columns: 1fr;
-    gap: 14px;
+    --across: 1;
+    --gap: 14px;
   }
   .oy-card-grid[data-columns='2'] {
-    grid-template-columns: 1fr 1fr;
+    --across: 2;
   }
   .oy-card-grid[data-columns='4'] {
-    grid-template-columns: repeat(4, 1fr);
+    --across: 4;
   }
   /* Five compact cards across (`15 People and History.dc.html`, staff and volunteers). */
   .oy-card-grid[data-columns='5'] {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
+    --across: 5;
+    --gap: 16px;
   }
   @media (max-width: 1000px) {
     .oy-card-grid[data-columns='4'],
     .oy-card-grid[data-columns='5'] {
-      grid-template-columns: 1fr 1fr;
+      --across: 2;
     }
   }
   @media (max-width: 860px) {
     .oy-card-grid[data-columns='3'],
     .oy-card-grid[data-columns='2'] {
-      grid-template-columns: 1fr;
+      --across: 1;
     }
   }
   @media (max-width: 600px) {
     .oy-card-grid[data-columns='4'] {
-      grid-template-columns: 1fr;
+      --across: 1;
     }
+  }
+  /* Centred: the same columns as a wrapping row, so the cards of a short last row keep their width
+     and sit in the middle (ADR 0055). */
+  .oy-card-grid[data-center] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .oy-card-grid[data-center] > :global(*) {
+    flex: 0 0 calc((100% - (var(--across) - 1) * var(--gap)) / var(--across));
+    min-width: 0;
   }
 </style>

@@ -46,7 +46,7 @@ describe('resolveAction', () => {
   });
 
   it('picks the first action that renders, so a half-filled one never replaces a whole one', () => {
-    const half = { label: 'Enrol a learner', kind: 'enquiry' };
+    const half = { label: 'Enroll a learner', kind: 'enquiry' };
     const whole = { label: 'See the Odunde Festival', kind: 'url', href: '/odunde' };
     expect(usableAction(half, whole)).toBe(whole);
     expect(usableAction(undefined, null, whole)).toBe(whole);

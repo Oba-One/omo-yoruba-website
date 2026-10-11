@@ -6,7 +6,7 @@ import Card from './Card.astro';
 type Args = StoryArgs<ComponentProps<typeof Card>>;
 
 const body =
-  '<p>Photo, title, two lines, one quiet action.</p><a class="oy-btn oy-btn--quiet" href="#x">Enrol a learner<span class="oy-btn-arrow" aria-hidden="true">→</span></a>';
+  '<p>Photo, title, two lines, one quiet action.</p><a class="oy-btn oy-btn--quiet" href="#x">Enroll a learner<span class="oy-btn-arrow" aria-hidden="true">→</span></a>';
 
 const meta = {
   title: 'Cards/Card',
