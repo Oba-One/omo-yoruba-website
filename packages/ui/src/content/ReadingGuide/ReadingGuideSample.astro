@@ -1,0 +1,44 @@
+---
+/**
+ * The markup a rendered guide hands to ReadingGuide's slot, for its story and test: numbered steps, a
+ * screenshot with its caption and a note. A component because the story sanitiser drops `aside` from a
+ * slot written as a string.
+ */
+import people from '../../../../../docs/screenshots/member-guide/people.jpg?url';
+---
+
+<h1>How to update our website</h1>
+<p>
+  Words in <strong>bold</strong> are words you will see on the screen.
+</p>
+<h2 id="add-or-change-a-person">Add or change a person</h2>
+<ol>
+  <li>Open <strong>People</strong>, then <strong>People</strong>.</li>
+  <li>
+    Choose the person to change. To add someone new, press the <strong>+</strong> button at the top right
+    of the list.
+  </li>
+  <li>
+    Check your work and publish it. The steps are under
+    <a href="#check-your-work-and-publish">Check your work and publish</a>.
+  </li>
+</ol>
+<figure>
+  <img
+    src={people}
+    alt="The People list with the + button at its top right"
+    width="702"
+    height="195"
+  />
+  <figcaption>The + button is at the top right of the list.</figcaption>
+</figure>
+<aside>
+  <p>Good to know</p>
+  <ul>
+    <li>Studio saves your work for you as you type. There is no Save button.</li>
+    <li>Visitors see your work only after you press <strong>Publish</strong>.</li>
+  </ul>
+</aside>
+<h2 id="check-your-work-and-publish">Check your work and publish</h2>
+<h3>Before you publish</h3>
+<p>Yoruba words and names have their marks, as in Ẹ káàbọ̀ and Ọjà Balógun.</p>
