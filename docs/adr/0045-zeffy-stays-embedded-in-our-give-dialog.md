@@ -107,7 +107,7 @@ policy keeps `frame-src https://www.zeffy.com` and nothing more. What this chang
   GiveDialog element tests post Zeffy's messages to the script the page ships. Every other test still asserts the
   initial markup and ARIA state, as ADR 0018 describes.
 - Answered on 10 October 2026: the Zeffy form and its embed address are in Organization details (wayfinder ticket
-  03). The form offers one-time, monthly, quarterly and yearly gifts and says a tax receipt follows. Still owed
+  03). The form offers one-time and monthly gifts and says a tax receipt follows. Still owed
   (open-work C12 and D8): the owner's wording of the Donate page's three facts the form decides, and of the dialog's
   own lines. The Donate page's give-now blurb and the Gala's give row are Studio content, the owner's to keep in step
   with the form.
