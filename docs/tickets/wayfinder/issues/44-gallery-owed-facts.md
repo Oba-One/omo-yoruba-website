@@ -74,3 +74,25 @@ recipe and the gallery policy are in `oy-content-ops`):
   subject, portrait originals in a wide tile. Drafts of the Odunde 2026 and summer camp albums hold
   a focus point for each of the six and the marks on five captions (agbádá, fìlà, ṣẹ̀kẹ̀rẹ̀, àkàrà).
   `docs/plans/content-pass-2026-10-10.md` lists what the live pages showed that day.
+- 11 October 2026, more photographs and publication: the owner asked for more ("Can we pull in more
+  photos please"). A second pass added photographs to eleven albums, every one but the summer camp,
+  and set each new one among the photographs its album held, through the import's `order` (pull
+  request 36). In the two albums that name an edition, Odunde 2026 and Gala 2025, the first eight
+  photographs kept their places, since the event pages show those eight. With four albums still to
+  pick, the owner wrote "Publish them for me when the last four are in", and on 11 October the agent
+  published all eleven: the nine new albums went live, and the two already published took their
+  additions. Counts: Odunde 2026 (59), End-of-Year Gala 2025 (53), Grand Reception for the Ọọ̀ni of
+  Ifẹ̀ (48), End-of-Year Gala 2024 (46) and 2022 (46), End-of-Year Gala 2023 (43), Yoruba Cultural
+  Fair 2025 (38), End-of-Year Party 2015 (37), End-of-Year Appreciation Party 2018 (31), Yoruba
+  Cultural Fair 2024 (24), Thanksgiving and End-of-Year Party 2014 (23). With the summer camp's 14,
+  unchanged, the gallery holds 462 photographs in twelve albums. Left out at review: photographs
+  showing a payment address on the organization's own banner, the name of a hired hall's own
+  congregation, banknotes on the dance floor, a third party's address, and close portraits of one
+  child. On the galas' dates the owner wrote "The gala is the saturday after thanksigving so use that
+  date": the 2024 album is dated 30 November, that Saturday. The 2022 album is dated Friday 25
+  November, from its printed programme, the camera and three phone photographs, where the rule gives
+  Saturday 26 November; the owner has been told and has not yet said which stands. The nine new
+  albums' credits are still to confirm, the consent policy and the marks on one summer camp caption
+  are still drafts, and the two sets by other photographers are still out. The photographer's channel
+  also holds a teaser and a highlights video for both fairs and for the 2022 to 2025 galas, which
+  their albums could show (ADR 0051); only Odunde 2026's were asked for.
