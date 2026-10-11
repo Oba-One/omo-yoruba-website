@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test';
 import {
   axeViolations,
   expectEnquiryRoundTrip,
+  expectJoinRoundTrip,
   expectNoMockWhileOwed,
   goldSharingAView,
   PLACEHOLDER_PROJECT,
@@ -205,6 +206,10 @@ test.describe('the Yoruba Language Lessons page', () => {
       ]);
     }
     await expect(section.locator('.oy-handoff a[href="/programs"]')).toContainText('All programs');
+    // Last, since without a Join Dialog the click is a page load: a member row opens the membership form.
+    for (const trigger of await section.locator('.oy-takepart a[data-join]').all()) {
+      await expectJoinRoundTrip(page, trigger);
+    }
   });
 
   test('is clean for axe with the page settled', async ({ page }) => {

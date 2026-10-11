@@ -1,7 +1,8 @@
 /**
  * The ways in of a take-part band (CONTEXT, Way in; ADR 0025, ADR 0029) and what each opens: its
- * enquiry kind, the Give Dialog for `give`, or the newsletter form on the same page for `updates`. A
- * plain module with no Sanity import, so the schema, the seed and the site read one list.
+ * enquiry kind, the Give Dialog for `give`, the Join Dialog for `member` (ADR 0050), or the newsletter
+ * form on the same page for `updates`. A plain module with no Sanity import, so the schema, the seed
+ * and the site read one list.
  */
 export const WAY_INS = [
   'vendor',
@@ -49,6 +50,7 @@ export const isWayIn = (value: unknown): value is WayIn =>
 export type WayAction =
   | { label: string; kind: 'enquiry'; enquiryKind: string }
   | { label: string; kind: 'give' }
+  | { label: string; kind: 'join' }
   | { label: string; kind: 'anchor'; href: string };
 
 /** The action a row's button takes: the way in decides what it opens, the row gives the label. */
@@ -56,6 +58,9 @@ export function wayAction(way: WayIn, label: string | null | undefined): WayActi
   const text = label?.trim();
   if (!text) return undefined;
   if (way === 'give') return { label: text, kind: 'give' };
+  // The membership form, as the member door opens it; its trigger falls back to the member enquiry
+  // while Organization details hold no form (ADR 0050; the owner, 11 October 2026).
+  if (way === 'member') return { label: text, kind: 'join' };
   if (way === 'updates') return { label: text, kind: 'anchor', href: NEWSLETTER_ANCHOR };
   return { label: text, kind: 'enquiry', enquiryKind: way };
 }

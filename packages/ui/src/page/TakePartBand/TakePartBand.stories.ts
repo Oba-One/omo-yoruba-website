@@ -31,7 +31,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The closing take-part band's rows from the page singleton: the accent and what the button opens follow each way in (vendor, sponsor, performer, volunteer, table, enrol and member open their form, give opens the Give Dialog, updates goes to the newsletter form on the page); the chip is the way in's unless the row names its own; the title, the line and the button label are the row's own. The first working row carries the one gold action; the give and updates rows' are quiet. The rows show in the Studio's order, and the label style is the page's `labels` option. On Odunde the vendor row adds the edition's vendor terms, Pending until the Studio holds them.",
+          "The closing take-part band's rows from the page singleton: the accent and what the button opens follow each way in (vendor, sponsor, performer, volunteer, table and enrol open their form, give opens the Give Dialog, member the Join Dialog, updates goes to the newsletter form on the page); the chip is the way in's unless the row names its own; the title, the line and the button label are the row's own. The first working row carries the one gold action; the give and updates rows' are quiet. The rows show in the Studio's order, and the label style is the page's `labels` option. On Odunde the vendor row adds the edition's vendor terms, Pending until the Studio holds them.",
       },
     },
   },

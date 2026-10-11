@@ -32,7 +32,7 @@ export const takePartRow = defineType({
         layout: 'radio',
       },
       description:
-        'The title and button wording are supplied for you. Give opens the donation form; Updates goes to the newsletter signup on the page.',
+        'The title and button wording are supplied for you. Give opens the donation form; Member opens the membership form; Updates goes to the newsletter signup on the page.',
       validation: (rule) => rule.required(),
     }),
     defineField({

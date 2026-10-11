@@ -17,8 +17,9 @@ describe('ways in', () => {
     ]);
   });
 
-  it('open their own enquiry kind; give opens the Give Dialog and updates the newsletter form', () => {
-    for (const way of WAY_INS.filter((way) => way !== 'give' && way !== 'updates')) {
+  it('open their own enquiry kind, but for give, member and updates', () => {
+    const nonEnquiryWays = ['give', 'member', 'updates'];
+    for (const way of WAY_INS.filter((way) => !nonEnquiryWays.includes(way))) {
       expect(ENQUIRY_KINDS).toContain(way);
       expect(wayAction(way, 'Label')).toEqual({
         label: 'Label',
@@ -27,6 +28,12 @@ describe('ways in', () => {
       });
     }
     expect(wayAction('give', 'Donate')).toEqual({ label: 'Donate', kind: 'give' });
+    // The membership form; the member enquiry stays a kind, as the form its trigger falls back to.
+    expect(wayAction('member', 'Become a member')).toEqual({
+      label: 'Become a member',
+      kind: 'join',
+    });
+    expect(ENQUIRY_KINDS).toContain('member');
     expect(wayAction('updates', 'Subscribe')).toEqual({
       label: 'Subscribe',
       kind: 'anchor',

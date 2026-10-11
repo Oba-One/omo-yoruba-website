@@ -39,6 +39,10 @@ What this change builds:
   owns. The link skips the router (`data-astro-reload`): the dialogs are persisted across its swaps, so only a full
   page load renders the Enquiry Modal open. No button is changed by this decision: the take-part rows' member way
   in and the member door still open the member enquiry until the owner points a button at the membership form.
+  The owner did so for the member door on 10 October 2026 and for the take-part rows on 11 October 2026: a row's
+  member way now takes the same action (`wayAction`), so the member door and every take-part row's member way
+  open the Join Dialog, with the member enquiry as what they fall back to. The footer's "Become a member" stays a
+  plain link to the member door on Get Involved.
 - The membership form's frame rides the page, written by the layout from the settings it already read, where the
   donation form's frame comes from a server island (ADR 0020). A second island would add a second function run and
   an uncached settings read to every page view (review ticket R129), and a publish of Organization details
@@ -69,9 +73,9 @@ What this change builds:
 
 ## Consequences
 
-- Still the owner's to decide (open-work D28): which buttons open the membership form, and whether the member
-  enquiry stays the first step. The enquiry's own words still say "Dues are not paid here.", which stays true of
-  that form.
+- Decided since (open-work D28): the member door and the take-part rows' member way open the membership form,
+  and the member enquiry is what they fall back to. The enquiry's own words still say "Dues are not paid here.",
+  which stays true of that form.
 - The Join Dialog's words are new and unconfirmed (open-work D29), as the Give Dialog's were (D8).
 - Zeffy draws the inside of its forms. The site cannot style it: a page cannot reach into a frame of another
   origin, and the form's address takes no styling (among the parameters the form's code reads by name, read on

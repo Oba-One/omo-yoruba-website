@@ -1,5 +1,8 @@
 # Take-part rows grow to nine ways in, and a row may name its own chip
 
+Amended by ADR 0050: since 11 October 2026 the `member` way opens the Join Dialog, Zeffy's membership form, and
+the member enquiry is what its button falls back to.
+
 Decided with the owner on 12 September 2026 (Phase 6 grill, `docs/tickets/phase-6/spec.md`, Q1). ADR
 0025 expected the program pages to reuse the event pages' take-part row, but their prototypes need three
 ways in `take-part.ts` did not know: `enrol` (Programs), `member` (Lessons) and an Updates row that sends

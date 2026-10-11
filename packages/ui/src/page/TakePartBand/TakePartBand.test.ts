@@ -72,7 +72,7 @@ describe('TakePartBand', () => {
     expect(body.querySelector('.oy-pend')).toBeNull();
   });
 
-  it('draws the program ways in: enrol and member open their forms on the performer accent', async () => {
+  it('draws the program ways in: enrol opens its form and member the membership form, on the performer accent', async () => {
     const programs = rowsOf(await renderToBody(Programs));
     expect(programs.map((row) => row.getAttribute('data-accent'))).toEqual([
       'enrol',
@@ -95,7 +95,11 @@ describe('TakePartBand', () => {
       'Give',
     ]);
     expect(lessons[0]?.querySelector('.oy-btn--primary')).not.toBeNull();
-    expect(lessons[1]?.querySelector('a.oy-btn')?.getAttribute('data-enquiry')).toBe('member');
+    // The member way opens the Join Dialog, and links to the member enquiry where there is none (ADR 0050).
+    const member = lessons[1]?.querySelector('a.oy-btn');
+    expect(member?.hasAttribute('data-join')).toBe(true);
+    expect(member?.hasAttribute('data-enquiry')).toBe(false);
+    expect(member?.getAttribute('href')).toBe('?enquiry=member#enquiry');
     // A row without a line draws no empty paragraph and no chip for it.
     expect(lessons[2]?.querySelector('.oy-path-body p')).toBeNull();
   });

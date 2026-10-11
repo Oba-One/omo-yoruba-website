@@ -76,8 +76,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   mailing address). `#give` in the URL opens it on load.
 - A button set to the membership form opens the Join Dialog (Zeffy's membership form in the
   same shell, fallback to the member enquiry) once Organization details hold that form, and
-  the member enquiry until then. `#join` in the URL opens the dialog on load (ADR 0050). Zeffy
-  is a frame in our own dialog, never a script.
+  the member enquiry until then. A take-part row's member way is such a button. `#join` in the
+  URL opens the dialog on load (ADR 0050). Zeffy is a frame in our own dialog, never a script.
 - The Gala's Get tickets buttons open the Tickets Dialog on the Gala page while the edition's
   ticket link is a Zeffy ticket form (`#tickets` opens it on load, ADR 0052); any other ticket
   link opens in a new tab.
