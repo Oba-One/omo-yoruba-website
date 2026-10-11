@@ -23,10 +23,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
-/** The Gala frame: "Coming up next", the edition, Tickets & tables. The date and venue are Pending until the Studio holds them. */
+/** The Gala frame: "Coming up next", the edition, Tickets. The date and venue are Pending until the Studio holds them. */
 export const Default: Story = {};
 
 export const Gala: Story = {};
+
+/** An edition that offers a table: the button names both, as the prototype draws it. */
+export const GalaWithTables: Story = { args: { event: { ...GALA_2026, tables: true } } };
 
 /** The festival frame: "Ọdúndé • The new year has arrived", Leimert Park, Vendors & sponsors. */
 export const Odunde: Story = { args: { event: ODUNDE_2027 } };

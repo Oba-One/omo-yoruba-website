@@ -3,13 +3,13 @@
  * The signature event band (`02 Homepage.dc.html`, COMPONENT-MAP, Page structure): one edition
  * at a time inside the festival frame, chevron rows and aṣọ òkè stripe seams top and bottom and
  * the motif columns on the edges, on the theme's band surface. The kicker and the button read by
- * kind (the Gala: "Coming up next" and "Tickets & tables"; Odunde: "Ọdúndé • The new year has
- * arrived" and "Vendors & sponsors"); everything else is the edition's own: title, venue, date
- * and summary, with a Pending chip for a missing date or venue. No edition renders the Pending
- * line for the next event. The line reads as the prototype's sentence ("June 2027. One village,
- * four zones, one family.") at the body size, and the button keeps to the right at every width,
- * below the copy once the row wraps. The root carries no generic `oy-band` class: the tokens size
- * that family's paragraphs at 15px.
+ * kind (the Gala: "Coming up next" and "Tickets & tables", or "Tickets" for an edition that offers
+ * no table; Odunde: "Ọdúndé • The new year has arrived" and "Vendors & sponsors"); everything
+ * else is the edition's own: title, venue, date and summary, with a Pending chip for a missing
+ * date or venue. No edition renders the Pending line for the next event. The line reads as the
+ * prototype's sentence ("June 2027. One village, four zones, one family.") at the body size, and
+ * the button keeps to the right at every width, below the copy once the row wraps. The root
+ * carries no generic `oy-band` class: the tokens size that family's paragraphs at 15px.
  */
 import { pendingWhat } from '@oy/content/pending';
 import { editionRoute } from '@oy/content/routes';
@@ -29,6 +29,8 @@ export interface BandEvent {
   end?: string | null;
   venueName?: string | null;
   summary?: string | null;
+  /** Whether the edition offers a table, which the Gala's button names only then. */
+  tables?: boolean | null;
 }
 
 interface Props {
@@ -53,6 +55,8 @@ const COPY: Record<EventBandKind, { kicker: { yo?: string; en: string }; button:
 const { event, kind: kindProp, edit, class: className, ...rest } = Astro.props;
 const kind: EventBandKind = kindProp ?? (event?.kind === 'festival' ? 'festival' : 'gala');
 const copy = COPY[kind];
+// The Gala's button names tables only when the edition offers one, as the Gala page's seats heading does.
+const button = kind === 'gala' && !event?.tables ? 'Tickets' : copy.button;
 const href = editionRoute(kind);
 const datePending = pendingWhat('event', 'start', kind);
 const venuePending = pendingWhat('event', 'venue.name', kind);
@@ -90,7 +94,7 @@ const when = longDate(event?.start);
               </p>
             </div>
             <Button href={href} arrow>
-              {copy.button}
+              {button}
             </Button>
           </>
         ) : (

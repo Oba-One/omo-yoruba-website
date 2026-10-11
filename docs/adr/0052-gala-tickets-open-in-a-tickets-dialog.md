@@ -48,7 +48,8 @@ What this change builds:
   the build ("wording do what you recommend", open-work D29 and D31).
 - The Gala of 2026 offers no tables (the owner, 10 October 2026, open-work D9). The seats section's heading
   reads "Seats" unless the edition lists a table tier, and the table enquiry stays in the code for a year that
-  offers one.
+  offers one. The homepage's event band follows the same rule since 11 October 2026: its button reads "Tickets"
+  unless the lead edition lists a table tier (`offersTable`), where the prototype's "Tickets & tables" returns.
 - Read in a browser on 10 October 2026, Zeffy's form shows the night's date, time and place and one ticket,
   General Admission. The site's own facts for
   the edition (date, doors, venue, tiers) are still owed in the Studio (open-work C5); nothing here copies them

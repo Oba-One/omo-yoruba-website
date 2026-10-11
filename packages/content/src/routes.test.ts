@@ -125,6 +125,8 @@ describe('tagsForRoute', () => {
       'type:siteSettings',
       'type:homepage',
       'type:event',
+      // The event band names tables only when the lead Gala edition has a table tier.
+      'type:ticketTier',
       'type:program',
       'type:testimonial',
       'type:stat',

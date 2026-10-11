@@ -134,7 +134,8 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   ],
   // The festival page draws the zones; the Gala's running order names a row's zone too.
   zone: ['/odunde', '/gala'],
-  ticketTier: ['/gala'],
+  // The homepage's event band names tables only when the lead Gala edition has a table tier.
+  ticketTier: ['/gala', '/'],
   sponsorLevel: ['/gala'],
   honoree: ['/gala'],
   // The Collective's page shows the Collective program's photograph (wayfinder ticket 31, ADR 0031).

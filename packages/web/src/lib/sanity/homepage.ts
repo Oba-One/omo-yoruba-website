@@ -14,6 +14,7 @@ import { HOMEPAGE_VOICE_SLOTS, type VoiceSlot } from '@oy/content/pending';
 import type { homepageQuery } from '@oy/content/queries';
 import { usableAction } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
+import { offersTable } from './gala-page';
 import { type BuildOptions, cleanText, editAttributes, resolveImage } from './view';
 
 export type { BuildOptions };
@@ -31,6 +32,15 @@ export interface HomepageLayout extends Record<string, string> {
 }
 
 const ORG_NAME = 'Omo Yorùbá of Southern California';
+
+/**
+ * What the event band reads of the lead edition: its own facts, and whether it offers a table in
+ * place of its tiers, so the button names tables only then, as the Gala page's seats heading does.
+ */
+function bandEvent<T extends { tiers?: Parameters<typeof offersTable>[0] }>(lead: T) {
+  const { tiers, ...facts } = lead;
+  return { ...facts, tables: offersTable(tiers) };
+}
 
 export function buildHomepage(data: HomepageData | null, options: BuildOptions) {
   const { imageSet, now = new Date() } = options;
@@ -86,7 +96,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       secondary: (hero?.secondaryActions ?? []).filter((action) => action !== null),
       motion: layout.motion !== 'off',
     },
-    lead: { event: lead, kind: leadKind },
+    lead: { event: lead ? bandEvent(lead) : undefined, kind: leadKind },
     // The strip's short label where the Studio holds one ("years serving SoCal").
     stats: (data?.stats ?? [])
       .filter((stat) => stat !== null)

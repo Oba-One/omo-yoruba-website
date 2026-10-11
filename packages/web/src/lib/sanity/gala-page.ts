@@ -45,6 +45,16 @@ const KIND = 'gala';
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';
 
 /**
+ * Whether an edition offers a table: one of its tiers is bought by enquiry. The seats heading here and the
+ * homepage band's button name tables only then. The Gala of 2026 offers none (the owner, 10 October 2026).
+ */
+export function offersTable(
+  tiers: readonly ({ variant?: string | null } | null)[] | null | undefined,
+): boolean {
+  return (tiers ?? []).some((tier) => tier?.variant === 'enquiry');
+}
+
+/**
  * "Seats from": the first buy-now tier's price by order, and the table tier's price as the note, so
  * no price is typed twice (spec Q9). Undefined values leave the registry's chip in place.
  */
@@ -183,9 +193,8 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       tiers: (edition?.tiers ?? [])
         .filter((tier) => tier !== null)
         .map((tier) => ({ ...tier, edit: edit('name', tier._id, 'ticketTier') })),
-      // Whether the edition offers a table: the section's heading names tables only then. The Gala of
-      // 2026 offers none (the owner, 10 October 2026).
-      tables: (edition?.tiers ?? []).some((tier) => tier?.variant === 'enquiry'),
+      // The section's heading names tables only when the edition offers one.
+      tables: offersTable(edition?.tiers),
       layout: layout.tiers,
       // The edition's own ticket link, the one source for seats (ADR 0024).
       ticketsUrl,

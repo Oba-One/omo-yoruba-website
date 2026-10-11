@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './EventBand.stories';
 
-const { Gala, Odunde, Filled, Pending } = composeStories(stories);
+const { Gala, GalaWithTables, Odunde, Filled, Pending } = composeStories(stories);
 
 describe('EventBand', () => {
   it('frames the Gala with its kicker and button and marks the missing date and venue', async () => {
@@ -16,9 +16,17 @@ describe('EventBand', () => {
     expect(chips).toEqual(['Pending: the venue', 'Pending: the date']);
     const button = band?.querySelector('a.oy-btn');
     expect(button?.getAttribute('href')).toBe('/gala');
-    expect(text(button)).toContain('Tickets & tables');
+    // An edition that offers no table: the button does not promise one.
+    expect(text(button)).toContain('Tickets');
+    expect(text(button)).not.toContain('tables');
     expect(band?.querySelectorAll('.oy-pattern--chevron')).toHaveLength(2);
     expect(band?.querySelectorAll('.oy-pattern--motif')).toHaveLength(2);
+  });
+
+  it("names tables on the Gala's button when the edition offers one", async () => {
+    const button = (await renderToBody(GalaWithTables)).querySelector('.oy-event-band a.oy-btn');
+    expect(button?.getAttribute('href')).toBe('/gala');
+    expect(text(button)).toContain('Tickets & tables');
   });
 
   it('frames the festival with the Ọdúndé kicker, the venue and its own chip wording', async () => {
@@ -28,6 +36,7 @@ describe('EventBand', () => {
     expect(text(band?.querySelector('.oy-band-line'))).toContain('Leimert Park');
     expect(text(band?.querySelector('.oy-band-line .oy-pend'))).toBe('Pending: the date');
     expect(band?.querySelector('a.oy-btn')?.getAttribute('href')).toBe('/odunde');
+    expect(text(band?.querySelector('a.oy-btn'))).toContain('Vendors & sponsors');
     // After the date's chip the summary starts its own line; no generic band class on the root.
     expect(band?.querySelector('.oy-band-summary--apart')?.textContent).toBe(
       'One village, four zones, one family.',
