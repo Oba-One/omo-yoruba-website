@@ -30,7 +30,10 @@ frame's address, so the form reports its readiness, its height and its thank-you
 dialog, and the layout links Zeffy's own page for the same form under it, the embed address
 without its `/embed` segment, where Apple Pay and Google Pay can show on a phone. Paste the embed
 address as Zeffy gives it (`https://www.zeffy.com/en-US/embed/donation-form/<slug>`, the locale
-optional); an address in any other shape draws no link to the page.
+optional); an address in any other shape draws no link to the page. The link in Zeffy's pop-up
+button code (`zeffy-form-link`) is the same address with `?modal=true`, and it can be pasted as it
+is: the site drops that parameter, which would make the form draw a close button for Zeffy's own
+pop-up script, and the site loads no Zeffy script (ADR 0045).
 
 Local: Node 22 and Bun 1.4 through `mise` (`mise trust` once, then `mise install`).
 `bun install` installs the git hooks. `LEFTHOOK=0 git commit` skips them once; do not

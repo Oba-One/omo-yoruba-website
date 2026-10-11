@@ -14,11 +14,21 @@ export const ZEFFY_ORIGIN = 'https://www.zeffy.com';
 export const ZEFFY_EMBED_ID = 'give';
 
 /**
+ * What Zeffy's pop-up button code adds to the same embed address (`zeffy-form-link="...?modal=true"`). It tells
+ * the form it sits in the pop-up Zeffy's own script draws: in a frame as narrow as the dialog's the form then
+ * shows a close button of its own, which posts to that script, and pads its sides. The Give Dialog is the
+ * pop-up here and loads no Zeffy script, so an address pasted from that code loses the parameter before it
+ * becomes the frame or the page link.
+ */
+const ZEFFY_POPUP_PARAMETER = 'modal';
+
+/**
  * The iframe's address: the form address `framableSrc` accepted, with the two v2 parameters set through the
- * URL API, so the address keeps its own parameters and fragment.
+ * URL API, so the address keeps its own parameters and fragment, all but the pop-up's.
  */
 export function zeffyFrameSrc(form: string): string {
   const url = new URL(form);
+  url.searchParams.delete(ZEFFY_POPUP_PARAMETER);
   url.searchParams.set('embed-version', 'v2');
   url.searchParams.set('embedId', ZEFFY_EMBED_ID);
   return url.href;
@@ -47,5 +57,8 @@ export function zeffyPageHref(form: string | null | undefined): string | undefin
   if (!match) return undefined;
   const [, locale, slug] = match;
   url.pathname = locale ? `/${locale}/donation-form/${slug}` : `/donation-form/${slug}`;
+  // A page in its own tab is no pop-up. Only an address that carries the parameter is rewritten, so any
+  // other keeps its query as it was typed.
+  if (url.searchParams.has(ZEFFY_POPUP_PARAMETER)) url.searchParams.delete(ZEFFY_POPUP_PARAMETER);
   return url.href;
 }

@@ -113,7 +113,8 @@ export const siteSettings = defineType({
       name: 'zeffyEmbedUrl',
       title: 'Zeffy embed URL',
       type: 'url',
-      description: 'The donation form every Donate button opens.',
+      description:
+        "The donation form every Donate button opens. Paste the form's address from Zeffy's embed code or its pop-up button code: it starts https://www.zeffy.com/ and has /embed/donation-form/ in it.",
       group: 'services',
     }),
     defineField({

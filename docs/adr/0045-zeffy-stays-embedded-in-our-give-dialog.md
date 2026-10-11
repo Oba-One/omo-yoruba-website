@@ -13,7 +13,19 @@ policy keeps `frame-src https://www.zeffy.com` and nothing more. What this chang
 - The iframe's address carries `embed-version=v2&embedId=give`, set with the URL API on the address `framableSrc`
   accepts, so the address keeps its own parameters. With those two parameters Zeffy's form posts its state to the
   page that frames it. That contract is read from Zeffy's own embed script and one test of its public sample form,
-  not from documentation; the research lists it as unverified.
+  not from documentation; the research lists it as unverified. On 10 October 2026, with the owner's own form in
+  Organization details, the form's code as Zeffy serves it was read too: its messages are `connected`, `loading`,
+  `resized`, `step-changed`, `thank-you-animation-shown` and `thank-you-page-shown`, each naming the address's
+  `embedId`, and the form's page sends `connected` and `resized` when the address carries one. On the public site
+  `connected` reached the dialog 1.3 seconds after it opened.
+- One parameter never reaches the frame or the page link: `modal` (since 10 October 2026). Zeffy's pop-up button
+  code hands out the same embed address with `modal=true`, which the owner pasted. Read in the form's code, it makes
+  the form draw a close button of its own in a frame narrower than its theme's `md` breakpoint (900px unless the
+  theme sets another; the value was not read, and the dialog is never wider than 520px), post that button and
+  Escape to Zeffy's pop-up script as `{ id: 'zeffy-iframe', close: true }`, and pad its sides. The Give Dialog is the
+  pop-up here and loads no Zeffy script, so `zeffy.ts` drops the parameter from the frame's address, and from the
+  link to Zeffy's own page, which opens in a tab of its own and is no pop-up either. An address from either of
+  Zeffy's codes can be pasted.
 - The dialog hears only `message` events whose origin is exactly `https://www.zeffy.com` and whose data is an object
   naming `embedId: 'give'`, as Zeffy's own script filters them, through one window listener registered when the
   element is defined (ADR 0041), and only once a form is mounted. `zeffy-embed:connected` counts as ready, as the
@@ -54,6 +66,13 @@ policy keeps `frame-src https://www.zeffy.com` and nothing more. What this chang
 - Zeffy's own v2 embed script instead of our listener: it needs `script-src https://www.zeffy.com`, and a call to
   `window.Zeffy.embed.init()` after the dialog mounts the template, since the script scans the page once. Our iframe
   and one listener do the same work with no third-party script.
+- Zeffy's pop-up button script (`embed-form-script.min.js` on Zeffy's storage host), the code the owner was given on
+  10 October 2026. Read in full that day: when the page loads it adds a hidden frame for every form link, so every
+  visitor to every page would load Zeffy's form; it wires its buttons once, so a page reached through the router
+  would have none; it closes on any window's message without checking where it came from; and it moves no focus and
+  names no dialog. It also needs a `script-src` for that host. Rejected again: the Give Dialog is that pop-up.
+- Listening for the pop-up's close message, so that Escape pressed inside the form closes the dialog: it would keep
+  `modal=true`, and with it the form's second close button and its side padding. Not built.
 - Zeffy's page address as a new site-settings field: a content-model change, and one more field for an administrator
   to keep in step, when the embed address already names the form.
 - Fitting the frame to every step's height: the dialog would shrink and grow between steps. The floor keeps it
@@ -84,8 +103,10 @@ policy keeps `frame-src https://www.zeffy.com` and nothing more. What this chang
 - Vitest can now run a component's own inline script (`renderLive` in `packages/ui/src/test/stories.ts`), so the
   GiveDialog element tests post Zeffy's messages to the script the page ships. Every other test still asserts the
   initial markup and ARIA state, as ADR 0018 describes.
-- Still owed (open-work C12 and D8): the Zeffy form itself, its embed address in the site settings, and whether it
-  offers monthly giving and emails receipts. The Donate page's give-now blurb still promises both, and the Gala's
-  give row monthly giving; they are Studio content, for the owner to change once the form says what it does.
+- Answered on 10 October 2026: the Zeffy form and its embed address are in Organization details (wayfinder ticket
+  03). The form offers one-time and monthly gifts and says a tax receipt follows. Still owed
+  (open-work C12 and D8): the owner's wording of the Donate page's three facts the form decides, and of the dialog's
+  own lines. The Donate page's give-now blurb and the Gala's give row are Studio content, the owner's to keep in step
+  with the form.
 - `packages/web/e2e/give.spec.ts` checks the frame's parameters once the settings hold an address, and holds Zeffy's
   requests unanswered to reach the fallback in that mode; until then every run meets the pending mode.
