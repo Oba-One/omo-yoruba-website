@@ -106,8 +106,9 @@ One pass on each axis before the commit, both read-only.
 - Chromatic's new baseline for the ReadingGuide story is the owner's to accept.
 - The QA pass on `feat/qa-pass` shows two videos on an event page. When it
   merges, the note under Add a video, which says the first video, follows.
-- The Role box on a person suggests "Head teacher", which `CONTEXT.md` asks us to
-  avoid. Not changed here.
+- The Role box on a person suggested "Head teacher", which `CONTEXT.md` asks us
+  to avoid. Pull request 50 replaces the example and holds the Studio's words to
+  the rule; it merges on its own.
 
 Suggested skills: `oy-voice` and `humanize-writing` for the words,
 `oy-component` for the layout.
