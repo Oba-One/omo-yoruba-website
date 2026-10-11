@@ -88,12 +88,13 @@ One pass on each axis before the commit, both read-only.
   gone. A printed guide lost the Studio's address: it is written out. The guide
   never said who an administrator is: it does now.
 - Spec, each step read against the Studio's code. Four statements were wrong and
-  are corrected: an event page shows only an album's first video, the three
-  switches are locked for members and not hidden, the homepage's buttons can be
-  changed in Studio, and an edition's form has an All fields tab. Steps that
-  carried several actions are split, terms are explained where they first
-  appear, and Add to another list is new because Missing content sends members
-  to lists the guide gave no steps for.
+  are corrected: the guide implied an event page shows several of an album's
+  videos when it showed one (two since pull request 51, and the guide now says
+  two), the three switches are locked for members and not hidden, the
+  homepage's buttons can be changed in Studio, and an edition's form has an All
+  fields tab. Steps that carried several actions are split, terms are explained
+  where they first appear, and Add to another list is new because Missing
+  content sends members to lists the guide gave no steps for.
 - The browser tests caught one more: an address beginning `www.` inside its own
   link is linked a second time by the Markdown renderer, which leaves the outer
   link empty. The visible address has no `www.`; the bare name redirects.
@@ -104,8 +105,6 @@ One pass on each axis before the commit, both read-only.
 - A walkthrough by a member with an Editor account: add an event, an album and a
   person, and clear one Missing content item, keeping the work as drafts.
 - Chromatic's new baseline for the ReadingGuide story is the owner's to accept.
-- The QA pass on `feat/qa-pass` shows two videos on an event page. When it
-  merges, the note under Add a video, which says the first video, follows.
 - The Role box on a person suggested "Head teacher", which `CONTEXT.md` asks us
   to avoid. Pull request 50 replaces the example and holds the Studio's words to
   the rule; it merges on its own.
