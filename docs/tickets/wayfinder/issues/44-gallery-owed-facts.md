@@ -92,7 +92,14 @@ recipe and the gallery policy are in `oy-content-ops`):
   date": the 2024 album is dated 30 November, that Saturday. The 2022 album is dated Friday 25
   November, from its printed programme, the camera and three phone photographs, where the rule gives
   Saturday 26 November; the owner has been told and has not yet said which stands. The nine new
-  albums' credits are still to confirm, the consent policy and the marks on one summer camp caption
-  are still drafts, and the two sets by other photographers are still out. The photographer's channel
-  also holds a teaser and a highlights video for both fairs and for the 2022 to 2025 galas, which
-  their albums could show (ADR 0051); only Odunde 2026's were asked for.
+  albums' credits are still to confirm, the marks on one summer camp caption are still a draft, and
+  the two sets by other photographers are still out.
+- 11 October 2026, the policy and the other videos: later that day the owner wrote "Publish the
+  policy and add the other videos". The consent policy drafted on 10 October was published as
+  drafted, so the gallery states it in place of its chip. It still does not say how permission is
+  asked, which the question above asks for: that part stays owed. The photographer's channel holds a
+  teaser and a highlights video for both fairs and for the 2022 to 2025 galas, and each went into its
+  album, as Odunde 2026's had: seven albums show two videos each (ADR 0051), and the Gala page shows
+  the 2025 teaser under past years. In those six albums the highlights video takes a photograph of
+  its own album as its still; Odunde 2026's two videos have no still of their own, and both show the
+  album's cover.
