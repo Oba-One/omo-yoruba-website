@@ -58,7 +58,13 @@ The tabs group an edition's details. Start with its title and year.
    the order you want them shown. Give each one **Alt text** describing who is
    doing what and where, plus a **Caption**.
    The first photograph is the cover unless you choose another **Cover**.
-4. Choose the **Photographer**. Tick **Credit confirmed** only once the owner
+4. To add a video, choose **Add item** under **Videos**. Give it a **Title**
+   and paste the **YouTube address** that the video's Share button gives. A
+   **Still** and **Made by** are optional: without a still, the album's cover
+   or first photograph shows under the play mark. Videos appear above the
+   photographs, and the first one also appears on the event's page. Nothing
+   loads from YouTube until a visitor presses play.
+5. Choose the **Photographer**. Tick **Credit confirmed** only once the owner
    confirms the credit. Add a **Consent note** for permission specific to this
    album. Check it, then **Publish**.
 
@@ -130,8 +136,8 @@ changes still missing after a minute. Include the page name and any message.
 
 Administrators handle **Organization details**, the **Inbox**, and the switches
 for gallery visibility, Our Story's timeline and Gala awards. **Coming soon**
-hides album photographs, including on event pages, but leaves photographs added
-directly to pages. Tell an administrator which pages need attention if
+hides album photographs and videos, including on event pages, but leaves
+photographs added directly to pages. Tell an administrator which pages need attention if
 permission changes.
 
 Your account may still access enquiries and subscriber details outside these

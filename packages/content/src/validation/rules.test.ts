@@ -140,6 +140,60 @@ describe('a hidden input blocks nothing', () => {
   });
 });
 
+describe("an album's videos (ADR 0051)", () => {
+  const id = 'AbC_dEf-123';
+  const video = (extra: Record<string, unknown> = {}) => ({
+    _key: 'video-1',
+    _type: 'video',
+    title: 'A title',
+    url: `https://youtu.be/${id}`,
+    ...extra,
+  });
+  // The slug's uniqueness is checked against a dataset this harness does not have, so only the videos are read.
+  const videoProblems = async (videos?: unknown[]) =>
+    (
+      await problems({
+        _type: 'album',
+        title: 'Odunde 2026',
+        slug: { _type: 'slug', current: 'odunde-2026' },
+        videos,
+      })
+    ).filter((line) => line.startsWith('videos'));
+  const on = (found: string[], field: string) =>
+    found.filter((line) => line.startsWith(`videos.[].${field}:`));
+
+  it('takes an album with no videos, and a video with a title and an address that names one', async () => {
+    expect(await videoProblems()).toEqual([]);
+    expect(await videoProblems([video()])).toEqual([]);
+    expect(await videoProblems([video({ url: `https://www.youtube.com/watch?v=${id}` })])).toEqual(
+      [],
+    );
+  });
+
+  it('asks for the title and the address', async () => {
+    const found = await videoProblems([video({ title: undefined, url: undefined })]);
+    expect(on(found, 'title')).toHaveLength(1);
+    expect(on(found, 'url')).toHaveLength(1);
+  });
+
+  it('says what to do when the address names no video, and takes nothing but https', async () => {
+    for (const url of [
+      'https://example.org/watch',
+      'https://www.youtube.com/@redcarpetfilmshollywood',
+      'https://www.youtube.com/watch?v=short',
+      `http://youtu.be/${id}`,
+    ]) {
+      const found = await videoProblems([video({ url })]);
+      expect(on(found, 'url').join(' '), url).toContain("the video's Share button");
+    }
+  });
+
+  it('holds a video title to the voice rules like any other heading', async () => {
+    const found = await videoProblems([video({ title: `Highlights ${dash} 2026` })]);
+    expect(on(found, 'title')).toHaveLength(1);
+  });
+});
+
 describe("the Sanity CLI's schema", () => {
   it('registers the rules as written, so a deployed schema tells agents what each field requires', () => {
     const types = (cli?: boolean) =>

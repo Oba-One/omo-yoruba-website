@@ -646,6 +646,14 @@ export const album = defineType({
         "In the order the album page and the photo viewer show them; the first is the gallery tile's photograph when no cover is chosen. A shared link to a photograph keeps working while the photograph stays in the album. The album's credit applies to every photograph unless one sets its own.",
     }),
     defineField({
+      name: 'videos',
+      title: 'Videos',
+      type: 'array',
+      of: [{ type: 'video' }],
+      description:
+        "Videos from YouTube, in the order the album page shows them, above the photographs. The first one also shows on the edition's page under past years. Nothing is requested from YouTube until a visitor presses play.",
+    }),
+    defineField({
       name: 'credit',
       title: 'Photographer',
       type: 'reference',

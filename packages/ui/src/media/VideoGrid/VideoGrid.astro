@@ -1,0 +1,293 @@
+---
+/**
+ * An album's videos, played from YouTube only when a visitor presses play (ADR 0051; added after the handoff, which
+ * draws no video): a list of tiles, two across from 720px and one under it, a single video in one column no wider
+ * than 720px. Each tile is our own still under a round play mark, the whole tile one link to the video's page on
+ * YouTube, with the title under it as a paragraph (never a heading, so the page's heading order cannot skip) and a
+ * muted line, "Video: Name. Plays from YouTube." (the credit is `CreditLine`, labelled Video, inline). The page
+ * makes no request to YouTube or Google before the press: no script, no thumbnail from YouTube's servers. The
+ * `oy-video` element swaps the link for YouTube's no-cookie player on a plain click or Enter and gives the frame
+ * focus; without JavaScript, or with a modifier key held (open in a new tab), the link simply opens the video on
+ * YouTube. The gold edge draws inside the tile on hover, as `PhotoGrid`'s does; nothing lifts or zooms, and the
+ * mark is never gold, since gold is the page's one primary action. The first still is fetched at once and first
+ * when the page asks (`priority`); the rest load lazily. No videos renders nothing.
+ */
+import CreditLine from '../CreditLine/CreditLine.astro';
+import ImagePlaceholder from '../ImagePlaceholder/ImagePlaceholder.astro';
+import { type ImageInput, imgAttributes, positionOf } from '../image';
+
+export interface VideoGridItem {
+  /** The video's key in the Studio. */
+  key: string;
+  title: string;
+  /** The video's page on YouTube: what the play link opens without JavaScript. */
+  watchHref: string;
+  /** The player's address, framed only once the play link is pressed. */
+  embedSrc: string;
+  /** The still shown before the video plays: our own photograph, drawn as decoration beside the link's name. */
+  still?: ImageInput | null;
+  /** Who made it, in the line under the title. */
+  credit?: string | null;
+  /** The maker's page, which the name links to. */
+  creditHref?: string | null;
+  /** A `data-sanity` attribute, so click-to-edit reaches the video. */
+  edit?: string;
+}
+
+interface Props {
+  videos?: (VideoGridItem | null)[] | null;
+  /** The list's accessible name. */
+  label?: string;
+  /** The first still is the page's largest paint: fetched at once and first. */
+  priority?: boolean;
+  class?: string;
+}
+
+const { videos, label = 'Videos', priority = false, class: className } = Astro.props;
+
+const list = (videos ?? []).filter((video): video is VideoGridItem => video !== null);
+// Two columns of 540px at most from 720px, one under it; a lone video fills its one column, 720px at most.
+const sizes =
+  list.length === 1
+    ? '(max-width: 768px) calc(100vw - 48px), 720px'
+    : '(max-width: 719px) calc(100vw - 48px), (max-width: 1148px) calc(50vw - 34px), 540px';
+---
+
+{
+  list.length > 0 && (
+    <ul
+      class:list={['oy-video-grid', list.length === 1 && 'oy-video-grid--one', className]}
+      aria-label={label}
+    >
+      {list.map((video, at) => {
+        const img = imgAttributes(video.still, sizes);
+        const position = positionOf(video.still);
+        const name = video.credit?.trim();
+        const first = priority && at === 0;
+        return (
+          <li data-sanity={video.edit}>
+            <oy-video data-embed={video.embedSrc} data-title={video.title}>
+              <a class="oy-video-play" href={video.watchHref}>
+                {img ? (
+                  <img
+                    {...img}
+                    alt=""
+                    loading={first ? 'eager' : 'lazy'}
+                    fetchpriority={first ? 'high' : undefined}
+                    decoding="async"
+                    style={position ? `object-position: ${position}` : undefined}
+                  />
+                ) : (
+                  <div class="oy-video-fill" aria-hidden="true">
+                    <ImagePlaceholder
+                      what="the still for this video"
+                      aspect="16 / 9"
+                      tone="adire"
+                      class="oy-video-placeholder"
+                    />
+                  </div>
+                )}
+                <span class="oy-video-mark" aria-hidden="true">
+                  <span class="oy-video-disc">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                      <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />
+                    </svg>
+                  </span>
+                </span>
+                <span class="oy-visually-hidden">Play video: {video.title}</span>
+              </a>
+            </oy-video>
+            <p class="oy-video-title">{video.title}</p>
+            <p class="oy-video-line">
+              {name && (<><CreditLine as="span" label="Video" credit={name} href={video.creditHref} confirmed /> </>)}Plays from YouTube.
+            </p>
+          </li>
+        );
+      })}
+    </ul>
+  )
+}
+
+{/* The element's script ships only where a video renders; the guard makes a second copy a no-op. */}
+{list.length > 0 && (
+<script is:inline>
+  if (!customElements.get('oy-video')) {
+    // The same allowances YouTube's own embed code asks for.
+    const ALLOW =
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+
+    customElements.define(
+      'oy-video',
+      class extends HTMLElement {
+        connectedCallback() {
+          // The listener belongs to the element, not to a connection: a moved element keeps the one it has.
+          if (this.oyWired) return;
+          this.oyWired = true;
+          this.addEventListener('click', (event) => this.press(event));
+          this.dataset.ready = 'true';
+        }
+
+        // A plain left click, or Enter on the link, swaps YouTube's player in; a modifier key (open in a new tab
+        // or window, download) belongs to the browser, and so does a link with nothing safe to frame.
+        press(event) {
+          const target = event.target instanceof Element ? event.target : null;
+          const link = target && target.closest('a.oy-video-play');
+          if (!link || !this.contains(link) || event.defaultPrevented) return;
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          const src = this.dataset.embed || '';
+          if (!/^https:\/\//i.test(src)) return;
+          event.preventDefault();
+          const frame = document.createElement('iframe');
+          frame.setAttribute('src', src);
+          frame.setAttribute('title', this.dataset.title || '');
+          frame.setAttribute('allow', ALLOW);
+          frame.setAttribute('allowfullscreen', '');
+          // YouTube's player wants to know which site frames it, and only the origin goes.
+          frame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+          link.replaceWith(frame);
+          this.dataset.playing = 'true';
+          frame.focus();
+        }
+      },
+    );
+  }
+</script>
+)}
+
+<style>
+  .oy-video-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px 20px;
+    margin: 32px 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 720px) {
+    .oy-video-grid {
+      grid-template-columns: repeat(2, minmax(0, 540px));
+    }
+  }
+  .oy-video-grid.oy-video-grid--one {
+    grid-template-columns: minmax(0, 720px);
+  }
+
+  oy-video {
+    display: block;
+  }
+  .oy-video-play {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface-dark);
+    color: var(--white);
+    text-decoration: none;
+  }
+  .oy-video-play img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .oy-video-fill,
+  .oy-video-play :global(.oy-video-placeholder) {
+    height: 100%;
+  }
+  /* The caption naming the missing still sits at the foot, clear of the play mark at the centre. */
+  .oy-video-play :global(.oy-video-placeholder) {
+    aspect-ratio: auto;
+    align-items: flex-end;
+    padding-bottom: 16px;
+  }
+  /* The gold edge draws over the still, which would cover a border or an inset shadow on the link. */
+  .oy-video-play::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 2px transparent;
+    transition: box-shadow 0.2s ease;
+    pointer-events: none;
+  }
+  .oy-video-play:hover::after {
+    box-shadow: inset 0 0 0 2px var(--gold-500);
+  }
+  /* The ring follows the tile's corners, which the base focus rule would otherwise set to 4px. */
+  .oy-video-play:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* The mark: a 72px disc of the dark surface over any still, ringed in white, the triangle drawn in the line's colour. */
+  .oy-video-mark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  .oy-video-disc {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    box-sizing: border-box;
+    border: 2px solid var(--white);
+    border-radius: 50%;
+    color: var(--white);
+    transition: scale 0.12s ease;
+  }
+  .oy-video-disc::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--surface-dark);
+    opacity: 0.82;
+    transition: opacity 0.18s ease;
+  }
+  .oy-video-disc svg {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    /* A triangle's weight sits left of its box: nudged so the disc looks centred. */
+    margin-left: 4px;
+  }
+  .oy-video-play:hover .oy-video-disc::before,
+  .oy-video-play:focus-visible .oy-video-disc::before {
+    opacity: 1;
+  }
+  .oy-video-play:active .oy-video-disc {
+    scale: 0.985;
+  }
+
+  /* The frame takes the link's place and its box. */
+  oy-video :global(iframe) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 6px;
+    background: var(--surface-dark);
+  }
+
+  .oy-video-title {
+    margin: 14px 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.25;
+    color: var(--text-heading);
+    text-wrap: balance;
+  }
+  .oy-video-line {
+    margin: 6px 0 0;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+</style>

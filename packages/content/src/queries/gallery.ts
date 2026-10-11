@@ -35,9 +35,11 @@ export const galleryPageQuery = defineQuery(`*[_type == "galleryPage" && _id == 
  * the photographer's link (ADR 0046) and whether the photographer confirmed it, its consent note, its edition's
  * year and kind (the facts line and the link to the edition's page, from the edition it names) and every
  * photograph in order with its alt, caption and any credit of its own, linked only when that credit names a
- * photographer, never for a written credit; the gallery singleton's kicker, the owner's consent policy and the
- * `captions` option, and the `state` that holds the album's photographs while it is `soon` (ADR 0043); and the
- * settings' general inbox. No album for the slug answers `album: null`, which the route serves as a 404.
+ * photographer, never for a written credit; the album's cover and its videos in order (ADR 0051), each with its title,
+ * the YouTube address the site reads the id from, its own still, and its maker's credit and link (the still falls
+ * back to the cover, else the first photograph); the gallery singleton's kicker, the owner's consent policy and the
+ * `captions` option, and the `state` that holds the album's photographs and videos while it is `soon` (ADR 0043);
+ * and the settings' general inbox. No album for the slug answers `album: null`, which the route serves as a 404.
  */
 export const albumPageQuery = defineQuery(`{
   "album": *[_type == "album" && slug.current == $slug][0]{
@@ -50,6 +52,15 @@ export const albumPageQuery = defineQuery(`{
     "credit": coalesce(credit->defaultCredit, credit->name),
     "creditUrl": credit->url,
     "edition": event->{"year": edition, kind},
+    cover{_type, alt, caption, hotspot, crop, asset},
+    "videos": videos[]{
+      _key,
+      title,
+      url,
+      still{_type, hotspot, crop, asset},
+      "credit": coalesce(credit->defaultCredit, credit->name),
+      "creditUrl": credit->url
+    },
     "photos": photos[]{
       _key,
       _type,

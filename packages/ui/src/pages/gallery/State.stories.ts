@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The `state` option, the consent hold for the albums: `built` (the default) shows the albums; `soon` replaces them with one sentence that claims nothing unconfirmed and the two event pages, and an album page shows the same sentence in place of its photographs, while the event pages show no photographs of past years. Photographs a page shows through its own fields stay. Photography credit and permissions closes the page in both, the policy and the inbox owed.',
+          'The `state` option, the consent hold for the albums: `built` (the default) shows the albums; `soon` replaces them with one sentence that claims nothing unconfirmed and the two event pages, and an album page shows the same sentence in place of its photographs and videos, while the event pages show no photographs or videos of past years. Photographs a page shows through its own fields stay. Photography credit and permissions closes the page in both, the policy and the inbox owed.',
       },
     },
   },

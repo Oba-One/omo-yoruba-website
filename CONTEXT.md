@@ -29,8 +29,8 @@ editions it may not exist yet, and its facts read Pending.
 _Avoid_: current edition, active event, this year's festival
 
 **Past years**:
-The photographs of the newest past edition of a kind, from its album, closing an event page (past
-galas on the Gala page). The only place a past edition appears on an event page.
+The photographs, and the first video, of the newest past edition of a kind, from its album, closing an
+event page (past galas on the Gala page). The only place a past edition appears on an event page.
 _Avoid_: recap, archive, previous events
 
 **Zone**:
@@ -328,10 +328,17 @@ the page describes them in prose until the owner adds them.
 _Avoid_: HTA in copy, chapter, club
 
 **Album**:
-The photographs of one occasion, an edition or an occasion with no edition such as the summer camp, with
-its own page on the gallery, one photo credit and its consent note. It names its edition, the one link between
+The photographs, and any videos, of one occasion, an edition or an occasion with no edition such as the
+summer camp, with its own page on the gallery, one photo credit and its consent note. It names its edition, the one link between
 them (ADR 0042), and its year is its own date's, else its edition's.
 _Avoid_: set, collection, gallery (the page of every album)
+
+**Video**:
+A recording of one occasion that an album holds, with a title, its YouTube address and, if the owner chooses, its own
+still and who made it. The album page shows its videos above the photographs, and the edition's page shows the
+first one under past years. It plays from YouTube on the visitor's press: until then the page shows our own still
+and asks nothing of YouTube, and the press swaps in YouTube's no-cookie player (ADR 0051).
+_Avoid_: film, clip, reel, movie
 
 **Cover**:
 The photograph an album shows on its tile on the gallery; the album's first photograph when none is chosen.
@@ -375,8 +382,8 @@ _Avoid_: site settings (its Studio name until 30 September 2026), globals, confi
 
 **Held-back switch**:
 A layout option that publishes content waiting for an owner decision (the gallery's coming-soon state, which takes the
-albums off the site while consent is settled, ADR 0043: a photograph a page shows through its own field stays; Our
-Story's timeline; the Gala's awards). Read-only for members.
+albums off the site while consent is settled, ADR 0043: their photographs and videos go, while a photograph a page
+shows through its own field stays; Our Story's timeline; the Gala's awards). Read-only for members.
 _Avoid_: feature flag, lock, admin option
 
 **To do**:

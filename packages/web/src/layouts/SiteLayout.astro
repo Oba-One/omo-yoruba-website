@@ -111,7 +111,7 @@ const giveForm = framableSrc(settings?.zeffyEmbedUrl);
 const giveMode = giveForm ? 'embed' : 'pending';
 const givePage = zeffyPageHref(giveForm);
 // The membership form (ADR 0050). The Join Dialog is on the page only while Organization details hold an
-// address the policy frames; without it a membership button is a link to the member enquiry. Its frame
+// address on Zeffy's origin; without it a membership button is a link to the member enquiry. Its frame
 // rides this page, which a publish of the settings purges, so it costs no second island.
 const joinForm = framableSrc(settings?.zeffyMembershipUrl);
 // The Studio can pause PostHog without a deploy (siteSettings.analyticsEnabled).

@@ -52,8 +52,8 @@ messages and the timer (ADR 0045).
 - An interactive component carries its behaviour in a `<script is:inline>` of plain JavaScript that
   defines a custom element and sets `data-ready` once wired (ADR 0018): `oy-site-nav`,
   `oy-newsletter`, `oy-enquiry-modal`, `oy-zeffy-dialog` (the Give Dialog and the Join Dialog, ADR 0050),
-  `oy-photo-carousel` (ADR 0027) and
-  `oy-lightbox` (ADR 0037). `Accordion` and `Disclosure` are native `details` with no script
+  `oy-photo-carousel` (ADR 0027), `oy-lightbox` (ADR 0037) and `oy-video` (ADR 0051). `Accordion` and
+  `Disclosure` are native `details` with no script
   (ADR 0032). A play function waits for `data-ready`, then drives the keys; Playwright proves what
   a story cannot, such as a touch swipe (ADR 0038).
 

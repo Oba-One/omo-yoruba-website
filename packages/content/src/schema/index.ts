@@ -23,6 +23,7 @@ import {
   seo,
   sourcedFigure,
   takePartRow,
+  video,
 } from './objects';
 import { SINGLETON_NAMES, singletonTypes } from './singletons';
 
@@ -40,6 +41,7 @@ export const objectTypes: SchemaTypeDefinition[] = [
   blockContent,
   pageHeader,
   takePartRow,
+  video,
   ...pageListTypes,
   ...enquiryFieldTypes,
 ];

@@ -412,4 +412,60 @@ describe('buildGalaPage', () => {
     expect(view.past.album).toBeUndefined();
     expect(buildGalaPage(seeded, options).past.shown).toBe(true);
   });
+
+  describe('the past album video (ADR 0051)', () => {
+    const video = (key: string, id: string) => ({
+      _key: key,
+      title: `Gala 2025 ${key}`,
+      url: `https://www.youtube.com/watch?v=${id}`,
+      still: null,
+      credit: null,
+      creditUrl: null,
+    });
+    const withVideos = (videos: unknown[] | null) =>
+      ({
+        ...seeded,
+        editions: seeded.editions?.map((event) =>
+          event?.album ? { ...event, album: { ...event.album, videos } } : event,
+        ),
+      }) as GalaPageData;
+
+    it("shows the first video of the newest past gala's album, its still the first photograph", () => {
+      const { videos } = buildGalaPage(
+        withVideos([video('toast', 'AbC_dEf-123'), video('dance', 'ZyX_wVu-987')]),
+        options,
+      ).past;
+      expect(videos).toHaveLength(1);
+      const [first] = videos;
+      expect(first).toMatchObject({
+        key: 'toast',
+        title: 'Gala 2025 toast',
+        watchHref: 'https://www.youtube.com/watch?v=AbC_dEf-123',
+        embedSrc: 'https://www.youtube-nocookie.com/embed/AbC_dEf-123?autoplay=1&rel=0',
+      });
+      expect(first?.still?.src).toContain('/0a1b2c3d-1100x728.jpg');
+      expect(first?.credit).toBeUndefined();
+    });
+
+    it('shows none for an album without videos, for no album, or while the gallery holds the albums', () => {
+      expect(buildGalaPage(seeded, options).past.videos).toEqual([]);
+      expect(buildGalaPage(withVideos(null), options).past.videos).toEqual([]);
+      expect(buildGalaPage(null, options).past.videos).toEqual([]);
+      const held = {
+        ...withVideos([video('toast', 'AbC_dEf-123')]),
+        galleryLayout: { state: 'soon' },
+      } as GalaPageData;
+      expect(buildGalaPage(held, options).past.videos).toEqual([]);
+    });
+
+    it("reaches the video from click-to-edit on the album's document in draft mode", () => {
+      const view = buildGalaPage(withVideos([video('toast', 'AbC_dEf-123')]), {
+        ...options,
+        draft: true,
+      });
+      expect(view.past.videos[0]?.edit).toContain(
+        'id=album-gala-2025;type=album;path=videos:toast;',
+      );
+    });
+  });
 });

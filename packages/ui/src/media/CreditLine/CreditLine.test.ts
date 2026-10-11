@@ -12,6 +12,7 @@ const {
   OnDark,
   Linked,
   UnsafeLink,
+  Video,
 } = composeStories(stories);
 
 describe('CreditLine', () => {
@@ -60,5 +61,16 @@ describe('CreditLine', () => {
     const line = (await renderToBody(UnsafeLink)).querySelector('p.oy-credit-line');
     expect(text(line)).toBe('Photographs: Red Carpet Films.');
     expect(line?.querySelector('a')).toBeNull();
+  });
+
+  it('names what the credit is for: Photographs unless the label says another kind of work (ADR 0051)', async () => {
+    const photographs = (await renderToBody(Linked)).querySelector('p.oy-credit-line');
+    expect(text(photographs)).toBe('Photographs: Red Carpet Films.');
+    const video = (await renderToBody(Video)).querySelector('span.oy-credit-line');
+    expect(text(video)).toBe('Video: Red Carpet Films.');
+    expect(video?.querySelector('a')?.getAttribute('href')).toBe(
+      'https://www.youtube.com/@redcarpetfilmshollywood',
+    );
+    expect(video?.querySelector('.oy-pend')).toBeNull();
   });
 });
