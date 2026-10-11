@@ -1,7 +1,7 @@
 # 15: Sponsor levels at 375 squeeze each level's recognition list into a 72px column beside an empty one
 
 Labels: design, bug
-Status: open
+Status: resolved
 Blocked by: none
 
 **Finding** (R15 in `docs/plans/review-alignment-and-quality.md`; /gala (SponsorLevels, packages/tokens); major; rule-conflict): The prototype's mobile rule was written for the event row's 72px date block and also catches sponsor tiers, dropping the recognition list into that date column; the site ported it verbatim. Once the Studio holds sponsor levels (open-work C5), every level on a phone reads a word or two per line beside an empty column, on one of the site's three funnels. The live page shows the Pending line today, so it is latent; verified with the story's fixtures and getComputedStyle. The elder test (readable on a phone) and the Build Brief's 'works at 375px' outrank a prototype that breaks its own mobile layout (the method's known trap).
@@ -10,9 +10,21 @@ Blocked by: none
 
 **What to build:** Under 720px give the sponsor tier row a single column, or set .oy-lrow--tier .oy-incl to grid-column 1 / -1, so the recognitions wrap across the row under the level; the event row keeps its 72px date column. Size S.
 
-- [ ] The fix, with a test that fails before it where the behaviour can be tested
-- [ ] `bun check` green; Playwright in both data modes where a page changes
+- [x] The fix, with a test that fails before it where the behaviour can be tested
+- [x] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
 
 **Triage, 27 September 2026:** Ready, latent: it shows once a sponsor level lists its recognitions.
+
+**Fixed, 10 October 2026:** no longer latent. The sponsor levels were published on 9 October, and the
+content pass of 10 October found each level's lines 72px wide on the live Gala page at 375.
+
+- `ListRow.astro` gives a tier's recognition list, or its Pending chip, the row's full width under 720px
+  (`grid-column: 1 / -1`), in the component's own style block beside `.oy-lrow--plain`. The ported rule in
+  `oy-components.css` is left as the prototype wrote it; an event row keeps its 72px date column.
+- `gala.spec.ts` holds each level's lines to more than half its row at both widths the suite runs. Against
+  `development`, on the phone project, it failed before the fix (72px against a 327px row) and passes after;
+  the whole spec passes in both data modes, 16 of 16 each.
+- What CI does not run: the placeholder project holds no sponsor level, so there the check measures nothing.
+  A run that reads the Studio is its only run.
