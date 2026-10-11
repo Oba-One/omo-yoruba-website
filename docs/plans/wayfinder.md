@@ -29,6 +29,9 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
 
 ## Decisions so far
 
+- [The favicon is the crowned Ifẹ̀ head on indigo](../tickets/wayfinder/issues/32-favicon.md):
+  the owner confirmed the proposed icon and asked to merge it on 10 October 2026.
+
 - [Phase 0 stack versions and library facts](../tickets/wayfinder/issues/24-phase-0-stack-research.md):
   pins in `docs/research/phase-0-stack-versions.md`; Astro CSP, cache and env facts,
   Biome, lefthook and PostHog notes alongside it.
@@ -191,7 +194,6 @@ open-work row and priority. Details in each ticket.
 | 29 | A preview host for editors | Drafts in the Presentation tool on the public host (D15: Launch) |
 | 30 | Photo hero heading on phones: the prototype's 34px or the brief's 44px | The type tokens and AGENTS.md's sizes (D11: Launch; the sizes half of E7) |
 | 31 | A photograph of the Yoruba Cultural Collective | The Collective's photograph on the homepage, Programs and Collective pages (C2: Now) |
-| 32 | The favicon | The favicon files and best practices 100 (D7, E3: Now) |
 | 04 | Gala tables: enquiry or purchase | The Gala's tables block and its copy (D9: Launch) |
 | 06 | Gala awards: yes or no | The Gala's honorees block (D10: Launch) |
 | 37 | The photo carousel's controls, answers 2 to 5 (ADR 0027) | Styling only (D19: Later) |

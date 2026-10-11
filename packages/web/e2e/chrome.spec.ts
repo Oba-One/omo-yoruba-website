@@ -23,6 +23,24 @@ test.describe('site chrome', () => {
     expect(fadeDuration).toBe(true);
   });
 
+  test('the page links its tab icon and its touch icon, and both files answer', async ({
+    page,
+    request,
+  }) => {
+    await page.goto('/');
+    // `/favicon.ico` is also the address a browser asks for on a page that links no icon (the member guide).
+    await expect(page.locator('head link[rel="icon"]')).toHaveAttribute('href', '/favicon.ico');
+    await expect(page.locator('head link[rel="apple-touch-icon"]')).toHaveAttribute(
+      'href',
+      '/apple-touch-icon.png',
+    );
+    for (const address of ['/favicon.ico', '/apple-touch-icon.png']) {
+      const response = await request.get(address);
+      expect(response.status(), address).toBe(200);
+      expect(response.headers()['content-type'], address).toMatch(/^image\//);
+    }
+  });
+
   test('the cross-fade honours reduced motion', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
