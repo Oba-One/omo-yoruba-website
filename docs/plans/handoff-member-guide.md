@@ -64,3 +64,20 @@ Implementation sources: [Sanity custom tools](https://www.sanity.io/docs/studio/
 
 Suggested skills: humanize-writing and oy-voice for copy changes, oy-content-ops
 for the member walkthrough, and oy-component for future display changes.
+
+## Merge and production verification
+
+The owner authorized merging PR 22 after the checks were green. All ten PR
+checks and the Vercel preview status passed for `df831ba4d0d6ee91f4ea569236903a714e2139e8`.
+PR 22 was squash-merged on 1 October at 00:26 UTC (30 September locally), as
+`0b2d9a0564b039990f940fbbd7cd901ef3476bfd`.
+
+Production deployment `dpl_C8KUJPj26AymKreftSwxAjWwW6Tg` is READY for that commit.
+It serves the production aliases, including `omoyorubasocal.org` and
+`omo-yoruba-khaki.vercel.app`. Opened the latter's live Studio with the existing
+administrator session and verified the Member guide tab, section navigation
+inside its frame, and successful loading of all eight screenshots. The guide
+is available at `/admin/member-guide`. No migration or schema command is needed.
+
+Local main was fast-forwarded to the merge. The existing changes to
+`handoff-pr-21-ci.md` were preserved. This deployment note is saved locally.
