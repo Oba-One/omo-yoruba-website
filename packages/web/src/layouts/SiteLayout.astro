@@ -1,13 +1,14 @@
 ---
 /**
  * The chrome around every page (ROUTES section 2): the tokens, the nav, the page, the footer,
- * the Enquiry Modal and the Give Dialog with its server island, the cross-fade at 380ms that
- * reduced motion switches off, the gold progress bar, the form bridge and the analytics bridge.
+ * the Enquiry Modal, the Give Dialog with its server island and, once Organization details hold the
+ * membership form, the Join Dialog (ADR 0050), the cross-fade at 380ms that reduced motion switches
+ * off, the gold progress bar, the form bridge and the analytics bridge.
  * Site settings come from one query per render; a failed read renders Pending, never an
  * invented name, address or phone (ADR 0005). Without JavaScript `?enquiry=<kind>` opens the
  * modal and a posted error re-renders it with the values kept; the middleware redirects a
  * success to `sent=1`, which renders the success block (ADR 0019). `#give` opens the Give
- * Dialog on load with JavaScript. The page's layout options reach the body as data attributes
+ * Dialog on load with JavaScript, and `#join` the Join Dialog. The page's layout options reach the body as data attributes
  * (`root`), the newsletter sits in the footer or as a band before it, and in draft mode (the
  * perspective cookie beside a verified session, ADR 0044) the Visual Editing overlay mounts after
  * the bridge (ADR 0021) and pages load in full: the router stays out, so the overlay never meets a
@@ -27,7 +28,8 @@ import { siteSettingsQuery } from '@oy/content/queries';
 import NewsletterBand from '@oy/ui/bands/NewsletterBand/NewsletterBand.astro';
 import EnquiryModal from '@oy/ui/forms/EnquiryModal/EnquiryModal.astro';
 import GiveDialog from '@oy/ui/forms/GiveDialog/GiveDialog.astro';
-import { zeffyPageHref } from '@oy/ui/forms/GiveDialog/zeffy.ts';
+import JoinDialog from '@oy/ui/forms/JoinDialog/JoinDialog.astro';
+import { zeffyPageHref } from '@oy/ui/forms/ZeffyDialog/zeffy.ts';
 import SiteFooter from '@oy/ui/navigation/SiteFooter/SiteFooter.astro';
 import SiteNav from '@oy/ui/navigation/SiteNav/SiteNav.astro';
 import ProgressBar from '@oy/ui/page/ProgressBar/ProgressBar.astro';
@@ -35,6 +37,7 @@ import { VisualEditing } from '@sanity/astro/visual-editing';
 import Analytics from '../components/Analytics.astro';
 import FormBridge from '../components/FormBridge.astro';
 import ZeffyEmbed from '../components/ZeffyEmbed.astro';
+import ZeffyFrame from '../components/ZeffyFrame.astro';
 import { framableSrc } from '../lib/csp';
 import { ENQUIRY_ACTIONS, NEWSLETTER_ACTION } from '../lib/forms/action-paths';
 import {
@@ -104,9 +107,13 @@ if (modal.state === 'error' || newsletter.state === 'error') {
 
 // The same check as the island's, so the dialog never waits for a frame the island refuses. Zeffy's
 // own page for the same form is the dialog's link to Apple Pay and Google Pay (ADR 0045).
-const zeffyForm = framableSrc(settings?.zeffyEmbedUrl);
-const zeffyMode = zeffyForm ? 'embed' : 'pending';
-const zeffyPage = zeffyPageHref(zeffyForm);
+const giveForm = framableSrc(settings?.zeffyEmbedUrl);
+const giveMode = giveForm ? 'embed' : 'pending';
+const givePage = zeffyPageHref(giveForm);
+// The membership form (ADR 0050). The Join Dialog is on the page only while Organization details hold an
+// address on Zeffy's origin; without it a membership button is a link to the member enquiry. Its frame
+// rides this page, which a publish of the settings purges, so it costs no second island.
+const joinForm = framableSrc(settings?.zeffyMembershipUrl);
 // The Studio can pause PostHog without a deploy (siteSettings.analyticsEnabled).
 const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !== false;
 ---
@@ -179,14 +186,21 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
         source={path}
       />
       <GiveDialog
-        mode={zeffyMode}
-        pageHref={zeffyPage}
+        mode={giveMode}
+        pageHref={givePage}
         orgName={settings?.orgName}
         address={settings?.address}
         ein={settings?.ein}
       >
         <ZeffyEmbed slot="embed" server:defer />
       </GiveDialog>
+      {
+        joinForm && (
+          <JoinDialog pageHref={zeffyPageHref(joinForm)}>
+            <ZeffyFrame slot="embed" address={joinForm} form="join" title="Zeffy membership form" />
+          </JoinDialog>
+        )
+      }
     </div>
     <FormBridge />
     <VisualEditing enabled={preview} zIndex={1000} />

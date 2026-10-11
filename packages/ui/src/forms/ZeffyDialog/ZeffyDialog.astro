@@ -1,0 +1,481 @@
+---
+/**
+ * The dialog a Zeffy form opens in: the shell the Give Dialog and the Join Dialog share (ADR 0050). Each
+ * supplies its form's key and its own words; the shell draws the aṣọ òkè top edge, the title, the lead line,
+ * the embed box and the fallback, and its one element runs every dialog on the page.
+ * The form's key names the dialog (`dialog#give`), its triggers (`data-give`), its hash (`#give`), its track
+ * events (`give_opened`) and the form in Zeffy's messages (`embedId=give`). The embed arrives through the
+ * `embed` slot as a `<template data-zeffy>` holding the iframe; the element mounts it on first open and
+ * starts the timer (8 seconds by default). Zeffy's form then reports on itself (ADR 0045): its connected
+ * message counts as ready, as the frame's load does, its resized message sets the frame's height, and its
+ * thank-you page announces `<form>_completed`. If the form is not ready by the end of the timer, or the
+ * template never arrives, the fallback shows: its heading, the sentence the `fallback` slot gives, the
+ * enquiry it hands over to and Try again. Under the form a link opens Zeffy's own page for it in a new tab,
+ * and the foot names Zeffy, with whatever the `foot` slot adds; the foot shows only with the form.
+ * The `.oy-give` class names are the Give Dialog prototype's, kept so the two read side by side.
+ * `mode="pending"` is the answer while Organization details hold no address for the form. The form's hash in the URL
+ * opens the dialog on load; a native dialog gives the focus trap and Escape; the element returns focus to
+ * the trigger and strips the hash on close. Announces `<form>_opened`, `<form>_embed_failed`,
+ * `<form>_completed` and `<form>_page_opened` as `oy:track` events (ADR 0018).
+ */
+import { safeHref } from '../../core/ActionButton/action';
+import Button from '../../core/Button/Button.astro';
+import type { ZeffyDialogCopy, ZeffyDialogMode } from './dialog';
+import { ZEFFY_ORIGIN, type ZeffyForm } from './zeffy';
+
+interface Props {
+  form: ZeffyForm;
+  copy: ZeffyDialogCopy;
+  /** Renders the dialog open. The site opens it only for the form's hash. */
+  open?: boolean;
+  /** The server state: the embed box, the fallback, or the Pending answer. */
+  mode?: ZeffyDialogMode;
+  /** Zeffy's own page for the form (`zeffyPageHref`), linked under the embed; none draws no link. */
+  pageHref?: string | null;
+  /** Milliseconds before the fallback shows; stories shorten it. */
+  timeout?: number;
+}
+
+const { form, copy, open = false, mode = 'embed', pageHref, timeout = 8000 } = Astro.props;
+// The words for a dialog with no form yet; a dialog mounted only with its form has none, and is never pending.
+const pendingCopy = mode === 'pending' ? copy.pending : undefined;
+const lead = pendingCopy?.lead ?? (mode === 'embed' ? copy.lead.embed : copy.lead.fallback);
+const heading = pendingCopy?.heading ?? copy.heading;
+// The pending mode has no form, so it has no page to link either.
+const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
+---
+
+<oy-zeffy-dialog
+  data-form={form}
+  data-mode={mode}
+  data-timeout={timeout}
+  data-zeffy-origin={ZEFFY_ORIGIN}
+  data-zeffy-embed-id={form}
+  data-lead-embed={copy.lead.embed}
+  data-lead-fallback={copy.lead.fallback}
+  data-heading-fallback={copy.heading}
+>
+  <dialog id={form} class="oy-modal-scrim" aria-labelledby={`${form}-title`} open={open}>
+    <div class="oy-modal oy-give">
+      <div class="oy-modal-top" aria-hidden="true"></div>
+      <div class="oy-modal-grab" aria-hidden="true"></div>
+      <div class="oy-modal-head">
+        <div>
+          <h2 id={`${form}-title`}>{copy.title}</h2>
+          <p data-lead>{lead}</p>
+        </div>
+        <button class="oy-modal-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="oy-modal-body">
+        <div class="oy-give-frame" data-embed hidden={mode === 'fallback'}>
+          <p class="oy-give-loading" data-loading hidden={mode === 'pending'}>{copy.loading}</p>
+          <div class="oy-give-mount" data-mount></div>
+          <slot name="embed" />
+          {
+            pageLink && (
+              <p class="oy-give-page">
+                <span id={`${form}-page-note`}>{copy.page.note}</span>
+                <Button
+                  variant="quiet"
+                  href={pageLink}
+                  target="_blank"
+                  rel="noopener"
+                  aria-describedby={`${form}-page-note`}
+                  data-zeffy-page
+                  arrow
+                >
+                  {copy.page.label}
+                </Button>
+              </p>
+            )
+          }
+        </div>
+        <div class="oy-ok oy-give-fallback" data-fallback hidden={mode === 'embed'}>
+          <b data-heading>{heading}</b>
+          <p><slot name="fallback" /></p>
+          <div class="oy-ok-actions">
+            <Button href={`?enquiry=${copy.enquiry.kind}#enquiry`} data-enquiry={copy.enquiry.kind} arrow>
+              {copy.enquiry.label}
+            </Button>
+            {
+              mode !== 'pending' && (
+                <Button variant="quiet" type="button" data-retry>
+                  Try again
+                </Button>
+              )
+            }
+          </div>
+        </div>
+        <p class="oy-give-foot" data-foot hidden={mode !== 'embed'}>
+          <span>Secure • Powered by Zeffy</span>
+          <slot name="foot" />
+        </p>
+      </div>
+    </div>
+  </dialog>
+</oy-zeffy-dialog>
+
+<style>
+  dialog.oy-modal-scrim {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    color: var(--ink);
+  }
+  dialog.oy-modal-scrim:not([open]) {
+    display: none;
+  }
+  dialog.oy-modal-scrim::backdrop {
+    background: transparent;
+  }
+  .oy-modal.oy-give {
+    max-width: 520px;
+  }
+  .oy-modal-body {
+    gap: 14px;
+  }
+  [data-embed][hidden],
+  [data-fallback][hidden],
+  [data-loading][hidden],
+  [data-foot][hidden] {
+    display: none;
+  }
+  .oy-give-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .oy-give-loading {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .oy-give-mount:empty {
+    display: none;
+  }
+  /* The starting height, and the floor under the height Zeffy's messages set: a taller step grows the
+     frame, a shorter one never shrinks it below this (ADR 0045). */
+  .oy-give-mount :global(iframe) {
+    display: block;
+    width: 100%;
+    height: min(640px, 70vh);
+    min-height: min(640px, 70vh);
+    border: 0;
+    border-radius: 6px;
+  }
+  .oy-give-page {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 12px;
+    font-size: var(--text-small);
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .oy-give-fallback {
+    background: var(--paper);
+    border-color: var(--border-soft);
+  }
+  .oy-ok-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .oy-give-foot {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+</style>
+
+<script is:inline>
+  if (!customElements.get('oy-zeffy-dialog')) {
+    // Persisted across navigations, and a persisted element is disconnected and connected again on
+    // every swap (moveBefore included: the element defines no connectedMoveCallback). The internal
+    // wiring happens once per element; the document and window listeners register once, when this
+    // script first runs while the page parses, so they stay ahead of the router's own click
+    // listener, which would otherwise navigate to the trigger's href as well (ADR 0041). One
+    // definition serves every dialog on the page: each listener finds its dialog by the form's key.
+    // The tallest height, in pixels, a Zeffy message may give the frame; the stylesheet keeps the floor.
+    const FRAME_MAX = 2400;
+    const wireZeffyDialog = (host) => {
+      const dialog = host.querySelector('dialog');
+      if (!dialog || typeof dialog.showModal !== 'function') return null;
+      // The form's key: the dialog's hash, its triggers' attribute and its track events' prefix.
+      const form = host.dataset.form;
+      const hash = '#' + form;
+      const lead = host.querySelector('[data-lead]');
+      const embed = host.querySelector('[data-embed]');
+      const mount = host.querySelector('[data-mount]');
+      const loading = host.querySelector('[data-loading]');
+      const fallback = host.querySelector('[data-fallback]');
+      const heading = host.querySelector('[data-heading]');
+      // The foot names Zeffy, so it shows only with the form (R38).
+      const foot = host.querySelector('[data-foot]');
+      const timeout = Number(host.dataset.timeout) || 8000;
+      const api = { trigger: null, dialog, form };
+      let timer = 0;
+      let poll = 0;
+      let mounted = false;
+      let frame = null;
+      let completed = false;
+      const track = (name) => {
+        const event = form + '_' + name;
+        const report = () =>
+          host.dispatchEvent(new CustomEvent('oy:track', { bubbles: true, detail: { event } }));
+        // Opened while the page parses (served open, or by its hash), the site's listener, a module
+        // script, is not running yet: the event waits for it, as the Lightbox's does.
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', report, { once: true });
+        } else {
+          report();
+        }
+      };
+      const stop = () => {
+        window.clearTimeout(timer);
+        window.clearInterval(poll);
+        timer = 0;
+        poll = 0;
+      };
+      const fail = () => {
+        stop();
+        if (embed) embed.hidden = true;
+        if (fallback) fallback.hidden = false;
+        if (foot) foot.hidden = true;
+        if (lead) lead.textContent = host.dataset.leadFallback;
+        if (heading) heading.textContent = host.dataset.headingFallback;
+        host.dataset.state = 'failed';
+        track('embed_failed');
+      };
+      const ready = () => {
+        stop();
+        if (loading) loading.hidden = true;
+        host.dataset.state = 'ready';
+      };
+      // The frame's load counts while the timer runs. A frame loads an error page too, so a load
+      // after the fallback showed leaves it; Zeffy's own connected message brings the form back.
+      const loaded = () => {
+        if (host.dataset.state !== 'failed') ready();
+      };
+      const showForm = () => {
+        if (embed) embed.hidden = false;
+        if (fallback) fallback.hidden = true;
+        if (foot) foot.hidden = false;
+        if (lead) lead.textContent = host.dataset.leadEmbed;
+      };
+      // The frame grows with the form, so the dialog holds the scroll: a step or the thank-you page
+      // that begins above the part in view scrolls back to its top. Under 720px the panel is the
+      // bottom sheet and scrolls itself (overflow auto); above it the panel clips and the dialog scrolls.
+      const reveal = () => {
+        const panel = dialog.querySelector('.oy-modal');
+        const sheet =
+          panel &&
+          /auto|scroll/.test(window.getComputedStyle(panel).overflowY) &&
+          panel.scrollHeight > panel.clientHeight;
+        const scroller = sheet ? panel : dialog;
+        const above = scroller.getBoundingClientRect().top - frame.getBoundingClientRect().top;
+        if (above > 0) scroller.scrollTop -= above;
+      };
+      const mountFrame = () => {
+        const template = host.querySelector('template[data-zeffy]');
+        if (!template || !mount || mounted) return Boolean(template);
+        mounted = true;
+        completed = false;
+        const content = template.content.cloneNode(true);
+        const clone = content.querySelector('iframe');
+        // Zeffy's own embed script turns express checkout off in an embed on an iPhone; so does this,
+        // before the frame is inserted and loads.
+        const src = clone && clone.getAttribute('src');
+        if (src && /iPhone|iPod/i.test(navigator.userAgent)) {
+          try {
+            const url = new URL(src);
+            if (!url.searchParams.has('disableExpressCheckout')) {
+              url.searchParams.set('disableExpressCheckout', 'true');
+              clone.setAttribute('src', url.href);
+            }
+          } catch {
+            // Not an address: the frame loads as the page wrote it.
+          }
+        }
+        mount.replaceChildren(content);
+        frame = mount.querySelector('iframe');
+        if (frame) frame.addEventListener('load', loaded, { once: true });
+        else ready();
+        return true;
+      };
+      const arm = () => {
+        if (host.dataset.mode === 'pending') return;
+        showForm();
+        if (loading) loading.hidden = false;
+        host.dataset.state = 'loading';
+        stop();
+        timer = window.setTimeout(fail, timeout);
+        // The template may still be on its way (the Give Dialog's comes from a server island); keep looking
+        // for it until the timer ends.
+        if (!mountFrame()) poll = window.setInterval(mountFrame, 200);
+      };
+      api.open = (from) => {
+        api.trigger = from || null;
+        dialog.oyTrigger = api.trigger;
+        if (!dialog.open) dialog.showModal();
+        // Served in the fallback mode (a story's), the fallback stays until Try again.
+        if (!mounted && host.dataset.mode !== 'fallback') arm();
+        const close = dialog.querySelector('.oy-modal-close');
+        if (close) close.focus();
+        track('opened');
+      };
+      api.openFromHash = () => {
+        if (window.location.hash === hash && !dialog.open) api.open(null);
+      };
+      // What Zeffy's mounted form reports on itself (ADR 0045). Connected counts as ready, as the
+      // frame's load does, and after the timer it brings the form back over the fallback; each
+      // connection starts the form afresh (Safari reloads a persisted frame on every page swap).
+      // Resized sets the frame's height, up to FRAME_MAX. A new step and the thank-you page come back
+      // into view, and the thank-you page announces the form's completed event once per connection:
+      // a sign in the browser, never a record of the payment.
+      api.receive = (message) => {
+        if (!frame) return;
+        if (message.type === 'zeffy-embed:connected') {
+          completed = false;
+          if (host.dataset.state === 'failed') showForm();
+          ready();
+        } else if (message.type === 'zeffy-embed:resized') {
+          const height = message.height;
+          if (Number.isFinite(height) && height > 0) {
+            frame.style.height = Math.min(Math.round(height), FRAME_MAX) + 'px';
+          }
+        } else if (message.type === 'zeffy-embed:step-changed') {
+          reveal();
+        } else if (message.type === 'zeffy-embed:thank-you-page-shown') {
+          reveal();
+          if (completed) return;
+          completed = true;
+          track('completed');
+        }
+      };
+      const retry = () => {
+        mounted = false;
+        frame = null;
+        if (mount) mount.replaceChildren();
+        arm();
+      };
+
+      host.addEventListener('click', (event) => {
+        const target =
+          event.target && event.target.closest && event.target.closest('[data-enquiry]');
+        if (target) dialog.close();
+      });
+      const retryButton = host.querySelector('[data-retry]');
+      if (retryButton) retryButton.addEventListener('click', retry);
+      // A payment on Zeffy's own page never reports back here, so the way out is counted instead.
+      const pageLink = host.querySelector('[data-zeffy-page]');
+      if (pageLink) pageLink.addEventListener('click', () => track('page_opened'));
+      const closeButton = dialog.querySelector('.oy-modal-close');
+      if (closeButton) closeButton.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        if (window.location.hash === hash) {
+          // Keep the router's entry state (its index and scroll position), only drop the hash.
+          window.history.replaceState(
+            window.history.state,
+            '',
+            window.location.pathname + window.location.search,
+          );
+        }
+        const back = api.trigger;
+        if (back && back.isConnected && typeof back.focus === 'function') back.focus();
+        api.trigger = null;
+        dialog.oyTrigger = null;
+      });
+      if (dialog.hasAttribute('open')) {
+        dialog.removeAttribute('open');
+        api.open(null);
+      } else {
+        window.setTimeout(api.openFromHash, 0);
+      }
+      return api;
+    };
+
+    /** The wired dialogs on this page, one per form, each persisted across navigations. */
+    const liveZeffyDialogs = () =>
+      [...document.querySelectorAll('oy-zeffy-dialog')].filter((host) => host.oyApi);
+    /** A dialog moved with appendChild (Safari, Firefox) leaves the top layer but keeps `open`. */
+    const restoreModal = (dialog) => {
+      let lost = false;
+      try {
+        lost = dialog.open && !dialog.matches(':modal');
+      } catch {
+        lost = false;
+      }
+      if (!lost) return;
+      dialog.removeAttribute('open');
+      dialog.showModal();
+    };
+
+    document.addEventListener('click', (event) => {
+      if (!event.target || !event.target.closest) return;
+      for (const host of liveZeffyDialogs()) {
+        const api = host.oyApi;
+        const target = event.target.closest('[data-' + api.form + ']');
+        if (!target) continue;
+        event.preventDefault();
+        // A trigger inside the mobile menu closes with it: focus goes back to the burger.
+        const from = target.closest('dialog');
+        api.open(from && from !== api.dialog && from.oyTrigger ? from.oyTrigger : target);
+        return;
+      }
+    });
+    const openFromHash = () => {
+      for (const host of liveZeffyDialogs()) host.oyApi.openFromHash();
+    };
+    window.addEventListener('hashchange', openFromHash);
+    document.addEventListener('astro:page-load', openFromHash);
+    // Zeffy's form posts to the page that frames it. Only a message from the origin a dialog names, about
+    // the form it names, reaches that dialog (ADR 0045), as Zeffy's own embed script filters them.
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object' || typeof data.type !== 'string') return;
+      for (const host of liveZeffyDialogs()) {
+        if (event.origin !== host.dataset.zeffyOrigin) continue;
+        if (data.embedId === host.dataset.zeffyEmbedId) host.oyApi.receive(data);
+      }
+    });
+
+    customElements.define(
+      'oy-zeffy-dialog',
+      class extends HTMLElement {
+        connectedCallback() {
+          if (!this.oyApi) this.oyApi = wireZeffyDialog(this);
+          if (!this.oyApi) return;
+          restoreModal(this.oyApi.dialog);
+          this.dataset.ready = 'true';
+        }
+
+        disconnectedCallback() {
+          delete this.dataset.ready;
+        }
+      },
+    );
+  }
+  // A page's second dialog is parsed after the definition above, so it connects before its children
+  // exist and finds nothing to wire. Its own copy of this script, which follows it, wires it here.
+  for (const host of document.querySelectorAll('oy-zeffy-dialog')) {
+    if (!host.oyApi && typeof host.connectedCallback === 'function') host.connectedCallback();
+  }
+</script>

@@ -21,16 +21,24 @@ Names and roles: `docs/design/README.md` section 7. Schema: `packages/web/astro.
 | `RESEND_API_KEY` | `packages/content/.env` for local function tests, then `sanity functions env add enquiry-notify RESEND_API_KEY <value>` after the first deploy | Not an Astro or Vercel variable |
 | `CHROMATIC_PROJECT_TOKEN` | GitHub Actions secret | Phase 1 workflow |
 
-Two links are not variables. The Zeffy form's embed link is `siteSettings.zeffyEmbedUrl`, which
-an administrator enters in the Studio and the Give Dialog's server island reads (ADR 0020); each
-gala edition holds its Eventbrite link as `ticketsUrl` (ADR 0024). Remove any
+Three links are not variables. The Zeffy donation form's embed link is `siteSettings.zeffyEmbedUrl`,
+which an administrator enters in the Studio and the Give Dialog's server island reads (ADR 0020); the
+Zeffy membership form's is `siteSettings.zeffyMembershipUrl`, which the layout reads, mounting the Join
+Dialog only while it holds an address on `www.zeffy.com` (ADR 0050); each gala edition holds its
+Eventbrite link as `ticketsUrl` (ADR 0024). Remove any
 `PUBLIC_ZEFFY_EMBED_URL` or `PUBLIC_EVENTBRITE_URL` left in Vercel or a local env file.
 Since ADR 0045 the island adds Zeffy's v2 parameters (`embed-version=v2&embedId=give`) to the
 frame's address, so the form reports its readiness, its height and its thank-you page to the
 dialog, and the layout links Zeffy's own page for the same form under it, the embed address
 without its `/embed` segment, where Apple Pay and Google Pay can show on a phone. Paste the embed
 address as Zeffy gives it (`https://www.zeffy.com/en-US/embed/donation-form/<slug>`, the locale
-optional); an address in any other shape draws no link to the page.
+optional); an address in any other shape draws no link to the page. The link in Zeffy's pop-up
+button code (`zeffy-form-link`) is the same address with `?modal=true`, and it can be pasted as it
+is: the site drops that parameter, which would make the form draw a close button for Zeffy's own
+pop-up script, and the site loads no Zeffy script (ADR 0045). The membership form's address is
+pasted the same way (`https://www.zeffy.com/embed/ticketing/<slug>`, from the `data-zeffy-embed-src`
+of Zeffy's embed code, never the code's script address); its frame names the form `join`. A button
+opens it once a Studio action is set to "The Zeffy membership form".
 
 Local: Node 22 and Bun 1.4 through `mise` (`mise trust` once, then `mise install`).
 `bun install` installs the git hooks. `LEFTHOOK=0 git commit` skips them once; do not
@@ -458,7 +466,8 @@ bun run --filter @oy/content query -- '*[_type == "enquiry"] | order(submittedAt
 ```
 
 Analytics: the components announce `oy:track` events (`enquiry_opened`, `enquiry_submitted`,
-`give_opened`, `give_embed_failed`, `give_completed`, `give_page_opened`, `newsletter_submitted`) and `Analytics.astro`
+`give_opened`, `give_embed_failed`, `give_completed`, `give_page_opened`, the Join Dialog's four `join_` events of the
+same names, `newsletter_submitted`) and `Analytics.astro`
 forwards them to PostHog once it loads, with pageviews on every navigation and never a form's
 contents. `give_completed` means Zeffy's form showed its thank-you page: a sign in the browser,
 not a record of the gift, which stays in Zeffy (ADR 0045). `give_page_opened` means the donor took
@@ -548,7 +557,7 @@ for the form is a plain link, which needs no policy entry either.
 YouTube is a frame and never a script (ADR 0051): a page makes no request to YouTube or Google until a
 visitor presses an album video's play link, which swaps in YouTube's no-cookie player as a frame, so
 no YouTube or Google origin is in `script-src`, `img-src` or `connect-src`. `framableSrc` names Zeffy's
-origin rather than reading `frame-src`, so the Give Dialog never frames the player.
+origin rather than reading `frame-src`, so neither the Give Dialog nor the Join Dialog frames the player.
 
 To allow a new origin: add it to the directive in `csp.ts`, update this list, and note it
 in the phase's handoff. Expect `style-src` reports from Astro's inlined small stylesheets

@@ -17,7 +17,8 @@ and no GROQ.
   `api/revalidate.ts` (the webhook's cache purge), `api/preview/` (draft mode on and off) and
   `api/csp-report.ts`.
 - `src/layouts/SiteLayout.astro`: the chrome around every page: the nav, the footer, the Enquiry
-  Modal, the Give Dialog, the cross-fade and, in draft mode, the Visual Editing overlay.
+  Modal, the Give Dialog, the Join Dialog once Organization details hold the membership form, the
+  cross-fade and, in draft mode, the Visual Editing overlay.
 - `src/actions/index.ts`: the nine Astro Actions, one per enquiry kind and one for the newsletter.
   The work happens in `src/lib/forms/`, which Vitest drives without Astro (ADR 0019).
 - `src/lib/sanity/`: `load-query.ts`, which makes every read with the Viewer token and answers null

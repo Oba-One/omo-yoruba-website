@@ -1,5 +1,5 @@
 import { YOUTUBE_EMBED_ORIGIN, youtubeEmbedSrc } from '@oy/content/videos';
-import { ZEFFY_ORIGIN } from '@oy/ui/forms/GiveDialog/zeffy.ts';
+import { ZEFFY_ORIGIN } from '@oy/ui/forms/ZeffyDialog/zeffy.ts';
 import { describe, expect, it } from 'vitest';
 import { buildCsp, cspDirectives, cspExempt, framableSrc, reportingEndpointsHeader } from './csp';
 

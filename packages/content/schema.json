@@ -1523,6 +1523,10 @@
               },
               {
                 "type": "string",
+                "value": "join"
+              },
+              {
+                "type": "string",
                 "value": "url"
               },
               {
@@ -6382,6 +6386,13 @@
         "optional": true
       },
       "zeffyEmbedUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "zeffyMembershipUrl": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
