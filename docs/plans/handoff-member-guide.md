@@ -38,37 +38,54 @@ Discard changes, Generate, Add item, Upload, "Used on" and the create button)
 were read from the English strings of the installed `sanity` 6.12.0, and from
 the walkthrough screenshots of 11 October.
 
-Not checked in a signed-in Studio: the built-in browser was signed out, no
-browser had the Claude in Chrome extension connected, and the owner chose to
-leave the screenshots for later. So three details rest on the package's strings
-and on older screenshots: **Upload** in a photograph's menu, the red and yellow
-marks beside a box, and the phone button above a preview.
+No signed-in Studio was within reach while the guide was written: the built-in
+browser was signed out and no browser had the Claude in Chrome extension
+connected. Later the same day the owner connected their Chrome and the pictures
+were taken there. That look confirmed the phone button above a preview and the
+yellow warning beside a tab. **Upload** in a photograph's menu and the red mark
+beside a box were not on screen, and still rest on the package's strings.
 
 ### Screenshots
 
-Four of the first eight still show the Studio as it is and stay: `pages.jpg`,
-`event-form.jpg`, `photo-details.jpg` and `people.jpg`. Five files are removed:
-`events.jpg` (the sidebar still said To do), `album-controls.jpg` (credit now
-comes before the photographs), `missing-content.jpg` (dark, an administrator's
-sidebar, a Vision tab), `preview-and-publish.jpg` (the page tabs before ADR 0053)
-and `todo.jpg`, which nothing used.
+The guide has twelve pictures, all in the Studio's light appearance.
 
-Seven are owed, each from a signed-in Studio in the light appearance, cropped so
-no account control or administrator menu shows, about 700px wide so the words in
-them stay readable:
+Four are from 30 September and still show the Studio as it is: `pages.jpg`,
+`event-form.jpg`, `photo-details.jpg` and `people.jpg`. Five from that day are
+removed: `events.jpg` (the sidebar still said To do), `album-controls.jpg`
+(credit now comes before the photographs), `todo.jpg`, which nothing used, and
+the first `missing-content.jpg` and `preview-and-publish.jpg`, which are retaken.
 
-1. The whole Studio as a member sees it, for Find your way around.
-2. A page form on Content with Advanced beside it.
-3. An edition opened: Edition details, Ticket tiers, Honorees, Albums.
-4. The top of an album's form: Title, Web address with Generate, Edition,
-   Photographer, Credit confirmed.
-5. Missing content with a page chosen and one item's details open.
-6. A page beside its form in Presentation, with Publish at the bottom right.
-7. Publish and the menu beside it, open on Discard changes.
+Eight were taken on 11 October in the owner's Chrome, in a window 1,460 wide,
+then cropped: `studio-screen.jpg`, `page-form.jpg`, `edition.jpg`,
+`album-form.jpg`, `photo-order.jpg`, `missing-content.jpg`,
+`preview-and-publish.jpg` and `inbox.jpg`. The owner's account is an
+administrator's, so before each capture a style rule hid the two rows only
+administrators have (Organization details and Inbox) and every profile picture.
+What is left is what a member sees. `inbox.jpg` keeps the two rows on purpose:
+it is in the administrators' part. Nothing was typed, saved or published.
 
-Add each as a `figure` with a `figcaption` in `docs/content-ops.md`, and raise
-the count in `packages/web/e2e/member-guide.spec.ts`. The built-in browser
-captures at most 800 by 600 at a time, so a wider picture is stitched from two.
+To retake one, sign in, set the appearance to light, and add this before the
+capture:
+
+```css
+li:has(> a[data-testid="pane-item-Inbox"]),
+li:has(> a[data-testid="pane-item-Organization details"]),
+li:has(+ li > a[data-testid="pane-item-Organization details"]) {
+  display: none !important;
+}
+#user-menu,
+[data-ui="Avatar"],
+[data-ui="AvatarStack"] {
+  visibility: hidden !important;
+}
+```
+
+One picture was not taken: the three dots beside Publish, open on Discard
+changes. No document had unpublished changes, and with none the menu lists only
+Duplicate and Delete. Making a draft for a picture would have changed content.
+
+Each picture is a `figure` with a `figcaption` in `docs/content-ops.md`, and
+`packages/web/e2e/member-guide.spec.ts` counts them.
 
 ### Proof
 
@@ -101,7 +118,8 @@ One pass on each axis before the commit, both read-only.
 
 ### Still open
 
-- The seven screenshots above.
+- A picture of Discard changes under the three dots beside Publish, the next
+  time a document has unpublished changes.
 - A walkthrough by a member with an Editor account: add an event, an album and a
   person, and clear one Missing content item, keeping the work as drafts.
 - Chromatic's new baseline for the ReadingGuide story is the owner's to accept.

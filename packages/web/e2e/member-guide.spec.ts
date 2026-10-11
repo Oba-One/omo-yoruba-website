@@ -17,7 +17,7 @@ test('the guide supports keyboard navigation and loads every screenshot', async 
   ).toBeInViewport();
 
   const screenshots = page.locator('article img');
-  await expect(screenshots).toHaveCount(4);
+  await expect(screenshots).toHaveCount(12);
   for (const image of await screenshots.all()) {
     await image.scrollIntoViewIfNeeded();
     await expect

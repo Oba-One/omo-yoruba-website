@@ -38,6 +38,11 @@ Three things to know before you change anything:
 
 ## Find your way around
 
+<figure>
+<img src="screenshots/member-guide/studio-screen.jpg" alt="Studio with its three tabs across the top, the menu on the left, the Pages list beside it and the Our Story form with Publish at the bottom right" width="1460" height="780" loading="lazy" />
+<figcaption>Studio, with the Our Story page open. <a href="screenshots/member-guide/studio-screen.jpg" target="_blank" rel="noopener">Open the larger picture in a new browser tab</a>.</figcaption>
+</figure>
+
 When Studio opens, this is what you see:
 
 - Across the top are three tabs. **Structure** is where you make changes.
@@ -90,6 +95,11 @@ name. Do this before you add a person or an album, so nothing is entered twice.
 <figure>
 <img src="screenshots/member-guide/pages.jpg" alt="The Pages list with Programs chosen, showing Programs page and Programs beside it" width="702" height="455" loading="lazy" />
 <figcaption>Programs opens a short list. Programs page holds the page's words. Programs holds each program.</figcaption>
+</figure>
+
+<figure>
+<img src="screenshots/member-guide/page-form.jpg" alt="The Our Story page form: Used on one page, the Content and Advanced tabs, Heading and kicker, and One line under the heading" width="710" height="520" loading="lazy" />
+<figcaption>A page's form. It opens on Content, with Advanced beside it. Heading and kicker opens when you press it.</figcaption>
 </figure>
 
 <aside>
@@ -170,6 +180,11 @@ Beside **Edition details** you will find that year's **Albums**. A Gala year
 also has its **Ticket tiers** and **Honorees** there.
 
 <figure>
+<img src="screenshots/member-guide/edition.jpg" alt="The Gala's editions with 2026 chosen and, beside them, Edition details, Ticket tiers, Honorees and Albums" width="704" height="210" loading="lazy" />
+<figcaption>Choose the year, then Edition details. That year's tickets, honorees and albums are beside it.</figcaption>
+</figure>
+
+<figure>
 <img src="screenshots/member-guide/event-form.jpg" alt="A festival edition's form with its tabs, title and edition year" width="630" height="719" loading="lazy" />
 <figcaption>A festival edition's form. The tabs near the top are All fields, Edition, The day and Vendors.</figcaption>
 </figure>
@@ -240,6 +255,11 @@ recent past year.
    credit. If you are not sure, leave it off and ask an administrator.
 9. Use **Consent note** for anything special about permission for this album.
 
+<figure>
+<img src="screenshots/member-guide/album-form.jpg" alt="The top of an album's form: Title, Web address with its Generate button, and Date" width="690" height="620" loading="lazy" />
+<figcaption>The top of an album's form. Generate is beside Web address. Edition, Photographer and Credit confirmed come next.</figcaption>
+</figure>
+
 <aside>
 
 Good to know
@@ -269,6 +289,11 @@ Good to know
 <figure>
 <img src="screenshots/member-guide/photo-details.jpg" alt="A photograph opened, with the crop button and the three dots at its top right and the Alt text and Caption boxes below" width="642" height="640" loading="lazy" />
 <figcaption>A photograph, opened. The crop button and the three dots are at its top right. Alt text and Caption are below. Photograph: Red Carpet Films.</figcaption>
+</figure>
+
+<figure>
+<img src="screenshots/member-guide/photo-order.jpg" alt="An album's photographs in a list, each with a dotted handle on its left and three dots on its right" width="660" height="370" loading="lazy" />
+<figcaption>An album's photographs. Drag one by the dotted handle on its left to move it. Photographs: Red Carpet Films.</figcaption>
 </figure>
 
 <aside>
@@ -354,6 +379,11 @@ still waiting for a fact, and shows them together.
 4. Press the item's name to open it, and fill in what is confirmed.
 5. Check your work and publish it.
 
+<figure>
+<img src="screenshots/member-guide/missing-content.jpg" alt="Missing content with End-of-Year Gala chosen under Page, and the two details the Gala's 2026 edition still needs" width="650" height="680" loading="lazy" />
+<figcaption>Missing content, with one page chosen. Pressing the line with the number shows what the item still needs.</figcaption>
+</figure>
+
 <aside>
 
 Good to know
@@ -378,6 +408,11 @@ Good to know
 3. To see the page as a phone shows it, press the phone button above the page.
 4. Press **Publish**, at the bottom right.
 5. Open our website and look at the page. A change can take a minute to appear.
+
+<figure>
+<img src="screenshots/member-guide/preview-and-publish.jpg" alt="The Our Story page shown beside its form, with the phone button above the page and Publish at the bottom right" width="1460" height="780" loading="lazy" />
+<figcaption>The page beside its form. The phone button is above the page, and Publish is at the bottom right. <a href="screenshots/member-guide/preview-and-publish.jpg" target="_blank" rel="noopener">Open the larger picture in a new browser tab</a>.</figcaption>
+</figure>
 
 Before you publish, check that:
 
@@ -461,6 +496,11 @@ tickets and paid memberships go to Zeffy instead.
 4. In **Notes**, write who is dealing with it and what happens next. Notes save
    by themselves.
 5. Press **Mark handled** when it is done. **Move to new** opens it again.
+
+<figure>
+<img src="screenshots/member-guide/inbox.jpg" alt="The menu as an administrator sees it, with Organization details and Inbox, and the Inbox's lists beside it" width="702" height="340" loading="lazy" />
+<figcaption>The menu as an administrator sees it, with the Inbox's lists beside it.</figcaption>
+</figure>
 
 None of these steps needs **Publish**, and none sends another email.
 
