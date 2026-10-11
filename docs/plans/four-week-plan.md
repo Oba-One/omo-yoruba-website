@@ -66,14 +66,14 @@ Agent sessions (Studio simplification, part 2):
 
 The owner:
 - Review the new Studio on the pull request's preview, and merge.
-- Enter the content whose shape does not change: site settings facts, captions, credits, news post bodies.
+- Enter the content whose shape does not change: site settings facts, captions, credits.
 
 Done when: the restructure is merged, `development` is migrated, and the To do view shows only what is owed.
 
 ## Week 3 (28 September to 4 October): the guide, the roles, the content
 
 Agent sessions (Phase 10 for the simplified Studio):
-- Write `docs/content-ops.md` for members. It covers adding a news post, an event edition, an album with its
+- Write `docs/content-ops.md` for members. It covers adding an event edition, an album with its
   credits and consent, and a person; clearing a to-do item; when to ask for help; and what never to do. Add
   screenshots.
 - Refresh the `oy-content-ops` and `oy-release` skills to match.
@@ -108,12 +108,14 @@ Done when: the site is ready to show and the pack is ready.
 
 - **A ten-minute demo:**
   - The site on a phone: the homepage, Odunde, Get Involved, Donate, the gallery.
-  - The Studio: add a news post live, publish it, and watch it appear.
-- **What we need from you:** the open C rows, and the decisions that belong to the organization (D5 consent, D9
-  tables, D10 awards, D21 the timeline, D22 news, D24 a second Donate door), each with its default.
-- **Who edits what:** the roles, the guide, a first-month schedule of who adds news, photos and events, and where to
+  - The Studio: add a photograph to an album live, publish it, and watch it appear. A publish showed on the
+    live page about five seconds later on 10 October, on the second request (open-work E1), so refresh twice.
+- **What we need from you:** the open C rows, and the decisions that belong to the organization (D9 tables, D10
+  awards, D21 the timeline, D24 a second Donate door), each with its default. `content-pass-2026-10-10.md` lists
+  the Pending chips the site's pages showed on 10 October.
+- **Who edits what:** the roles, the guide, a first-month schedule of who adds photos and events, and where to
   ask for help.
-- **What comes next:** the domain, Phase 9's hardening, and launch.
+- **What comes next:** the Studio on the domain (D2), Phase 9's hardening, and launch.
 
 ## Risks
 

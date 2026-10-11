@@ -114,8 +114,17 @@ test.describe('the End-of-Year Gala page', () => {
     await page.goto('/gala');
     const sponsor = page.locator('#sponsor');
     await expect(sponsor.locator('h2')).toHaveText('Sponsor the Gala');
-    if ((await sponsor.locator('li.oy-lrow--tier').count()) === 0) {
+    const levels = sponsor.locator('li.oy-lrow--tier');
+    if ((await levels.count()) === 0) {
       await expect(sponsor.locator('.oy-pend-line')).toContainText('level names and amounts');
+    }
+    // What a level recognizes keeps most of its row's width at both widths the suite runs: on a phone it sits
+    // under the level's name, not in the 72px first column a row keeps for a date (review ticket R15). The
+    // placeholder project holds no level, so this measures only a run that reads the Studio's.
+    for (const level of await levels.all()) {
+      const rowBox = await level.boundingBox();
+      const recognitionBox = await level.locator('.oy-incl, .oy-lrow-owed').boundingBox();
+      expect(recognitionBox?.width ?? 0).toBeGreaterThan((rowBox?.width ?? 0) / 2);
     }
     const gold = sponsor.locator('.oy-btn--primary');
     await expect(gold).toHaveCount(1);
