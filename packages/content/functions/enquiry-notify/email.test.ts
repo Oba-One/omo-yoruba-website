@@ -65,7 +65,8 @@ describe('buildEmail', () => {
         '',
         'Sent from: /odunde',
         'Submitted: 2026-09-11T10:00:00Z',
-        'Reply to this email to answer them. The enquiry is also in the Studio inbox (id abc).',
+        'Reply to this email to answer them. Update its status and notes in the Studio Inbox:',
+        'https://www.omoyorubasocal.org/admin/structure/intent/edit/id=abc;type=enquiry/',
       ].join('\n'),
     );
   });

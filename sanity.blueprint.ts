@@ -12,9 +12,12 @@ export default defineBlueprint({
     defineDocumentFunction({
       name: 'enquiry-notify',
       src: 'packages/content/functions/enquiry-notify',
+      timeout: 30,
       event: {
-        on: ['create'],
-        filter: '_type == "enquiry" && !defined(notifiedAt)',
+        on: ['create', 'update'],
+        resource: { type: 'dataset', id: 'qsya7q8x.development' },
+        filter:
+          '_type == "enquiry" && !defined(notifiedAt) && (delta::operation() == "create" || delta::changedAny(notifyRequestedAt))',
       },
     }),
     defineDocumentFunction({
@@ -22,6 +25,7 @@ export default defineBlueprint({
       src: 'packages/content/functions/content-lint',
       event: {
         on: ['create', 'update'],
+        resource: { type: 'dataset', id: 'qsya7q8x.development' },
         filter:
           '_type in ["siteSettings", "homepage", "festivalPage", "galaPage", "programsPage", "lessonsPage", "collectivePage", "getInvolvedPage", "impactPage", "storyPage", "donatePage", "galleryPage", "event", "zone", "ticketTier", "sponsorLevel", "honoree", "program", "person", "testimonial", "album", "photographer", "partner", "stat", "door", "hometownAssociation", "governanceDoc"]',
       },

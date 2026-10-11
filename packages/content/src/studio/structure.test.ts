@@ -1,13 +1,4 @@
-import {
-  concat,
-  firstValueFrom,
-  NEVER,
-  type Observable,
-  of,
-  Subject,
-  skip,
-  throwError,
-} from 'rxjs';
+import { concat, NEVER, type Observable, of, throwError } from 'rxjs';
 import {
   type CurrentUser,
   createSchema,
@@ -17,6 +8,7 @@ import {
   type Tool,
 } from 'sanity';
 import {
+  type ComponentBuilder,
   createStructureBuilder,
   type DocumentBuilder,
   type DocumentListBuilder,
@@ -33,7 +25,7 @@ import { SITE_PAGES } from './site-pages';
 import { structure } from './structure';
 import { studioTemplates } from './templates';
 import { type TodoResult, todoListenQuery, todoPlan, todoQuery } from './todo';
-import { KEEP_MS, RETRY_MS } from './todo-list';
+import { KEEP_MS, type Live, liveTodo, RETRY_MS } from './todo-list';
 
 // What an administrator and a member see (ADR 0042), built from the real structure without a
 // browser: the Sanity structure builder runs on the compiled schema and templates, and the To do
@@ -147,7 +139,7 @@ describe('the sidebar follows the site', () => {
         role.role,
       ).toHaveLength(3);
     }
-    expect(placed(ADMIN).filter((type) => type === 'enquiry')).toHaveLength(9);
+    expect(placed(ADMIN).filter((type) => type === 'enquiry')).toHaveLength(4);
     expect(placed(EDITOR)).not.toContain('enquiry');
     expect([...new Set(placed(ADMIN)), 'lintReport'].sort()).toEqual(everything);
     expect([...new Set(placed(EDITOR)), 'lintReport', ...ADMIN_ONLY_TYPES].sort()).toEqual(
@@ -265,218 +257,55 @@ describe('the sidebar follows the site', () => {
   });
 });
 
-describe('the To do in the sidebar', () => {
-  const plan = todoPlan(ADMIN_ONLY_TYPES);
-  const row = (where: string, what: string) => {
-    const found = plan.rows.find(({ entry }) => entry.where === where && entry.what === what);
-    if (!found) throw new Error(`no row ${where}: ${what}`);
-    return found;
-  };
-  const whatItIs = row('Odunde, what the day is', 'what Odunde is, in your words');
-  const bio = row('Our Story, board', 'a short bio');
-  const cost = row('Odunde, at a glance', 'the cost');
-  const zones = plan.stillToAdd.find(({ presence }) => presence?.type === 'zone');
-  const collective = plan.stillToAdd.find(({ presence }) => presence?.type === 'event');
-  // Far from any calendar edge: 2099's editions are the next ones whatever today is.
-  const festival = { _id: 'event-odunde-2099', kind: 'festival', start: '2099-06-13T17:00:00Z' };
-  const gala = { _id: 'event-gala-2099', kind: 'gala', start: '2099-11-20T02:00:00Z' };
-  /** Every presence entry with its minimum of documents, of the next Gala where it asks, but for the counts given. */
-  const present = (counts: Record<string, number> = {}) =>
-    Object.fromEntries(
-      plan.stillToAdd.flatMap(({ id, presence, minimum }) =>
-        presence
-          ? [
-              [
-                id,
-                Array.from({ length: counts[id] ?? minimum }, (_, n) => ({
-                  _id: `${id}-${n}`,
-                  edition: presence.edition ? gala._id : undefined,
-                })),
-              ],
-            ]
-          : [],
-      ),
-    );
-  const answer: TodoResult = {
-    editions: [festival, gala],
-    rows: {
-      [whatItIs.id]: [{ _id: 'festivalPage' }],
-      [bio.id]: [{ _id: 'person-a' }, { _id: 'person-b' }],
-      [cost.id]: [{ _id: festival._id, edition: festival._id }],
-    },
-    presence: present({ [zones?.id ?? '']: 2, [collective?.id ?? '']: 0 }),
-    wording: 1,
-  };
-
-  /** Resolves a pane the way the structure tool does: a function is called, an observable read once. */
-  async function open(parent: ListBuilder, id: string): Promise<unknown> {
-    const spec = (parent.serialize({ path: [] }) as { child: unknown }).child;
-    const resolved =
-      typeof spec === 'function'
-        ? (spec as (id: string, options: unknown) => unknown)(id, {})
-        : spec;
-    return resolved && typeof resolved === 'object' && 'subscribe' in resolved
-      ? firstValueFrom(resolved as Observable<unknown>)
-      : resolved;
-  }
-  const rootOf = (role: CurrentUser, result: () => Observable<TodoResult>) => {
-    const item = items(sidebar(role, result)).find((entry) => entry.getId() === 'todo');
-    if (!item) throw new Error('the sidebar has no To do');
-    return (item.getChild() as unknown as () => Observable<ListBuilder>)();
-  };
-  /** The To do once counted: the view opens on its counting line, then the count. */
-  const todo = (role: CurrentUser, result: () => Observable<TodoResult> = () => of(answer)) =>
-    firstValueFrom(rootOf(role, result).pipe(skip(1)));
-  const shown = (list: ListBuilder) => JSON.stringify(list.serialize({ path: [] }).items);
-
-  it('opens on a counting line, so opening a document from search never waits for the count', async () => {
-    const first = await firstValueFrom(rootOf(EDITOR, () => NEVER));
-    expect(items(first)).toEqual([]);
-    expect(shown(first)).toContain('Counting what is owed...');
+describe('Missing content in the sidebar', () => {
+  it('opens a checklist document with a valid pane id and preserves the document id', () => {
+    const pane = child(cached(EDITOR), 'todo') as unknown as ComponentBuilder;
+    const resolve = pane.getChild() as (id: string) => DocumentBuilder;
+    const document = resolve('document:event:event-gala-2026');
+    expect(document.getDocumentId()).toBe('event-gala-2026');
+    expect(() => document.serialize()).not.toThrow();
+    expect(resolve('document:siteSettings:siteSettings')).toBeUndefined();
   });
 
-  it('lists the pages that owe something with their counts, then what is still to add', async () => {
-    const list = await todo(EDITOR);
-    expect(items(list).map((item) => item.getTitle())).toEqual([
-      'Odunde Festival (2)',
-      'Our Story (2)',
-      'Still to add (2)',
-      'Wording to check (1)',
-    ]);
+  it('opens one component immediately without waiting on a query, so edit intents cannot hang', () => {
+    const list = sidebar(EDITOR, () => NEVER);
+    const item = items(list).find((entry) => entry.getId() === 'todo');
+    expect(item?.getTitle()).toBe('Missing content');
+    expect(item?.getChild()).toBeTruthy();
+    expect(typeof item?.getChild()).not.toBe('function');
   });
 
-  it('opens a page on its rows, and a row on the page or the documents that owe it', async () => {
-    const list = await todo(EDITOR);
-    const odunde = (await open(list, 'festivalPage')) as ListBuilder;
-    expect(items(odunde).map((item) => item.getTitle())).toEqual([
-      'At a glance: the cost',
-      'What the day is: what Odunde is, in your words',
-    ]);
-    const page = (await open(odunde, whatItIs.id)) as DocumentBuilder;
-    expect(page.getDocumentId()).toBe('festivalPage');
-    // Its own pane id: opening the page from search matches the page under Pages, not this row.
-    expect(page.getId()).toBe(whatItIs.id);
-    const edition = (await open(odunde, cost.id)) as DocumentListBuilder;
-    expect(edition.getParams()).toEqual({
-      ids: ['event-odunde-2099', 'drafts.event-odunde-2099'],
-    });
-    expect(templateIds(edition)).toEqual([]);
-    const story = (await open(list, 'storyPage')) as ListBuilder;
-    expect(items(story).map((item) => item.getTitle())).toEqual(['Board: a short bio (2)']);
-    const people = (await open(story, bio.id)) as DocumentListBuilder;
-    expect(people.getFilter()).toContain('group == "board"');
-  });
-
-  it('opens what is still to add on its list, new events starting as their kind', async () => {
-    const list = await todo(EDITOR, () => of({ ...answer, editions: [festival] }));
-    const still = (await open(list, 'still-to-add')) as ListBuilder;
-    expect(items(still).map((item) => item.getTitle())).toEqual([
-      'End-of-Year Gala: the next edition',
-      'Odunde, zones: the unnamed zones (2 of 4)',
-      'Gala, seats and tables: three prices and what each includes',
-      'Sponsorship: level names and amounts',
-      'Yoruba Cultural Collective: the next events',
-    ]);
-    const next = (await open(still, 'next-gala')) as DocumentListBuilder;
-    expect(templateIds(next)).toEqual(['event-gala']);
-    const events = (await open(still, collective?.id ?? '')) as DocumentListBuilder;
-    expect(templateIds(events)).toEqual(['event-collective']);
-  });
-
-  it("keeps an administrator's documents out of a member's wording to check", async () => {
-    const wording = async (role: CurrentUser) =>
-      ((await open(await todo(role), 'wording')) as DocumentListBuilder).getFilter();
-    expect(await wording(EDITOR)).toContain(JSON.stringify([...ADMIN_ONLY_TYPES]));
-    expect(await wording(ADMIN)).toContain('!(documentType in [])');
-  });
-
-  it('gives administrators the settings rows under Organization details', async () => {
-    const admin = todoPlan();
-    const ein = admin.rows.find(({ entry }) => entry.what === 'EIN');
-    const list = await todo(ADMIN, () =>
-      of({ ...answer, rows: { [ein?.id ?? '']: [{ _id: 'siteSettings' }] } }),
-    );
-    expect(items(list).map((item) => item.getTitle())).toContain('Organization details (1)');
-    const settings = (await open(list, 'organization')) as ListBuilder;
-    const opened = (await open(settings, ein?.id ?? '')) as DocumentBuilder;
-    expect(opened.getDocumentId()).toBe('siteSettings');
-  });
-
-  it('asks the document store once for the whole view, with drafts, and counts again on change', async () => {
-    const calls: { query: { fetch: string; listen: string }; options: object }[] = [];
-    const results = new Subject<TodoResult>();
-    const store = (query: { fetch: string; listen: string }, _: object, options: object) => {
-      calls.push({ query, options });
-      return results;
-    };
-    const roots: ListBuilder[] = [];
-    const rootWatch = rootOf(EDITOR, store as never).subscribe((list) => roots.push(list));
-    results.next(answer);
-    const list = roots.at(-1);
-    if (!list) throw new Error('no To do yet');
-    const spec = (list.serialize({ path: [] }) as { child: (id: string, o: unknown) => unknown })
-      .child;
-    const pages: ListBuilder[] = [];
-    const pageWatch = (spec('storyPage', {}) as Observable<ListBuilder>).subscribe((page) =>
-      pages.push(page),
-    );
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.query).toEqual({ fetch: todoQuery(plan), listen: todoListenQuery(plan) });
-    expect(calls[0]?.options).toMatchObject({ perspective: 'drafts' });
-    expect(items(pages.at(-1) as ListBuilder).map((entry) => entry.getTitle())).toEqual([
-      'Board: a short bio (2)',
-    ]);
-    // A member fills both bios: the row leaves Our Story, and its documents still open.
-    results.next({ ...answer, rows: { ...answer.rows, [bio.id]: [] } });
-    expect(items(pages.at(-1) as ListBuilder)).toEqual([]);
-    expect(items(roots.at(-1) as ListBuilder).map((entry) => entry.getTitle())).toEqual([
-      'Odunde Festival (2)',
-      'Still to add (2)',
-      'Wording to check (1)',
-    ]);
-    const stillOpen = await open(pages.at(-1) as ListBuilder, bio.id);
-    expect((stillOpen as DocumentListBuilder).getFilter()).toContain('group == "board"');
-    rootWatch.unsubscribe();
-    pageWatch.unsubscribe();
-  });
-
-  it('says when the count fails, tries again, and keeps the query open while the Studio moves', async () => {
+  it('shares one live draft-aware query and recovers from a failed read', async () => {
     vi.useFakeTimers();
     try {
-      let calls = 0;
-      const store = () => {
-        calls += 1;
-        return calls === 1 ? throwError(() => new Error('offline')) : concat(of(answer), NEVER);
-      };
-      const roots: ListBuilder[] = [];
-      const root = rootOf(EDITOR, store);
-      let watch = root.subscribe((list) => roots.push(list));
-      expect(shown(roots.at(-1) as ListBuilder)).toContain(
-        'Could not count (offline); trying again shortly.',
-      );
+      const plan = todoPlan(ADMIN_ONLY_TYPES);
+      const listenQuery = vi
+        .fn()
+        .mockImplementationOnce(() => throwError(() => new Error('offline')))
+        .mockImplementation(() => concat(of({}), NEVER));
+      const context = { documentStore: { listenQuery } } as never;
+      const updates: Live[] = [];
+      const source = liveTodo(context, plan, 'member');
+      const first = source.subscribe((value) => updates.push(value));
+      expect(updates[0]).toHaveProperty('error', 'offline');
       await vi.advanceTimersByTimeAsync(RETRY_MS);
-      expect(calls).toBe(2);
-      expect(items(roots.at(-1) as ListBuilder).map((item) => item.getTitle())).toContain(
-        'Our Story (2)',
+      expect(updates.at(-1)).toHaveProperty('state');
+      expect(listenQuery).toHaveBeenLastCalledWith(
+        { fetch: todoQuery(plan), listen: todoListenQuery(plan) },
+        {},
+        expect.objectContaining({ perspective: 'drafts' }),
       );
-      // The Studio closes and reopens panes as it moves: the query stays open for a while.
-      watch.unsubscribe();
-      watch = root.subscribe((list) => roots.push(list));
-      expect(calls).toBe(2);
-      watch.unsubscribe();
+      const second = liveTodo(context, plan, 'member').subscribe();
+      expect(listenQuery).toHaveBeenCalledTimes(2);
+      first.unsubscribe();
+      second.unsubscribe();
       await vi.advanceTimersByTimeAsync(KEEP_MS);
-      watch = root.subscribe((list) => roots.push(list));
-      expect(calls).toBe(3);
-      watch.unsubscribe();
+      const third = source.subscribe();
+      expect(listenQuery).toHaveBeenCalledTimes(3);
+      third.unsubscribe();
     } finally {
       vi.useRealTimers();
     }
-  });
-
-  it('says so when nothing is owed', async () => {
-    const done = await todo(EDITOR, () => of({ editions: [festival, gala], presence: present() }));
-    expect(items(done)).toEqual([]);
-    expect(shown(done)).toContain('Nothing owed: every page has what it needs.');
   });
 });
 
@@ -502,7 +331,11 @@ describe('tools, actions and templates per role', () => {
   it("lets only administrators act on an administrator's documents", () => {
     expect([...ADMIN_ONLY_TYPES]).toEqual(['siteSettings', 'enquiry', 'subscriber']);
     for (const type of ADMIN_ONLY_TYPES) expect(allowed(type, EDITOR), type).toEqual([]);
-    expect(allowed('enquiry', ADMIN)).toContain('publish');
+    expect(allowed('enquiry', ADMIN)).not.toContain('publish');
+    expect(
+      documentActions(defaults, { schemaType: 'enquiry', currentUser: ADMIN } as never),
+    ).toHaveLength(6);
+    expect(allowed('enquiry', ADMIN)).toContain('delete');
   });
 
   it('lets no member restore an old version of a page with a held-back switch', () => {

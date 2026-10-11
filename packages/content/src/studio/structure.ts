@@ -6,7 +6,7 @@ import type {
 } from 'sanity/structure';
 import { STUDIO_API_VERSION } from '../api-version';
 import { EVENT_LIST_TITLES } from '../edition-fields';
-import { ENQUIRY_KINDS, KIND_TITLES } from '../enquiry-kinds';
+import { ENQUIRY_STATUS_FILTER, ENQUIRY_STATUSES } from '../enquiry-workflow';
 import { EVENT_PAGE_NAMES } from '../routes';
 import { STUDIO_HIDDEN_TYPES } from './document-options';
 import { isAdministrator } from './roles';
@@ -205,41 +205,34 @@ function pagesItem(S: StructureBuilder) {
 }
 
 function inboxItem(S: StructureBuilder) {
-  const unhandled = S.listItem()
-    .title('Unhandled enquiries')
-    .id('inbox-unhandled')
-    .child(
-      S.documentList()
-        .title('Unhandled enquiries')
-        .schemaType('enquiry')
-        .apiVersion(STUDIO_API_VERSION)
-        .filter('_type == "enquiry" && handled != true')
-        .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }]),
-    );
-  const byKind = ENQUIRY_KINDS.map((kind) =>
+  const queue = (id: string, title: string, filter: string) =>
     S.listItem()
-      .title(KIND_TITLES[kind])
-      .id(`inbox-${kind}`)
+      .id(id)
+      .title(title)
       .child(
         S.documentList()
-          .title(KIND_TITLES[kind])
+          .id(id)
+          .title(title)
           .schemaType('enquiry')
           .apiVersion(STUDIO_API_VERSION)
-          .filter('_type == "enquiry" && kind == $kind')
-          .params({ kind })
-          .defaultOrdering([
-            { field: 'handled', direction: 'asc' },
-            { field: 'submittedAt', direction: 'desc' },
-          ]),
-      ),
-  );
+          .filter(`_type == "enquiry" && (${filter})`)
+          .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }])
+          .initialValueTemplates([]),
+      );
   return S.listItem()
     .title('Inbox')
     .id('inbox')
     .child(
       S.list()
         .title('Inbox')
-        .items([unhandled, S.divider(), ...byKind, S.divider(), typeList(S, 'subscriber')]),
+        .items([
+          ...ENQUIRY_STATUSES.map(({ title, value }) =>
+            queue(`inbox-${value}`, title, `${ENQUIRY_STATUS_FILTER} == "${value}"`),
+          ),
+          queue('inbox-email', 'Not emailed', '!defined(notifiedAt)'),
+          S.divider(),
+          typeList(S, 'subscriber'),
+        ]),
     );
 }
 

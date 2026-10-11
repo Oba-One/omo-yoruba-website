@@ -5,6 +5,12 @@ import type {
   Tool,
 } from 'sanity';
 import { SINGLETON_NAMES } from '../schema/singletons';
+import {
+  markHandledAction,
+  reopenEnquiryAction,
+  retryNotificationAction,
+  startEnquiryAction,
+} from './enquiry-actions';
 import { ADMIN_ONLY_TYPES, ADMIN_TOOLS, HELD_BACK_PAGES, isAdministrator } from './roles';
 import { EDITION_CONTENT_TYPES } from './templates';
 
@@ -38,6 +44,15 @@ export const newDocumentOptions: NewDocumentOptionsResolver = (prev) =>
 export const documentActions: DocumentActionsResolver = (prev, context) => {
   const administrator = isAdministrator(context.currentUser);
   if (ADMIN_ONLY_TYPES.has(context.schemaType) && !administrator) return [];
+  if (context.schemaType === 'enquiry') {
+    return [
+      markHandledAction,
+      startEnquiryAction,
+      reopenEnquiryAction,
+      retryNotificationAction,
+      ...prev.filter((action) => ['discardChanges', 'delete'].includes(action.action ?? '')),
+    ];
+  }
   if (HELD_BACK_PAGES.has(context.schemaType) && !administrator) {
     prev = prev.filter((action) => action.action !== 'restore');
   }
