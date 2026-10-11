@@ -185,7 +185,9 @@ test.describe('the Odunde Festival page', () => {
       await expect(past.locator('.oy-carousel-stage .oy-ph')).toHaveCount(1);
       await expect(past.locator('.oy-credit-line')).toHaveCount(0);
     } else {
-      await expect(past.locator('.oy-section-inner > .oy-credit-line')).toContainText('Photographs:');
+      await expect(past.locator('.oy-section-inner > .oy-credit-line')).toContainText(
+        'Photographs:',
+      );
       // The album's credit links out only to its photographer's own page (ADR 0046).
       const creditLink = past.locator('.oy-section-inner > .oy-credit-line a');
       if ((await creditLink.count()) > 0) {
