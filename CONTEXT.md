@@ -30,14 +30,14 @@ editions it may not exist yet, and its facts read Pending.
 _Avoid_: current edition, active event, this year's festival
 
 **Past years**:
-The photographs, and the first video, of the newest past edition of a kind, from its album, closing an
+The photographs, and the first two videos, of the newest past edition of a kind, from its album, closing an
 event page (past galas on the Gala page). The only place a past edition appears on an event page.
 _Avoid_: recap, archive, previous events
 
 **Zone**:
-One of the festival's areas. Named zones: Ọjà Balógun (the market), Àgbàlá Ọmọde (the
-children's yard). Two are unnamed and pending; the festival page names them as placeholders up to
-the four confirmed.
+One of the festival's three areas (ADR 0055): Ọjà Balógun (the market), Àgbàlá Ọmọde (the
+children's yard) and Ẹgbẹ́ Ìbílẹ̀ (the hometown associations). A zone the Studio does not hold yet
+shows as a placeholder, up to the three.
 _Avoid_: area, stage, village
 
 **Vendor terms**:
@@ -60,7 +60,7 @@ administrator's.
 _Avoid_: awardee, honouree (spelling)
 
 **Lessons**:
-Yoruba Language Lessons. One teacher, live online, enrol by writing to her.
+Yoruba Language Lessons. One teacher, live online, enroll by writing to her.
 _Avoid_: School, classes, Saturday school, term
 
 **Teacher**:
@@ -92,7 +92,8 @@ _Avoid_: edition, meetup, class
 **Program**:
 One of four: Lessons, Collective, Kids & STEM, Cultural Exchange. Only Lessons and the
 Collective have their own page; Kids & STEM and Cultural Exchange are inline programs,
-described in full on the Programs hub.
+described in full on the Programs hub. Cultural Exchange is not running, so the hub leaves it
+out, card and section, until it is (ADR 0055).
 _Avoid_: programme in code and copy (US spelling), course
 
 **Sub-program**:
@@ -345,7 +346,7 @@ _Avoid_: set, collection, gallery (the page of every album)
 **Video**:
 A recording of one occasion that an album holds, with a title, its YouTube address and, if the owner chooses, its own
 still and who made it. The album page shows its videos above the photographs, and the edition's page shows the
-first one under past years. It plays from YouTube on the visitor's press: until then the page shows our own still
+first two under past years. It plays from YouTube on the visitor's press: until then the page shows our own still
 and asks nothing of YouTube, and the press swaps in YouTube's no-cookie player (ADR 0051).
 _Avoid_: film, clip, reel, movie
 

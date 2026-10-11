@@ -317,39 +317,32 @@ describe('GiveDialog, running its element', () => {
     expect(text(host?.querySelector('[data-lead]'))).toBe('Amount and card details, all here.');
   });
 
-  it('scrolls back to the top of a new step or the thank-you page when it begins above the view', async () => {
+  it("scrolls the panel's body back to the top of a new step or the thank-you page when it begins above the view", async () => {
     const { host, frame } = await openWithFrame();
     const at = (element: Element | null | undefined, top: number) => {
       if (element) element.getBoundingClientRect = () => ({ top }) as DOMRect;
     };
-    // Above 720px the dialog itself scrolls: the donor is 300px past the frame's top.
+    // The panel's body holds the scroll, as dialog and as bottom sheet: the donor is 300px past the frame's top.
     const dialog = host?.querySelector('dialog') as HTMLDialogElement;
-    dialog.scrollTop = 500;
-    at(dialog, 0);
+    const panel = host?.querySelector('.oy-modal') as HTMLElement;
+    const body = host?.querySelector('.oy-modal-body') as HTMLElement;
+    body.scrollTop = 500;
+    at(body, 0);
     at(frame, -300);
     post({ type: 'zeffy-embed:step-changed', embedId: 'give' });
-    expect(dialog.scrollTop).toBe(200);
+    expect(body.scrollTop).toBe(200);
     // With the frame's top in view nothing moves.
     at(frame, 120);
     post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' });
-    expect(dialog.scrollTop).toBe(200);
-    // A panel taller than its box that only clips (overflow hidden, above 720px) is never scrolled.
-    const sheet = host?.querySelector('.oy-modal') as HTMLElement;
-    sheet.style.overflowY = 'hidden';
-    Object.defineProperty(sheet, 'scrollHeight', { value: 1400, configurable: true });
-    Object.defineProperty(sheet, 'clientHeight', { value: 600, configurable: true });
-    at(sheet, 60);
-    at(frame, -40);
-    post({ type: 'zeffy-embed:step-changed', embedId: 'give' });
-    expect(sheet.scrollTop).toBe(0);
-    expect(dialog.scrollTop).toBe(160);
-    // Under 720px the bottom sheet scrolls: the frame begins 50px above the sheet's top edge.
-    sheet.style.overflowY = 'auto';
-    sheet.scrollTop = 400;
+    expect(body.scrollTop).toBe(200);
+    // The body begins under the head: the frame's top is 50px above the body's top edge.
+    at(body, 60);
     at(frame, 10);
-    post({ type: 'zeffy-embed:thank-you-page-shown', embedId: 'give' });
-    expect(sheet.scrollTop).toBe(350);
-    expect(dialog.scrollTop).toBe(160);
+    post({ type: 'zeffy-embed:step-changed', embedId: 'give' });
+    expect(body.scrollTop).toBe(150);
+    // The scrim and the panel never scroll: the panel fits the screen and clips.
+    expect(dialog.scrollTop).toBe(0);
+    expect(panel.scrollTop).toBe(0);
   });
 
   it('keeps a dialog served in its fallback mode on the fallback until Try again', async () => {

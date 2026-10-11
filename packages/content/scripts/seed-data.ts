@@ -57,6 +57,15 @@ function span(text: string, index: number) {
 }
 const blocks = (...paragraphs: string[]) => paragraphs.map(span);
 
+// The festival's words that count its zones, and how the earlier seed counted them (ADR 0055).
+const ODUNDE_SUMMARY = 'One village, three zones, one family.';
+const FESTIVAL_LINE =
+  'A day of Yoruba culture at Leimert Park, held each June. Three zones, one village, open to everyone.';
+const WHAT_ODUNDE_IS =
+  'Odunde marks the Yoruba new year. It is held in June at Leimert Park, and it is open to the whole neighborhood, not only to Yoruba families. The park is laid out as a village for the day, with three zones and a program that runs from the opening procession to the last drum.';
+const fourZones = (text: string) =>
+  text.replace('Three zones', 'Four zones').replace('three zones', 'four zones');
+
 const bilingual = (yo: string | undefined, en: string) => (yo ? { yo, en } : { en });
 const cta = (label: string, kind: 'enquiry' | 'give' | 'url' | 'anchor', target?: string) => ({
   _type: 'cta',
@@ -178,7 +187,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       label: 'Yoruba community in Southern California',
       shortLabel: 'Yoruba community in SoCal',
     },
-    { id: 'stat-zones', value: '4', label: 'festival zones at Odunde' },
+    { id: 'stat-zones', value: '3', label: 'festival zones at Odunde' },
     {
       id: 'stat-associations',
       value: '9',
@@ -227,7 +236,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         'Speaking, reading, and tone marks, taught over video call by our teacher. Times are set with her.',
       image: 'odunde-2026-attendees-learning-yoruba.jpg',
       focus: [60, 35],
-      action: cta('Enrol a learner', 'url', '/programs/yoruba-lessons'),
+      action: cta('Enroll a learner', 'url', '/programs/yoruba-lessons'),
     },
     {
       id: 'program-cultural-collective',
@@ -290,8 +299,8 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     title: 'Odunde Festival 2027',
     edition: 2027,
     venue: { name: 'Leimert Park' },
-    // The edition's line on the homepage band (02 Homepage); four zones is a confirmed fact.
-    summary: 'One village, four zones, one family.',
+    // The edition's line on the homepage band (02 Homepage); three zones is the confirmed count (ADR 0055).
+    summary: ODUNDE_SUMMARY,
   });
   docs.push({
     _id: 'event-gala-2026',
@@ -464,7 +473,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       header: {
         kicker: bilingual('Ọdúndé', 'The new year has arrived'),
         title: 'Odunde Festival',
-        line: 'A day of Yoruba culture at Leimert Park, held each June. Four zones, one village, open to everyone.',
+        line: FESTIVAL_LINE,
         image: image(assets, 'odunde-2026-procession-with-drummer.jpg'),
       },
       extraFacts: withKeys('fact', [fact('Family', 'All ages', "Children's compound on site")]),
@@ -476,7 +485,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         [45, 50],
       ),
       whatItIs: blocks(
-        'Odunde marks the Yoruba new year. It is held in June at Leimert Park, and it is open to the whole neighborhood, not only to Yoruba families. The park is laid out as a village for the day, with four zones and a program that runs from the opening procession to the last drum.',
+        WHAT_ODUNDE_IS,
         'If you have never been: this sits alongside Lunar New Year, Diwali, and Nowruz. Communities that pause the world for a day to celebrate who they are, in public, with their neighbors, and with anyone who wants to come and eat.',
       ),
       zonesIntro:
@@ -653,7 +662,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           way: 'enrol',
           title: 'Start Yoruba lessons',
           line: 'Online lessons for children and adults, scheduled with the teacher. Write to her to start.',
-          label: 'Enrol a learner',
+          label: 'Enroll a learner',
         },
         {
           _type: 'takePartRow',
@@ -671,7 +680,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           label: 'Donate',
         },
       ]),
-      primaryAction: cta('Enrol a learner', 'enquiry', 'enrol'),
+      primaryAction: cta('Enroll a learner', 'enquiry', 'enrol'),
     }),
   );
 
@@ -1023,6 +1032,27 @@ export function buildRevisions(assets: SeedAssets): SeedRevision[] {
       path: 'label',
       was: 'hometown associations',
       now: ASSOCIATIONS_LABEL,
+    },
+    // The festival has three zones (ADR 0055): the earlier seed wrote four in these four places.
+    { type: 'stat', id: 'stat-zones', path: 'value', was: '4', now: '3' },
+    {
+      type: 'event',
+      id: 'event-odunde-2027',
+      path: 'summary',
+      was: fourZones(ODUNDE_SUMMARY),
+      now: ODUNDE_SUMMARY,
+    },
+    {
+      type: 'festivalPage',
+      path: 'header.line',
+      was: fourZones(FESTIVAL_LINE),
+      now: FESTIVAL_LINE,
+    },
+    {
+      type: 'festivalPage',
+      path: 'whatItIs[_key=="block-1"].children[_key=="span-1"].text',
+      was: fourZones(WHAT_ODUNDE_IS),
+      now: WHAT_ODUNDE_IS,
     },
     // The gallery (spec Q15 of Phase 8): the header line names only the albums that exist.
     { type: 'galleryPage', path: 'header.line', was: GALLERY_PROTOTYPE_LINE, now: GALLERY_LINE },

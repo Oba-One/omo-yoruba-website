@@ -837,7 +837,8 @@ export const PRESENCE: readonly PresenceEntry[] = [
   // The page shows active zones only (festivalPageQuery), so the count skips the inactive ones.
   {
     type: 'zone',
-    minimum: 4,
+    // Three (ADR 0055): the market, the children's yard and the hometown associations.
+    minimum: 3,
     filter: 'active != false',
     where: 'Odunde, zones',
     what: 'the unnamed zones',
@@ -1092,6 +1093,14 @@ export function presenceWhat(
     kind,
   );
   return entry ? { what: entry.what, minimum: entry.minimum } : undefined;
+}
+
+/**
+ * How many of a type a block draws: those the Studio lists, padded with placeholders up to the count the
+ * registry expects (the festival's zones).
+ */
+export function presenceTotal(type: string, listed: number): number {
+  return Math.max(listed, presenceWhat(type)?.minimum ?? 0);
 }
 
 /** The GROQ filter of the documents a presence entry counts. */

@@ -124,7 +124,7 @@ describe('VideoGrid', () => {
     expect(line?.querySelector('a')).toBeNull();
   });
 
-  it('puts a lone video in its own, narrower column', async () => {
+  it('marks a lone video, which fills the column on its own', async () => {
     const body = await renderToBody(OneVideo);
     expect(body.querySelectorAll('ul.oy-video-grid > li')).toHaveLength(1);
     expect(body.querySelector('ul.oy-video-grid')?.classList.contains('oy-video-grid--one')).toBe(

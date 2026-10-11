@@ -15,7 +15,7 @@ describe('ProgramCard', () => {
     expect(text(card?.querySelector('p'))).toContain('Speaking, reading, and tone marks');
     const link = card?.querySelector('a.oy-btn--quiet');
     expect(link?.getAttribute('href')).toBe('/programs/yoruba-lessons');
-    expect(text(link)).toContain('Enrol a learner');
+    expect(text(link)).toContain('Enroll a learner');
     expect(card?.querySelector('.v2-rule')).not.toBeNull();
   });
 

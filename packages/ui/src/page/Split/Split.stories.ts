@@ -34,3 +34,6 @@ export const Person: Story = {
 
 /** The columns centred on each other, as Donate sets the give-now copy beside its facts. */
 export const Centred: Story = { args: { align: 'center' } };
+
+/** Both columns at one height, the aside filling it, as Our Story sets the contact facts beside the message card. */
+export const Stretched: Story = { args: { align: 'stretch' } };

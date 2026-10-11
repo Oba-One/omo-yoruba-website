@@ -298,7 +298,7 @@ Good to know
 6. Check your work and publish it.
 
 Videos show above the album's photographs. The album's festival or Gala page
-also shows its first video, so put the best one first.
+also shows its first two videos, so put the best ones first.
 
 **Still** is the picture shown before the video plays. Leave it empty to use the
 album's cover. **Made by** names whoever made the video. Both are optional.

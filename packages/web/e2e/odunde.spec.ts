@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
-import { pendingWhat } from '@oy/content/pending';
+import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
 import { expectNoMockWhileOwed, galleryHeld, settle } from './helpers';
 
@@ -64,7 +64,7 @@ test.describe('the Odunde Festival page', () => {
     await expect(page.locator('#about-festival h2')).toHaveText('What Odunde is');
   });
 
-  test('draws four zone cards, the named zones first, and names the owed ones', async ({
+  test('draws a card for each of the festival zones, the named ones first, and names the owed ones', async ({
     page,
   }) => {
     await page.goto('/odunde');
@@ -72,9 +72,13 @@ test.describe('the Odunde Festival page', () => {
     const grid = page.locator(`#zones .oy-zones[data-layout="${layout}"]`);
     await expect(grid).toHaveCount(1);
     const cards = grid.locator('article.oy-zone');
-    expect(await cards.count()).toBeGreaterThanOrEqual(4);
+    // The number of zones the festival has is the registry's (three since 11 October 2026).
+    const expected = presenceWhat('zone')?.minimum ?? 0;
+    expect(await cards.count()).toBeGreaterThanOrEqual(expected);
     const named = await grid.locator('article.oy-zone:not(.oy-zone--pending)').count();
-    await expect(grid.locator('article.oy-zone--pending')).toHaveCount(Math.max(0, 4 - named));
+    await expect(grid.locator('article.oy-zone--pending')).toHaveCount(
+      Math.max(0, expected - named),
+    );
     // Each named zone's Yoruba name is a heading with its marks.
     for (const heading of await grid.locator('h3.oy-zone-name').all()) {
       await expect(heading).toHaveAttribute('lang', 'yo');
@@ -126,10 +130,16 @@ test.describe('the Odunde Festival page', () => {
       const ways = await rows.evaluateAll((els) => els.map((el) => el.getAttribute('data-way')));
       expect(new Set(ways).size).toBe(ways.length);
       await expect(section.locator('.oy-btn--primary')).toHaveCount(1);
-      // No option reorders the rows (ADR 0042): the first working button in the markup is the gold one.
+      // No option reorders the rows (ADR 0042): the first button in the markup that is neither the give
+      // row's nor the updates row's is the gold one, and no button in the section is a text link (ADR 0055).
       await expect(
-        section.locator('.oy-takepart > .oy-path .oy-btn:not(.oy-btn--quiet)').first(),
+        section
+          .locator(
+            '.oy-takepart > .oy-path:not([data-way="give"]):not([data-way="updates"]) .oy-btn',
+          )
+          .first(),
       ).toHaveClass(/oy-btn--primary/);
+      await expect(section.locator('.oy-btn--quiet')).toHaveCount(0);
       // The vendor row carries the edition's terms or the registry's chip, never an invented fee.
       const vendor = rows.and(page.locator('[data-way="vendor"]'));
       if ((await vendor.count()) === 1) {

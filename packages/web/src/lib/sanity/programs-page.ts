@@ -2,10 +2,11 @@
  * The Programs hub view: what `/programs` hands the library parts, built from the one Programs query
  * (`10 Programs.dc.html`, spec Q2 of Phase 6). Pure, so a test drives it with a fixture: the layout
  * with the schema defaults, the slim header with the Studio's actions and the registry's chip for a
- * missing heading, every program as a card in order (the first three under the `cards` option's
- * `three`), a program with its own page linking there and an inline program linking to its section
- * on this page, the two inline programs (Kids & STEM with its sub-programs, Cultural Exchange with its
- * facts) open or closed by `inline` and hidden with a card the `three` option leaves out, the year
+ * missing heading, every running program as a card in order (the first three under the `cards` option's
+ * `three`; Cultural Exchange is not running and has none, ADR 0055), a program with its own page linking
+ * there and an inline program linking to its section on this page, the two inline programs (Kids & STEM
+ * with its sub-programs, Cultural Exchange with its facts) open or closed by `inline` and hidden with a
+ * card the page leaves out, the year
  * strip's rows named by program or by event page, every
  * photograph resolved to a CDN set with its alt and framing, the take-part rows with the intro that
  * counts them, and the `data-sanity` attributes for click-to-edit in draft mode.
@@ -35,6 +36,13 @@ const COLUMNS: Record<ProgramsLayout['cards'], 2 | 3 | 4> = { four: 4, three: 3,
 /** The inline programs' section headings while the Studio holds no title: the programs' own names. */
 const KIDS_STEM = 'Kids & STEM';
 const CULTURAL_EXCHANGE = 'Cultural Exchange';
+const EXCHANGE_SLUG = 'cultural-exchange';
+/**
+ * Programs the Studio holds that are not running, by slug: off the page until they are (the owner said
+ * so of Cultural Exchange on 11 October 2026, ADR 0055). Taking a slug out of this list brings its card
+ * and its section back.
+ */
+const NOT_RUNNING: readonly string[] = [EXCHANGE_SLUG];
 
 /** The take-part intro, counting the rows the band draws. */
 function takePartIntro(count: number): string | undefined {
@@ -48,7 +56,9 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
   const page = pageSkeleton<ProgramsLayout>('programsPage', data, options, PAGE_TITLE);
   const { edit, layout } = page;
 
-  const programs = (data?.programs ?? []).filter((program) => program !== null);
+  const listed = (data?.programs ?? []).filter((program) => program !== null);
+  // A program that is not running has no card and no section, wherever the Studio's order puts it.
+  const programs = listed.filter((program) => !NOT_RUNNING.includes(program.slug ?? ''));
   const shown = layout.cards === 'three' ? programs.slice(0, 3) : programs;
   // A program the cards leave out takes its inline section with it (the prototype hides #exchange).
   const leftOut = new Set(
@@ -112,7 +122,7 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
         })),
     },
     exchange: {
-      shown: !leftOut.has('cultural-exchange'),
+      shown: !NOT_RUNNING.includes(EXCHANGE_SLUG) && !leftOut.has(EXCHANGE_SLUG),
       open,
       title: cleanText(exchange?.title)
         ? (exchange?.title ?? CULTURAL_EXCHANGE)

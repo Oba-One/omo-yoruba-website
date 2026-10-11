@@ -360,7 +360,7 @@ describe('buildAlbumPage, the videos', () => {
     const [first, second] = buildAlbumPage(withVideos({ cover }), options, null).videos.items;
     expect(first?.still?.src).toContain('/cover-1100x825.jpg');
     expect(second?.still?.src).toContain('/teaserstill-1100x825.jpg');
-    expect(first?.still).toMatchObject({ width: 720, height: 405 });
+    expect(first?.still).toMatchObject({ width: 1052, height: 592 });
     expect(first?.still?.src).toContain('fit=crop');
     // No cover: the first photograph of the album.
     const [uncovered] = buildAlbumPage(withVideos({ cover: null }), options, null).videos.items;

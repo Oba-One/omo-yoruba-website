@@ -13,7 +13,14 @@ import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import type { ActionLike } from '../../core/ActionButton/action';
 import Kicker, { type BilingualText } from '../../core/Kicker/Kicker.astro';
 import Pending from '../../core/Pending/Pending.astro';
-import { altOf, type ImageInput, imgAttributes, positionOf } from '../../media/image';
+import {
+  altOf,
+  type ImageInput,
+  imgAttributes,
+  photoBandSizes,
+  positionOf,
+} from '../../media/image';
+import { PHOTO_HEADER_BAND } from '../photo-bands';
 
 export type PageHeaderVariant = 'photo' | 'slim';
 
@@ -66,7 +73,8 @@ const {
 } = Astro.props;
 
 const photo = variant === 'photo';
-const img = photo ? imgAttributes(image, '100vw') : undefined;
+// On a phone the photograph is drawn wider than the screen, so `sizes` comes from the band's height.
+const img = photo ? imgAttributes(image, photoBandSizes(image, PHOTO_HEADER_BAND)) : undefined;
 const position = positionOf(image);
 const [primary, secondary] = (actions ?? []).filter((action) => action !== null);
 const shownFacts = facts ?? [];

@@ -15,7 +15,13 @@ import type { homepageQuery } from '@oy/content/queries';
 import { usableAction } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
 import { offersTable } from './gala-page';
-import { type BuildOptions, cleanText, editAttributes, resolveImage } from './view';
+import {
+  BAND_PHOTOGRAPH,
+  type BuildOptions,
+  cleanText,
+  editAttributes,
+  resolveImage,
+} from './view';
 
 export type { BuildOptions };
 
@@ -83,7 +89,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       gallery: layout.gallery,
     },
     hero: {
-      image: resolveImage(imageSet, hero?.image, { width: 1440 }),
+      image: resolveImage(imageSet, hero?.image, BAND_PHOTOGRAPH),
       imageEdit: edit('hero.image'),
       edit: undefined,
       kicker: hero?.kicker,

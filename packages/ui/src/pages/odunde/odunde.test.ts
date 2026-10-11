@@ -28,7 +28,7 @@ describe('the Odunde page-section stories', () => {
     expect(slim?.querySelector('header.oy-phead--photo')).toBeNull();
   });
 
-  it('zones: the option on the root and the block, four cards with the owed zones as placeholders', async () => {
+  it('zones: the option on the root and the block, three cards with the owed zone as a placeholder', async () => {
     for (const [story, layout] of [
       [Zones.Mosaic, 'mosaic'],
       [Zones.Five, 'five'],
@@ -38,7 +38,7 @@ describe('the Odunde page-section stories', () => {
       const root = (await renderToBody(story)).querySelector('.oy-home');
       expect(root?.getAttribute('data-zones')).toBe(layout);
       expect(root?.querySelector('#zones .oy-zones')?.getAttribute('data-layout')).toBe(layout);
-      expect(root?.querySelectorAll('#zones article.oy-zone')).toHaveLength(4);
+      expect(root?.querySelectorAll('#zones article.oy-zone')).toHaveLength(3);
     }
   });
 
@@ -67,7 +67,9 @@ describe('the Odunde page-section stories', () => {
     expect(first?.querySelector('.oy-btn--primary')).not.toBeNull();
     expect(section?.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
     const handoff = section?.querySelector('.oy-takepart + .oy-handoff');
-    expect(handoff?.querySelector('.oy-btn--quiet[data-give]')).not.toBeNull();
+    // The gift under the band is an outline too: the section shows the gold and one other shape (ADR 0055).
+    expect(handoff?.querySelector('.oy-btn--secondary[data-give]')).not.toBeNull();
+    expect(section?.querySelector('.oy-btn--quiet')).toBeNull();
   });
 
   it('labels: the option on the root and the column', async () => {

@@ -1,8 +1,8 @@
 ---
 /**
  * An album's videos, played from YouTube only when a visitor presses play (ADR 0051; added after the handoff, which
- * draws no video): a list of tiles, two across from 720px and one under it, a single video in one column no wider
- * than 720px. Each tile is our own still under a round play mark, the whole tile one link to the video's page on
+ * draws no video): a list of tiles, two across from 720px and one under it, the two sharing the width of the
+ * column; a single video fills it (ADR 0055: a video section fills the page's width). Each tile is our own still under a round play mark, the whole tile one link to the video's page on
  * YouTube, with the title under it as a paragraph (never a heading, so the page's heading order cannot skip) and a
  * muted line, "Video: Name. Plays from YouTube." (the credit is `CreditLine`, labelled Video, inline). The page
  * makes no request to YouTube or Google before the press: no script, no thumbnail from YouTube's servers. The
@@ -46,11 +46,11 @@ interface Props {
 const { videos, label = 'Videos', priority = false, class: className } = Astro.props;
 
 const list = (videos ?? []).filter((video): video is VideoGridItem => video !== null);
-// Two columns of 540px at most from 720px, one under it; a lone video fills its one column, 720px at most.
+// Two columns from 720px, 516px each at the content width, one under it; a lone video fills the column, 1052px there.
 const sizes =
   list.length === 1
-    ? '(max-width: 768px) calc(100vw - 48px), 720px'
-    : '(max-width: 719px) calc(100vw - 48px), (max-width: 1148px) calc(50vw - 34px), 540px';
+    ? '(max-width: 1148px) calc(100vw - 48px), 1052px'
+    : '(max-width: 719px) calc(100vw - 48px), (max-width: 1148px) calc(50vw - 34px), 516px';
 ---
 
 {
@@ -165,11 +165,11 @@ const sizes =
   }
   @media (min-width: 720px) {
     .oy-video-grid {
-      grid-template-columns: repeat(2, minmax(0, 540px));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   .oy-video-grid.oy-video-grid--one {
-    grid-template-columns: minmax(0, 720px);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   oy-video {

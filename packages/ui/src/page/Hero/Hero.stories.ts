@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'astro/types';
-import { HERO } from '../../fixtures/homepage';
+import { HERO, HERO_STUDIO_PHOTO } from '../../fixtures/homepage';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import Hero from './Hero.astro';
 
@@ -39,6 +39,14 @@ export const Default: Story = {};
 
 /** Motion off: everything settled, the photo still. */
 export const MotionOff: Story = { args: { motion: false } };
+
+/**
+ * The photograph in the shape the site passes a Studio one, with its width, its height and a
+ * `srcset`: the hero then tells the browser how wide it draws the photograph (`sizes`). It covers the
+ * band by its height, so on a phone that is about three screens, and the browser fetches a file to
+ * match.
+ */
+export const StudioPhotograph: Story = { args: { image: HERO_STUDIO_PHOTO } };
 
 export const NoBlessing: Story = { args: { blessing: undefined, secondary: [] } };
 

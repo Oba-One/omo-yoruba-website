@@ -63,7 +63,7 @@ export const KIND_TITLES: Record<EnquiryKind, string> = {
   table: 'Gala table',
   member: 'Membership',
   volunteer: 'Volunteer',
-  enrol: 'Lessons enrolment',
+  enrol: 'Lessons enrollment',
   vendor: 'Vendor booth',
   contact: 'Message',
 };

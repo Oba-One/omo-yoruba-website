@@ -19,6 +19,7 @@ system readme, and no content is invented):
   "What Odunde is", "Take part in Odunde"); the kickers' Yoruba halves keep their marks (ADR 0009).
 - **Four zones.** The prototype draws five; the page draws the named zones and placeholders up to the
   confirmed four (spec Q3).
+  Amended by ADR 0055: the confirmed count is three.
 - **Take-part rows** come from the singleton with the prototypes' invented facts taken out, the lead
   row moved in the markup rather than by CSS `order` (ADR 0025).
 - **The carousel** has 44px dot tabs, drawn chevrons and a count that is not uppercase (ADR 0027).

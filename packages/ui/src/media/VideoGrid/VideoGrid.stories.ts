@@ -18,7 +18,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "An album's videos: our own still under a round play mark, two across from 720px and one under it, a single video in one column no wider than 720px. The title is a paragraph under the tile, with a muted line naming who made it and that it plays from YouTube. Nothing is requested from YouTube before the press: pressing play (a click, or Enter on the link) swaps YouTube's no-cookie player in and gives it focus. Without JavaScript, or with a modifier key held, the link opens the video on YouTube. The gold edge draws inside the tile on hover; nothing lifts or zooms.",
+          "An album's videos: our own still under a round play mark, two across from 720px sharing the column's width and one under it, a single video filling the column. The title is a paragraph under the tile, with a muted line naming who made it and that it plays from YouTube. Nothing is requested from YouTube before the press: pressing play (a click, or Enter on the link) swaps YouTube's no-cookie player in and gives it focus. Without JavaScript, or with a modifier key held, the link opens the video on YouTube. The gold edge draws inside the tile on hover; nothing lifts or zooms.",
       },
     },
   },
@@ -69,7 +69,7 @@ export const Default: Story = {
   },
 };
 
-/** One video sits in one column, 720px at most. */
+/** One video fills the column it sits in. */
 export const OneVideo: Story = { ...desktop, args: { videos: ODUNDE_VIDEOS.slice(0, 1) } };
 
 /** At 375 the tiles stack in one column. */

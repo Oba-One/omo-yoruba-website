@@ -74,7 +74,9 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
           {
             pageLink && (
               <p class="oy-give-page">
-                <span id={`${form}-page-note`}>{copy.page.note}</span>
+                <span id={`${form}-page-note`} data-phones={copy.page.phones ? '' : undefined}>
+                  {copy.page.note}
+                </span>
                 <Button
                   variant="quiet"
                   href={pageLink}
@@ -135,7 +137,25 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
     max-width: 520px;
   }
   .oy-modal-body {
-    gap: 14px;
+    gap: 12px;
+  }
+  /* The form is the dialog: above the bottom sheet's width a tighter head and foot leave it the room.
+     The sheet keeps the tokens' own spacing, its safe-area padding included. */
+  @media (width > 720px) {
+    .oy-modal-head {
+      padding-top: 18px;
+    }
+    .oy-modal-head p {
+      margin-top: 4px;
+    }
+    .oy-modal-body {
+      padding-top: 14px;
+      padding-bottom: 18px;
+    }
+    /* A line that speaks only to phones is left out here; the link beside it stays, still described by it. */
+    .oy-give-page > [data-phones] {
+      display: none;
+    }
   }
   [data-embed][hidden],
   [data-fallback][hidden],
@@ -157,12 +177,13 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
     display: none;
   }
   /* The starting height, and the floor under the height Zeffy's messages set: a taller step grows the
-     frame, a shorter one never shrinks it below this (ADR 0045). */
+     frame, a shorter one never shrinks it below this (ADR 0045). The floor leaves room for the head
+     and the foot, so the dialog opens whole on a laptop; a taller step scrolls inside the panel. */
   .oy-give-mount :global(iframe) {
     display: block;
     width: 100%;
-    height: min(640px, 70vh);
-    min-height: min(640px, 70vh);
+    height: clamp(320px, 100vh - 300px, 560px);
+    min-height: clamp(320px, 100vh - 300px, 560px);
     border: 0;
     border-radius: 6px;
   }
@@ -272,16 +293,11 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         if (foot) foot.hidden = false;
         if (lead) lead.textContent = host.dataset.leadEmbed;
       };
-      // The frame grows with the form, so the dialog holds the scroll: a step or the thank-you page
-      // that begins above the part in view scrolls back to its top. Under 720px the panel is the
-      // bottom sheet and scrolls itself (overflow auto); above it the panel clips and the dialog scrolls.
+      // The frame grows with the form and the panel's body holds the scroll, as dialog and as bottom
+      // sheet: a step or the thank-you page that begins above the part in view scrolls back to its top.
       const reveal = () => {
-        const panel = dialog.querySelector('.oy-modal');
-        const sheet =
-          panel &&
-          /auto|scroll/.test(window.getComputedStyle(panel).overflowY) &&
-          panel.scrollHeight > panel.clientHeight;
-        const scroller = sheet ? panel : dialog;
+        const scroller = dialog.querySelector('.oy-modal-body');
+        if (!scroller) return;
         const above = scroller.getBoundingClientRect().top - frame.getBoundingClientRect().top;
         if (above > 0) scroller.scrollTop -= above;
       };

@@ -178,6 +178,11 @@ describe('buildHomepage', () => {
     const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.hero.image?.src).toContain('cdn.sanity.io');
     expect(view.hero.image?.alt).toBe('A woman laughs');
+    // The hero is a photo band: its files are the lighter ones a phone can take at three screens wide
+    // (ADR 0055). Every other photograph keeps the builder's quality.
+    expect(view.hero.image?.srcset).toContain('q=50');
+    expect(view.hero.image?.srcset).not.toContain('q=80');
+    expect(view.programs[0]?.program.image?.src).toContain('q=80');
     // The card crops with object-fit, so the CDN keeps the photo's own ratio (1100 by 728).
     expect(view.programs[0]?.program.image).toMatchObject({ width: 360, height: 238 });
     expect(view.programs[0]?.program.image?.src).not.toContain('fit=crop');
@@ -197,7 +202,7 @@ describe('buildHomepage', () => {
     const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.hero.emphasis).toBe('alive');
     expect(view.hero.primary?.label).toBe('See the Odunde Festival');
-    const enrol = { label: 'Enrol a learner', kind: 'url', href: '/programs/yoruba-lessons' };
+    const enrol = { label: 'Enroll a learner', kind: 'url', href: '/programs/yoruba-lessons' };
     const withAction = {
       ...data,
       programs: data.programs?.map((program) => ({ ...program, action: enrol })),
