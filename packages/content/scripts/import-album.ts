@@ -14,11 +14,13 @@
  *     "source": "/path/to/the/photographs",
  *     "photos": [{ "key": "gala-2025-the-hall", "file": "0205-167.jpg", "alt": "...", "caption": "..." }],
  *     "remove": ["gala-2025-attendees-sitting"],
- *     "cover": "gala-2025-the-hall"
+ *     "cover": "gala-2025-the-hall",
+ *     "order": ["gala-2025-the-hall", "gala-2025-tables-set"]
  *   }
  *
  * A key the album holds takes the manifest's file and keeps its place, its words and its framing; a new
- * key needs alt text and a caption and is added after the others. A new album adds
+ * key needs alt text and a caption and is added after the others, unless `order` gives the album's whole
+ * order: every key it will hold, held and new, in place of the order set in the Studio. A new album adds
  * `"create": { "title", "slug" }` with its `date` or `event` and its `credit`. Manifests name folders on
  * one machine and carry draft captions, so they stay out of the repository.
  *
@@ -113,6 +115,12 @@ function report(plan: AlbumPlan, pending: readonly SourceFile[], alreadyUploaded
   line('added', plan.added);
   line('removed', plan.removed);
   line('already out of the album', plan.absent);
+  if (plan.heldReordered) {
+    console.log("  the manifest's order moves photographs the album already holds");
+  } else if (plan.reordered) {
+    console.log('  the new photographs are set among the ones the album holds');
+  }
+  if (plan.opensWith) console.log(`  the album would open with ${plan.opensWith}`);
   console.log(`  the album would hold ${album.photos?.length ?? 0} photographs`);
 }
 

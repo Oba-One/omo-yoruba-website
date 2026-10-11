@@ -106,10 +106,11 @@ sibling of R02, fixed there too: the Zeffy iframe took its address from site set
 | Outcome | Tickets | Next step |
 | --- | --- | --- |
 | Resolved by pull request 10 | [R44](../tickets/review/issues/44-after-a-client-side-navigation-every-dialog-trigger.md), [R109](../tickets/review/issues/109-closing-a-dialog-opened-by-its-address-wipes.md) | None: `navigation.spec.ts` proves both. |
-| Ready for an agent | R12, R37, R42, R49, R50 (contrast and type); R45, R46, the scrim half of R47 (the dialogs); R15, R21 (latent layouts); R48 (Storybook); R144 (the guardrail hook) | Five small pull requests in that grouping, each with a test that fails first. |
+| Ready for an agent | R12, R37, R42, R49, R50 (contrast and type); R45, R46, the scrim half of R47 (the dialogs); R21 (a latent layout); R48 (Storybook); R144 (the guardrail hook) | Five small pull requests in that grouping, each with a test that fails first. |
 | Ready after pull request 13 | R85 | The outcomes' To do row is written against Impact's page list, which pull request 13 introduces. |
 | The owner decides | R38 (monthly giving, receipts and the Zeffy mention: C12, D8), R47 (whether a reopened form keeps what was typed), R110 (what the 17px floor covers) | The recommendation is in each ticket. The owner chose Zeffy, embedded, from `docs/research/online-giving-options.md` on 27 September; R38's interim fix is in the Zeffy pull request. |
 | The owner acts or approves | R142 (require TypeGen drift and Playwright and axe: a repository setting) | Say the word in a session and an agent runs the change. |
+| Resolved on 10 October 2026 | [R15](../tickets/review/issues/15-sponsor-levels-at-375-squeeze-each-level-s.md) | None: a sponsor level's lines take the row's width on a phone, and `gala.spec.ts` measures it in a run that reads the Studio. |
 | Resolved by pull requests 27 and 30 | [R143](../tickets/review/issues/143-the-weekly-dependency-audit-has-failed-on-every.md) | None: the weekly audit passes. Of the 27 advisories at its gate, 11 were fixed in range, 10 by an override, and six are accepted with their reasons in `scripts/check-audit.sh`. |
 
 ## Architecture candidates

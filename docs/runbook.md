@@ -85,14 +85,15 @@ Bun 1.4 writes version 3 as soon as the root `package.json` has an override scop
 a version (Bun's documentation on overrides). Bun 1.3.14 stops on that file with
 "Unknown lockfile version" (reproduced locally on 9 October), so every machine needs 1.4.
 
-Domain: `omoyorubasocal.org`, bought on 11 September 2026 (the old `omoyorubaofsocal.org` is
-not in the owner's hands; wayfinder ticket 10 covers its redirects). Its DNS is at Cloudflare.
-Both names are attached under the project's Domains, with the apex redirecting to `www` (this
-section had asked for the reverse), but Cloudflare holds no record for either, so neither answers
-yet. To finish it (open-work D2): settle which name serves, create the records Vercel shows in
-Cloudflare with the proxy off (DNS only), and put Resend's records for the sending domain there too.
-The serving name then goes into `PUBLIC_SITE_URL`, the Sanity CORS origins (with credentials, for
-the Studio) and the webhook's URL. Until then `omo-yoruba-khaki.vercel.app` serves the site.
+Domain: `omoyorubasocal.org`, bought on 11 September 2026 (the old `omoyorubaofsocal.org` is not in
+the owner's hands; wayfinder ticket 10 covers its redirects). Its DNS is at Cloudflare. Both names
+are attached under the project's Domains, with the apex redirecting to `www` (this section had asked
+for the reverse), and both answer: `www.omoyorubasocal.org` serves the site (checked 10 October
+2026; Hosting today has the rest). Left of the move (open-work D2): add
+`https://www.omoyorubasocal.org` to the Sanity CORS origins with credentials, so the Studio works
+there; put Resend's records for the sending domain in Cloudflare; and confirm `PUBLIC_SITE_URL`
+names the serving host. The webhook may stay on `omo-yoruba-khaki.vercel.app`, which still answers:
+both hosts serve one deployment and share its cache.
 
 Environments: Vercel holds `PUBLIC_SANITY_DATASET=development` for now (set 11 September 2026),
 so the deployed site reads the seeded development dataset. Switch it to `production` only after
@@ -111,17 +112,19 @@ owner in the Chromatic app; CI never fails on a visual change.
 ## Hosting today
 
 Recorded in the owner's hosting session of 13 September 2026, which chose a stand-in public host
-while `omoyorubasocal.org` does not answer; open-work D2 (the public host) and D3 (the dataset)
-decide what replaces it. Each fact was checked again on 27 September 2026 without printing a
-secret; the brackets say how.
+while `omoyorubasocal.org` did not answer; open-work D2 (the public host) and D3 (the dataset)
+decide what replaces it. Each fact was checked again on 27 September 2026 without printing a secret;
+the brackets say how. The public host, the domain, the CORS origins and the webhooks were read again
+on 10 October 2026, with the domain answering; those four bullets say what that day showed.
 
-- **Public host:** `https://omo-yoruba-khaki.vercel.app`, the site with the Studio at `/admin`. It
-  answers without a Vercel login, while `omo-yoruba-greenpilldevguild.vercel.app` sends a visitor to
-  Vercel's login page (both opened in a browser with no Vercel session).
+- **Public host:** `https://www.omoyorubasocal.org`, since the domain answers (10 October 2026).
+  `https://omo-yoruba-khaki.vercel.app` serves the same deployment and is where the Studio at
+  `/admin` works. Khaki answers without a Vercel login, while
+  `omo-yoruba-greenpilldevguild.vercel.app` sends a visitor to Vercel's login page (both opened in a
+  browser with no Vercel session on 27 September; a request to each host on 10 October).
 - **The domain:** `omoyorubasocal.org` and `www.omoyorubasocal.org` are attached to the project and
-  verified by Vercel, the apex redirecting to `www`. Cloudflare's nameservers answer for the domain
-  but hold no record for either name, so neither answers yet. (The project's domain list; `dig`
-  against the domain's Cloudflare nameserver.)
+  verified by Vercel, both added on 12 September 2026. On 10 October the apex answered 308 to `www`,
+  and `www` answered 200 with the site. (The project's domain list; a request to each name.)
 - **Datasets** of the Sanity project "Website" (`qsya7q8x`): `development` is private and holds the
   content, 116 published documents with 68 image assets, four enquiries and one subscriber among
   them; a query without a token reads none of them. The site and the Studio read it: the public host
@@ -137,15 +140,27 @@ secret; the brackets say how.
 - **CORS origins:** `http://localhost:3333`, `http://localhost:4321` and
   `https://omo-yoruba-khaki.vercel.app` with credentials, `https://omoyorubasocal.org` and
   `https://omoyorubaofsocal.org` without. The khaki entry was added on 13 September, when `/admin`
-  without it asked to connect the Studio to the project. The domain's serving name needs credentials
-  before the Studio works there. (Read with the owner's Sanity login.)
-- **Webhook:** one, `purge-site-cache`, a POST to
-  `https://omo-yoruba-khaki.vercel.app/api/revalidate` for `development`. The 13 September session
-  had found none. Its log holds one delivery, at 22:37 UTC that day, answered 200, so the body was
-  signed with the site's `SANITY_WEBHOOK_SECRET` (the route answers 401 otherwise). The newest
-  change in `development` is from that day too, so no later delivery proves the purge yet (open-work
-  E1). Its triggers, filter and projection were not read. (The webhook list and its log, with the
-  owner's Sanity login.)
+  without it asked to connect the Studio to the project. On 10 October the list was the same five:
+  `https://www.omoyorubasocal.org`, the name that serves the site, is not among them, so by this
+  list the Studio works only on khaki until the owner adds it with credentials (the Studio on `www`
+  was not tried). (Read with the owner's Sanity login; on 10 October through the Sanity connector.)
+- **Webhooks:** two, both for `development`. `purge-site-cache` posts to
+  `https://omo-yoruba-khaki.vercel.app/api/revalidate`, and every delivery in its log answered 200.
+  `purge-site-cache2` posts to `https://omoyorubasocal.org/api/revalidate`, the bare name, which
+  answers with a redirect; its log is empty. The purge was proven on 10 October 2026 (open-work E1)
+  with a publish made through the Sanity connector, a draft and then a publish, as the Studio does:
+  a photograph's hotspot was changed, the first webhook delivered a second after the publish, the
+  function logged `purged: true` for `type:album` and five paths, the next request for the album's
+  page on `www` answered `STALE` with the old tile, and the one after it, about five seconds after
+  the publish, carried the change (the page was asked for every three seconds). The revert was
+  published with nobody requesting the page: the first request, 71 seconds later, got the old copy
+  once, and the next the new. One host's webhook is enough, since both names serve one deployment
+  and share its cache. The first webhook is not limited to publishes: a delivery followed each of
+  five draft writes made through the connector that day with nothing published, so a draft saved in
+  the Studio may purge the same way (not observed). Its triggers, and whether the second webhook
+  stays, are the owner's to settle in sanity.io/manage. Their filters and projections were not read.
+  (`sanity hooks list` and `hooks logs` through the Sanity connector; Vercel's runtime logs;
+  requests to the page.)
 - **Members:** the owner is the only person, an Administrator; the two other members are robot
   tokens, a Viewer and an Editor. (The project's member list, read with the
   Viewer token.)
@@ -274,22 +289,21 @@ request, the preview host and anything but a GET; a form error re-render (a 400)
 layout. The cache is a no-op in dev and the Vercel adapter has no `astro preview`, so the headers
 show only on a deployment.
 
-`/api/revalidate` verifies the `sanity-webhook-signature` header with `SANITY_WEBHOOK_SECRET`
-(HMAC SHA-256 over `timestamp.body`, five minutes of tolerance), reads `{_type, slug}` from the
-body, turns the document into its tags (`cacheTagsFor`: the type tag and one route tag per page
-that reads it) and purges them through the provider: the type tag as a tag, each route as a path
-(`purgePlan` in `packages/web/src/lib/sanity/purge.ts`). It answers
-`{ type, slug, tags, purged, paths }`; a document type the site never shows answers
-`purged: false` with a note, a failed purge answers 500 with the message, so the webhook's
-delivery log tells the story. The webhook points at the public host's `/api/revalidate`, today
-`https://omo-yoruba-khaki.vercel.app/api/revalidate` for `development` (see Hosting today). When D2
-moves the site to its domain or D3 moves the content to `production`, update the webhook's URL and
-dataset in sanity.io/manage (the project, API, Webhooks). Never point it at a preview deployment or
-a generated `vercel.app` alias other than the public stand-in: Vercel Authentication answers there,
-not the site. Wizard stage 7 lists the settings for the domain and `production`, the setup after D2
-and D3. The purge is soft: after a publish the CDN
-serves the stale copy once more while it revalidates, so the second request within the minute
-carries the change.
+`/api/revalidate` verifies the `sanity-webhook-signature` header with `SANITY_WEBHOOK_SECRET` (HMAC
+SHA-256 over `timestamp.body`, five minutes of tolerance), reads `{_type, slug}` from the body,
+turns the document into its tags (`cacheTagsFor`: the type tag and one route tag per page that reads
+it) and purges them through the provider: the type tag as a tag, each route as a path (`purgePlan`
+in `packages/web/src/lib/sanity/purge.ts`). It answers `{ type, slug, tags, purged, paths }`; a
+document type the site never shows answers `purged: false` with a note, a failed purge answers 500
+with the message, so the webhook's delivery log tells the story. The webhook that delivers points at
+`https://omo-yoruba-khaki.vercel.app/api/revalidate` for `development` (see Hosting today), and may
+stay there now that the domain serves the site: both hosts are one deployment with one cache. When
+D3 moves the content to `production`, update the webhook's dataset in sanity.io/manage (the project,
+API, Webhooks). Never point it at a preview deployment or a generated `vercel.app` alias other than
+the public stand-in: Vercel Authentication answers there, not the site. Wizard stage 7 lists the
+settings for the domain and `production`, the setup after D2 and D3. The purge is soft: after a
+publish the CDN serves the stale copy once more while it revalidates, so the second request within
+the minute carries the change.
 
 To check on a deployment: `curl -sI https://<host>/ | grep -i x-vercel-cache` twice (the second
 reads `HIT`), publish a change in the Studio (or sign a webhook body by hand with the secret),

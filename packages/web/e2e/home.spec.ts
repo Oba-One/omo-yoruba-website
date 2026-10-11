@@ -1,5 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
+import { pendingWhat } from '@oy/content/pending';
 import { expect, test } from '@playwright/test';
+import { expectNoMockWhileOwed, PLACEHOLDER_PROJECT } from './helpers';
 
 // The homepage blocks in the prototype's order (ROUTES section 4), each present whether the
 // Studio holds its content or renders Pending (CI runs with a placeholder project, so every read
@@ -37,18 +39,24 @@ test.describe('the homepage', () => {
     page,
   }) => {
     await page.goto('/');
-    const hero = page.locator('header.v2-hero');
-    const heroText = await hero.innerText();
-    const seeded = heroText.includes('Yoruba culture, alive in Southern California');
-    expect(seeded || /pending: the hero heading/i.test(heroText)).toBe(true);
-    // With the Studio's content the band carries an edition (its year or the registry's chip for
-    // a missing fact); only CI's placeholder project shows the Pending line for no edition
-    // (innerText applies the chip's uppercase transform, so the match ignores case).
+    // The hero heading is the Studio's words or its chip; with CI's placeholder project every read answers
+    // null, so it is the chip (innerText applies the chip's uppercase transform, so the matches ignore case).
+    const heading = await page.locator('header.v2-hero h1').innerText();
+    if (PLACEHOLDER_PROJECT) expect(heading).toMatch(/pending: the hero heading/i);
+    else expect(heading.trim()).not.toBe('');
+    // The band carries an edition (its year, or the registry's chip for a fact it lacks) or the Pending line
+    // for no edition, which is all the placeholder project can show.
     const bandText = await page.locator('#lead-event').innerText();
-    expect(bandText).toMatch(seeded ? /pending: the|\b\d{4}\b/i : /pending from you/i);
-    // The trust line's EIN placeholder, the mock address and the mock prices never appear.
+    expect(bandText).toMatch(
+      PLACEHOLDER_PROJECT ? /pending from you/i : /pending: the|pending from you|\b\d{4}\b/i,
+    );
+    // The prototype's EIN and phone are no one's, so they never appear. Its address never stands in while the
+    // organization's own is owed. A dollar figure could be a published price one day, so it is refused only
+    // with the placeholder project, where no Studio fact reaches the page and any figure would be invented.
     const body = await page.locator('body').innerText();
-    expect(body).not.toMatch(/95-4612387|Leimert Boulevard|555-0148|\$\d/);
+    expect(body).not.toMatch(/95-4612387|555-0148/);
+    expectNoMockWhileOwed(body, [[/Leimert Boulevard/, pendingWhat('siteSettings', 'address')]]);
+    if (PLACEHOLDER_PROJECT) expect(body).not.toMatch(/\$\d/);
   });
 
   test('holds the prototype layout at this width', async ({ page }) => {

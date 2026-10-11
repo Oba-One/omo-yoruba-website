@@ -3,11 +3,13 @@
  * they come from, and the plan says what the album's draft becomes. Nothing here reads a file or talks to
  * a dataset, so the plan is tested on plain data before `import-album.ts` uploads anything.
  *
- * A key the album already holds keeps its place, its words, its crop and its hotspot, and takes the
+ * A key the album already holds keeps its words, its crop and its hotspot, and takes the
  * manifest's file: the same photograph from a better file. Its words are edited in the Studio, never from
  * a manifest, so a second run cannot undo the owner's review. A different photograph gets a new key, and
  * the old one is removed by name. A key is the photograph's address (`/gallery/<slug>?photo=<key>`,
- * ADR 0037).
+ * ADR 0037). A held photograph keeps its place and new ones follow, unless the manifest gives `order`:
+ * the whole album by key, held and new, which is how a second pass sets its photographs among the first's.
+ * An order replaces the one set in the Studio, so the plan says when it moves photographs the album held.
  */
 import { emDashMessage, marksMessage } from '../src/validation/checks';
 import { type Mutation, revisionGuard } from './migrations/core';
@@ -46,6 +48,8 @@ export interface AlbumManifest {
   remove: string[];
   /** The key whose photograph becomes the cover. */
   cover?: string;
+  /** Every photograph the album will hold, by key, in album order. */
+  order?: string[];
 }
 
 export interface StoredImage {
@@ -77,6 +81,12 @@ export interface AlbumPlan {
   removed: string[];
   /** Keys the manifest removes that the album does not hold. */
   absent: string[];
+  /** The manifest's order sets a photograph somewhere other than where the album would hold it. */
+  reordered: boolean;
+  /** The order also changes how the photographs the album already held follow one another. */
+  heldReordered: boolean;
+  /** The first photograph's key, when the plan changes which one opens an album that exists. */
+  opensWith?: string;
   /** The album already matches the manifest: nothing to write. */
   unchanged: boolean;
 }
@@ -109,6 +119,16 @@ function onlyFields(value: Record<string, unknown>, known: readonly string[], wh
   if (unknown.length > 0) {
     throw new Error(`${where} has ${unknown.join(', ')}, which the import does not read.`);
   }
+}
+
+/** What `remove` and `order` both are: a list of keys, none of them twice. */
+function keyList(value: unknown, name: string): string[] {
+  if (!Array.isArray(value) || !value.every(filled)) {
+    throw new Error(`${name} must be a list of keys.`);
+  }
+  const twice = value.find((key, at) => value.indexOf(key) !== at);
+  if (twice) throw new Error(`${name} lists ${twice} twice.`);
+  return value;
 }
 
 /**
@@ -201,7 +221,11 @@ function parseCreate(value: unknown): NewAlbum | undefined {
 /** A manifest as the import reads it, or an error that names what to fix. */
 export function parseManifest(value: unknown): AlbumManifest {
   if (!isRecord(value)) throw new Error('A manifest is a JSON object.');
-  onlyFields(value, ['album', 'create', 'source', 'photos', 'remove', 'cover'], 'The manifest');
+  onlyFields(
+    value,
+    ['album', 'create', 'source', 'photos', 'remove', 'cover', 'order'],
+    'The manifest',
+  );
   const { album, source } = value;
   if (!filled(album) || !ALBUM_ID.test(album)) {
     throw new Error(
@@ -214,11 +238,7 @@ export function parseManifest(value: unknown): AlbumManifest {
   }
   const photos = value.photos.map(parsePhoto);
 
-  const remove = value.remove ?? [];
-  if (!Array.isArray(remove) || !remove.every(filled)) {
-    throw new Error('remove must be a list of keys.');
-  }
-  if (new Set(remove).size !== remove.length) throw new Error('remove lists a key twice.');
+  const remove = keyList(value.remove ?? [], 'remove');
 
   const keys = new Set<string>();
   const files = new Set<string>();
@@ -232,6 +252,12 @@ export function parseManifest(value: unknown): AlbumManifest {
     if (keys.has(key)) throw new Error(`The manifest both lists and removes ${key}.`);
   }
 
+  const order = value.order === undefined ? undefined : keyList(value.order, 'order');
+  const orderedAndRemoved = order?.filter((key) => remove.includes(key)) ?? [];
+  if (orderedAndRemoved.length > 0) {
+    throw new Error(`The manifest both orders and removes ${orderedAndRemoved.join(', ')}.`);
+  }
+
   const cover = optionalText(value.cover, 'cover');
   const create = parseCreate(value.create);
   return {
@@ -241,6 +267,7 @@ export function parseManifest(value: unknown): AlbumManifest {
     photos,
     remove,
     ...(cover ? { cover } : {}),
+    ...(order ? { order } : {}),
   };
 }
 
@@ -305,6 +332,37 @@ function refuseRepeats(photos: readonly StoredImage[]) {
     }
     shown.set(asset, photo._key);
   }
+}
+
+/**
+ * The photographs in the manifest's order. It names every photograph the album will hold, so one added
+ * in the Studio since the manifest was written is an error to read, never a photograph dropped or left
+ * at the end. Every photograph is placed by its key, so a stored one without a key, or two sharing one,
+ * is refused rather than lost.
+ */
+function photosInOrder(photos: readonly StoredImage[], order: readonly string[]): StoredImage[] {
+  const byKey = new Map<string, StoredImage>();
+  for (const photo of photos) {
+    if (!photo._key) {
+      throw new Error('A photograph the album holds has no key, so order cannot place it.');
+    }
+    if (byKey.has(photo._key)) {
+      throw new Error(`The album holds the key ${photo._key} twice, so order cannot place both.`);
+    }
+    byKey.set(photo._key, photo);
+  }
+  const unknown = order.filter((key) => !byKey.has(key));
+  if (unknown.length > 0) {
+    throw new Error(`order names ${unknown.join(', ')}, which the album would not hold.`);
+  }
+  const named = new Set(order);
+  const leftOut = [...byKey.keys()].filter((key) => !named.has(key));
+  if (leftOut.length > 0) {
+    throw new Error(
+      `order leaves out ${leftOut.join(', ')}: list every photograph the album will hold.`,
+    );
+  }
+  return order.map((key) => byKey.get(key) as StoredImage);
 }
 
 /**
@@ -392,12 +450,17 @@ export function planAlbum(
       };
     });
 
-  const photos = [...kept, ...added];
+  const keptThenAdded = [...kept, ...added];
+  const photos = manifest.order ? photosInOrder(keptThenAdded, manifest.order) : keptThenAdded;
   refuseRepeats(photos);
   if (!current && photos.length === 0) {
     throw new Error(`${manifest.album} would be created with no photographs: list at least one.`);
   }
   const cover = coverAfter(base.cover, manifest.cover, held, photos, swappedTo);
+
+  const keptKeys = kept.map((photo) => photo._key);
+  const keptAsOrdered = photos.map((photo) => photo._key).filter((key) => keptKeys.includes(key));
+  const opensWith = photos[0]?._key;
 
   const album: StoredAlbum = {
     ...base,
@@ -412,6 +475,9 @@ export function planAlbum(
     added: added.map((photo) => photo._key as string),
     removed: manifest.remove.filter((key) => heldKeys.has(key)),
     absent: manifest.remove.filter((key) => !heldKeys.has(key)),
+    reordered: photos.some((photo, place) => photo._key !== keptThenAdded[place]?._key),
+    heldReordered: keptAsOrdered.some((key, place) => key !== keptKeys[place]),
+    ...(current && opensWith && opensWith !== held[0]?._key ? { opensWith } : {}),
     unchanged: Boolean(current) && sameValue(album, base),
   };
 }
