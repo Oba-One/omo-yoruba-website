@@ -4,6 +4,7 @@ import {
   axeViolations,
   bodyOption as body,
   expectEnquiryRoundTrip,
+  expectJoinRoundTrip,
   expectNoMockWhileOwed,
   goldSharingAView,
   PLACEHOLDER_PROJECT,
@@ -168,6 +169,10 @@ test.describe('the Our Story page', () => {
     for (const trigger of await section.locator('.oy-takepart a[data-enquiry]').all()) {
       await expectEnquiryRoundTrip(page, trigger);
     }
+    // The member row opens the membership form, or the member enquiry where there is none (ADR 0050).
+    const member = section.locator('.oy-takepart a[data-join]');
+    await expect(member).toHaveCount(1);
+    await expectJoinRoundTrip(page, member);
   });
 
   test('keeps one gold action per screen view', async ({ page }) => {

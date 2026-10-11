@@ -109,7 +109,7 @@ export const Enrol: Story = {
   },
 };
 
-/** The Lessons page's member row: the performer accent, the member form, an outline. */
+/** The Lessons page's member row: the performer accent, the membership form, an outline. */
 export const MemberRow: Story = {
   args: {
     door: undefined,

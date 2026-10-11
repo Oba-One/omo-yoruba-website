@@ -4,8 +4,8 @@ import { expect, test } from '@playwright/test';
 // address. Without it (CI's placeholder content, or a dataset that holds none) `#join` opens nothing and a
 // membership button opens the member enquiry. With it `#join` opens the dialog around the form's frame,
 // whose address names the form `join`, the Give Dialog stays closed, and closing strips the hash. A
-// membership button opening the dialog is covered by the JoinDialog stories and element tests: no button on
-// the site opens the membership form until the owner points one at it (open-work D28).
+// membership button opening the dialog is covered by the JoinDialog stories and element tests, and on a page
+// by `our-story.spec.ts`, whose take-part row's member way opens it (open-work D28).
 test('#join opens the Join Dialog on load once Organization details hold the membership form', async ({
   page,
 }) => {

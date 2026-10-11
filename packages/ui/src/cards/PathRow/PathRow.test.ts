@@ -97,9 +97,7 @@ describe('PathRow', () => {
     expect(text(enrol?.querySelector('.oy-path-chip'))).toBe('Enrol');
     expect(enrol?.querySelector('a.oy-btn--primary')?.getAttribute('data-enquiry')).toBe('enrol');
     const member = (await renderToBody(MemberRow)).querySelector('.oy-path');
-    expect(member?.querySelector('a.oy-btn--secondary')?.getAttribute('data-enquiry')).toBe(
-      'member',
-    );
+    expect(member?.querySelector('a.oy-btn--secondary')?.hasAttribute('data-join')).toBe(true);
     const updates = (await renderToBody(Updates)).querySelector('.oy-path');
     const link = updates?.querySelector('a.oy-btn--quiet');
     expect(link?.getAttribute('href')).toBe('#subscribe');

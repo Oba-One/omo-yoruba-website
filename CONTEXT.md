@@ -114,8 +114,9 @@ _Avoid_: CTA section, footer CTA
 
 **Way in**:
 One of the nine things a visitor can do from a take-part band: vendor, sponsor, performer, volunteer,
-table, give, enrol, member, updates. Each has its accent and opens its enquiry kind, the Give Dialog, or
-for updates the newsletter form.
+table, give, enrol, member, updates. Each has its accent and opens its enquiry kind, the Give Dialog, for
+member the Join Dialog (the member enquiry while there is no membership form), or for updates the newsletter
+form.
 _Avoid_: channel, CTA type, path
 
 **Take-part row**:

@@ -121,6 +121,31 @@ export async function expectEnquiryRoundTrip(page: Page, trigger: Locator) {
   await expect(trigger).toBeFocused();
 }
 
+/**
+ * A membership trigger's round trip (ADR 0050): with a Join Dialog on the page the click opens it, Escape
+ * closes it and focus returns to the trigger; without one the click is a full page load that renders the
+ * member enquiry open. Zeffy's requests stay unanswered: the test reads which dialog opens, never the form.
+ */
+export async function expectJoinRoundTrip(page: Page, trigger: Locator) {
+  await page.route('https://www.zeffy.com/**', () => {});
+  await expect(trigger).toHaveAttribute('href', '?enquiry=member#enquiry');
+  // Read before the click: without a Join Dialog the click leaves the page.
+  const hasJoinDialog = (await page.locator('oy-zeffy-dialog[data-form="join"]').count()) > 0;
+  await trigger.scrollIntoViewIfNeeded();
+  await trigger.click();
+  if (!hasJoinDialog) {
+    await expect(page.locator('dialog#enquiry')).toHaveAttribute('open', '');
+    await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS.member.title);
+    return;
+  }
+  const dialog = page.locator('dialog#join');
+  await expect(dialog).toHaveAttribute('open', '');
+  await expect(page.locator('dialog#enquiry')).not.toHaveAttribute('open', '');
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toHaveAttribute('open', '');
+  await expect(trigger).toBeFocused();
+}
+
 /** A layout option as the page root carries it on the body (`data-<name>`). */
 export const bodyOption = (page: Page, name: string) =>
   page.locator('body').getAttribute(`data-${name}`);
