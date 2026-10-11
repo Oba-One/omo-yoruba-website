@@ -309,6 +309,8 @@ describe('buildGalaPage', () => {
   it('resolves the header photograph, cleans the head and writes edit attributes only in draft', () => {
     const view = buildGalaPage(seeded, options);
     expect(view.header.image?.src).toContain('cdn.sanity.io');
+    // The header is a photo band, so its files are the lighter ones (ADR 0055).
+    expect(view.header.image?.srcset).toContain('q=50');
     expect(view.title).toBe('End-of-Year Gala');
     expect(view.edit.treatment).toBeUndefined();
     const draft = buildGalaPage(seeded, { ...options, draft: true });

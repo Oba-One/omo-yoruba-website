@@ -33,6 +33,7 @@ import vendorSuya from '../../../../docs/design/design/images/w2/odunde-2026-ven
 import teachingSession from '../../../../docs/design/design/images/w2/odunde-2026-yoruba-language-teaching-session.jpg?url';
 import summerCampArt from '../../../../docs/design/design/images/w2/summer-camp-kids-art.jpg?url';
 import summerCampArtClass from '../../../../docs/design/design/images/w2/summer-camp-kids-art-class.jpg?url';
+import type { ResolvedImage } from '../media/image';
 
 export interface FixturePhoto {
   src: string;
@@ -153,3 +154,12 @@ export const PHOTOS = {
     alt: 'An elder in gèlè sits among a dozen children holding up their coloured drawings in front of the banner',
   },
 } as const satisfies Record<string, FixturePhoto>;
+
+/**
+ * A register photograph in the shape a page hands a component for a Studio one: a resolved image
+ * with its width, its height and a `srcset`, which is when a component writes `sizes`. The stories
+ * hold the one file, so it is the only candidate, at its own width.
+ */
+export function studioPhoto(photo: FixturePhoto, width: number, height: number): ResolvedImage {
+  return { src: photo.src, srcset: `${photo.src} ${width}w`, width, height, alt: photo.alt };
+}
