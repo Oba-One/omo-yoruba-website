@@ -1,5 +1,8 @@
 # The membership form opens in a Join Dialog, and every Zeffy form shares one dialog shell
 
+Amended by ADR 0052: a third dialog, the Tickets Dialog, frames the Gala edition's ticket form; the Gala page
+mounts it, and `#tickets` opens it on load.
+
 Built on 10 October 2026 at the owner's request: they gave the embed code of the organization's Zeffy membership
 form (`/embed/ticketing/omo-yoruba-of-southern-california-memberships`: one membership at $50, renewing monthly, with
 an optional gift) as "the membership form we can embed on the website", and asked for the site's own styling on

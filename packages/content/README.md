@@ -83,6 +83,8 @@ The spec is `docs/design/CONTENT-MODEL.md`. Where the built model differs, an AD
 - ADR 0051: an album holds `videos`, a list of the shared `video` object (a title, the YouTube address, an
   optional still and who made it) that the site plays from YouTube once a visitor presses play; optional, so
   no Pending row and no To do row.
+- ADR 0052: an edition's `ticketsUrl` is its ticket link, a Zeffy ticket form's embed address or any other
+  link, and no longer Eventbrite's alone.
 - With no ADR of their own: `cta` has `kind` plus `enquiryKind`; `stat` stores its figure flat
   (`value`, `label`, `source`); `scheduleItem.title` is `bilingual` with English required; and
   `festivalPage.whatItIsImage`, `programsPage.culturalExchange.howToJoin` and

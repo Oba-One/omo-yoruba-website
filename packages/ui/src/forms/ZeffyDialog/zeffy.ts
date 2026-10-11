@@ -12,11 +12,12 @@
 export const ZEFFY_ORIGIN = 'https://www.zeffy.com';
 
 /**
- * The site's Zeffy forms: the donation form in the Give Dialog and the membership form in the Join Dialog.
- * A form's key names its dialog (`dialog#give`), its triggers (`data-give`), its hash (`#give`), its track
- * events (`give_opened`) and the form itself in Zeffy's messages (`embedId=give`).
+ * The site's Zeffy forms: the donation form in the Give Dialog, the membership form in the Join Dialog and
+ * the Gala edition's ticket form in the Tickets Dialog. A form's key names its dialog (`dialog#give`), its
+ * triggers (`data-give`), its hash (`#give`), its track events (`give_opened`) and the form itself in
+ * Zeffy's messages (`embedId=give`).
  */
-export const ZEFFY_FORMS = ['give', 'join'] as const;
+export const ZEFFY_FORMS = ['give', 'join', 'tickets'] as const;
 export type ZeffyForm = (typeof ZEFFY_FORMS)[number];
 
 /**

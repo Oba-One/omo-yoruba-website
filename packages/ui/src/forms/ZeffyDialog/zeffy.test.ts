@@ -12,7 +12,7 @@ const MEMBERSHIPS = 'an-organization-memberships';
 describe('the contract', () => {
   it("names Zeffy's origin and the site's forms, each the id of its own frame", () => {
     expect(ZEFFY_ORIGIN).toBe('https://www.zeffy.com');
-    expect(ZEFFY_FORMS).toEqual(['give', 'join']);
+    expect(ZEFFY_FORMS).toEqual(['give', 'join', 'tickets']);
   });
 });
 

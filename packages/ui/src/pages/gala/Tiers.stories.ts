@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The `tiers` option: the ticket tiers side by side in columns, or stacked as rows with the button on the right. The tiers are placeholders and the Eventbrite link is still owed, so the buy-now tiers show its chip.',
+          'The `tiers` option: the ticket tiers side by side in columns, or stacked as rows with the button on the right. The tiers are placeholders and the ticket link is still owed, so the buy-now tiers show its chip.',
       },
     },
   },

@@ -99,7 +99,7 @@ export const seam: SlotValue = { component: Divider, props: { kind: 'seam' } };
 
 /**
  * Seats and tables on the tint as the `tiers` option draws them, in the Studio's order: placeholder tiers
- * (the Studio holds none), no Eventbrite link yet, so the buy-now tiers show the chip where their button goes.
+ * (the Studio holds none), no ticket link yet, so the buy-now tiers show the chip where their button goes.
  */
 export const seats = (tiers: 'columns' | 'rows'): SlotValue => ({
   component: Section,
