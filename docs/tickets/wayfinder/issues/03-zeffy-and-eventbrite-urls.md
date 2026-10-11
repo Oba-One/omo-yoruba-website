@@ -33,3 +33,15 @@ where its button goes. The Zeffy half is unchanged.
 has read since Phase 3, when the Give Dialog's island began reading the site settings; the variable
 leaves the env schema, the runbook and the wizard (open-work E6). The Zeffy link is still owed:
 `development`'s site settings hold none (checked 27 September).
+
+10 October 2026. The Zeffy half is answered. The owner gave the form's pop-up button code and asked for
+Zeffy across the site; its link, without the pop-up's `modal=true`, went into Organization details and was
+published that day (`https://www.zeffy.com/embed/donation-form/donate-to-omo-yoruba-of-southern-california`).
+Checked on the public site, on the homepage and Donate: the dialog is in its embed mode, its frame carries
+the v2 parameters, Zeffy's connected message arrived 1.3 seconds after the dialog opened, the frame took the
+height Zeffy reported (542px, over the 538px it starts at in that window), and the link under the form goes
+to Zeffy's own page for it. The form itself offers one-time and monthly gifts and says "You'll receive a tax
+receipt for making a donation.", which answers the first half of open-work C12's question. Its suggested
+amounts are set in Zeffy and changed during the day, so none is recorded here. The three owed facts on Donate
+(fees, receipt, monthly) are the owner's to word. The Eventbrite half stays open (C5). Open-work rows
+C1 and C12 take this once pull request 35, which edits both, is merged.
