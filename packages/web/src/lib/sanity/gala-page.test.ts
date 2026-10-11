@@ -272,6 +272,28 @@ describe('buildGalaPage', () => {
     expect(buildGalaPage(null, options).title).toBe('End-of-Year Gala');
   });
 
+  it("frames the edition's ticket link in the Tickets Dialog only when it is a Zeffy ticket form", () => {
+    const withLink = (ticketsUrl: string) =>
+      buildGalaPage(
+        {
+          ...seeded,
+          editions: [edition('event-gala-2026', 2026, { ticketsUrl })],
+        } as unknown as GalaPageData,
+        options,
+      ).seats;
+    const zeffy = withLink('https://www.zeffy.com/embed/ticketing/a-gala?modal=true');
+    expect(zeffy.ticketsForm).toBe('https://www.zeffy.com/embed/ticketing/a-gala?modal=true');
+    expect(zeffy.ticketsPage).toBe('https://www.zeffy.com/ticketing/a-gala');
+    for (const other of [
+      'https://www.zeffy.com/ticketing/a-gala',
+      'https://www.zeffy.com/embed/v2/zeffy-embed.js',
+      'http://www.zeffy.com/embed/ticketing/a-gala',
+      'https://www.zeffy.com.example.org/embed/ticketing/a-gala',
+    ]) {
+      expect(withLink(other).ticketsForm, other).toBeUndefined();
+    }
+  });
+
   it('carries the seats: the tiers with their edit attributes, the options and the edition link', () => {
     const view = buildGalaPage(seeded, options);
     expect(view.seats).toMatchObject({
@@ -279,7 +301,7 @@ describe('buildGalaPage', () => {
       layout: 'columns',
       ticketsUrl: undefined,
       pending: 'three prices and what each includes',
-      ticketsPending: 'the Eventbrite link',
+      ticketsPending: 'the ticket link',
       pricePending: 'the price',
       includesPending: 'what the ticket includes',
     });
@@ -297,7 +319,25 @@ describe('buildGalaPage', () => {
     const draft = buildGalaPage(sold, { ...options, draft: true });
     expect(draft.seats.intro).toBe('[ intro ]');
     expect(draft.seats.ticketsUrl).toBe('https://www.eventbrite.com/e/0');
+    // Eventbrite is a link, never a frame: no Tickets Dialog.
+    expect(draft.seats.ticketsForm).toBeUndefined();
+    expect(draft.seats.ticketsPage).toBeUndefined();
     expect(draft.seats.layout).toBe('rows');
+    // No table tier, so the section's heading names seats alone.
+    expect(view.seats.tables).toBe(false);
+    expect(draft.seats.tables).toBe(false);
+    const withTable = buildGalaPage(
+      {
+        ...seeded,
+        editions: [
+          edition('event-gala-2026', 2026, {
+            tiers: [tier('table', '[ table price ]', 'enquiry')],
+          }),
+        ],
+      } as unknown as GalaPageData,
+      options,
+    );
+    expect(withTable.seats.tables).toBe(true);
     expect(draft.seats.tiers[0]?.edit).toContain('id=seat;type=ticketTier;path=name');
   });
 
@@ -411,5 +451,61 @@ describe('buildGalaPage', () => {
     expect(view.past.slides).toEqual([]);
     expect(view.past.album).toBeUndefined();
     expect(buildGalaPage(seeded, options).past.shown).toBe(true);
+  });
+
+  describe('the past album video (ADR 0051)', () => {
+    const video = (key: string, id: string) => ({
+      _key: key,
+      title: `Gala 2025 ${key}`,
+      url: `https://www.youtube.com/watch?v=${id}`,
+      still: null,
+      credit: null,
+      creditUrl: null,
+    });
+    const withVideos = (videos: unknown[] | null) =>
+      ({
+        ...seeded,
+        editions: seeded.editions?.map((event) =>
+          event?.album ? { ...event, album: { ...event.album, videos } } : event,
+        ),
+      }) as GalaPageData;
+
+    it("shows the first video of the newest past gala's album, its still the first photograph", () => {
+      const { videos } = buildGalaPage(
+        withVideos([video('toast', 'AbC_dEf-123'), video('dance', 'ZyX_wVu-987')]),
+        options,
+      ).past;
+      expect(videos).toHaveLength(1);
+      const [first] = videos;
+      expect(first).toMatchObject({
+        key: 'toast',
+        title: 'Gala 2025 toast',
+        watchHref: 'https://www.youtube.com/watch?v=AbC_dEf-123',
+        embedSrc: 'https://www.youtube-nocookie.com/embed/AbC_dEf-123?autoplay=1&rel=0',
+      });
+      expect(first?.still?.src).toContain('/0a1b2c3d-1100x728.jpg');
+      expect(first?.credit).toBeUndefined();
+    });
+
+    it('shows none for an album without videos, for no album, or while the gallery holds the albums', () => {
+      expect(buildGalaPage(seeded, options).past.videos).toEqual([]);
+      expect(buildGalaPage(withVideos(null), options).past.videos).toEqual([]);
+      expect(buildGalaPage(null, options).past.videos).toEqual([]);
+      const held = {
+        ...withVideos([video('toast', 'AbC_dEf-123')]),
+        galleryLayout: { state: 'soon' },
+      } as GalaPageData;
+      expect(buildGalaPage(held, options).past.videos).toEqual([]);
+    });
+
+    it("reaches the video from click-to-edit on the album's document in draft mode", () => {
+      const view = buildGalaPage(withVideos([video('toast', 'AbC_dEf-123')]), {
+        ...options,
+        draft: true,
+      });
+      expect(view.past.videos[0]?.edit).toContain(
+        'id=album-gala-2025;type=album;path=videos:toast;',
+      );
+    });
   });
 });

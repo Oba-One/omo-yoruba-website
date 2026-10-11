@@ -371,7 +371,7 @@ export const PENDING: readonly PendingEntry[] = [
     filter: GALA,
     edition: 'next',
     where: 'Gala, tickets',
-    what: 'the Eventbrite link',
+    what: 'the ticket link',
   },
   // The Gala page shows the next edition's tiers only.
   {

@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
-import { openEnquiry } from './helpers';
+import { albumTiles, NO_SUCH_ALBUM, openEnquiry } from './helpers';
 
 const audit = async (page: Page) => {
   // The bottom sheet slides up over 300ms; a half-faded panel is not the contrast to measure.
@@ -56,6 +56,14 @@ test.describe('axe on the layout', () => {
 // leave out; heading order is the one a page composition can break (Phase 5: the footer's headings
 // followed Odunde's last h2 as h4s).
 test('headings never skip a level on the content routes', async ({ page }) => {
+  const headingsInOrder = async (route: string) => {
+    await page.goto(route);
+    const results = await new AxeBuilder({ page }).withRules(['heading-order']).analyze();
+    expect(
+      results.violations.map((violation) => violation.nodes.map((node) => node.target.join(' '))),
+      route,
+    ).toEqual([]);
+  };
   for (const route of [
     '/',
     '/odunde',
@@ -68,14 +76,12 @@ test('headings never skip a level on the content routes', async ({ page }) => {
     '/our-story',
     '/donate',
     '/gallery',
-    '/gallery/gala-2025',
-    '/no-such-page',
   ]) {
-    await page.goto(route);
-    const results = await new AxeBuilder({ page }).withRules(['heading-order']).analyze();
-    expect(
-      results.violations.map((violation) => violation.nodes.map((node) => node.target.join(' '))),
-      route,
-    ).toEqual([]);
+    await headingsInOrder(route);
   }
+  // The album the gallery lists first, read while the gallery is on screen (review ticket R136); with none
+  // listed, the page the album route answers in its place.
+  const [album] = await albumTiles(page);
+  await headingsInOrder(album?.path ?? NO_SUCH_ALBUM);
+  await headingsInOrder('/no-such-page');
 });

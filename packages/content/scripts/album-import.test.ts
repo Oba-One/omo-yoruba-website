@@ -122,6 +122,19 @@ describe('reading a manifest', () => {
     expect(() => parseManifest({ ...valid, remove: ['toast', 'toast'] })).toThrow('twice');
   });
 
+  it('reads `order` as a list of keys, and refuses a key listed twice or one it also removes', () => {
+    const ordered = parseManifest({ ...valid, order: ['toast', 'arrivals'] });
+    expect(ordered.order).toEqual(['toast', 'arrivals']);
+    expect(parseManifest(valid)).not.toHaveProperty('order');
+    expect(() => parseManifest({ ...valid, order: 'arrivals' })).toThrow('order must be a list');
+    expect(() => parseManifest({ ...valid, order: ['toast', 'toast'] })).toThrow(
+      'order lists toast twice',
+    );
+    expect(() =>
+      parseManifest({ ...valid, remove: ['toast', 'cake'], order: ['cake', 'arrivals', 'toast'] }),
+    ).toThrow('both orders and removes cake, toast');
+  });
+
   it('refuses a file outside the source folder', () => {
     for (const file of ['../elsewhere/RCF-001.jpg', '/photos/RCF-001.jpg', 'a/../../RCF-001.jpg']) {
       expect(() => parseManifest({ ...valid, photos: [{ key: 'arrivals', file }] })).toThrow(
@@ -224,6 +237,8 @@ describe('an album that exists', () => {
       assetFor,
     );
     expect(plan.added).toEqual(['dancing', 'buffet']);
+    expect(plan).toMatchObject({ reordered: false, heldReordered: false });
+    expect(plan).not.toHaveProperty('opensWith');
     expect(plan.album.photos?.map((photo) => photo._key)).toEqual([
       'arrivals',
       'toast',
@@ -237,6 +252,80 @@ describe('an album that exists', () => {
       alt: 'Two guests dance',
       caption: 'On the floor',
     });
+  });
+
+  it("puts the photographs in the manifest's order when it gives one, new ones among those it holds", () => {
+    const plan = planAlbum(
+      manifest({ photos: [DANCING], order: ['arrivals', 'dancing', 'toast'] }),
+      stored(),
+      assetFor,
+    );
+    expect(plan.album.photos?.map((photo) => photo._key)).toEqual(['arrivals', 'dancing', 'toast']);
+    // A new photograph among the held ones, which follow one another as before.
+    expect(plan).toMatchObject({ reordered: true, heldReordered: false, unchanged: false });
+    expect(plan).not.toHaveProperty('opensWith');
+  });
+
+  it('moves the photographs it holds on an order alone, words and framing kept, and finds nothing to do the second time', () => {
+    const turned = manifest({ order: ['toast', 'arrivals'] });
+    const first = planAlbum(turned, stored(), assetFor);
+    expect(first.album.photos).toEqual([...(stored().photos ?? [])].reverse());
+    // The plan says the Studio's order changes, and which photograph now opens the album.
+    expect(first).toMatchObject({ reordered: true, heldReordered: true, opensWith: 'toast' });
+    const second = planAlbum(turned, { ...first.album, _rev: 'rev-2' }, assetFor);
+    expect(second).toMatchObject({ reordered: false, heldReordered: false, unchanged: true });
+    expect(second).not.toHaveProperty('opensWith');
+  });
+
+  it('orders what the album will hold: without a photograph it removes, with a swapped one as it was framed', () => {
+    const plan = planAlbum(
+      manifest({
+        photos: [{ key: 'arrivals', file: 'RCF-001.jpg' }, DANCING],
+        remove: ['toast'],
+        order: ['dancing', 'arrivals'],
+      }),
+      stored(),
+      assetFor,
+    );
+    expect(plan.album.photos?.map((photo) => photo._key)).toEqual(['dancing', 'arrivals']);
+    expect(plan.album.photos?.[1]).toEqual({
+      _key: 'arrivals',
+      ...image('image-RCF-001-jpg', 'Guests arrive', FRAMING),
+    });
+    expect(plan.swapped).toEqual(['arrivals']);
+    expect(plan.removed).toEqual(['toast']);
+    expect(plan.reordered).toBe(true);
+  });
+
+  it('refuses an order that leaves a photograph out, or names one the album would not hold', () => {
+    expect(() =>
+      planAlbum(manifest({ photos: [DANCING], order: ['arrivals', 'toast'] }), stored(), assetFor),
+    ).toThrow('order leaves out dancing');
+    expect(() =>
+      planAlbum(manifest({ order: ['arrivals', 'toast', 'speeches'] }), stored(), assetFor),
+    ).toThrow('order names speeches');
+    // A photograph added in the Studio after the manifest was written, and an order that names nothing.
+    expect(() => planAlbum(manifest({ order: ['arrivals'] }), stored(), assetFor)).toThrow(
+      'order leaves out toast',
+    );
+    expect(() => planAlbum(manifest({ order: [] }), stored(), assetFor)).toThrow(
+      'order leaves out arrivals, toast',
+    );
+  });
+
+  it('refuses to order an album that holds a photograph without a key, or one key twice', () => {
+    const [arrivals, toast] = stored().photos ?? [];
+    const { _key: _dropped, ...keyless } = toast ?? {};
+    const order = manifest({ order: ['arrivals', 'toast'] });
+    expect(() =>
+      planAlbum(order, { ...stored(), photos: [arrivals ?? {}, keyless] }, assetFor),
+    ).toThrow('has no key');
+    const twice = [arrivals ?? {}, toast ?? {}, { ...toast, asset: { _ref: 'image-web-c' } }];
+    expect(() => planAlbum(order, { ...stored(), photos: twice }, assetFor)).toThrow(
+      'holds the key toast twice',
+    );
+    // Without an order the import leaves such an album as it found it.
+    expect(planAlbum(manifest(), { ...stored(), photos: twice }, assetFor).unchanged).toBe(true);
   });
 
   it('refuses a new photograph without alt text, and one without a caption', () => {
@@ -433,6 +522,23 @@ describe('an album that does not exist yet', () => {
     );
     expect(plan.album.event).toEqual({ _type: 'reference', _ref: 'event-odunde-2027' });
     expect(plan.album).not.toHaveProperty('date');
+  });
+
+  it('takes its order from the manifest too, and finds nothing to do the second time', () => {
+    const ordered = manifest({
+      create: { title: 'Gala 2024', slug: 'gala-2024' },
+      photos: [
+        DANCING,
+        { key: 'buffet', file: 'RCF-148.jpg', alt: 'Trays of rice', caption: 'The buffet' },
+      ],
+      order: ['buffet', 'dancing'],
+    });
+    const first = planAlbum(ordered, undefined, assetFor);
+    expect(first.album.photos?.map((photo) => photo._key)).toEqual(['buffet', 'dancing']);
+    // A new album has no order to change and no opening photograph to replace.
+    expect(first).toMatchObject({ created: true, reordered: true, heldReordered: false });
+    expect(first).not.toHaveProperty('opensWith');
+    expect(planAlbum(ordered, { ...first.album, _rev: 'rev-1' }, assetFor).unchanged).toBe(true);
   });
 
   it('is refused without `create`, and without a photograph', () => {

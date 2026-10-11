@@ -233,7 +233,7 @@ export type OyImage = {
 export type Cta = {
   _type: "cta";
   label?: string;
-  kind?: "enquiry" | "give" | "url" | "anchor";
+  kind?: "enquiry" | "give" | "join" | "url" | "anchor";
   enquiryKind?: "sponsor" | "performer" | "table" | "member" | "volunteer" | "enrol" | "vendor" | "contact";
   href?: string;
   newTab?: boolean;
@@ -273,6 +273,9 @@ export type Album = {
   photos?: Array<{
     _key: string;
   } & OyImage>;
+  videos?: Array<{
+    _key: string;
+  } & Video>;
   credit?: PhotographerReference;
   creditConfirmed?: boolean;
   consentNote?: string;
@@ -915,6 +918,7 @@ export type SiteSettings = {
   newsletterTitle?: string;
   newsletterBlurb?: string;
   zeffyEmbedUrl?: string;
+  zeffyMembershipUrl?: string;
   analyticsEnabled?: boolean;
   theme?: "adire" | "calm" | "festival";
 };
@@ -971,6 +975,36 @@ export type Initiative = {
   serves?: string;
   since?: string;
   next?: string;
+};
+
+export type Video = {
+  _type: "video";
+  title?: string;
+  url?: string;
+  still?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  credit?: PhotographerReference;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
 };
 
 export type TakePartRow = {
@@ -1049,22 +1083,6 @@ export type Photographer = {
   name?: string;
   defaultCredit?: string;
   url?: string;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -1164,11 +1182,11 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields | EnquiryVendorFields | EnquiryEnrolFields | EnquiryVolunteerFields | EnquiryMemberFields | EnquiryTableFields | EnquiryPerformerFields | EnquirySponsorFields | LintReport | SanityFileAssetReference | GovernanceDoc | HometownAssociation | Door | SanityImageAssetReference | PhotographerReference | OyImage | Cta | Partner | EventReference | Album | Slug | Honoree | SponsorLevel | TicketTier | Event | SourcedFigure | GalleryPage | Seo | PageHeader | DoorReference | DonatePage | StoryPage | BlockContent | StatReference | TestimonialReference | ImpactPage | GetInvolvedPage | Stat | CollectivePage | Testimonial | PersonReference | LessonsPage | Person | ProgramReference | ProgramsPage | GalaPage | FestivalPage | Homepage | Bilingual | SiteSettings | GivingLevel | TimelineEntry | Outcome | Program | Initiative | TakePartRow | PullQuote | ContactRole | FaqItem | ZoneReference | ScheduleItem | Zone | Fact | Photographer | SanityImageCrop | SanityImageHotspot | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
+export type AllSanitySchemaTypes = Subscriber | Enquiry | EnquiryContactFields | EnquiryVendorFields | EnquiryEnrolFields | EnquiryVolunteerFields | EnquiryMemberFields | EnquiryTableFields | EnquiryPerformerFields | EnquirySponsorFields | LintReport | SanityFileAssetReference | GovernanceDoc | HometownAssociation | Door | SanityImageAssetReference | PhotographerReference | OyImage | Cta | Partner | EventReference | Album | Slug | Honoree | SponsorLevel | TicketTier | Event | SourcedFigure | GalleryPage | Seo | PageHeader | DoorReference | DonatePage | StoryPage | BlockContent | StatReference | TestimonialReference | ImpactPage | GetInvolvedPage | Stat | CollectivePage | Testimonial | PersonReference | LessonsPage | Person | ProgramReference | ProgramsPage | GalaPage | FestivalPage | Homepage | Bilingual | SiteSettings | GivingLevel | TimelineEntry | Outcome | Program | Initiative | Video | SanityImageCrop | SanityImageHotspot | TakePartRow | PullQuote | ContactRole | FaqItem | ZoneReference | ScheduleItem | Zone | Fact | Photographer | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
 
 // Source: src/queries/event-pages.ts
 // Variable: festivalPageQuery
-// Query: *[_id == "festivalPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  extraFacts[]{_key, label, value, note},  whatItIs,  whatItIsImage{_type, alt, caption, hotspot, crop, asset},  zonesIntro,  planYourVisit[]{_key, label, value, note},  takePart[]{_key, way, chip, title, line, label},  pastYearsIntro,  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},  partnersIntro,  "editions": *[_type == "event" && kind == "festival"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    venue{name, address, line},    cost,    summary,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    vendorTerms{fees, closeDate, decisionDate, permitNote},    attendance{value, label, source},    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "creditUrl": credit->url,      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "zones": *[_type == "zone" && active != false] | order(order asc){    _id,    name{yo, en},    line,    image{_type, alt, caption, hotspot, crop, asset}  },  "partners": *[_type == "partner" && "odunde" in scope] | order(name asc){    _id,    name,    url,    kind,    logo{_type, alt, caption, hotspot, crop, asset}  },  layout{phead, zones, schedule, labels},  seo{title, description}}
+// Query: *[_id == "festivalPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  extraFacts[]{_key, label, value, note},  whatItIs,  whatItIsImage{_type, alt, caption, hotspot, crop, asset},  zonesIntro,  planYourVisit[]{_key, label, value, note},  takePart[]{_key, way, chip, title, line, label},  pastYearsIntro,  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},  partnersIntro,  "editions": *[_type == "event" && kind == "festival"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    venue{name, address, line},    cost,    summary,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    vendorTerms{fees, closeDate, decisionDate, permitNote},    attendance{value, label, source},    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "creditUrl": credit->url,      cover{_type, alt, caption, hotspot, crop, asset},      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset},      "videos": videos[]{        _key,        title,        url,        still{_type, hotspot, crop, asset},        "credit": coalesce(credit->defaultCredit, credit->name),        "creditUrl": credit->url      }    }  },  "zones": *[_type == "zone" && active != false] | order(order asc){    _id,    name{yo, en},    line,    image{_type, alt, caption, hotspot, crop, asset}  },  "partners": *[_type == "partner" && "odunde" in scope] | order(name asc){    _id,    name,    url,    kind,    logo{_type, alt, caption, hotspot, crop, asset}  },  layout{phead, zones, schedule, labels},  seo{title, description}}
 export type FestivalPageQueryResult = {
   header: null;
   primaryAction: null;
@@ -1230,6 +1248,14 @@ export type FestivalPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1238,6 +1264,19 @@ export type FestivalPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -1334,6 +1373,14 @@ export type FestivalPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1342,6 +1389,19 @@ export type FestivalPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -1404,7 +1464,7 @@ export type FestivalPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1412,7 +1472,7 @@ export type FestivalPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1474,6 +1534,14 @@ export type FestivalPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1482,6 +1550,19 @@ export type FestivalPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -1544,7 +1625,7 @@ export type FestivalPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1552,7 +1633,7 @@ export type FestivalPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1621,6 +1702,14 @@ export type FestivalPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1629,6 +1718,19 @@ export type FestivalPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -1691,7 +1793,7 @@ export type FestivalPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1699,7 +1801,7 @@ export type FestivalPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1768,6 +1870,14 @@ export type FestivalPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1776,6 +1886,19 @@ export type FestivalPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -1838,7 +1961,7 @@ export type FestivalPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1846,7 +1969,7 @@ export type FestivalPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1932,6 +2055,14 @@ export type FestivalPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -1940,6 +2071,19 @@ export type FestivalPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -1987,7 +2131,7 @@ export type FestivalPageQueryResult = {
 
 // Source: src/queries/event-pages.ts
 // Variable: galaPageQuery
-// Query: *[_id == "galaPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  eveningIntro,  tiersIntro,  sponsorIntro,  honoreesIntro,  pastIntro,  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},  takePart[]{_key, way, chip, title, line, label},  "editions": *[_type == "event" && kind == "gala"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    doors,    venue{name, address, line},    dress,    ticketsUrl,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    "tiers": *[_type == "ticketTier" && event._ref == ^._id] | order(order asc){      _id,      name,      price,      includes,      variant,      featured    },    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "creditUrl": credit->url,      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}    }  },  "sponsorLevels": *[_type == "sponsorLevel" && scope in ["gala", "org"]] | order(order asc){    _id,    name,    amount,    recognition,    "eventId": event._ref  },  "honorees": *[_type == "honoree" && event->kind == "gala"] | order(name asc){    _id,    name,    award,    blurb,    image{_type, alt, caption, hotspot, crop, asset},    "eventId": event._ref  },  layout{treatment, tiers, awards, schedule, past, labels},  seo{title, description}}
+// Query: *[_id == "galaPage"][0]{  header{    kicker{yo, en},    title,    line,    image{_type, alt, caption, hotspot, crop, asset}  },  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  eveningIntro,  tiersIntro,  sponsorIntro,  honoreesIntro,  pastIntro,  "galleryLayout": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state},  takePart[]{_key, way, chip, title, line, label},  "editions": *[_type == "event" && kind == "gala"] | order(edition desc){    _id,    kind,    title,    edition,    start,    end,    doors,    venue{name, address, line},    dress,    ticketsUrl,    schedule[]{_key, time, day, title{yo, en}, detail, "zone": zone->name{yo, en}},    "tiers": *[_type == "ticketTier" && event._ref == ^._id] | order(order asc){      _id,      name,      price,      includes,      variant,      featured    },    "album": *[_type == "album" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{      _id,      title,      "slug": slug.current,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name),      "creditUrl": credit->url,      cover{_type, alt, caption, hotspot, crop, asset},      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset},      "videos": videos[]{        _key,        title,        url,        still{_type, hotspot, crop, asset},        "credit": coalesce(credit->defaultCredit, credit->name),        "creditUrl": credit->url      }    }  },  "sponsorLevels": *[_type == "sponsorLevel" && scope in ["gala", "org"]] | order(order asc){    _id,    name,    amount,    recognition,    "eventId": event._ref  },  "honorees": *[_type == "honoree" && event->kind == "gala"] | order(name asc){    _id,    name,    award,    blurb,    image{_type, alt, caption, hotspot, crop, asset},    "eventId": event._ref  },  layout{treatment, tiers, awards, schedule, past, labels},  seo{title, description}}
 export type GalaPageQueryResult = {
   header: null;
   primaryAction: null;
@@ -2045,6 +2189,14 @@ export type GalaPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2053,6 +2205,19 @@ export type GalaPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -2137,6 +2302,14 @@ export type GalaPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2145,6 +2318,19 @@ export type GalaPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -2201,7 +2387,7 @@ export type GalaPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2209,7 +2395,7 @@ export type GalaPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2267,6 +2453,14 @@ export type GalaPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2275,6 +2469,19 @@ export type GalaPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -2331,7 +2538,7 @@ export type GalaPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2339,7 +2546,7 @@ export type GalaPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2404,6 +2611,14 @@ export type GalaPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2412,6 +2627,19 @@ export type GalaPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -2468,7 +2696,7 @@ export type GalaPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2476,7 +2704,7 @@ export type GalaPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2541,6 +2769,14 @@ export type GalaPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2549,6 +2785,19 @@ export type GalaPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -2605,7 +2854,7 @@ export type GalaPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2613,7 +2862,7 @@ export type GalaPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2678,6 +2927,14 @@ export type GalaPageQueryResult = {
       creditConfirmed: boolean | null;
       credit: string | null;
       creditUrl: string | null;
+      cover: {
+        _type: "oyImage";
+        alt: string | null;
+        caption: string | null;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
       photos: Array<{
         _key: string;
         _type: "oyImage";
@@ -2686,6 +2943,19 @@ export type GalaPageQueryResult = {
         hotspot: SanityImageHotspot | null;
         crop: SanityImageCrop | null;
         asset: SanityImageAssetReference | null;
+      }> | null;
+      videos: Array<{
+        _key: string;
+        title: string | null;
+        url: string | null;
+        still: {
+          _type: "image";
+          hotspot: SanityImageHotspot | null;
+          crop: SanityImageCrop | null;
+          asset: SanityImageAssetReference | null;
+        } | null;
+        credit: string | null;
+        creditUrl: string | null;
       }> | null;
     } | null;
   }>;
@@ -2739,7 +3009,7 @@ export type GalleryPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2747,7 +3017,7 @@ export type GalleryPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2794,7 +3064,7 @@ export type GalleryPageQueryResult = {
 
 // Source: src/queries/gallery.ts
 // Variable: albumPageQuery
-// Query: {  "album": *[_type == "album" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    date,    consentNote,    creditConfirmed,    "credit": coalesce(credit->defaultCredit, credit->name),    "creditUrl": credit->url,    "edition": event->{"year": edition, kind},    "photos": photos[]{      _key,      _type,      alt,      caption,      hotspot,      crop,      asset,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name, creditNote),      "creditUrl": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)    }  },  "page": *[_type == "galleryPage" && _id == "galleryPage"][0]{    header{kicker{yo, en}},    creditsAndConsent,    layout{captions, state}  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{generalEmail}}
+// Query: {  "album": *[_type == "album" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    date,    consentNote,    creditConfirmed,    "credit": coalesce(credit->defaultCredit, credit->name),    "creditUrl": credit->url,    "edition": event->{"year": edition, kind},    cover{_type, alt, caption, hotspot, crop, asset},    "videos": videos[]{      _key,      title,      url,      still{_type, hotspot, crop, asset},      "credit": coalesce(credit->defaultCredit, credit->name),      "creditUrl": credit->url    },    "photos": photos[]{      _key,      _type,      alt,      caption,      hotspot,      crop,      asset,      creditConfirmed,      "credit": coalesce(credit->defaultCredit, credit->name, creditNote),      "creditUrl": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)    }  },  "page": *[_type == "galleryPage" && _id == "galleryPage"][0]{    header{kicker{yo, en}},    creditsAndConsent,    layout{captions, state}  },  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{generalEmail}}
 export type AlbumPageQueryResult = {
   album: {
     _id: string;
@@ -2809,6 +3079,27 @@ export type AlbumPageQueryResult = {
       year: number | null;
       kind: "collective" | "festival" | "gala" | null;
     } | null;
+    cover: {
+      _type: "oyImage";
+      alt: string | null;
+      caption: string | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      asset: SanityImageAssetReference | null;
+    } | null;
+    videos: Array<{
+      _key: string;
+      title: string | null;
+      url: string | null;
+      still: {
+        _type: "image";
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        asset: SanityImageAssetReference | null;
+      } | null;
+      credit: string | null;
+      creditUrl: string | null;
+    }> | null;
     photos: Array<{
       _key: string;
       _type: "oyImage";
@@ -2879,7 +3170,7 @@ export type HomepageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -2928,7 +3219,7 @@ export type HomepageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -2994,7 +3285,7 @@ export type HomepageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3048,7 +3339,7 @@ export type HomepageQueryResult = {
     } | null;
     primaryAction: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3056,7 +3347,7 @@ export type HomepageQueryResult = {
     secondaryActions: Array<{
       _key: string;
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3102,7 +3393,7 @@ export type HomepageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3141,7 +3432,7 @@ export type HomepageQueryResult = {
       bullets: Array<string> | null;
       action: {
         label: string | null;
-        kind: "anchor" | "enquiry" | "give" | "url" | null;
+        kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
         enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
         href: string | null;
         newTab: boolean | null;
@@ -3185,7 +3476,7 @@ export type ProgramsPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3193,7 +3484,7 @@ export type ProgramsPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3229,7 +3520,7 @@ export type ProgramsPageQueryResult = {
       }> | null;
       action: {
         label: string | null;
-        kind: "anchor" | "enquiry" | "give" | "url" | null;
+        kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
         enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
         href: string | null;
         newTab: boolean | null;
@@ -3276,7 +3567,7 @@ export type ProgramsPageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3307,7 +3598,7 @@ export type LessonsPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3315,7 +3606,7 @@ export type LessonsPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3392,7 +3683,7 @@ export type CollectivePageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3400,7 +3691,7 @@ export type CollectivePageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3477,7 +3768,7 @@ export type CollectivePageQueryResult = {
 
 // Source: src/queries/site.ts
 // Variable: siteSettingsQuery
-// Query: *[_id == "siteSettings"][0]{  orgName,  ein,  address,  phone,  generalEmail,  contacts[]{role, name, email, phone, responds},  socials[]{network, url},  newsletterTitle,  newsletterBlurb,  zeffyEmbedUrl,  analyticsEnabled,  theme}
+// Query: *[_id == "siteSettings"][0]{  orgName,  ein,  address,  phone,  generalEmail,  contacts[]{role, name, email, phone, responds},  socials[]{network, url},  newsletterTitle,  newsletterBlurb,  zeffyEmbedUrl,  zeffyMembershipUrl,  analyticsEnabled,  theme}
 export type SiteSettingsQueryResult = {
   orgName: null;
   ein: null;
@@ -3489,6 +3780,7 @@ export type SiteSettingsQueryResult = {
   newsletterTitle: null;
   newsletterBlurb: null;
   zeffyEmbedUrl: null;
+  zeffyMembershipUrl: null;
   analyticsEnabled: null;
   theme: null;
 } | {
@@ -3511,6 +3803,7 @@ export type SiteSettingsQueryResult = {
   newsletterTitle: string | null;
   newsletterBlurb: string | null;
   zeffyEmbedUrl: string | null;
+  zeffyMembershipUrl: string | null;
   analyticsEnabled: boolean | null;
   theme: "adire" | "calm" | "festival" | null;
 } | null;
@@ -3553,7 +3846,7 @@ export type GetInvolvedPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3561,7 +3854,7 @@ export type GetInvolvedPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3574,7 +3867,7 @@ export type GetInvolvedPageQueryResult = {
     bullets: Array<string> | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3638,7 +3931,7 @@ export type ImpactPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3646,7 +3939,7 @@ export type ImpactPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3815,7 +4108,7 @@ export type StoryPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3823,7 +4116,7 @@ export type StoryPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3925,7 +4218,7 @@ export type DonatePageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3933,7 +4226,7 @@ export type DonatePageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3958,7 +4251,7 @@ export type DonatePageQueryResult = {
       blurb: string | null;
       action: {
         label: string | null;
-        kind: "anchor" | "enquiry" | "give" | "url" | null;
+        kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
         enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
         href: string | null;
         newTab: boolean | null;
@@ -4006,15 +4299,15 @@ export type DonatePageQueryResult = {
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    "*[_id == \"festivalPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  whatItIs,\n  whatItIsImage{_type, alt, caption, hotspot, crop, asset},\n  zonesIntro,\n  planYourVisit[]{_key, label, value, note},\n  takePart[]{_key, way, chip, title, line, label},\n  pastYearsIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  partnersIntro,\n  \"editions\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    venue{name, address, line},\n    cost,\n    summary,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    vendorTerms{fees, closeDate, decisionDate, permitNote},\n    attendance{value, label, source},\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url,\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"zones\": *[_type == \"zone\" && active != false] | order(order asc){\n    _id,\n    name{yo, en},\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"partners\": *[_type == \"partner\" && \"odunde\" in scope] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  layout{phead, zones, schedule, labels},\n  seo{title, description}\n}": FestivalPageQueryResult;
-    "*[_id == \"galaPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  eveningIntro,\n  tiersIntro,\n  sponsorIntro,\n  honoreesIntro,\n  pastIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  takePart[]{_key, way, chip, title, line, label},\n  \"editions\": *[_type == \"event\" && kind == \"gala\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    doors,\n    venue{name, address, line},\n    dress,\n    ticketsUrl,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    \"tiers\": *[_type == \"ticketTier\" && event._ref == ^._id] | order(order asc){\n      _id,\n      name,\n      price,\n      includes,\n      variant,\n      featured\n    },\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url,\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"sponsorLevels\": *[_type == \"sponsorLevel\" && scope in [\"gala\", \"org\"]] | order(order asc){\n    _id,\n    name,\n    amount,\n    recognition,\n    \"eventId\": event._ref\n  },\n  \"honorees\": *[_type == \"honoree\" && event->kind == \"gala\"] | order(name asc){\n    _id,\n    name,\n    award,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"eventId\": event._ref\n  },\n  layout{treatment, tiers, awards, schedule, past, labels},\n  seo{title, description}\n}": GalaPageQueryResult;
+    "*[_id == \"festivalPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  extraFacts[]{_key, label, value, note},\n  whatItIs,\n  whatItIsImage{_type, alt, caption, hotspot, crop, asset},\n  zonesIntro,\n  planYourVisit[]{_key, label, value, note},\n  takePart[]{_key, way, chip, title, line, label},\n  pastYearsIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  partnersIntro,\n  \"editions\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    venue{name, address, line},\n    cost,\n    summary,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    vendorTerms{fees, closeDate, decisionDate, permitNote},\n    attendance{value, label, source},\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url,\n      cover{_type, alt, caption, hotspot, crop, asset},\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset},\n      \"videos\": videos[]{\n        _key,\n        title,\n        url,\n        still{_type, hotspot, crop, asset},\n        \"credit\": coalesce(credit->defaultCredit, credit->name),\n        \"creditUrl\": credit->url\n      }\n    }\n  },\n  \"zones\": *[_type == \"zone\" && active != false] | order(order asc){\n    _id,\n    name{yo, en},\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"partners\": *[_type == \"partner\" && \"odunde\" in scope] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  layout{phead, zones, schedule, labels},\n  seo{title, description}\n}": FestivalPageQueryResult;
+    "*[_id == \"galaPage\"][0]{\n  header{\n    kicker{yo, en},\n    title,\n    line,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  eveningIntro,\n  tiersIntro,\n  sponsorIntro,\n  honoreesIntro,\n  pastIntro,\n  \"galleryLayout\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0].layout{state},\n  takePart[]{_key, way, chip, title, line, label},\n  \"editions\": *[_type == \"event\" && kind == \"gala\"] | order(edition desc){\n    _id,\n    kind,\n    title,\n    edition,\n    start,\n    end,\n    doors,\n    venue{name, address, line},\n    dress,\n    ticketsUrl,\n    schedule[]{_key, time, day, title{yo, en}, detail, \"zone\": zone->name{yo, en}},\n    \"tiers\": *[_type == \"ticketTier\" && event._ref == ^._id] | order(order asc){\n      _id,\n      name,\n      price,\n      includes,\n      variant,\n      featured\n    },\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{\n      _id,\n      title,\n      \"slug\": slug.current,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url,\n      cover{_type, alt, caption, hotspot, crop, asset},\n      \"photos\": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset},\n      \"videos\": videos[]{\n        _key,\n        title,\n        url,\n        still{_type, hotspot, crop, asset},\n        \"credit\": coalesce(credit->defaultCredit, credit->name),\n        \"creditUrl\": credit->url\n      }\n    }\n  },\n  \"sponsorLevels\": *[_type == \"sponsorLevel\" && scope in [\"gala\", \"org\"]] | order(order asc){\n    _id,\n    name,\n    amount,\n    recognition,\n    \"eventId\": event._ref\n  },\n  \"honorees\": *[_type == \"honoree\" && event->kind == \"gala\"] | order(name asc){\n    _id,\n    name,\n    award,\n    blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    \"eventId\": event._ref\n  },\n  layout{treatment, tiers, awards, schedule, past, labels},\n  seo{title, description}\n}": GalaPageQueryResult;
     "*[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  creditsAndConsent,\n  \"albums\": *[_type == \"album\" && defined(slug.current) && count(photos) > 0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    \"editionYear\": event->edition,\n    cover{_type, alt, caption, hotspot, crop, asset},\n    \"firstPhoto\": photos[0]{_key, _type, alt, caption, hotspot, crop, asset},\n    \"count\": count(photos)\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail},\n  layout{open, captions, state},\n  seo{title, description}\n}": GalleryPageQueryResult;
-    "{\n  \"album\": *[_type == \"album\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    consentNote,\n    creditConfirmed,\n    \"credit\": coalesce(credit->defaultCredit, credit->name),\n    \"creditUrl\": credit->url,\n    \"edition\": event->{\"year\": edition, kind},\n    \"photos\": photos[]{\n      _key,\n      _type,\n      alt,\n      caption,\n      hotspot,\n      crop,\n      asset,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name, creditNote),\n      \"creditUrl\": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)\n    }\n  },\n  \"page\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n    header{kicker{yo, en}},\n    creditsAndConsent,\n    layout{captions, state}\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail}\n}": AlbumPageQueryResult;
+    "{\n  \"album\": *[_type == \"album\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    consentNote,\n    creditConfirmed,\n    \"credit\": coalesce(credit->defaultCredit, credit->name),\n    \"creditUrl\": credit->url,\n    \"edition\": event->{\"year\": edition, kind},\n    cover{_type, alt, caption, hotspot, crop, asset},\n    \"videos\": videos[]{\n      _key,\n      title,\n      url,\n      still{_type, hotspot, crop, asset},\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url\n    },\n    \"photos\": photos[]{\n      _key,\n      _type,\n      alt,\n      caption,\n      hotspot,\n      crop,\n      asset,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name, creditNote),\n      \"creditUrl\": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)\n    }\n  },\n  \"page\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n    header{kicker{yo, en}},\n    creditsAndConsent,\n    layout{captions, state}\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail}\n}": AlbumPageQueryResult;
     "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc)[0...3]{\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_type == \"programsPage\" && _id == \"programsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  takePart[]{_key, way, chip, title, line, label},\n  kidsStem{\n    title,\n    blurb,\n    subprograms[]{\n      _key, name, blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      facts[]{_key, label, value, note},\n      action{label, kind, enquiryKind, href, newTab}\n    }\n  },\n  culturalExchange{\n    title, blurb, cadence, eligibility, howToJoin,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  yearStrip[]{_key, when, kind, note, \"program\": program->name},\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  layout{cards, inline, yearstrip},\n  seo{title, description}\n}": ProgramsPageQueryResult;
     "*[_type == \"lessonsPage\" && _id == \"lessonsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  glance[]{_key, label, value, note},\n  \"teacher\": teacher->{\n    _id, name, role, bioShort,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  teacherIntro,\n  learn,\n  levels[]{_key, name, blurb},\n  oneLesson[]{_key, step, title, detail},\n  faq[]{_key, question, answer},\n  takePart[]{_key, way, chip, title, line, label},\n  \"teacherEmail\": *[_id == \"siteSettings\"][0].contacts[role == \"teacher\"][0].email,\n  layout{lesson, portraits, faq},\n  seo{title, description}\n}": LessonsPageQueryResult;
     "*[_type == \"collectivePage\" && _id == \"collectivePage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  argument,\n  \"photo\": *[_type == \"program\" && page == \"collective\"] | order(order asc)[0]{\n    _id,\n    name,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"initiatives\": initiatives[_type != \"reference\" || defined(@->)]{\n    _key,\n    ...coalesce(@->, @){\n      name,\n      memberLed,\n      status,\n      statusLine,\n      blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      serves,\n      since,\n      next\n    }\n  },\n  \"voice\": voice->{_id, quote, name, relation, permissionToName},\n  \"events\": *[_type == \"event\" && kind == \"collective\" && defined(start)] | order(start asc){\n    _id,\n    kind,\n    title,\n    start,\n    end,\n    summary,\n    venue{name}\n  },\n  takePart[]{_key, way, chip, title, line, label},\n  layout{initiatives, green, status, events},\n  seo{title, description}\n}": CollectivePageQueryResult;
-    "*[_id == \"siteSettings\"][0]{\n  orgName,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
+    "*[_id == \"siteSettings\"][0]{\n  orgName,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  zeffyMembershipUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;
     "*[_type == \"subscriber\" && email == $email][0]._id": SubscriberByEmailQueryResult;
     "*[_type == \"getInvolvedPage\" && _id == \"getInvolvedPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"doors\": doors[]->{\n    _id, key, title, blurb, bullets,\n    action{label, kind, enquiryKind, href, newTab},\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  hometownAssociations{\n    title,\n    prose,\n    \"stat\": stat->{_id, value, label}\n  },\n  \"associations\": *[_type == \"hometownAssociation\"] | order(name asc){_id, name, url},\n  fallback{title, blurb},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    generalEmail,\n    phone,\n    \"general\": contacts[role == \"general\"][0]{name, responds}\n  },\n  layout{doors, hta},\n  seo{title, description}\n}": GetInvolvedPageQueryResult;

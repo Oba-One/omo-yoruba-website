@@ -17,7 +17,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "An album's photograph credit: the name as the Studio holds it, with the registry's chip until the credit is confirmed, linking to the photographer's page when the Studio holds one.",
+          "An album's credit: the name as the Studio holds it, with the registry's chip until the credit is confirmed, linking to the photographer's page when the Studio holds one. The label says what the credit is for: Photographs, or another kind of work such as Video under a video's tile.",
       },
     },
   },
@@ -55,4 +55,9 @@ export const LinkedOnDark: Story = { ...onDark, args: { ...LINKED_ALBUM_CREDIT, 
 /** An address the Studio's rule refuses but the API accepts: the name shows, with no link. */
 export const UnsafeLink: Story = {
   args: { ...LINKED_ALBUM_CREDIT, href: 'javascript:alert(1)' },
+};
+
+/** Another kind of work: a video's maker, inline in the muted line under a `VideoGrid` tile (ADR 0051). */
+export const Video: Story = {
+  args: { ...LINKED_ALBUM_CREDIT, label: 'Video', as: 'span' },
 };

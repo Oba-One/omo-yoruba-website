@@ -21,6 +21,7 @@ import Pending from '@oy/ui/core/Pending/Pending.astro';
 import CreditLine from '@oy/ui/media/CreditLine/CreditLine.astro';
 import PhotoCarousel from '@oy/ui/media/PhotoCarousel/PhotoCarousel.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
+import VideoGrid from '@oy/ui/media/VideoGrid/VideoGrid.astro';
 import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
 import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
@@ -185,6 +186,7 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
                 pending={page.past.album.pending}
               />
             )}
+            <VideoGrid videos={page.past.videos} />
             <ButtonRow>
               <Button variant="secondary" href="/gallery" arrow>All Odunde albums</Button>
             </ButtonRow>

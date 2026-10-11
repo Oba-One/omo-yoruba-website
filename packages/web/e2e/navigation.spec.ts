@@ -81,7 +81,10 @@ async function arriveHome(page: Page, from: string) {
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator('html')).not.toHaveAttribute('data-loading', 'true');
   await expect(page.locator('oy-enquiry-modal')).toHaveAttribute('data-ready', 'true');
-  await expect(page.locator('oy-give-dialog')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('oy-zeffy-dialog[data-form="give"]')).toHaveAttribute(
+    'data-ready',
+    'true',
+  );
 }
 
 interface Sample {
@@ -224,7 +227,10 @@ for (const variant of VARIANTS) {
     await expect(dialog).toHaveAttribute('open', '');
     await page.goBack();
     await expect(page).toHaveURL(new RegExp(`${FROM}$`));
-    await expect(page.locator('oy-give-dialog')).toHaveAttribute('data-ready', 'true');
+    await expect(page.locator('oy-zeffy-dialog[data-form="give"]')).toHaveAttribute(
+      'data-ready',
+      'true',
+    );
     await expect(dialog).toHaveAttribute('open', '');
     expect(await isModal(page, 'give'), 'still modal after the swap').toBe(true);
     await page.keyboard.press('Escape');

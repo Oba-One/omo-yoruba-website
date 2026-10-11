@@ -1,7 +1,7 @@
 # Pick the favicon
 
 Type: grilling
-Status: open
+Status: resolved
 Owner: yes
 Labels: design
 Phase: 4
@@ -57,3 +57,10 @@ magick icon-16.png icon-32.png icon-48.png packages/web/public/favicon.ico
 magick tile.png -filter Lanczos -resize 180x180 -alpha off -depth 8 -strip \
   -define png:compression-level=9 -define png:color-type=2 packages/web/public/apple-touch-icon.png
 ```
+
+## Answer
+
+On 10 October 2026 the owner confirmed the proposed crowned Ifẹ̀ head on indigo:
+"Keep this icon and merge it". Option 1 is the chosen favicon and touch icon.
+The files and head links are in pull request 32. D7 and E3 are done; remaining
+Lighthouse best-practices work stays in D13.

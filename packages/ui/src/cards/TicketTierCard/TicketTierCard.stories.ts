@@ -16,7 +16,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "A ticket tier: name, price, what it includes and one button. Buy now leaves for the edition's Eventbrite event in a new tab, with the notice on the card, or shows the Pending chip while the edition holds no link; the table tier opens its enquiry. The featured tier wears the gold ring. The names, prices and includes here are placeholders: the Studio holds no tiers yet.",
+          "A ticket tier: name, price, what it includes and one button. Buy now opens the edition's ticket link, a Zeffy ticket form in the Tickets Dialog on the page or any other link in a new tab, with the notice on the card, or shows the Pending chip while the edition holds no link; the table tier opens its enquiry. The featured tier wears the gold ring. The names, prices and includes here are placeholders: the Studio holds no tiers yet.",
       },
     },
   },
@@ -28,7 +28,12 @@ type Story = StoryObj<Args>;
 /** Buy now with the edition's link: the outline button and the new-tab notice. */
 export const BuyNow: Story = {};
 
-/** Buy now before the edition holds its Eventbrite link: the chip where the button goes. */
+/** Buy now with a Zeffy ticket form as the edition's link: the button opens the Tickets Dialog on the page. */
+export const BuyNowZeffy: Story = {
+  args: { ticketsUrl: 'https://www.zeffy.com/embed/ticketing/a-gala' },
+};
+
+/** Buy now before the edition holds its ticket link: the chip where the button goes. */
 export const BuyNowNoLink: Story = { args: { ticketsUrl: null } };
 
 /** The featured tier with the block's gold button. */

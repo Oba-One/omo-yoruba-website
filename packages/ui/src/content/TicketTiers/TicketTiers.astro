@@ -3,10 +3,15 @@
  * The seats and tables block (`09 End-of-Year Gala.dc.html`): the next edition's ticket tiers as cards
  * in columns or rows by the page's `tiers` option, in the Studio's order, the one control for which
  * tier leads (ADR 0042). The first featured tier carries the block's gold button; every featured tier
- * keeps its ring. No tiers renders the registry's Pending line.
+ * keeps its ring. No tiers renders the registry's Pending line. While no tier is a buy-now one, so no card
+ * carries the ticket link, the block draws its own Get tickets button once the edition holds the link:
+ * Zeffy's ticket form lists the tickets itself (ADR 0052).
  */
 import TicketTierCard, { type TierLike } from '../../cards/TicketTierCard/TicketTierCard.astro';
+import { ticketsTrigger } from '../../cards/TicketTierCard/tickets';
+import Button from '../../core/Button/Button.astro';
 import Pending from '../../core/Pending/Pending.astro';
+import ButtonRow from '../../page/ButtonRow/ButtonRow.astro';
 
 interface Props {
   tiers?: ((TierLike & { edit?: string }) | null)[] | null;
@@ -36,6 +41,9 @@ const {
 
 const ordered = (tiers ?? []).filter((tier) => tier !== null);
 const goldAt = ordered.findIndex((tier) => tier.featured);
+// The ticket link needs a button somewhere: a buy-now tier's card, else the block's own.
+const sold = ordered.some((tier) => tier.variant !== 'enquiry');
+const tickets = sold ? undefined : ticketsTrigger(ticketsUrl);
 ---
 
 {
@@ -57,5 +65,16 @@ const goldAt = ordered.findIndex((tier) => tier.featured);
         />
       ))}
     </div>
+  )
+}
+{
+  tickets && (
+    <ButtonRow class="oy-tiers-tickets">
+      {/* One gold action in the block: a featured tier's button keeps it. */}
+      <Button variant={goldAt === -1 ? 'primary' : 'secondary'} arrow {...tickets.attributes}>
+        Get tickets
+      </Button>
+      <span class="oy-button-row-note">{tickets.notice}</span>
+    </ButtonRow>
   )
 }

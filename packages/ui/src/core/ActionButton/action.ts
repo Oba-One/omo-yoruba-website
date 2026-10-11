@@ -1,8 +1,10 @@
 /**
  * A Studio action (the `cta` object) turned into the attributes of its trigger. An enquiry opens
  * the Enquiry Modal through `data-enquiry` and links to the same page with the modal open without
- * JavaScript; the Give Dialog opens through `data-give` and links to `/donate#give`; a link and an
- * anchor are plain hrefs (ADR 0019, ADR 0020).
+ * JavaScript; the Give Dialog opens through `data-give` and links to `/donate#give`; the Join Dialog
+ * opens through `data-join` and links to the member enquiry on the same page, past the router, which is
+ * what a membership button opens without JavaScript or while Organization details hold no membership form
+ * (ADR 0050); a link and an anchor are plain hrefs (ADR 0019, ADR 0020).
  */
 export interface ActionLike {
   label?: string | null;
@@ -16,6 +18,8 @@ export interface ActionAttributes {
   href: string;
   'data-enquiry'?: string;
   'data-give'?: '';
+  'data-join'?: '';
+  'data-astro-reload'?: '';
   target?: '_blank';
   rel?: 'noopener';
 }
@@ -58,6 +62,14 @@ export function resolveAction(action: ActionLike | null | undefined): ActionReso
     }
     case 'give':
       return { ok: true, label, attributes: { href: '/donate#give', 'data-give': '' } };
+    case 'join':
+      return {
+        ok: true,
+        label,
+        // Where no Join Dialog claims the click the link is followed, and only a full page load renders
+        // the Enquiry Modal open: the dialogs are persisted across the router's swaps.
+        attributes: { href: '?enquiry=member#enquiry', 'data-join': '', 'data-astro-reload': '' },
+      };
     case 'url': {
       const href = safeHref(action.href);
       if (!href) return { ok: false, pending: 'the link' };

@@ -314,3 +314,137 @@ describe('buildAlbumPage', () => {
     expect(buildAlbumPage(null, draft, null).credit.edit).toBeUndefined();
   });
 });
+
+// The album's videos (ADR 0051) play from YouTube once a visitor presses play. Two ids made up for the fixtures.
+describe('buildAlbumPage, the videos', () => {
+  const channel = 'https://www.youtube.com/@redcarpetfilmshollywood';
+  const video = (key: string, id: string, extra: Record<string, unknown> = {}) => ({
+    _key: key,
+    title: `Odunde 2026 ${key}`,
+    url: `https://youtu.be/${id}`,
+    still: null,
+    credit: null,
+    creditUrl: null,
+    ...extra,
+  });
+  /** A video's own still: a plain image, with neither alt text nor caption. */
+  const still = (name: string) => ({
+    _type: 'image' as const,
+    hotspot: null,
+    crop: null,
+    asset: { _ref: `image-${name}-1100x825-jpg`, _type: 'reference' as const },
+  });
+  const highlights = video('highlights', 'AbC_dEf-123', {
+    credit: 'Red Carpet Films',
+    creditUrl: channel,
+  });
+  const teaser = video('teaser', 'ZyX_wVu-987', { still: still('teaserstill') });
+  const withVideos = (patch: Record<string, unknown> = {}) =>
+    withAlbum({ videos: [highlights, teaser], ...patch });
+
+  it('hands the page every video, in order, each with the addresses made from its id', () => {
+    const { items } = buildAlbumPage(withVideos(), options, null).videos;
+    expect(items.map((each) => each.key)).toEqual(['highlights', 'teaser']);
+    expect(items[0]).toMatchObject({
+      title: 'Odunde 2026 highlights',
+      watchHref: 'https://www.youtube.com/watch?v=AbC_dEf-123',
+      embedSrc: 'https://www.youtube-nocookie.com/embed/AbC_dEf-123?autoplay=1&rel=0',
+      credit: 'Red Carpet Films',
+      creditHref: channel,
+    });
+    expect(items[1]?.credit).toBeUndefined();
+  });
+
+  it("shows each video's own still, else the album's cover, else its first photograph, framed 16:9", () => {
+    const cover = photo('cover', 'The procession');
+    const [first, second] = buildAlbumPage(withVideos({ cover }), options, null).videos.items;
+    expect(first?.still?.src).toContain('/cover-1100x825.jpg');
+    expect(second?.still?.src).toContain('/teaserstill-1100x825.jpg');
+    expect(first?.still).toMatchObject({ width: 720, height: 405 });
+    expect(first?.still?.src).toContain('fit=crop');
+    // No cover: the first photograph of the album.
+    const [uncovered] = buildAlbumPage(withVideos({ cover: null }), options, null).videos.items;
+    expect(uncovered?.still?.src).toContain('/gala2025attendeesgroupphoto-1100x825.jpg');
+  });
+
+  it('has no video for an album that holds none, and leaves out one that names no YouTube video', () => {
+    expect(buildAlbumPage(seeded, options, null).videos.items).toEqual([]);
+    expect(buildAlbumPage(withVideos({ videos: null }), options, null).videos.items).toEqual([]);
+    const page = buildAlbumPage(
+      withVideos({
+        videos: [
+          highlights,
+          video('channel', 'AbC_dEf-123', { url: channel }),
+          { ...teaser, title: null },
+        ],
+      }),
+      options,
+      null,
+    );
+    expect(page.videos.items.map((each) => each.key)).toEqual(['highlights']);
+    expect(buildAlbumPage(null, options, null).videos.items).toEqual([]);
+  });
+
+  it('keeps every video off the page while the gallery holds the albums (R01)', () => {
+    const held = {
+      ...withVideos(),
+      page: { ...seeded.page, layout: { captions: 'always', state: 'soon' } },
+    } as AlbumPageData;
+    expect(buildAlbumPage(held, options, null).videos).toEqual({ items: [], priority: false });
+    expect(buildAlbumPage(withVideos(), options, null).videos.items).toHaveLength(2);
+  });
+
+  it('keeps stega out of the keys and the addresses', () => {
+    const tail = '\u200B\u200C\u200D\uFEFF';
+    const { items } = buildAlbumPage(
+      withVideos({
+        videos: [
+          video(`highlights${tail}`, 'AbC_dEf-123', { url: `https://youtu.be/AbC_dEf-123${tail}` }),
+        ],
+      }),
+      draft,
+      null,
+    ).videos;
+    expect(items[0]?.key).toBe('highlights');
+    expect(items[0]?.watchHref).toBe('https://www.youtube.com/watch?v=AbC_dEf-123');
+    expect(items[0]?.edit).toContain('path=videos:highlights;');
+  });
+
+  it('reaches every video from click-to-edit in draft mode, and carries no attribute otherwise', () => {
+    const { items } = buildAlbumPage(withVideos(), draft, null).videos;
+    expect(items[0]?.edit).toContain('id=album-gala-2025;type=album;path=videos:highlights;');
+    expect(items[1]?.edit).toContain('id=album-gala-2025;type=album;path=videos:teaser;');
+    const published = buildAlbumPage(withVideos(), options, null);
+    expect(published.videos.items.map((each) => each.edit)).toEqual([undefined, undefined]);
+  });
+
+  // Only one image on the page asks to be fetched at once and first: the first video's still, which sits above the
+  // photographs, else the first photograph, and neither while a photograph is served open over the page.
+  it("asks for the first video's still at once and first, and leaves the photographs to load lazily", () => {
+    const page = buildAlbumPage(withVideos(), options, null);
+    expect(page.videos.priority).toBe(true);
+    expect(page.photos.priority).toBe(false);
+  });
+
+  it('asks for the first photograph instead when no video shows, or none has a still', () => {
+    const bare = buildAlbumPage(seeded, options, null);
+    expect(bare.videos).toEqual({ items: [], priority: false });
+    expect(bare.photos.priority).toBe(true);
+    // A video whose album holds no cover and no photograph has no image to fetch: nothing above the grid asks.
+    const stillless = buildAlbumPage(
+      withVideos({ cover: null, photos: [], videos: [highlights] }),
+      options,
+      null,
+    );
+    expect(stillless.videos.items).toHaveLength(1);
+    expect(stillless.videos.items[0]?.still).toBeUndefined();
+    expect(stillless.videos.priority).toBe(false);
+  });
+
+  it('asks for neither while a photograph is served open: the Lightbox holds the largest paint', () => {
+    const open = buildAlbumPage(withVideos(), options, 'gala-2025-three-friends-selfie');
+    expect(open.lightbox.openKey).toBe('gala-2025-three-friends-selfie');
+    expect(open.videos.priority).toBe(false);
+    expect(open.photos.priority).toBe(false);
+  });
+});

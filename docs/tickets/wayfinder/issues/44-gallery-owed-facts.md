@@ -52,3 +52,25 @@ recipe and the gallery policy are in `oy-content-ops`):
   photographer of all three albums; each album credits them, confirmed, with the name linking to their YouTube
   channel (ADR 0046). Consent was confirmed on 27 September (open-work D5). The policy in the owner's words, the
   general inbox, the summer camp's year, the captions and the header line remain.
+- 10 October 2026: asked for the policy in their words, the owner had the agent draft it ("Not sure
+  you craft"; the same answer left the summer camp's year and photographer unknown). The draft says
+  the organization has consent to share the gallery's photographs, children's included (D5), and
+  that a photograph comes down on request. It does not say how permission is asked, which no file
+  records. It waits in the Studio for the owner to publish or reword.
+- 10 October 2026, albums: asked which of the nine other occasions become albums and how many
+  photographs each, the owner said "I'll go with your recommendation for media count". The agent
+  recommended all nine, about 20 photographs each from the photographer's sets, and saved each as a
+  draft for the owner to publish, 194 photographs in all: Yoruba Cultural Fair 2025 (24) and 2024
+  (18); End-of-Year Gala 2024 (24), 2023 (23) and 2022 (22); End-of-Year Appreciation Party 2018
+  (20); Grand Reception for the Ọọ̀ni of Ifẹ̀, 2017 (27); End-of-Year Party 2015 (20); Thanksgiving
+  and End-of-Year Party 2014 (16). The titles follow what each occasion called itself: on the 2024
+  fair's poster, in the printed programmes photographed in 2017, 2018, 2022, 2023 and 2024, and on
+  the 2014 invitation kept with the photographs. Two rest on the photographer's folder name alone:
+  the 2025 fair and the 2015 party. The 2024 gala's programme prints 29 November where the cameras
+  and that night's certificates say 30 November, and its album takes the 30th. Two sets by other
+  photographers, one from 2014 and one from 2018, were left out. Every new album credits Red Carpet
+  Films, to be confirmed by the owner.
+- 10 October 2026, framing and marks: the content pass found six Odunde 2026 tiles cutting off their
+  subject, portrait originals in a wide tile. Drafts of the Odunde 2026 and summer camp albums hold
+  a focus point for each of the six and the marks on five captions (agbádá, fìlà, ṣẹ̀kẹ̀rẹ̀, àkàrà).
+  `docs/plans/content-pass-2026-10-10.md` lists what the live pages showed that day.

@@ -153,7 +153,8 @@ export const event = defineType({
       title: 'Tickets link',
       type: 'url',
       group: 'edition',
-      description: 'Eventbrite, for Gala seats.',
+      description:
+        "For Gala seats. Paste the address from Zeffy's embed code (it starts https://www.zeffy.com/ and has /embed/ticketing/ in it) and the ticket form opens on the Gala page. Any other link, such as Eventbrite, opens in a new tab.",
       hidden: editionHidden('ticketsUrl'),
     }),
     defineField({
@@ -299,7 +300,7 @@ export const ticketTier = defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Buy now (Eventbrite)', value: 'buyNow' },
+          { title: 'Buy now (the ticket link)', value: 'buyNow' },
           { title: 'Enquiry (a table)', value: 'enquiry' },
         ],
         layout: 'radio',
@@ -644,6 +645,14 @@ export const album = defineType({
       of: [{ type: 'oyImage' }],
       description:
         "In the order the album page and the photo viewer show them; the first is the gallery tile's photograph when no cover is chosen. A shared link to a photograph keeps working while the photograph stays in the album. The album's credit applies to every photograph unless one sets its own.",
+    }),
+    defineField({
+      name: 'videos',
+      title: 'Videos',
+      type: 'array',
+      of: [{ type: 'video' }],
+      description:
+        "Videos from YouTube, in the order the album page shows them, above the photographs. The first one also shows on the edition's page under past years. Nothing is requested from YouTube until a visitor presses play.",
     }),
     defineField({
       name: 'credit',

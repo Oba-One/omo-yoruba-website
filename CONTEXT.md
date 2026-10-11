@@ -14,7 +14,8 @@ marks in the nav (Ọdúndé); lowercase `odunde` in URLs and file names.
 _Avoid_: splitting it into two words (the older design system spelling), "the festival" without a name
 
 **Gala**:
-The End-of-Year Gala, November or December. Seats go to Eventbrite; tables are an enquiry.
+The End-of-Year Gala, November or December. Seats are bought through the edition's ticket link; tables are an
+enquiry.
 _Avoid_: dinner, banquet, fundraiser
 
 **Edition**:
@@ -29,8 +30,8 @@ editions it may not exist yet, and its facts read Pending.
 _Avoid_: current edition, active event, this year's festival
 
 **Past years**:
-The photographs of the newest past edition of a kind, from its album, closing an event page (past
-galas on the Gala page). The only place a past edition appears on an event page.
+The photographs, and the first video, of the newest past edition of a kind, from its album, closing an
+event page (past galas on the Gala page). The only place a past edition appears on an event page.
 _Avoid_: recap, archive, previous events
 
 **Zone**:
@@ -44,7 +45,8 @@ One festival edition's booth fees, application close and decision dates, and per
 _Avoid_: vendor pricing, booth rates
 
 **Ticket tier**:
-One way into the Gala: seats bought through Eventbrite, or a table of ten arranged by enquiry.
+One way into the Gala: seats bought through the edition's ticket link (Zeffy's ticket form in the Tickets Dialog,
+or Eventbrite in a new tab), or a table of ten arranged by enquiry.
 _Avoid_: ticket type, package, price point
 
 **Sponsor level**:
@@ -145,6 +147,18 @@ _Avoid_: eyebrow, overline, tagline
 **Give Dialog**:
 The dialog every Donate button opens; wraps the Zeffy embed with a fallback.
 _Avoid_: donate modal, checkout
+
+**Join Dialog**:
+The dialog a button set to Zeffy's membership form opens, once Organization details hold that form: wraps the
+form, where someone joining pays their dues, with a fallback to the member enquiry. Until the form is there, such
+a button opens the member enquiry. A handoff: the membership is Zeffy's record.
+_Avoid_: membership modal, dues checkout, signup
+
+**Tickets Dialog**:
+The dialog the Gala's Get tickets buttons open while the edition's ticket link is a Zeffy ticket form: wraps the
+form, where seats are chosen and paid for, with a fallback to the contact enquiry. On the Gala page only. A
+handoff: the order is Zeffy's record.
+_Avoid_: checkout, ticket modal, box office
 
 **Enquiry Modal**:
 The one dialog shell every owned form opens in, with eight field sets.
@@ -322,10 +336,17 @@ the page describes them in prose until the owner adds them.
 _Avoid_: HTA in copy, chapter, club
 
 **Album**:
-The photographs of one occasion, an edition or an occasion with no edition such as the summer camp, with
-its own page on the gallery, one photo credit and its consent note. It names its edition, the one link between
+The photographs, and any videos, of one occasion, an edition or an occasion with no edition such as the
+summer camp, with its own page on the gallery, one photo credit and its consent note. It names its edition, the one link between
 them (ADR 0042), and its year is its own date's, else its edition's.
 _Avoid_: set, collection, gallery (the page of every album)
+
+**Video**:
+A recording of one occasion that an album holds, with a title, its YouTube address and, if the owner chooses, its own
+still and who made it. The album page shows its videos above the photographs, and the edition's page shows the
+first one under past years. It plays from YouTube on the visitor's press: until then the page shows our own still
+and asks nothing of YouTube, and the press swaps in YouTube's no-cookie player (ADR 0051).
+_Avoid_: film, clip, reel, movie
 
 **Cover**:
 The photograph an album shows on its tile on the gallery; the album's first photograph when none is chosen.
@@ -369,8 +390,8 @@ _Avoid_: site settings (its Studio name until 30 September 2026), globals, confi
 
 **Held-back switch**:
 A layout option that publishes content waiting for an owner decision (the gallery's coming-soon state, which takes the
-albums off the site while consent is settled, ADR 0043: a photograph a page shows through its own field stays; Our
-Story's timeline; the Gala's awards). Read-only for members.
+albums off the site while consent is settled, ADR 0043: their photographs and videos go, while a photograph a page
+shows through its own field stays; Our Story's timeline; the Gala's awards). Read-only for members.
 _Avoid_: feature flag, lock, admin option
 
 **To do**:

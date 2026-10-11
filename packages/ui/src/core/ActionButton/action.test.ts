@@ -20,6 +20,19 @@ describe('resolveAction', () => {
     });
   });
 
+  it('opens the Join Dialog, and the member enquiry where there is no dialog to open', () => {
+    // Without JavaScript, or while Organization details hold no membership form, the link is all there is.
+    expect(resolveAction({ label: 'Become a member', kind: 'join' })).toEqual({
+      ok: true,
+      label: 'Become a member',
+      attributes: {
+        href: '?enquiry=member#enquiry',
+        'data-join': '',
+        'data-astro-reload': '',
+      },
+    });
+  });
+
   it('links, in a new tab only when asked, and anchors on the page', () => {
     expect(
       resolveAction({ label: 'Tickets', kind: 'url', href: 'https://x.test', newTab: true }),
