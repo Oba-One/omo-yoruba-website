@@ -143,7 +143,7 @@ test.describe('the End-of-Year Gala page', () => {
     }
     await expect(past.locator('h2')).toHaveText('Past galas');
     // An album's credit links out only to its photographer's own page (ADR 0046).
-    const creditLink = past.locator('.oy-credit-line a');
+    const creditLink = past.locator('.oy-section-inner > .oy-credit-line a');
     if ((await creditLink.count()) > 0) {
       await expect(creditLink).toHaveAttribute('href', /^https:\/\//);
     }
