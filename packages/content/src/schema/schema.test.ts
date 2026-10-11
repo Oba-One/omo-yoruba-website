@@ -135,7 +135,7 @@ describe('singletons and documents', () => {
   });
 });
 
-describe("an album's videos (ADR 0050)", () => {
+describe("an album's videos (ADR 0051)", () => {
   interface Def {
     name: string;
     type?: string;

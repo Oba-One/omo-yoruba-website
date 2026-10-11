@@ -427,7 +427,7 @@ describe('buildFestivalPage', () => {
     expect(buildFestivalPage(seeded, options).past.held).toBe(false);
   });
 
-  describe('the past album video (ADR 0050)', () => {
+  describe('the past album video (ADR 0051)', () => {
     const channel = 'https://www.youtube.com/@redcarpetfilmshollywood';
     const video = (key: string, id: string, extra: Record<string, unknown> = {}) => ({
       _key: key,

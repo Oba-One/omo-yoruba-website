@@ -17,7 +17,7 @@ describe('buildCsp', () => {
     expect(cspDirectives['script-src']?.join(' ')).not.toContain('zeffy');
   });
 
-  it("frames YouTube's no-cookie player an album's video swaps in, and loads nothing else from YouTube or Google (ADR 0050)", () => {
+  it("frames YouTube's no-cookie player an album's video swaps in, and loads nothing else from YouTube or Google (ADR 0051)", () => {
     // The frame's address is built from the id alone (`@oy/content/videos`): the policy must frame exactly that origin.
     expect(cspDirectives['frame-src']).toContain(new URL(youtubeEmbedSrc('AbC_dEf-123')).origin);
     expect(cspDirectives['frame-src']).toEqual([ZEFFY_ORIGIN, YOUTUBE_EMBED_ORIGIN]);
@@ -84,7 +84,7 @@ describe('framableSrc', () => {
     }
   });
 
-  // `frame-src` lists YouTube's player for the album videos (ADR 0050), but the Give Dialog's rule is what it was:
+  // `frame-src` lists YouTube's player for the album videos (ADR 0051), but the Give Dialog's rule is what it was:
   // Zeffy's origin alone. An address written into the Zeffy field must never turn a video into the donation form.
   it("keeps the donation form to Zeffy's origin although the policy also frames YouTube's player", () => {
     const player = youtubeEmbedSrc('AbC_dEf-123');

@@ -78,7 +78,7 @@ The spec is `docs/design/CONTENT-MODEL.md`. Where the built model differs, an AD
 - ADR 0042: members are Editors, and administrators keep the settings and the Inbox (no News page since ADR 0048);
   outcomes, timeline entries, giving levels and initiatives are lists on their pages; one control
   per decision; an input no page reads is deleted, or named in `src/hidden-inputs.ts` if kept.
-- ADR 0050: an album holds `videos`, a list of the shared `video` object (a title, the YouTube address, an
+- ADR 0051: an album holds `videos`, a list of the shared `video` object (a title, the YouTube address, an
   optional still and who made it) that the site plays from YouTube once a visitor presses play; optional, so
   no Pending row and no To do row.
 - With no ADR of their own: `cta` has `kind` plus `enquiryKind`; `stat` stores its figure flat

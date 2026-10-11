@@ -521,7 +521,7 @@ describe('the gallery', () => {
     expect(pendingWhat('album', 'photos[]')).toBe('the photographs');
   });
 
-  it("asks for no video: an album's videos are an extra, with no row in the register (ADR 0050)", () => {
+  it("asks for no video: an album's videos are an extra, with no row in the register (ADR 0051)", () => {
     const asked = PENDING.filter((entry) => entry.type === 'album').flatMap((entry) => [
       ...(entry.fields ?? []),
       entry.condition ?? '',

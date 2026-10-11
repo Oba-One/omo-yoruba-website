@@ -35,7 +35,7 @@ export const galleryPageQuery = defineQuery(`*[_type == "galleryPage" && _id == 
  * the photographer's link (ADR 0046) and whether the photographer confirmed it, its consent note, its edition's
  * year and kind (the facts line and the link to the edition's page, from the edition it names) and every
  * photograph in order with its alt, caption and any credit of its own, linked only when that credit names a
- * photographer, never for a written credit; the album's cover and its videos in order (ADR 0050), each with its title,
+ * photographer, never for a written credit; the album's cover and its videos in order (ADR 0051), each with its title,
  * the YouTube address the site reads the id from, its own still, and its maker's credit and link (the still falls
  * back to the cover, else the first photograph); the gallery singleton's kicker, the owner's consent policy and the
  * `captions` option, and the `state` that holds the album's photographs and videos while it is `soon` (ADR 0043);

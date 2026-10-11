@@ -72,7 +72,7 @@ describe("the credit's link", () => {
   });
 });
 
-// An album's videos (ADR 0050) come with the cover their stills fall back to, on the album page and in the past
+// An album's videos (ADR 0051) come with the cover their stills fall back to, on the album page and in the past
 // years of both event pages alike. The query hands over the stored address: the site reads the id from it.
 describe("an album's videos", () => {
   const channel = 'https://www.youtube.com/@redcarpetfilmshollywood';

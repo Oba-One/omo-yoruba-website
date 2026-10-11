@@ -1,5 +1,5 @@
 /**
- * An album's videos for the stories (ADR 0050), shaped as `videoViews` hands them to `VideoGrid`: a highlights cut
+ * An album's videos for the stories (ADR 0051), shaped as `videoViews` hands them to `VideoGrid`: a highlights cut
  * and a teaser of Odunde 2026, as the owner described them, with stills from the register's photographs and the
  * credit the albums carry, linked to the photographer's page. The titles are the stories' own, not the channel's.
  * The addresses are built from ids made up for the stories (eleven characters that name no real video), through

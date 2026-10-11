@@ -63,7 +63,7 @@ describe('CreditLine', () => {
     expect(line?.querySelector('a')).toBeNull();
   });
 
-  it('names what the credit is for: Photographs unless the label says another kind of work (ADR 0050)', async () => {
+  it('names what the credit is for: Photographs unless the label says another kind of work (ADR 0051)', async () => {
     const photographs = (await renderToBody(Linked)).querySelector('p.oy-credit-line');
     expect(text(photographs)).toBe('Photographs: Red Carpet Films.');
     const video = (await renderToBody(Video)).querySelector('span.oy-credit-line');

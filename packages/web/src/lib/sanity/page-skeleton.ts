@@ -138,7 +138,7 @@ interface AlbumLike {
   credit: string | null;
   /** The photographer's page, which the credit's name links to (ADR 0046). */
   creditUrl: string | null;
-  /** What a video without a still of its own shows, before a photograph does (ADR 0050). */
+  /** What a video without a still of its own shows, before a photograph does (ADR 0051). */
   cover?: ImageLike | null;
   photos: ({ _key: string; alt: string | null; caption: string | null } & ImageLike)[] | null;
   videos?: (VideoLike | null)[] | null;
@@ -152,7 +152,7 @@ const hasPhotos = (event: { album?: AlbumLike | null }) => (event.album?.photos?
  * its album the carousel and the credit line take: each photograph resolved at the stage's width with
  * its alt and caption, the registry's wording for no album, and the credit with its confirmation, its
  * photographer's link and the edit attribute on the album. `videos` is the one video the page shows under the
- * photographs (ADR 0050), as `VideoGrid` takes its list: the first the album holds that has a title and a
+ * photographs (ADR 0051), as `VideoGrid` takes its list: the first the album holds that has a title and a
  * readable YouTube address, or none, and none while the gallery holds the albums.
  */
 export function pastYears<T extends LeadCandidate & { album?: AlbumLike | null }>(

@@ -140,7 +140,7 @@ describe('a hidden input blocks nothing', () => {
   });
 });
 
-describe("an album's videos (ADR 0050)", () => {
+describe("an album's videos (ADR 0051)", () => {
   const id = 'AbC_dEf-123';
   const video = (extra: Record<string, unknown> = {}) => ({
     _key: 'video-1',

@@ -331,7 +331,7 @@ _Avoid_: set, collection, gallery (the page of every album)
 A recording of one occasion that an album holds, with a title, its YouTube address and, if the owner chooses, its own
 still and who made it. The album page shows its videos above the photographs, and the edition's page shows the
 first one under past years. It plays from YouTube on the visitor's press: until then the page shows our own still
-and asks nothing of YouTube, and the press swaps in YouTube's no-cookie player (ADR 0050).
+and asks nothing of YouTube, and the press swaps in YouTube's no-cookie player (ADR 0051).
 _Avoid_: film, clip, reel, movie
 
 **Cover**:

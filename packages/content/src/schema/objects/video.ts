@@ -7,7 +7,7 @@ const NOT_A_VIDEO =
   "Paste the address the video's Share button on YouTube gives. It starts with https://.";
 
 /**
- * One video of an album (ADR 0050): a title, the YouTube address and, optionally, a still and who made it. The
+ * One video of an album (ADR 0051): a title, the YouTube address and, optionally, a still and who made it. The
  * site plays it from YouTube only once a visitor presses play, keeping nothing of the address but the video's id
  * (`videos.ts`). Optional like the rest of an album's extras: there is no Pending row for a video.
  *

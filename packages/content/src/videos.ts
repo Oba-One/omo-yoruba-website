@@ -1,5 +1,5 @@
 /**
- * An album's videos, played from YouTube (ADR 0050). The owner pastes the address the video's Share button gives
+ * An album's videos, played from YouTube (ADR 0051). The owner pastes the address the video's Share button gives
  * and the site keeps only the video's id from it: the frame and the link to YouTube are both built from that id,
  * never from the stored text, so the Studio's field cannot make the site frame or link anything else. Pure and
  * free of Sanity imports, so the Studio's rule, the site's builders and the tests share it. An address arrives

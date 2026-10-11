@@ -545,7 +545,7 @@ Zeffy's form posts to the page with `postMessage`, which the policy does not gov
 hears only messages from `https://www.zeffy.com` that name `give`. The link to Zeffy's own page
 for the form is a plain link, which needs no policy entry either.
 
-YouTube is a frame and never a script (ADR 0050): a page makes no request to YouTube or Google until a
+YouTube is a frame and never a script (ADR 0051): a page makes no request to YouTube or Google until a
 visitor presses an album video's play link, which swaps in YouTube's no-cookie player as a frame, so
 no YouTube or Google origin is in `script-src`, `img-src` or `connect-src`. `framableSrc` names Zeffy's
 origin rather than reading `frame-src`, so the Give Dialog never frames the player.

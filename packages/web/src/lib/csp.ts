@@ -5,7 +5,7 @@
  * with violations posted to /api/csp-report. Phase 9 flips it to enforcement
  * (docs/adr/0011, docs/runbook.md). Third parties allowed: Sanity, Zeffy,
  * PostHog, and YouTube's no-cookie player as a frame an album's video swaps in
- * once a visitor presses play (ADR 0050). Eventbrite is a link, not an embed.
+ * once a visitor presses play (ADR 0051). Eventbrite is a link, not an embed.
  * Fonts are self-hosted.
  */
 import { YOUTUBE_EMBED_ORIGIN } from '@oy/content/videos';
@@ -55,7 +55,7 @@ export function reportingEndpointsHeader(reportPath: string = CSP_REPORT_PATH): 
  * answers undefined and the caller shows no frame. The answer is the parsed address, never the raw
  * text: a browser resolves `https:www.zeffy.com/...` against the page, where the parser here would not.
  * The check names Zeffy rather than reading `frame-src`: the policy also frames YouTube's player for an
- * album's videos (ADR 0050), and an address on that origin must never become the donation form.
+ * album's videos (ADR 0051), and an address on that origin must never become the donation form.
  */
 export function framableSrc(value: string | null | undefined): string | undefined {
   const raw = value?.trim();

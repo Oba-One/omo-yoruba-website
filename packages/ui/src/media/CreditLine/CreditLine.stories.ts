@@ -57,7 +57,7 @@ export const UnsafeLink: Story = {
   args: { ...LINKED_ALBUM_CREDIT, href: 'javascript:alert(1)' },
 };
 
-/** Another kind of work: a video's maker, inline in the muted line under a `VideoGrid` tile (ADR 0050). */
+/** Another kind of work: a video's maker, inline in the muted line under a `VideoGrid` tile (ADR 0051). */
 export const Video: Story = {
   args: { ...LINKED_ALBUM_CREDIT, label: 'Video', as: 'span' },
 };

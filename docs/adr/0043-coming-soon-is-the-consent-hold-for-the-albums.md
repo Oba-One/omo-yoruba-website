@@ -1,6 +1,6 @@
 # Coming soon is the consent hold for the albums
 
-Amended by ADR 0050: the hold withholds an album's videos with its photographs, on the album page and under past
+Amended by ADR 0051: the hold withholds an album's videos with its photographs, on the album page and under past
 years.
 
 Decided on 27 September 2026, when the owner asked for the deep review's blockers to be fixed (R01 of the deep

@@ -1,5 +1,5 @@
 /**
- * An album's videos as the library's `VideoGrid` takes them (ADR 0050), shared by the album page and the event
+ * An album's videos as the library's `VideoGrid` takes them (ADR 0051), shared by the album page and the event
  * pages' past years: one function takes the album and answers its tiles. Pure, so a test drives it with a fixture.
  * A video with no title, no key or no readable YouTube address is left out. The frame's address and the link to
  * YouTube are built from the id alone (`@oy/content/videos`), so nothing else the Studio stored in the address

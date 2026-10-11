@@ -1,6 +1,6 @@
 # Zeffy stays, embedded in our own Give Dialog and sized by its own messages
 
-Amended by ADR 0050: the policy also frames YouTube's no-cookie player, for an album's videos; what the Give
+Amended by ADR 0051: the policy also frames YouTube's no-cookie player, for an album's videos; what the Give
 Dialog may frame stays Zeffy's origin alone.
 
 Decided on 27 September 2026 by the owner, from `docs/research/online-giving-options.md` (pull request 16), which

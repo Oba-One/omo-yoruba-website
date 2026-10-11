@@ -1,7 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 import { PLACEHOLDER_PROJECT } from './helpers';
 
-// An album's video plays from YouTube only when a visitor presses play (ADR 0050): the page asks nothing of YouTube
+// An album's video plays from YouTube only when a visitor presses play (ADR 0051): the page asks nothing of YouTube
 // or Google and holds no frame until then, and the press swaps YouTube's no-cookie player in for the play link.
 // The spec reads whichever page shows a video in the dataset it runs against, found by the gallery's own links to
 // its album pages and then the two event pages' past years, and skips where none does: CI's placeholder project,

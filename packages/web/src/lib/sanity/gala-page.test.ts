@@ -413,7 +413,7 @@ describe('buildGalaPage', () => {
     expect(buildGalaPage(seeded, options).past.shown).toBe(true);
   });
 
-  describe('the past album video (ADR 0050)', () => {
+  describe('the past album video (ADR 0051)', () => {
     const video = (key: string, id: string) => ({
       _key: key,
       title: `Gala 2025 ${key}`,

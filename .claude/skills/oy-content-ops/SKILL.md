@@ -59,7 +59,7 @@ rather than duplicates. Ids you create never contain a period.
 - **Album, videos**: add an item to the album's `videos` with a `title`, the YouTube address the video's Share
   button gives, an optional still (else the cover, or the first photograph, shows) and who made it (a `photographer` document, so the name
   links to their page). The album page shows them above the photographs and the edition's page the first one under
-  past years, and nothing loads from YouTube until a visitor presses play (ADR 0050).
+  past years, and nothing loads from YouTube until a visitor presses play (ADR 0051).
 - **Album, many photographs**: more than a handful, or web copies to swap for the photographer's originals,
   go through `bun run import-album -- <manifest.json>` (a dry run; `--apply` uploads and saves the album as a
   draft). The manifest lists the album's id, the source folder and each photograph's key, file, alt text and

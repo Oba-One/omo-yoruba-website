@@ -5,7 +5,7 @@
  * gallery's kicker, the album's title and its facts (its year, or the year's chip, and the count), the links to the
  * gallery and the edition's page, the credit with its chip, its photographer's link (ADR 0046) and the consent
  * note, the photographs as tiles linking to their photo addresses, the Lightbox's photographs with each one's
- * credit and link and the photograph served open, the album's videos above them (ADR 0050) and which image asks to
+ * credit and link and the photograph served open, the album's videos above them (ADR 0051) and which image asks to
  * be fetched first, the credit and permissions section, and the `data-sanity` attributes in draft mode. Keys, the
  * slug, the links and the `?photo=` value are cleaned of stega before they become an address or a comparison.
  * While the gallery holds the albums (`state: soon`, ADR 0043) the view carries no photograph and no video, only
