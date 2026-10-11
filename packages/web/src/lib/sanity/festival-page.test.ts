@@ -236,6 +236,9 @@ describe('buildFestivalPage', () => {
   it('resolves the photographs with their alt and caption, and cleans the head of stega', () => {
     const view = buildFestivalPage(seeded, options);
     expect(view.header.image?.src).toContain('cdn.sanity.io');
+    // The header is a photo band, so its files are the lighter ones (ADR 0055); the others are not.
+    expect(view.header.image?.srcset).toContain('q=50');
+    expect(view.figure.image?.src).toContain('q=80');
     expect(view.figure.image?.alt).toBe('A dancer plays with a young girl');
     expect(view.figure.caption).toBe('Festival day • Leimert Park');
     expect(view.whatItIs).toHaveLength(1);

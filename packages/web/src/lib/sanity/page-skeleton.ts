@@ -14,6 +14,7 @@ import { ALBUM_CREDIT_PENDING, pendingWhat, presenceWhat } from '@oy/content/pen
 import type { ActionLike } from '@oy/ui/core/ActionButton/action.ts';
 import { type VideoLike, videoViews } from './videos';
 import {
+  BAND_PHOTOGRAPH,
   type BuildOptions,
   cleanText,
   type EditAttribute,
@@ -96,7 +97,7 @@ export function pageSkeleton<L extends Record<string, string>>(
       kicker: header?.kicker,
       title: header?.title,
       line: header?.line,
-      image: resolveImage(options.imageSet, header?.image, { width: 1440 }),
+      image: resolveImage(options.imageSet, header?.image, BAND_PHOTOGRAPH),
       imageEdit: edit('header.image'),
       // The first is the page's gold action, the second an outline.
       actions: [

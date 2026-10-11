@@ -4,7 +4,7 @@ import { renderToBody, text } from '../../test/stories';
 import { splitEmphasis } from './emphasis';
 import * as stories from './Hero.stories';
 
-const { Default, MotionOff, PlainHeading, Pending } = composeStories(stories);
+const { Default, MotionOff, PlainHeading, Pending, StudioPhotograph } = composeStories(stories);
 
 describe('Hero', () => {
   it('renders the photo, the scrim, the kicker, one H1, the sub and the two actions', async () => {
@@ -33,6 +33,18 @@ describe('Hero', () => {
     expect(buttons[1]?.className).toContain('oy-btn--secondary');
     expect(text(hero?.querySelector('.oy-hero-blessing [lang="yo"]'))).toBe('Oòdúà á gbè wá o!');
     expect(hero?.querySelector('.oy-divider-asoke')).not.toBeNull();
+  });
+
+  it('tells the browser how wide it draws a photograph that covers the band by its height', async () => {
+    const img = (await renderToBody(StudioPhotograph)).querySelector('img.oy-hero-photo');
+    expect(img?.getAttribute('srcset')).toContain(' 1100w');
+    // 1100 by 728 under a band 640px tall at 760 and under, 660px above: 967px, then 997px.
+    expect(img?.getAttribute('sizes')).toBe(
+      '(max-width: 760px) 967px, (max-width: 997px) 997px, 100vw',
+    );
+    // A plain file has no candidates to choose between, so it carries no `sizes`.
+    const plain = (await renderToBody(Default)).querySelector('img.oy-hero-photo');
+    expect(plain?.hasAttribute('sizes')).toBe(false);
   });
 
   it('finds the gold words across mark encodings and only where they occur', () => {
