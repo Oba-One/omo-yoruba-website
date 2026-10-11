@@ -156,6 +156,24 @@ describe('buildHomepage', () => {
     expect(february.lead.kind).toBe('festival');
   });
 
+  it("tells the band whether the lead edition offers a table, and keeps its tiers out of the band's props", () => {
+    const options = { imageSet, draft: false, studioUrl: '/admin', now };
+    const leadWith = (tiers: { variant: string | null }[]) => {
+      const events = data.events.map((event) =>
+        event._id === 'gala-2026' ? { ...event, tiers } : event,
+      );
+      return buildHomepage({ ...data, events } as unknown as HomepageData, options).lead.event;
+    };
+    // The stored shapes a lead edition can have: no tier yet, seats only, and a table by enquiry.
+    expect(buildHomepage(data, options).lead.event?.tables).toBe(false);
+    expect(leadWith([])?.tables).toBe(false);
+    expect(leadWith([{ variant: 'buyNow' }, { variant: null }])?.tables).toBe(false);
+    const withTable = leadWith([{ variant: 'buyNow' }, { variant: 'enquiry' }]);
+    expect(withTable?.tables).toBe(true);
+    expect(withTable).not.toHaveProperty('tiers');
+    expect(withTable?.title).toBe('End-of-Year Gala 2026');
+  });
+
   it('resolves every image to a CDN set carrying its alt, uncropped, with the hotspot framing', () => {
     const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.hero.image?.src).toContain('cdn.sanity.io');

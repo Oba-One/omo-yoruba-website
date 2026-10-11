@@ -8,6 +8,10 @@ describe('homepageQuery', () => {
       expect(homepageQuery).toContain(list);
     }
     expect(homepageQuery).toContain('kind in ["festival", "gala"]');
+    // How each edition's tiers are bought, so the band can tell whether the Gala offers a table.
+    expect(homepageQuery).toContain(
+      '"tiers": *[_type == "ticketTier" && event._ref == ^._id]{variant}',
+    );
     expect(homepageQuery).not.toContain('newsPost');
     // The three program cards only: the highlight no longer reaches a fourth program (ADR 0042).
     expect(homepageQuery).toContain('*[_type == "program"] | order(order asc)[0...3]');

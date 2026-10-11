@@ -18,6 +18,7 @@ describe('cachePage', () => {
           'type:siteSettings',
           'type:homepage',
           'type:event',
+          'type:ticketTier',
           'type:program',
           'type:testimonial',
           'type:stat',
