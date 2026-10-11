@@ -3,7 +3,7 @@
 Open-work E26: the homepage hero and the two event pages' headers looked soft on a phone. They now ask for
 the photograph at the width a phone draws it, and the photographs are served at quality 50, which takes
 back most of what the wider file costs the page's largest paint. The owner chose that from four options,
-after the table below and three sheets of crops were sent to them (ADR 0055). Pull request 48, for the
+after the table below and three sheets of crops were sent to them (ADR 0055). Pull request 49, for the
 owner to merge.
 
 ## What changed
@@ -92,7 +92,7 @@ Three facts that cost time:
 
 ## Checked
 
-- `bun check`: typecheck, lint, 1,232 unit tests and the toolchain pins. `bun run build`.
+- `bun check`: typecheck, lint, 1,231 unit tests and the toolchain pins. `bun run build`.
 - The two new stories in Storybook at 375 and 1440 wide: the hero's photograph drawn 967px wide on a
   phone and saying so, no sideways overflow, no console error. axe, with the rules Storybook's own panel
   runs, found nothing on the header story at either width, nor on the hero story at 1440 wide or in six
