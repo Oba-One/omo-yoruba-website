@@ -32,6 +32,12 @@ published with the draft's own revision. The owner's words are quoted.
   back to 2014. Open an album and start looking."
 - `album-summer-camp`: the draft that waited since 10 October, one caption's marks.
 - `galaPage.layout.awards`: `hidden`, until the owner decides whether the Gala gives awards (D10).
+- `donatePage.paymentDetails`: the four lines under Give now, read from the live donation form in a
+  browser (One-time and Monthly tabs, "You'll receive a tax receipt for making a donation", and 100% of
+  the donation going to the mission). "Publish all four".
+- `donatePage.giveNow.blurb`: "You will receive a tax receipt for your donation." where it said the
+  receipt arrives by email straight away, which the form does not say. "yes trim that receipt sentence
+  to match the form".
 
 ## What a phone shows of a hero photograph
 
@@ -58,7 +64,11 @@ is soft there (open-work E26).
   `get-involved`, `a11y` and `navigation` (107 tests).
 - Both pull requests were reviewed on the standards and spec axes before their commits.
 
-Pending notes on the pages fell from 483 to 137: 121 across the eleven pages and 16 on the summer camp
+After pull request 46 deployed, Our Story's member row was clicked in the built-in browser: the Join
+Dialog opened around the membership form and reached `data-state="ready"`. The sweep ran once more
+after that: 48 page reads, none with a problem.
+
+Pending notes on the pages fell from 483 to 133: 117 across the eleven pages and 16 on the summer camp
 album.
 
 ## For the owner
@@ -70,15 +80,19 @@ Two private pages, shared from their own Share menu:
 
 ## Left
 
-- The Gala: when doors open, the dress code, the running order, and the honorees (C5, D10).
-- Membership dues, each role's contact and response line, and the Donate page's three lines on fees,
-  receipts and monthly giving (C1, C12).
-- The officers' names, published on 9 October for a later look (C11).
+- The Gala: when doors open, the dress code, the running order, and the honorees (C5, D10). Asked for
+  a suggestion, the owner was offered doors at 5pm, the start the ticket form already gives. Not decided.
+- Membership dues, each role's contact and response line (who answers the general inbox, and how
+  soon), and what each preset amount on the donation form pays for (C1, C12).
+- The officers' names, which the owner will look over, and their portraits, which the owner will
+  supply later (C11).
 - The summer camp album's year and photographer (C3).
 - The organization's mailbox, and the temporary routing of enquiry emails (D16).
 - Four test enquiries of 12 September still sit in the Inbox (H6).
 - The walkthrough with a member's Editor account (E8).
-- The main checkout holds uncommitted files: the owner's own edits to two handoffs and one new
-  handoff, and seven handoffs, a research note, screenshots and six open-work rows left by other
-  sessions on 10 and 11 October. Local `main` is behind `origin/main` and cannot fast-forward over
-  them. This pass left them as they were.
+- The main checkout held uncommitted files from other sessions of 30 September to 11 October: seven
+  handoffs, additions to two older ones, the CMS walkthrough note, twelve screenshots and six
+  open-work rows. The pass's last pull request carries them, merged with the rows above. Two things
+  stay out of the repository until the owner says otherwise: the arts internship handoff, which is not
+  about the website, and four screenshots of the mail provider's console. The main checkout itself was
+  left as it was: local `main` is behind `origin/main` and cannot fast-forward over its own copies.
