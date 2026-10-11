@@ -98,7 +98,7 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
     <Section id="zones" ground="alt" labelledby="zones-heading">
       <SectionHead
         kicker={{ yo: 'Ìlú kan', en: 'One village' }}
-        title="Four zones, one village"
+        title={page.zonesTitle}
         intro={page.zonesIntro}
         id="zones-heading"
       />
@@ -153,7 +153,6 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
       />
       <Handoff
         shape="box"
-        variant="quiet"
         text="Too small to sponsor, but want the day to happen? A gift does the same work."
         action={{ label: 'Donate', kind: 'give' }}
       />

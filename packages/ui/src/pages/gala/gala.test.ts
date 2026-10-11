@@ -44,7 +44,7 @@ describe('the Gala page-section stories', () => {
     );
   });
 
-  it('labels: the option on the root and the column, the give row quiet', async () => {
+  it('labels: the option on the root and the column, the give row an outline', async () => {
     for (const [story, style] of [
       [Labels.Column, 'column'],
       [Labels.None, 'none'],
@@ -55,7 +55,7 @@ describe('the Gala page-section stories', () => {
       const band = root?.querySelector('#take-part .oy-takepart');
       expect(band?.getAttribute('data-labels')).toBe(style);
       expect(band?.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
-      expect(band?.querySelector('.oy-path[data-way="give"] .oy-btn--quiet')).not.toBeNull();
+      expect(band?.querySelector('.oy-path[data-way="give"] .oy-btn--secondary')).not.toBeNull();
     }
   });
 

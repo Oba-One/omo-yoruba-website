@@ -100,7 +100,7 @@ cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
         page.board.people.length === 0 ? (
           <Pending variant="line" what={page.board.pending} />
         ) : (
-          <CardGrid columns={4} data-sanity={page.edit.portraits}>
+          <CardGrid columns={4} center data-sanity={page.edit.portraits}>
             {page.board.people.map((person) => (
               <PersonCard
                 person={person}
@@ -123,7 +123,7 @@ cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
         page.staff.people.length === 0 ? (
           <Pending variant="line" what={page.staff.pending} />
         ) : (
-          <CardGrid columns={5}>
+          <CardGrid columns={5} center>
             {page.staff.people.map((person) => (
               <PersonCard
                 person={person}
@@ -145,13 +145,18 @@ cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
     </Section>
 
     <Section id="contact" labelledby="contact-heading">
-      <Split>
-        <SectionHead
-          kicker={{ yo: 'Ẹ kàn sí wa', en: 'Reach us' }}
-          title={page.reach.title}
-          intro={page.reach.intro}
-          id="contact-heading"
-        />
+      <SectionHead
+        kicker={{ yo: 'Ẹ kàn sí wa', en: 'Reach us' }}
+        title={page.reach.title}
+        intro={page.reach.intro}
+        id="contact-heading"
+      />
+      {
+        /* The head sits over both columns, so the facts and the card start and end together, and the
+           urgent line closes the card (ADR 0055: the card hung beside the heading
+           with the line loose under it and the column empty below). */
+      }
+      <Split align="stretch">
         <ContactBlock
           part="facts"
           settings={page.reach.settings}
@@ -160,21 +165,23 @@ cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
           nameLabel="Who receives this"
           namePending={page.reach.namePending}
         />
-        <Handoff
-          shape="box"
-          variant="quiet"
-          text="Governance, tax status, and financial documents."
-          action={{ label: 'Impact', kind: 'url', href: '/impact#governance' }}
-        />
         {
           /* The take-part band's gold member row shares a screen view with this card at 375 and 1440, so
              the card's trigger is the outline (one gold action per view; ticket 12). */
         }
-        <div slot="aside">
-          <EnquiryCard kind="contact" variant="secondary" />
-          {page.reach.urgent && <p>If it is urgent, calling reaches a person faster than email does.</p>}
-        </div>
+        <EnquiryCard
+          slot="aside"
+          kind="contact"
+          variant="secondary"
+          note={page.reach.urgent ? 'If it is urgent, calling reaches a person faster than email does.' : undefined}
+        />
       </Split>
+      <Handoff
+        shape="box"
+        variant="quiet"
+        text="Governance, tax status, and financial documents."
+        action={{ label: 'Impact', kind: 'url', href: '/impact#governance' }}
+      />
     </Section>
 
     <Section id="take-part" ground="alt" labelledby="take-part-heading">

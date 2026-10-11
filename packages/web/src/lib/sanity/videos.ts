@@ -54,8 +54,8 @@ export interface VideoView {
   edit?: string;
 }
 
-/** The tile is 16:9, about 540 pixels wide at its widest column and 720 when it stands alone. */
-const STILL = { width: 720, aspect: 16 / 9 };
+/** The tile is 16:9: 516 pixels wide beside another at the content width, and that width, 1052, when it stands alone. */
+const STILL = { width: 1052, aspect: 16 / 9 };
 
 /**
  * The still a video takes when it has none of its own: the album's cover, else the first of its photographs that

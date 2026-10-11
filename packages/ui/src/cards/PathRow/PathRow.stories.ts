@@ -22,7 +22,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Chip, one line, one action: the compact alternative to door cards, and the row of a take-part band. A door names its chip from the prototypes (Membership, Volunteer, Vendors, Partnership, Give); a take-part row brings its own way in, chip, title, line and action. The accent follows the way in; hover deepens the border. No rule, no lift. The action is outline by default, gold once per view, quiet for the give row.',
+          'Chip, one line, one action: the compact alternative to door cards, and the row of a take-part band. A door names its chip from the prototypes (Membership, Volunteer, Vendors, Partnership, Give); a take-part row brings its own way in, chip, title, line and action. The accent follows the way in; hover deepens the border. No rule, no lift. The action is outline by default and gold once per view.',
       },
     },
   },
@@ -66,8 +66,8 @@ export const TakePartRow: Story = {
   },
 };
 
-/** The give row of the Gala's band: its action is quiet and opens the Give Dialog. */
-export const Quiet: Story = {
+/** The give row of the Gala's band: an outline like every other row's, opening the Give Dialog. */
+export const GiveRow: Story = {
   args: {
     door: undefined,
     way: 'give',
@@ -76,7 +76,6 @@ export const Quiet: Story = {
     line: give?.line,
     action: wayAction('give', give?.label),
     primary: false,
-    variant: 'quiet',
   },
 };
 
@@ -101,7 +100,7 @@ export const Enrol: Story = {
   args: {
     door: undefined,
     way: 'enrol',
-    chip: 'Enrol',
+    chip: 'Enroll',
     title: enrol?.title,
     line: enrol?.line,
     action: wayAction('enrol', enrol?.label),
@@ -122,7 +121,7 @@ export const MemberRow: Story = {
   },
 };
 
-/** The Collective's updates row: the give accent, a quiet link to the newsletter form. */
+/** The Collective's updates row: the give accent, an outline that goes to the newsletter form. */
 export const Updates: Story = {
   args: {
     door: undefined,
@@ -132,7 +131,6 @@ export const Updates: Story = {
     line: updates?.line,
     action: wayAction('updates', updates?.label),
     primary: false,
-    variant: 'quiet',
   },
 };
 

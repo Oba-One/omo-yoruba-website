@@ -207,7 +207,9 @@ test.describe('the Programs page', () => {
     await expect(section.locator('.oy-handoff a[href="/impact"]')).toContainText('See our impact');
   });
 
-  test('closes with the take-part rows, one gold action, the give row quiet', async ({ page }) => {
+  test('closes with the take-part rows, one gold action, the give row an outline', async ({
+    page,
+  }) => {
     await page.goto('/programs');
     const section = page.locator('#take-part');
     await expect(section.locator('h2')).toHaveText('Take part');
@@ -219,7 +221,7 @@ test.describe('the Programs page', () => {
       await expect(section.locator('.oy-btn--primary')).toHaveCount(1);
       const give = rows.and(page.locator('[data-way="give"]'));
       if ((await give.count()) === 1) {
-        await expect(give.locator('a.oy-btn')).toHaveClass(/oy-btn--quiet/);
+        await expect(give.locator('a.oy-btn')).toHaveClass(/oy-btn--secondary/);
       }
       expectNoMockWhileOwed(await section.innerText(), [
         [/classroom helpers|festival hands/i, pendingWhat('programsPage', 'takePart[]')],

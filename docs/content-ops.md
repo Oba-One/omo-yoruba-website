@@ -78,7 +78,7 @@ The tabs group an edition's details. Start with its title and year.
    and paste the **YouTube address** that the video's Share button gives. A
    **Still** and **Made by** are optional: without a still, the album's cover
    or first photograph shows under the play mark. Videos appear above the
-   photographs, and the first one also appears on the event's page. Nothing
+   photographs, and the first two also appear on the event's page. Nothing
    loads from YouTube until a visitor presses play.
 5. At the top of the album, choose the **Photographer**. Tick **Credit confirmed** only once the owner
    confirms the credit. Add a **Consent note** for permission specific to this

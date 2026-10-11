@@ -63,8 +63,12 @@ test.describe('the Our Story page', () => {
       [/Crenshaw|Thirty-one people|borrowed blackboard/i, pendingWhat('storyPage', 'founding')],
       [/Balogun|Sofolahan|with 29 others|Nine children/, pendingWhat('storyPage', 'foundingFacts')],
     ]);
-    // The earliest photograph is owed: never the summer camp captioned as the founding years.
-    expect(text).not.toMatch(/before Odunde|Citrus College/);
+    // The earliest photograph is owed: never the summer camp captioned as the founding years. The guard
+    // reads the photograph's own column, since the story may name Citrus College, where the summer
+    // gathering was held for years.
+    expect(await section.locator('.oy-split-aside').innerText()).not.toMatch(
+      /before Odunde|Citrus College/,
+    );
   });
 
   test('keeps the timeline by its option, each entry or its Pending line', async ({ page }) => {

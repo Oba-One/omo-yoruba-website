@@ -27,7 +27,7 @@ const paragraph = (key: string, text: string): Block => ({
 export const FESTIVAL_HEADER = {
   kicker: { yo: 'Ọdúndé', en: 'The new year has arrived' },
   title: 'Odunde Festival',
-  line: 'A day of Yoruba culture at Leimert Park, held each June. Four zones, one village, open to everyone.',
+  line: 'A day of Yoruba culture at Leimert Park, held each June. Three zones, one village, open to everyone.',
   image: PHOTOS.processionDrummer,
   actions: [
     { label: 'Plan your day', kind: 'anchor', href: '#plan' },
@@ -58,7 +58,7 @@ export const FESTIVAL_GLANCE = [
 export const WHAT_IT_IS: Block[] = [
   paragraph(
     'what-1',
-    'Odunde marks the Yoruba new year. It is held in June at Leimert Park, and it is open to the whole neighborhood, not only to Yoruba families. The park is laid out as a village for the day, with four zones and a program that runs from the opening procession to the last drum.',
+    'Odunde marks the Yoruba new year. It is held in June at Leimert Park, and it is open to the whole neighborhood, not only to Yoruba families. The park is laid out as a village for the day, with three zones and a program that runs from the opening procession to the last drum.',
   ),
   paragraph(
     'what-2',
@@ -102,7 +102,7 @@ export const PROSE_EVERY_NODE = [
     _key: 'every-2',
     style: 'h3',
     markDefs: [],
-    children: [{ _type: 'span', _key: 'every-2-a', text: 'Four zones, one village', marks: [] }],
+    children: [{ _type: 'span', _key: 'every-2-a', text: 'Three zones, one village', marks: [] }],
   },
   {
     _type: 'block',

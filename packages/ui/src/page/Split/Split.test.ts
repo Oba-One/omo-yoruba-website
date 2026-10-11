@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './Split.stories';
 
-const { Default, Person, Centred } = composeStories(stories);
+const { Default, Person, Centred, Stretched } = composeStories(stories);
 
 describe('Split', () => {
   it('puts the copy first and the aside second inside the tokens split', async () => {
@@ -21,10 +21,13 @@ describe('Split', () => {
     ).toBe(false);
   });
 
-  it('centres the columns on each other when asked, and aligns them from the top by default', async () => {
+  it('centres or stretches the columns when asked, and aligns them from the top by default', async () => {
     expect(
       (await renderToBody(Centred)).querySelector('.oy-split')?.getAttribute('data-align'),
     ).toBe('center');
+    expect(
+      (await renderToBody(Stretched)).querySelector('.oy-split')?.getAttribute('data-align'),
+    ).toBe('stretch');
     expect(
       (await renderToBody(Default)).querySelector('.oy-split')?.hasAttribute('data-align'),
     ).toBe(false);

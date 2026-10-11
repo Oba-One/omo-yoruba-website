@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { ENQUIRY_KINDS } from './enquiry-kinds';
-import { isQuietWay, isWayIn, NEWSLETTER_ANCHOR, WAY_CHIPS, WAY_INS, wayAction } from './take-part';
+import {
+  canCarryGold,
+  isWayIn,
+  NEWSLETTER_ANCHOR,
+  WAY_CHIPS,
+  WAY_INS,
+  wayAction,
+} from './take-part';
 
 describe('ways in', () => {
   it('are the nine a take-part band can draw', () => {
@@ -51,12 +58,12 @@ describe('ways in', () => {
   });
 });
 
-describe('the chips and the quiet ways', () => {
-  it('names a chip for every way in, and keeps give and updates quiet', () => {
+describe('the chips and the ways that may carry the gold', () => {
+  it('names a chip for every way in, and never gives give or updates the gold', () => {
     expect(Object.keys(WAY_CHIPS).sort()).toEqual([...WAY_INS].sort());
-    expect(WAY_CHIPS.enrol).toBe('Enrol');
+    expect(WAY_CHIPS.enrol).toBe('Enroll');
     expect(WAY_CHIPS.member).toBe('Membership');
-    expect(WAY_INS.filter((way) => isQuietWay(way))).toEqual(['give', 'updates']);
-    expect(isQuietWay(undefined)).toBe(false);
+    expect(WAY_INS.filter((way) => !canCarryGold(way))).toEqual(['give', 'updates']);
+    expect(canCarryGold(undefined)).toBe(false);
   });
 });

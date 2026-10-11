@@ -41,6 +41,15 @@ export const WithNext: Story = {
   args: { kind: 'member', next: 'Dues are agreed with our membership lead' },
 };
 
+/** Our Story's contact card: the page's line on calling closes the card under a hairline. */
+export const WithNote: Story = {
+  args: {
+    kind: 'contact',
+    variant: 'secondary',
+    note: 'If it is urgent, calling reaches a person faster than email does.',
+  },
+};
+
 /** The Lessons page's card: the enrol spec's copy, the prototype's label, and the teacher's own address beside it. */
 export const WithEmail: Story = {
   args: {

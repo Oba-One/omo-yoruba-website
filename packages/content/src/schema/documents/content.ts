@@ -690,7 +690,7 @@ export const album = defineType({
       type: 'array',
       of: [{ type: 'video' }],
       description:
-        "Videos from YouTube, in the order the album page shows them, above the photographs. The first one also shows on the edition's page under past years. Nothing is requested from YouTube until a visitor presses play.",
+        "Videos from YouTube, in the order the album page shows them, above the photographs. The first two also show on the edition's page under past years. Nothing is requested from YouTube until a visitor presses play.",
     }),
   ],
   orderings: [

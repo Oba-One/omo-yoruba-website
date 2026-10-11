@@ -28,12 +28,12 @@ describe('the Programs page-section stories', () => {
     }
   });
 
-  it('closes with the take-part band: enrol in gold, the give row quiet', async () => {
+  it('closes with the take-part band: enrol in gold, the give row an outline', async () => {
     const root = (await renderToBody(Cards.Four)).querySelector('#take-part');
     expect(text(root?.querySelector('h2'))).toBe('Take part');
     expect(root?.querySelectorAll('.oy-path')).toHaveLength(3);
     expect(root?.querySelector('.oy-path[data-way="enrol"] .oy-btn--primary')).not.toBeNull();
-    expect(root?.querySelector('.oy-path[data-way="give"] .oy-btn--quiet')).not.toBeNull();
+    expect(root?.querySelector('.oy-path[data-way="give"] .oy-btn--secondary')).not.toBeNull();
   });
 
   it('inline: both programs behind their toggles, open or closed by the option, their facts Pending', async () => {

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './CardGrid.stories';
 
-const { Three, Two, One, Five, Four, ProgramsFour, ProgramsPairs, Pending, WithNote } =
+const { Three, Two, One, Five, Four, Centered, ProgramsFour, ProgramsPairs, Pending, WithNote } =
   composeStories(stories);
 
 describe('CardGrid', () => {
@@ -21,6 +21,16 @@ describe('CardGrid', () => {
     expect((await renderToBody(Five)).querySelectorAll('[data-columns="5"] .oy-card')).toHaveLength(
       5,
     );
+  });
+
+  it('marks a centred grid, and leaves the others as they were', async () => {
+    const centred = (await renderToBody(Centered)).querySelector('.oy-card-grid');
+    expect(centred?.hasAttribute('data-center')).toBe(true);
+    expect(centred?.getAttribute('data-columns')).toBe('4');
+    expect(centred?.querySelectorAll('.oy-card')).toHaveLength(7);
+    expect(
+      (await renderToBody(Four)).querySelector('.oy-card-grid')?.hasAttribute('data-center'),
+    ).toBe(false);
   });
 
   it('arranges the program cards four across, three or in pairs', async () => {

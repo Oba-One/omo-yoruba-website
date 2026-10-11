@@ -127,7 +127,7 @@ export const seats = (tiers: 'columns' | 'rows'): SlotValue => ({
   },
 });
 
-/** The closing band on the tint: the seed's four rows, the give row last with its quiet Donate. */
+/** The closing band on the tint: the seed's four rows, the give row last with its Donate. */
 export const takePart = (labels: TakePartLabels): SlotValue => ({
   component: Section,
   props: { id: 'take-part', ground: 'alt', labelledby: 'take-part-heading' },

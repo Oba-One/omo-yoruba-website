@@ -25,7 +25,7 @@ describe('Prose', () => {
     expect(prose?.querySelector('p strong')?.textContent).toBe('Yoruba new year');
     expect(prose?.querySelector('p em')?.textContent).toBe('open to the whole neighborhood');
     expect(prose?.querySelector('a.oy-prose-link')?.getAttribute('href')).toBe('/gala');
-    expect(text(prose?.querySelector('h3.oy-prose-h3'))).toBe('Four zones, one village');
+    expect(text(prose?.querySelector('h3.oy-prose-h3'))).toBe('Three zones, one village');
     expect(text(prose?.querySelector('blockquote.oy-prose-quote em'))).toBe(
       'Àgbájọ ọwọ́ la fi ń sọ̀yà.',
     );

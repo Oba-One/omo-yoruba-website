@@ -202,7 +202,7 @@ describe('buildHomepage', () => {
     const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.hero.emphasis).toBe('alive');
     expect(view.hero.primary?.label).toBe('See the Odunde Festival');
-    const enrol = { label: 'Enrol a learner', kind: 'url', href: '/programs/yoruba-lessons' };
+    const enrol = { label: 'Enroll a learner', kind: 'url', href: '/programs/yoruba-lessons' };
     const withAction = {
       ...data,
       programs: data.programs?.map((program) => ({ ...program, action: enrol })),
