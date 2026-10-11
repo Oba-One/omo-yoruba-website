@@ -1,0 +1,49 @@
+---
+/**
+ * The dialog a membership button opens (CONTEXT.md, Join Dialog; ADR 0050): Zeffy's membership form,
+ * where someone joining pays their dues, in the shell every Zeffy form opens in
+ * (`ZeffyDialog.astro`). These are the Join Dialog's own words. The site mounts it only while
+ * Organization details hold the membership form's address, so it has no pending mode: without the dialog
+ * a membership button is a link to the member enquiry on the same page. Its fallback hands over to that
+ * enquiry, where our membership lead arranges the dues. `#join` in the URL opens the dialog on load.
+ * Announces `join_opened`, `join_embed_failed`, `join_completed` and `join_page_opened` as `oy:track`
+ * events (ADR 0018); `join_completed` is a sign in the browser, the membership itself is Zeffy's record.
+ */
+import type { ZeffyDialogCopy, ZeffyDialogMode } from '../ZeffyDialog/dialog';
+import ZeffyDialog from '../ZeffyDialog/ZeffyDialog.astro';
+
+interface Props {
+  /** Renders the dialog open. The site opens it only for `#join`. */
+  open?: boolean;
+  /** The server state: the embed box or the fallback. */
+  mode?: Exclude<ZeffyDialogMode, 'pending'>;
+  /** Zeffy's own page for the form (`zeffyPageHref`), linked under the embed; none draws no link. */
+  pageHref?: string | null;
+  /** Milliseconds before the fallback shows; stories shorten it. */
+  timeout?: number;
+}
+
+const { open, mode, pageHref, timeout } = Astro.props;
+
+const COPY: ZeffyDialogCopy = {
+  title: 'Become a member',
+  lead: {
+    embed: 'Membership and dues, all here.',
+    fallback: 'Another way to join while the form is down.',
+  },
+  heading: 'The membership form did not load.',
+  loading: 'Loading the membership form...',
+  page: {
+    note: "Zeffy's own page has the same form. It opens in a new tab.",
+    label: "Join on Zeffy's page",
+  },
+  enquiry: { kind: 'member', label: 'Become a member' },
+};
+---
+
+<ZeffyDialog form="join" copy={COPY} open={open} mode={mode} pageHref={pageHref} timeout={timeout}>
+  <slot name="embed" slot="embed" />
+  <Fragment slot="fallback">
+    Tell us about yourself and our membership lead will arrange your dues with you.
+  </Fragment>
+</ZeffyDialog>
