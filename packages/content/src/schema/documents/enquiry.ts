@@ -7,6 +7,8 @@ import {
   KIND_TITLES,
   SENDER_FIELDS,
 } from '../../enquiry-kinds';
+import { ENQUIRY_STATUSES, enquiryStatus } from '../../enquiry-workflow';
+import { EnquiryStatusInput } from '../../studio/enquiry-status-input';
 import { forMembers } from '../../studio/roles';
 import { instantDate, LA_DATETIME } from '../format';
 
@@ -45,6 +47,7 @@ const previewSelect: Record<string, string> = {
   kind: 'kind',
   submittedAt: 'submittedAt',
   handled: 'handled',
+  status: 'status',
   ...Object.fromEntries(
     ENQUIRY_KINDS.map((kind) => [`${kind}Title`, `${kind}.${enquiryTitleField(kind)}`]),
   ),
@@ -58,11 +61,43 @@ export const enquiry = defineType({
   name: 'enquiry',
   title: 'Enquiry',
   type: 'document',
+  liveEdit: true,
+  fieldsets: [
+    { name: 'delivery', title: 'Email details', options: { collapsible: true, collapsed: true } },
+  ],
   // Personal data: administrators reach enquiries through the Inbox, never through search, and a
   // member who opens one cannot change it (ADR 0042).
   readOnly: forMembers,
   __experimental_omnisearch_visibility: false,
   fields: [
+    defineField({
+      name: 'status',
+      title: 'Status',
+      type: 'string',
+      initialValue: 'new',
+      options: { list: [...ENQUIRY_STATUSES] },
+      readOnly: true,
+      components: { input: EnquiryStatusInput },
+      description:
+        'Use the status actions below. Notes save automatically; no Publish step is needed.',
+    }),
+    defineField({
+      name: 'notes',
+      title: 'Notes',
+      type: 'text',
+      rows: 4,
+      description:
+        'Note who is handling this, the last reply and the next step. These notes stay in the CMS.',
+    }),
+    defineField({
+      name: 'notifyError',
+      title: 'Email problem',
+      type: 'text',
+      rows: 3,
+      description: 'Fix the cause, then use Retry email notification below.',
+      readOnly: true,
+      hidden: ({ document }) => !document?.notifyError || Boolean(document?.notifiedAt),
+    }),
     defineField({
       name: 'kind',
       title: 'Kind',
@@ -96,21 +131,50 @@ export const enquiry = defineType({
     }),
     defineField({
       name: 'notifiedAt',
-      title: 'Email sent',
+      title: 'Email accepted',
       type: 'datetime',
       options: LA_DATETIME,
-      description: 'When the email to the right contact went out.',
+      description: 'When Resend accepted the email. Delivery or bounce details are in Resend.',
+      readOnly: true,
+      fieldset: 'delivery',
+    }),
+    defineField({
+      name: 'notificationId',
+      title: 'Email receipt',
+      type: 'string',
+      fieldset: 'delivery',
       readOnly: true,
     }),
     defineField({
-      name: 'notifyError',
-      title: 'Email problem',
-      type: 'string',
-      description: 'Why the email could not be sent, when it could not.',
+      name: 'notifyAttemptAt',
+      title: 'First send attempt',
+      type: 'datetime',
+      options: LA_DATETIME,
+      fieldset: 'delivery',
       readOnly: true,
     }),
-    defineField({ name: 'handled', title: 'Handled', type: 'boolean', initialValue: false }),
-    defineField({ name: 'notes', title: 'Notes', type: 'text', rows: 4 }),
+    defineField({
+      name: 'notifyAttemptCount',
+      title: 'Send attempts',
+      type: 'number',
+      fieldset: 'delivery',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'notifyRequestedAt',
+      title: 'Retry requested',
+      type: 'datetime',
+      options: LA_DATETIME,
+      fieldset: 'delivery',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'handled',
+      title: 'Legacy handled status',
+      type: 'boolean',
+      hidden: true,
+      readOnly: true,
+    }),
   ],
   orderings: [
     {
@@ -127,7 +191,11 @@ export const enquiry = defineType({
       const when = instantDate(selection.submittedAt as string | undefined);
       return {
         title: title ?? (kind ? KIND_TITLES[kind] : 'Enquiry'),
-        subtitle: [kind ? KIND_TITLES[kind] : '', when, selection.handled ? 'handled' : 'unhandled']
+        subtitle: [
+          kind ? KIND_TITLES[kind] : '',
+          when,
+          ENQUIRY_STATUSES.find(({ value }) => value === enquiryStatus(selection))?.title,
+        ]
           .filter(Boolean)
           .join(' • '),
       };

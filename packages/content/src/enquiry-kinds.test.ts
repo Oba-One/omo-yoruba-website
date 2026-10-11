@@ -85,7 +85,7 @@ describe('successCopy', () => {
       name: 'Adebayo Ogunlesi',
       responds: 'within one working day',
     });
-    expect(copy.title).toBe('Ẹ ṣé! ✓ The deck is on its way.');
+    expect(copy.title).toBe('Ẹ ṣé! ✓ We have your enquiry.');
     expect(copy.body).toBe(
       'Adebayo Ogunlesi, our partnerships lead, sends the deck and the impact numbers within one working day and follows up to talk through levels and recognition.',
     );
@@ -96,7 +96,7 @@ describe('successCopy', () => {
       'Our partnerships lead sends the deck and the impact numbers and follows up to talk through levels and recognition.',
     );
     expect(successCopy('member', {}).body).toBe(
-      'Dues are not paid here. Our membership lead will call or write to arrange payment, and you are on the members list from today.',
+      'Dues are not paid here. Our membership lead will call or write about payment and the next steps to join.',
     );
   });
 

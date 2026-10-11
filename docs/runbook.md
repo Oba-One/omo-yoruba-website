@@ -177,21 +177,21 @@ The Studio is embedded at `/admin` (`@sanity/astro`, ADR 0017); it loads the con
 http://localhost:4321/admin and log in with the Sanity account that belongs to the project. The
 project's CORS origins must include `http://localhost:4321` and the public host's origin, both with
 credentials (wizard stage 1 adds the domain without them; see Hosting today), or the login loop
-never ends. The sidebar follows the site (ADR 0042, its names ADR 0047; no news, ADR 0048): To
-do, Events (the Odunde Festival with its editions and zones, the End-of-Year Gala with its
+never ends. The sidebar follows the site (ADR 0042, its names ADR 0047; no news, ADR 0048): Missing
+content, Events (the Odunde Festival with its editions and zones, the End-of-Year Gala with its
 editions, tiers, levels and honorees, and the Yoruba Cultural Collective events), Photos, People, Pages (each page;
 its own lists, such as Impact's outcomes and the Collective's initiatives, are in its form, and the documents it
 lists open beside it: the programs beside Programs, the ways to get involved beside Get Involved, and the headline
 figures, partners and governance documents beside Impact), and for administrators Organization details and
-the Inbox (enquiries by kind, unhandled first, and subscribers). The To do (`studio/todo.ts`, ADR
-0042) groups the registry's rows by the page that shows them, with counts, listing only what is owed:
-the organization's rows gather under Organization details (administrators only), a row bound to an edition
-(an event's facts, the Gala's tiers and levels) counts only the edition its page shows, Still to add lists the documents the site needs more of (and a next
-festival or Gala edition not yet entered), and Wording to check lists the content-lint function's
-reports that have something to fix. One live query feeds it and reads drafts, as the Studio does: a
-row leaves once its documents are fixed, even in a draft, so an edition prepared as drafts for the
-announce day leaves nothing owed while the site still shows its Pending chips until it is published. Members (Sanity Editors) see everything but Organization details, the Inbox and
-the Vision tool (ADR 0042, `packages/content/src/studio/roles.ts`); those documents open read-only
+the Inbox (New, In progress, Handled, Not emailed, and Subscribers). Missing content (`studio/todo.ts`,
+ADR 0054) keeps the same registry and current-edition rules in one checklist: one task per document,
+an expandable list of fields, and a page filter. Next event essentials appear first, followed by other
+site content and owner decisions or items to add. One live query reads drafts and labels documents
+with unpublished changes. Filling a draft clears its task; publication is still a separate action.
+Wording to check lists nonempty content-lint reports across the site. Members (Sanity Editors) see
+everything but Organization details and the Inbox (ADR 0042, `packages/content/src/studio/roles.ts`).
+Vision is registered only for administrators in local development, never in a deployed CMS.
+Administrators' documents open read-only
 for them wherever else they turn up, and enquiries and subscribers stay out of search. The three
 held-back switches (the gallery's albums, Our Story's timeline, the Gala's awards) are read-only for
 members, who also cannot restore an old version of those three pages. Each kind's events list
@@ -375,11 +375,15 @@ migrations: `album-link`, `inline-lists`, `teacher-group`, then `retired-fields`
 Two Sanity Functions (ADR 0004, ADR 0014) declared in `sanity.blueprint.ts` at the repo root,
 with their code under `packages/content/functions/`:
 
-- `enquiry-notify`: on `create` of an `enquiry` without `notifiedAt`, emails the routing contact
+- `enquiry-notify`: on `create` or an explicit change to `notifyRequestedAt` of an `enquiry`
+  without `notifiedAt`, emails the routing contact
   for the kind's role (`siteSettings.contacts`, then the general entry, then `generalEmail`)
-  through Resend and patches `notifiedAt`, or `notifyError` when nothing routed or the send failed.
+  through Resend and patches `notifiedAt` and `notificationId`, or `notifyError` when nothing
+  routed or the send failed. Notes and handling status updates never trigger sending. The email
+  has the visitor's Reply-To and a direct link to the enquiry. A receipt means acceptance, not final
+  delivery. Check Resend for bounces or delivery. Staff reply through their email client.
 - `content-lint`: on `create` or `update` of a content document, writes one `lintReport`
-  (empty when clean) that the Studio's To do lists under "Wording to check". It skips the inputs the
+  (empty when clean) that Missing content lists under "Wording to check". It skips the inputs the
   Studio hides, for good or by an event's kind (`src/hidden-inputs.ts`).
 
 Local test, from the repo root (the wrapper loads `packages/web/.env`):
@@ -406,6 +410,28 @@ runs) and `bunx sanity functions env add enquiry-notify ENQUIRY_FROM "<Name> <ad
 verified Resend domain>"`. Neither lives in code; without them the function records
 `notifyError` on the enquiry instead of sending. Logs: `bunx sanity functions logs <name>`.
 Functions run on Node 24 in production and on this machine's Node 22 locally.
+
+The live stack is `website` (`ST-ayekuuu8cz`) in project `qsya7q8x`. Both triggers explicitly target
+the site's private `development` dataset. Its nonsecret link is `.sanity/blueprint.config.json`.
+The sender is `Omo Yorùbá website <forms@omoyorubasocal.org>`. Resend verified that domain on
+11 October 2026 using `resend._domainkey` TXT, `rsend` CNAME to `rsend.forge.rmta.net`, and
+`send` CNAME to `send.forge.rmta.net`; CNAMEs are DNS only. A new `_dmarc` TXT record
+contains `v=DMARC1; p=none;` as Resend recommends. Receiving is disabled. The existing
+sending-only API key is in the Function environment, never source control.
+
+Retry from **Inbox → Not emailed** after correcting the reported error. Resend receives a stable
+`enquiry-notify/<document-id>` idempotency key. Receipt patches reread the latest revision and
+change machine fields only, preserving concurrent staff notes. Resend retains keys for 24 hours:
+an attempt without a certain result older than that stops for a human check in Resend. Do not clear
+its `notifyAttemptAt` or send manually until the earlier outcome is known. A definitively rejected
+first request can retry after configuration is corrected, including the next day. Existing
+enquiries are not replayed automatically when Functions deploy.
+
+Enquiries use live editing for notes and explicit actions for `new`, `in-progress`, and `handled`.
+The hidden legacy `handled` boolean remains readable as a fallback; a status action removes it.
+No stored-content migration is required. The live dataset had no enquiry drafts at rollout.
+Before using this configuration on another dataset, resolve any old enquiry drafts and preserve
+their notes first. Other content still uses drafts and Publish.
 
 ## Playwright and axe
 
@@ -460,7 +486,7 @@ and the newsletter, each backed by a handler in `src/lib/forms/handlers.ts`: val
 success answer and no write, refuse a burst from one origin (ten in ten minutes, a token bucket
 in module memory, best effort on a warm function) and an address past the cap (five enquiries an
 hour per reply-to address, a Sanity count across every kind), write `{ kind, [kind]: fields,
-submittedAt, source, handled }` or `{ email, subscribedAt, source }` with `SANITY_API_WRITE_TOKEN`,
+submittedAt, source, status: "new" }` or `{ email, subscribedAt, source }` with `SANITY_API_WRITE_TOKEN`,
 and answer `{ ok: true, title, body }` from `successCopy` with the routing contact read from the
 settings (cached for a minute) or `{ ok: false, summary, fields, values }`. Without the write
 token every form answers the fallback sentence and logs why. The Enquiry Modal and the footer

@@ -91,7 +91,8 @@ export function buildEmail(enquiry: EnquiryDocument, route: Route): Email {
     '',
     `Sent from: ${text(enquiry.source)}`,
     `Submitted: ${text(enquiry.submittedAt)}`,
-    `Reply to this email to answer them. The enquiry is also in the Studio inbox (id ${enquiry._id}).`,
+    'Reply to this email to answer them. Update its status and notes in the Studio Inbox:',
+    `https://www.omoyorubasocal.org/admin/structure/intent/edit/id=${encodeURIComponent(enquiry._id)};type=enquiry/`,
   ];
   return {
     to: route.to,

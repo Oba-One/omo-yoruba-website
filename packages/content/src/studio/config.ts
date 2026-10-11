@@ -28,6 +28,8 @@ export interface StudioEnv {
    * checks hidden inputs too.
    */
   cli?: boolean;
+  /** Vision is a local developer tool and is never shown in the live CMS. */
+  development?: boolean;
 }
 
 /**
@@ -35,7 +37,13 @@ export interface StudioEnv {
  * astro:env) and the Sanity CLI in this package (from process.env). Browser safe: nothing here
  * reads the environment.
  */
-export function createStudioConfig({ projectId, dataset, previewOrigin, cli = false }: StudioEnv) {
+export function createStudioConfig({
+  projectId,
+  dataset,
+  previewOrigin,
+  cli = false,
+  development = false,
+}: StudioEnv) {
   const origin = previewOrigin?.trim();
   const presentation: PresentationPluginOptions = origin
     ? {
@@ -52,10 +60,16 @@ export function createStudioConfig({ projectId, dataset, previewOrigin, cli = fa
     plugins: [
       structureTool({ structure, defaultDocumentNode }),
       presentationTool(presentation),
-      visionTool({ defaultApiVersion: STUDIO_API_VERSION }),
+      ...(development ? [visionTool({ defaultApiVersion: STUDIO_API_VERSION })] : []),
     ],
     // The guide is hosted by Astro; the CLI has no guide route. Vision stays administrator-only.
-    tools: (prev, context) => studioTools(cli ? prev : [...prev, memberGuideTool], context),
+    tools: (prev, context) =>
+      studioTools(
+        (cli ? prev : [...prev, memberGuideTool]).filter(
+          (tool) => development || tool.name !== 'vision',
+        ),
+        context,
+      ),
     // Editions are prepared as drafts and published by hand on the announce day: nothing is
     // staged in a release or scheduled to publish itself (ADR 0042).
     releases: { enabled: false },

@@ -12,4 +12,5 @@ export default createStudioConfig({
   projectId: PUBLIC_SANITY_PROJECT_ID,
   dataset: PUBLIC_SANITY_DATASET,
   previewOrigin: PUBLIC_PREVIEW_ORIGIN,
+  development: import.meta.env.DEV,
 });
