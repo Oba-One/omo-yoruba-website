@@ -108,6 +108,43 @@ describe('enquiry notifications', () => {
     expect(f.send).toHaveBeenCalledTimes(1);
   });
 
+  it('uses a private recipient override without reading or changing public contacts', async () => {
+    const f = fixture();
+    f.fetch.mockRejectedValue(new Error('Settings unavailable'));
+    await notifyEnquiry(f.event, {
+      ...f.dependencies,
+      recipientOverride: ' temporary@example.org ',
+    });
+    expect(f.fetch).not.toHaveBeenCalled();
+    expect(f.send).toHaveBeenCalledWith(
+      expect.objectContaining({ to: 'temporary@example.org', replyTo: 'sender@example.org' }),
+      'enquiry-notify/enquiry-test',
+    );
+    expect(f.current().notificationId).toBe('email-receipt');
+    expect(f.dependencies.client.patch).toHaveBeenCalledWith('enquiry-test');
+    expect(f.dependencies.client.patch).not.toHaveBeenCalledWith('siteSettings');
+  });
+
+  it('returns to normal contact routing when the override is blank', async () => {
+    const f = fixture();
+    await notifyEnquiry(f.event, { ...f.dependencies, recipientOverride: ' ' });
+    expect(f.send).toHaveBeenCalledWith(
+      expect.objectContaining({ to: 'team@example.org' }),
+      'enquiry-notify/enquiry-test',
+    );
+  });
+
+  it.each(['invalid', 'one@example.org, two@example.org', 'Name <one@example.org>'])(
+    'records a configuration error for an invalid override: %s',
+    async (recipientOverride) => {
+      const f = fixture();
+      await notifyEnquiry(f.event, { ...f.dependencies, recipientOverride });
+      expect(f.send).not.toHaveBeenCalled();
+      expect(f.current().notifyError).toContain('ENQUIRY_TO must contain one email address');
+      expect(f.current().notifyAttemptAt).toBeUndefined();
+    },
+  );
+
   it.each(['route', 'sender', 'key'] as const)(
     'does not attempt sending without a configured %s',
     async (missing) => {

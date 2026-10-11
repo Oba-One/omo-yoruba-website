@@ -16,6 +16,7 @@ interface SendResult {
 interface Dependencies {
   client: SanityClient;
   from?: string;
+  recipientOverride?: string;
   configurationError?: string;
   send: (
     email: ReturnType<typeof buildEmail> & { from: string },
@@ -57,10 +58,17 @@ export async function notifyEnquiry(event: NotificationDocument, dependencies: D
     return;
   const fail = (message: string) => recordResult(client, current._id, { notifyError: message });
   try {
-    const settings = await client.fetch<{ contacts?: Contact[]; generalEmail?: string } | null>(
-      '*[_id == "siteSettings"][0]{contacts, generalEmail}',
-    );
-    const route = routeFor(current.kind, settings?.contacts, settings?.generalEmail);
+    const recipient = dependencies.recipientOverride?.trim();
+    if (recipient && !/^[^\s@,<>]+@[^\s@,<>]+\.[^\s@,<>]+$/.test(recipient))
+      return await fail('ENQUIRY_TO must contain one email address without a display name.');
+    const settings = recipient
+      ? null
+      : await client.fetch<{ contacts?: Contact[]; generalEmail?: string } | null>(
+          '*[_id == "siteSettings"][0]{contacts, generalEmail}',
+        );
+    const route = recipient
+      ? { to: recipient }
+      : routeFor(current.kind, settings?.contacts, settings?.generalEmail);
     if (!route)
       return await fail(
         'No email contact is configured. Add the general email in Organization details.',

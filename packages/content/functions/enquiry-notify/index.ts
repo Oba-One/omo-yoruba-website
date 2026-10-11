@@ -21,6 +21,7 @@ export const handler = documentEventHandler<NotificationDocument>(async ({ conte
   await notifyEnquiry(event.data, {
     client,
     from: process.env.ENQUIRY_FROM,
+    recipientOverride: process.env.ENQUIRY_TO,
     configurationError: process.env.RESEND_API_KEY
       ? undefined
       : 'RESEND_API_KEY is missing from the notification function settings.',

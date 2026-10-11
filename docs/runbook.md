@@ -419,6 +419,14 @@ The sender is `Omo Yorùbá website <forms@omoyorubasocal.org>`. Resend verified
 contains `v=DMARC1; p=none;` as Resend recommends. Receiving is disabled. The existing
 sending-only API key is in the Function environment, never source control.
 
+For an owner-approved temporary receiving inbox, set the private Function variable
+`ENQUIRY_TO` to one plain email address. It overrides routing for every enquiry kind without
+changing public contacts or the visitor's Reply-To. Remove it to restore role/general routing.
+A blank value also restores normal routing; an invalid value records `notifyError` without
+sending. This changes future notifications only; accepted emails are never replayed.
+The owner approved temporary routing on 11 October 2026 while the organization mailbox is
+repaired. Confirm the repaired inbox works before removing this override.
+
 Retry from **Inbox → Not emailed** after correcting the reported error. Resend receives a stable
 `enquiry-notify/<document-id>` idempotency key. Receipt patches reread the latest revision and
 change machine fields only, preserving concurrent staff notes. Resend retains keys for 24 hours:
