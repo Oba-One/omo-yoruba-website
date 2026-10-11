@@ -25,7 +25,8 @@ Three links are not variables. The Zeffy donation form's embed link is `siteSett
 which an administrator enters in the Studio and the Give Dialog's server island reads (ADR 0020); the
 Zeffy membership form's is `siteSettings.zeffyMembershipUrl`, which the layout reads, mounting the Join
 Dialog only while it holds an address on `www.zeffy.com` (ADR 0050); each gala edition holds its
-Eventbrite link as `ticketsUrl` (ADR 0024). Remove any
+ticket link as `ticketsUrl` (ADR 0024): a Zeffy ticket form's embed address opens in the Tickets Dialog
+on the Gala page (ADR 0052), any other link, such as Eventbrite, in a new tab. Remove any
 `PUBLIC_ZEFFY_EMBED_URL` or `PUBLIC_EVENTBRITE_URL` left in Vercel or a local env file.
 Since ADR 0045 the island adds Zeffy's v2 parameters (`embed-version=v2&embedId=give`) to the
 frame's address, so the form reports its readiness, its height and its thank-you page to the
@@ -466,8 +467,8 @@ bun run --filter @oy/content query -- '*[_type == "enquiry"] | order(submittedAt
 ```
 
 Analytics: the components announce `oy:track` events (`enquiry_opened`, `enquiry_submitted`,
-`give_opened`, `give_embed_failed`, `give_completed`, `give_page_opened`, the Join Dialog's four `join_` events of the
-same names, `newsletter_submitted`) and `Analytics.astro`
+`give_opened`, `give_embed_failed`, `give_completed`, `give_page_opened`, the Join Dialog's four `join_` events and the
+Tickets Dialog's four `tickets_` events of the same names, `newsletter_submitted`) and `Analytics.astro`
 forwards them to PostHog once it loads, with pageviews on every navigation and never a form's
 contents. `give_completed` means Zeffy's form showed its thank-you page: a sign in the browser,
 not a record of the gift, which stays in Zeffy (ADR 0045). `give_page_opened` means the donor took

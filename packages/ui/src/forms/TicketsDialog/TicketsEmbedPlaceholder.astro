@@ -1,0 +1,35 @@
+---
+/**
+ * Storybook stands in for the ticket form: the site hands the dialog a `<template data-zeffy>` with the
+ * iframe, which a story cannot carry (string slots drop templates and iframes). This box shows where the form
+ * renders and says so.
+ */
+---
+
+<template data-zeffy>
+  <div class="oy-tickets-stand-in">
+    <p>Zeffy's ticket form renders in this box on the site.</p>
+  </div>
+</template>
+<p class="oy-tickets-stand-in-note">The ticket form is Zeffy's own on the site; this story shows its frame.</p>
+
+<style>
+  .oy-tickets-stand-in {
+    border: 1.5px dashed var(--gold-600);
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 20px;
+    min-height: 240px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  .oy-tickets-stand-in p {
+    margin: 0;
+  }
+  .oy-tickets-stand-in-note {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+</style>

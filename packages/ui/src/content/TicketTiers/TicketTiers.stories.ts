@@ -31,8 +31,24 @@ export const Columns: Story = {};
 
 export const Rows: Story = { args: { layout: 'rows' } };
 
-/** Before the edition holds its Eventbrite link: every buy-now tier shows the chip. */
+/** Before the edition holds its ticket link: every buy-now tier shows the chip. */
 export const NoLink: Story = { args: { ticketsUrl: null } };
 
-/** No tiers in the Studio, as for Gala 2026 today. */
-export const Pending: Story = { args: { tiers: [] } };
+/** No tiers in the Studio and no ticket link. */
+export const Pending: Story = { args: { tiers: [], ticketsUrl: null } };
+
+/** No tiers in the Studio, and a Zeffy ticket form as the edition's link: the form lists the tickets itself. */
+export const PendingWithZeffyForm: Story = {
+  args: { tiers: [], ticketsUrl: 'https://www.zeffy.com/embed/ticketing/a-gala' },
+};
+
+/** No tiers in the Studio, and any other ticket link: it opens in a new tab. */
+export const PendingWithLink: Story = { args: { tiers: [] } };
+
+/** Only the table tier, and a Zeffy ticket form: no card sells a seat, so the block's own button does. */
+export const TableOnlyWithZeffyForm: Story = {
+  args: {
+    tiers: TIER_PLACEHOLDERS.filter((tier) => tier.variant === 'enquiry'),
+    ticketsUrl: 'https://www.zeffy.com/embed/ticketing/a-gala',
+  },
+};

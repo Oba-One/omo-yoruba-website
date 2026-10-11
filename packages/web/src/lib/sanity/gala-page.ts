@@ -4,7 +4,7 @@
  * 0024) and its facts for the header line and the glance strip with the registry's chips where the
  * Studio holds nothing, "Seats from" derived from the edition's tiers (spec Q9), the page's two
  * actions, the evening's intro and running order as the option shows it, the seats and tables with
- * the edition's Eventbrite link and the options that draw them, the sponsor levels, the honorees of
+ * the edition's ticket link and the options that draw them, the sponsor levels, the honorees of
  * this gala and the ones before it, the newest past gala's album with its credit, the take-part rows
  * with the intro that counts them (ADR 0025), every photograph resolved to a CDN set with its alt and framing,
  * the head's title and description cleaned of stega, and the `data-sanity` attributes for
@@ -14,10 +14,12 @@ import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { galaPageQuery } from '@oy/content/queries';
 import { EVENT_PAGE_NAMES } from '@oy/content/routes';
+import { ticketsTrigger } from '@oy/ui/cards/TicketTierCard/tickets.ts';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import { longDate, shortDate } from '@oy/ui/content/edition-dates.ts';
 import { sentence } from '@oy/ui/content/sentence.ts';
 import type { ClientReturn } from '@sanity/client';
+import { framableSrc } from '../csp';
 import { albumsHeld } from './gallery-page';
 import { GLANCE_MAX, type GlanceFactView, pageSkeleton, pastYears } from './page-skeleton';
 import { type BuildOptions, cleanText, resolveImage } from './view';
@@ -119,6 +121,12 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
   const venue = edition?.venue?.name || undefined;
   const seats = seatsFrom(edition?.tiers);
   const tiersPending = presenceWhat('ticketTier')?.what ?? 'the ticket tiers';
+  // The edition's ticket link (ADR 0024). `ticketsTrigger` decides what a Get tickets button does, for
+  // the cards and here: only when it opens the Tickets Dialog does the page mount one, around the same
+  // address, which the policy must frame (ADR 0052). Any other link opens in a new tab.
+  const ticketsUrl = cleanText(edition?.ticketsUrl);
+  const tickets = ticketsTrigger(ticketsUrl);
+  const ticketsForm = tickets?.dialog ? framableSrc(ticketsUrl) : undefined;
 
   const glance: GlanceFactView[] = [
     {
@@ -168,9 +176,15 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       tiers: (edition?.tiers ?? [])
         .filter((tier) => tier !== null)
         .map((tier) => ({ ...tier, edit: edit('name', tier._id, 'ticketTier') })),
+      // Whether the edition offers a table: the section's heading names tables only then. The Gala of
+      // 2026 offers none (the owner, 10 October 2026).
+      tables: (edition?.tiers ?? []).some((tier) => tier?.variant === 'enquiry'),
       layout: layout.tiers,
-      // The edition's own Eventbrite event, the one source for seats (ADR 0024).
-      ticketsUrl: cleanText(edition?.ticketsUrl),
+      // The edition's own ticket link, the one source for seats (ADR 0024).
+      ticketsUrl,
+      // What the Tickets Dialog frames, and Zeffy's own page for the same form; none without a Zeffy form.
+      ticketsForm,
+      ticketsPage: ticketsForm ? tickets?.attributes.href : undefined,
       pending: tiersPending,
       ticketsPending: pending('ticketsUrl'),
       pricePending: pendingWhat('ticketTier', 'price') ?? 'the price',

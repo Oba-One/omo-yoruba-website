@@ -18,7 +18,7 @@ Before writing, read the deployed schema as `oy-content-ops` says (Before writin
    (`event-odunde-2027`, `event-gala-2026`) and leave the document unpublished.
 2. Fill what the form shows for that kind: the title, the edition year, start and end (Los Angeles
    time), the venue and the summary. The festival adds the cost, the schedule and the vendor terms; the
-   Gala adds the doors, the dress, the tickets link (Eventbrite) and the running order.
+   Gala adds the doors, the dress, the tickets link (a Zeffy ticket form's embed address, or any other link) and the running order.
 3. Gala: `ticketTier` documents for the edition (buy-now and enquiry variants, one featured) in the
    order the page shows them (`order`: the table tier shows where its order puts it) and `sponsorLevel`
    documents (the Gala's own or the organization's), each naming the edition; `honoree` documents name

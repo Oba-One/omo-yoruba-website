@@ -80,12 +80,14 @@ test.describe('the End-of-Year Gala page', () => {
     }
   });
 
-  test('seats leave for Eventbrite in a new tab and the table tier opens its form, focus returning', async ({
+  test('seats open the ticket link, the form on the page or a new tab, and the table tier opens its form, focus returning', async ({
     page,
   }) => {
     await page.goto('/gala');
     const seats = page.locator('#seats');
-    await expect(seats.locator('h2')).toHaveText('Seats and tables');
+    // The heading names tables only while the edition offers one (the Gala of 2026 offers none).
+    const tables = (await seats.locator('article[data-variant="enquiry"]').count()) > 0;
+    await expect(seats.locator('h2')).toHaveText(tables ? 'Seats and tables' : 'Seats');
     const cards = seats.locator('article.oy-tier');
     if ((await cards.count()) === 0) {
       // No tiers for the next gala (or CI's placeholder project): the registry's Pending line.
@@ -98,6 +100,12 @@ test.describe('the End-of-Year Gala page', () => {
     await expect(seats.locator('.oy-tiers')).toHaveAttribute('data-layout', layout ?? '');
     expect(await seats.locator('.oy-btn--primary').count()).toBeLessThanOrEqual(1);
     for (const link of await seats.locator('article[data-variant="buyNow"] a.oy-btn').all()) {
+      if ((await link.getAttribute('data-tickets')) !== null) {
+        // A Zeffy ticket form opens in the Tickets Dialog; the link is Zeffy's own page for it (ADR 0052).
+        await expect(link).toHaveAttribute('href', /^https:\/\/www\.zeffy\.com\//);
+        await expect(page.locator('dialog#tickets')).toHaveCount(1);
+        continue;
+      }
       await expect(link).toHaveAttribute('target', '_blank');
       await expect(link).toHaveAttribute('rel', /noopener/);
     }
