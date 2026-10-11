@@ -90,11 +90,11 @@ Domain: `omoyorubasocal.org`, bought on 11 September 2026 (the old `omoyorubaofs
 the owner's hands; wayfinder ticket 10 covers its redirects). Its DNS is at Cloudflare. Both names
 are attached under the project's Domains, with the apex redirecting to `www` (this section had asked
 for the reverse), and both answer: `www.omoyorubasocal.org` serves the site (checked 10 October
-2026; Hosting today has the rest). Left of the move (open-work D2): add
-`https://www.omoyorubasocal.org` to the Sanity CORS origins with credentials, so the Studio works
-there; put Resend's records for the sending domain in Cloudflare; and confirm `PUBLIC_SITE_URL`
-names the serving host. The webhook may stay on `omo-yoruba-khaki.vercel.app`, which still answers:
-both hosts serve one deployment and share its cache.
+2026; Hosting today has the rest). `https://www.omoyorubasocal.org` was among the Sanity CORS
+origins with credentials when they were read on 11 October 2026 (it was not on the 10th), and
+`/admin` there showed the Studio's sign-in screen. Left of the move (open-work D2): put Resend's
+records for the sending domain in Cloudflare; and confirm `PUBLIC_SITE_URL` names the serving host. The webhook may stay on `omo-yoruba-khaki.vercel.app`,
+which still answers: both hosts serve one deployment and share its cache.
 
 Environments: Vercel holds `PUBLIC_SANITY_DATASET=development` for now (set 11 September 2026),
 so the deployed site reads the seeded development dataset. Switch it to `production` only after
@@ -116,11 +116,15 @@ Recorded in the owner's hosting session of 13 September 2026, which chose a stan
 while `omoyorubasocal.org` did not answer; open-work D2 (the public host) and D3 (the dataset)
 decide what replaces it. Each fact was checked again on 27 September 2026 without printing a secret;
 the brackets say how. The public host, the domain, the CORS origins and the webhooks were read again
-on 10 October 2026, with the domain answering; those four bullets say what that day showed.
+on 10 October 2026, with the domain answering; those four bullets say what that day showed. The
+CORS origins and the Studio's host were read once more on 11 October 2026, and their two bullets
+say so.
 
 - **Public host:** `https://www.omoyorubasocal.org`, since the domain answers (10 October 2026).
-  `https://omo-yoruba-khaki.vercel.app` serves the same deployment and is where the Studio at
-  `/admin` works. Khaki answers without a Vercel login, while
+  `https://omo-yoruba-khaki.vercel.app` serves the same deployment, and the Studio at `/admin`
+  loads on both (11 October 2026: each showed the sign-in screen, and Sanity answered a request
+  with credentials from each origin; signing in on `www` was not tried in that reading). The
+  member guide links the Studio on `www`. Khaki answers without a Vercel login, while
   `omo-yoruba-greenpilldevguild.vercel.app` sends a visitor to Vercel's login page (both opened in a
   browser with no Vercel session on 27 September; a request to each host on 10 October).
 - **The domain:** `omoyorubasocal.org` and `www.omoyorubasocal.org` are attached to the project and
@@ -138,13 +142,13 @@ on 10 October 2026, with the domain answering; those four bullets say what that 
   (The datasets API, read with the Viewer token, and a count per dataset with and without
   `--public`:
   `bun run --filter @oy/content query -- 'count(*[!(_id in path("_.**"))])' --dataset development`.)
-- **CORS origins:** `http://localhost:3333`, `http://localhost:4321` and
-  `https://omo-yoruba-khaki.vercel.app` with credentials, `https://omoyorubasocal.org` and
-  `https://omoyorubaofsocal.org` without. The khaki entry was added on 13 September, when `/admin`
-  without it asked to connect the Studio to the project. On 10 October the list was the same five:
-  `https://www.omoyorubasocal.org`, the name that serves the site, is not among them, so by this
-  list the Studio works only on khaki until the owner adds it with credentials (the Studio on `www`
-  was not tried). (Read with the owner's Sanity login; on 10 October through the Sanity connector.)
+- **CORS origins:** on 11 October 2026, `http://localhost:3333`, `http://localhost:4321`,
+  `https://omo-yoruba-khaki.vercel.app` and `https://www.omoyorubasocal.org` with credentials, and
+  `https://omoyorubasocal.org` without. The khaki entry was added on 13 September, when `/admin`
+  without it asked to connect the Studio to the project. Until 10 October the list held
+  `https://omoyorubaofsocal.org` without credentials where it now holds `www`, the name that
+  serves the site. (Read with the owner's Sanity login; on 10 and 11 October through the Sanity
+  connector.)
 - **Webhooks:** two, both for `development`. `purge-site-cache` posts to
   `https://omo-yoruba-khaki.vercel.app/api/revalidate`, and every delivery in its log answered 200.
   `purge-site-cache2` posts to `https://omoyorubasocal.org/api/revalidate`, the bare name, which
@@ -205,7 +209,8 @@ Organization details and the held-back switches included.
 The deployed schema is what agents read to learn each field's shape and rules, and `development` holds two
 copies of it. The Studio uploads its own each time an administrator opens `/admin` on the host it is
 registered at (`https://omo-yoruba-khaki.vercel.app/admin`; the registration has to follow the site when D2
-moves it). The Sanity MCP lists that copy as Studio-deployed and `get_schema` returns it by default, but it
+moves it: on 11 October 2026 the project listed two Studios, one made on 13 September and one that day,
+without naming the host of either). The Sanity MCP lists that copy as Studio-deployed and `get_schema` returns it by default, but it
 folds the voice-checked rules into one `custom` rule, so it does not say that a name or a title is required,
 and it drops built-in checks and hidden conditions. The CLI writes `_.schemas.omo-yoruba` (the MCP lists it as
 Legacy; the name follows the workspace in `packages/content/src/studio/config.ts`), which keeps those rules.

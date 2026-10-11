@@ -7,7 +7,7 @@ Find this guide in the **Member guide** tab at the top of Studio.
 
 ## Get started
 
-Open <a href="https://omo-yoruba-khaki.vercel.app/admin" target="_blank" rel="noopener">Studio</a> and sign in with your
+Open <a href="https://www.omoyorubasocal.org/admin" target="_blank" rel="noopener">Studio</a> and sign in with your
 invited account. Ask your administrator if you cannot sign in.
 
 Search before adding something new to avoid duplicates. Changes save as a
