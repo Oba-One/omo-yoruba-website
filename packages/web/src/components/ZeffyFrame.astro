@@ -1,0 +1,22 @@
+---
+/**
+ * A Zeffy form's frame as its dialog mounts it (ADR 0020, ADR 0050): a template holding the iframe, so the
+ * form loads only for a visitor who opens the dialog. The frame's address carries Zeffy's v2 parameters and
+ * the form's key, so the form posts its readiness, its height and its thank-you page to that dialog
+ * (ADR 0045). `address` is one `framableSrc` accepted.
+ */
+import { type ZeffyForm, zeffyFrameSrc } from '@oy/ui/forms/ZeffyDialog/zeffy.ts';
+
+interface Props {
+  address: string;
+  form: ZeffyForm;
+  /** The frame's accessible name. */
+  title: string;
+}
+
+const { address, form, title } = Astro.props;
+---
+
+<template data-zeffy>
+  <iframe src={zeffyFrameSrc(address, form)} title={title} allow="payment" loading="lazy"></iframe>
+</template>

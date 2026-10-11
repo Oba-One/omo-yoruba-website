@@ -78,6 +78,8 @@ The spec is `docs/design/CONTENT-MODEL.md`. Where the built model differs, an AD
 - ADR 0042: members are Editors, and administrators keep the settings and the Inbox (no News page since ADR 0048);
   outcomes, timeline entries, giving levels and initiatives are lists on their pages; one control
   per decision; an input no page reads is deleted, or named in `src/hidden-inputs.ts` if kept.
+- ADR 0050: a `cta` can open Zeffy's membership form (`kind: 'join'`), and `siteSettings` holds that form's
+  address (`zeffyMembershipUrl`) beside the donation form's (`zeffyEmbedUrl`).
 - With no ADR of their own: `cta` has `kind` plus `enquiryKind`; `stat` stores its figure flat
   (`value`, `label`, `source`); `scheduleItem.title` is `bilingual` with English required; and
   `festivalPage.whatItIsImage`, `programsPage.culturalExchange.howToJoin` and
