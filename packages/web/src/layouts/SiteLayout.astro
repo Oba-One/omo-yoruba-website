@@ -107,9 +107,9 @@ if (modal.state === 'error' || newsletter.state === 'error') {
 
 // The same check as the island's, so the dialog never waits for a frame the island refuses. Zeffy's
 // own page for the same form is the dialog's link to Apple Pay and Google Pay (ADR 0045).
-const zeffyForm = framableSrc(settings?.zeffyEmbedUrl);
-const zeffyMode = zeffyForm ? 'embed' : 'pending';
-const zeffyPage = zeffyPageHref(zeffyForm);
+const giveForm = framableSrc(settings?.zeffyEmbedUrl);
+const giveMode = giveForm ? 'embed' : 'pending';
+const givePage = zeffyPageHref(giveForm);
 // The membership form (ADR 0050). The Join Dialog is on the page only while Organization details hold an
 // address the policy frames; without it a membership button is a link to the member enquiry. Its frame
 // rides this page, which a publish of the settings purges, so it costs no second island.
@@ -186,8 +186,8 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
         source={path}
       />
       <GiveDialog
-        mode={zeffyMode}
-        pageHref={zeffyPage}
+        mode={giveMode}
+        pageHref={givePage}
         orgName={settings?.orgName}
         address={settings?.address}
         ein={settings?.ein}

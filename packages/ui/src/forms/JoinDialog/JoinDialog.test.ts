@@ -58,7 +58,7 @@ describe('JoinDialog', () => {
     expect(enquiry?.getAttribute('href')).toBe('?enquiry=member#enquiry');
     expect(text(enquiry)).toContain('Become a member');
     expect(text(fallback?.querySelector('[data-retry]'))).toBe('Try again');
-    // The form shows the memberships and their prices; the dialog's own words name none.
+    // The form shows the membership and its price; the dialog's own words name neither.
     expect(body.querySelector('oy-zeffy-dialog')?.outerHTML).not.toMatch(/\$|\d+ a (month|year)/i);
   });
 

@@ -28,16 +28,18 @@ What this change builds:
   the payment and the membership are Zeffy's records, and nothing about either reaches the site. It is a handoff.
 - Organization details gain the membership form's address (`siteSettings.zeffyMembershipUrl`). The layout mounts
   the Join Dialog only while that address is one the policy frames, so the dialog has no pending mode and a page
-  carries nothing for it until the form exists.
-- A Studio action gains a fifth thing to open, the membership form (`cta.kind: 'join'`). Its trigger carries
-  `data-join` and links to the member enquiry on the same page (`?enquiry=member#enquiry`), so without JavaScript,
-  or while the settings hold no membership form, a membership button opens the form the site owns. No button is
-  changed by this decision: the take-part rows' member way in and the member door still open the member enquiry
-  until the owner points a button at the membership form.
+  carries nothing for it until the form exists. The shell keeps the Give Dialog prototype's class names
+  (`.oy-give`), as the ported vocabulary asks.
+- A Studio action gains a fifth thing to open, the Zeffy membership form (`cta.kind: 'join'`). Its trigger
+  carries `data-join` and links to the member enquiry on the same page (`?enquiry=member#enquiry`), so without
+  JavaScript, or while Organization details hold no membership form, a membership button opens the form the site
+  owns. The link skips the router (`data-astro-reload`): the dialogs are persisted across its swaps, so only a full
+  page load renders the Enquiry Modal open. No button is changed by this decision: the take-part rows' member way
+  in and the member door still open the member enquiry until the owner points a button at the membership form.
 - The membership form's frame rides the page, written by the layout from the settings it already read, where the
   donation form's frame comes from a server island (ADR 0020). A second island would add a second function run and
-  an uncached settings read to every page view (review ticket R129), and a publish of the settings already purges
-  every page.
+  an uncached settings read to every page view (review ticket R129), and a publish of Organization details
+  already purges every page.
 
 - Two things follow from a second dialog on the page, both met in the browser and not in the element tests. The
   parser connects it before its children exist, since the first dialog's script has already defined the element, so
@@ -77,8 +79,8 @@ What this change builds:
 - `zeffy.ts` moves beside the shell (`packages/ui/src/forms/ZeffyDialog/zeffy.ts`) and derives Zeffy's own page for
   a ticketing form as it does for a donation form. The Studio's "Zeffy embed URL" is now "Zeffy donation form URL",
   beside "Zeffy membership form URL"; the field's name, `zeffyEmbedUrl`, stays.
-- A third Zeffy form (sponsor levels, Gala seats, vendor fees) is a key, a field in Organization details and a
-  dialog's words. None is built or decided here.
+- A third Zeffy form (sponsor levels, Gala seats, vendor fees) is a key, a field in Organization details, a
+  dialog's words, an action kind and its mount in the layout. None is built or decided here.
 - Amends ADR 0045 and ADR 0020, noted in both: the Give Dialog's element is the shared `oy-zeffy-dialog`, and
   `#join` joins `#give` among the addresses that open a dialog on load. AGENTS.md's rule on what opens on load
   reads as amended here.

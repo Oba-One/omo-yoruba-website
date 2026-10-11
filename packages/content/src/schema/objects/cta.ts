@@ -8,7 +8,7 @@ export const CTA_KINDS = ['enquiry', 'give', 'join', 'url', 'anchor'] as const;
 const OPENS: Record<(typeof CTA_KINDS)[number], string> = {
   enquiry: 'An enquiry form',
   give: 'The donation form',
-  join: 'The membership form',
+  join: 'The Zeffy membership form',
   url: 'A link',
   anchor: 'A section on this page',
 };

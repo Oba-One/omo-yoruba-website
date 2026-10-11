@@ -12,6 +12,7 @@
  * template never arrives, the fallback shows: its heading, the sentence the `fallback` slot gives, the
  * enquiry it hands over to and Try again. Under the form a link opens Zeffy's own page for it in a new tab,
  * and the foot names Zeffy, with whatever the `foot` slot adds; the foot shows only with the form.
+ * The `.oy-give` class names are the Give Dialog prototype's, kept so the two read side by side.
  * `mode="pending"` is the answer while Organization details hold no address for the form. The form's hash in the URL
  * opens the dialog on load; a native dialog gives the focus trap and Escape; the element returns focus to
  * the trigger and strips the hash on close. Announces `<form>_opened`, `<form>_embed_failed`,
@@ -37,9 +38,9 @@ interface Props {
 
 const { form, copy, open = false, mode = 'embed', pageHref, timeout = 8000 } = Astro.props;
 // The words for a dialog with no form yet; a dialog mounted only with its form has none, and is never pending.
-const unset = mode === 'pending' ? copy.pending : undefined;
-const lead = unset?.lead ?? (mode === 'embed' ? copy.lead.embed : copy.lead.fallback);
-const heading = unset?.heading ?? copy.heading;
+const pendingCopy = mode === 'pending' ? copy.pending : undefined;
+const lead = pendingCopy?.lead ?? (mode === 'embed' ? copy.lead.embed : copy.lead.fallback);
+const heading = pendingCopy?.heading ?? copy.heading;
 // The pending mode has no form, so it has no page to link either.
 const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
 ---
@@ -55,7 +56,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
   data-heading-fallback={copy.heading}
 >
   <dialog id={form} class="oy-modal-scrim" aria-labelledby={`${form}-title`} open={open}>
-    <div class="oy-modal oy-zeffy">
+    <div class="oy-modal oy-give">
       <div class="oy-modal-top" aria-hidden="true"></div>
       <div class="oy-modal-grab" aria-hidden="true"></div>
       <div class="oy-modal-head">
@@ -66,13 +67,13 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         <button class="oy-modal-close" type="button" aria-label="Close">×</button>
       </div>
       <div class="oy-modal-body">
-        <div class="oy-zeffy-frame" data-embed hidden={mode === 'fallback'}>
-          <p class="oy-zeffy-loading" data-loading hidden={mode === 'pending'}>{copy.loading}</p>
-          <div class="oy-zeffy-mount" data-mount></div>
+        <div class="oy-give-frame" data-embed hidden={mode === 'fallback'}>
+          <p class="oy-give-loading" data-loading hidden={mode === 'pending'}>{copy.loading}</p>
+          <div class="oy-give-mount" data-mount></div>
           <slot name="embed" />
           {
             pageLink && (
-              <p class="oy-zeffy-page">
+              <p class="oy-give-page">
                 <span id={`${form}-page-note`}>{copy.page.note}</span>
                 <Button
                   variant="quiet"
@@ -89,7 +90,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
             )
           }
         </div>
-        <div class="oy-ok oy-zeffy-fallback" data-fallback hidden={mode === 'embed'}>
+        <div class="oy-ok oy-give-fallback" data-fallback hidden={mode === 'embed'}>
           <b data-heading>{heading}</b>
           <p><slot name="fallback" /></p>
           <div class="oy-ok-actions">
@@ -105,7 +106,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
             }
           </div>
         </div>
-        <p class="oy-zeffy-foot" data-foot hidden={mode !== 'embed'}>
+        <p class="oy-give-foot" data-foot hidden={mode !== 'embed'}>
           <span>Secure • Powered by Zeffy</span>
           <slot name="foot" />
         </p>
@@ -130,7 +131,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
   dialog.oy-modal-scrim::backdrop {
     background: transparent;
   }
-  .oy-modal.oy-zeffy {
+  .oy-modal.oy-give {
     max-width: 520px;
   }
   .oy-modal-body {
@@ -142,22 +143,22 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
   [data-foot][hidden] {
     display: none;
   }
-  .oy-zeffy-frame {
+  .oy-give-frame {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
-  .oy-zeffy-loading {
+  .oy-give-loading {
     margin: 0;
     font-size: 14px;
     color: var(--text-muted);
   }
-  .oy-zeffy-mount:empty {
+  .oy-give-mount:empty {
     display: none;
   }
   /* The starting height, and the floor under the height Zeffy's messages set: a taller step grows the
      frame, a shorter one never shrinks it below this (ADR 0045). */
-  .oy-zeffy-mount :global(iframe) {
+  .oy-give-mount :global(iframe) {
     display: block;
     width: 100%;
     height: min(640px, 70vh);
@@ -165,7 +166,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
     border: 0;
     border-radius: 6px;
   }
-  .oy-zeffy-page {
+  .oy-give-page {
     margin: 0;
     display: flex;
     flex-wrap: wrap;
@@ -175,7 +176,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
     line-height: 1.5;
     color: var(--text-muted);
   }
-  .oy-zeffy-fallback {
+  .oy-give-fallback {
     background: var(--paper);
     border-color: var(--border-soft);
   }
@@ -185,7 +186,7 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
     flex-wrap: wrap;
     margin-top: 12px;
   }
-  .oy-zeffy-foot {
+  .oy-give-foot {
     margin: 0;
     font-size: 13px;
     color: var(--muted);
@@ -318,7 +319,8 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         host.dataset.state = 'loading';
         stop();
         timer = window.setTimeout(fail, timeout);
-        // The island may still be on its way; keep looking for the template until the timer ends.
+        // The template may still be on its way (the Give Dialog's comes from a server island); keep looking
+        // for it until the timer ends.
         if (!mountFrame()) poll = window.setInterval(mountFrame, 200);
       };
       api.open = (from) => {

@@ -147,9 +147,9 @@ The dialog every Donate button opens; wraps the Zeffy embed with a fallback.
 _Avoid_: donate modal, checkout
 
 **Join Dialog**:
-The dialog a button set to the membership form opens, once Organization details hold that form: wraps Zeffy's
-membership form, where a member chooses a membership and pays the dues, with a fallback to the member enquiry.
-Until the form is there, such a button opens the member enquiry. A handoff: the membership is Zeffy's record.
+The dialog a button set to Zeffy's membership form opens, once Organization details hold that form: wraps the
+form, where someone joining pays their dues, with a fallback to the member enquiry. Until the form is there, such
+a button opens the member enquiry. A handoff: the membership is Zeffy's record.
 _Avoid_: membership modal, dues checkout, signup
 
 **Enquiry Modal**:

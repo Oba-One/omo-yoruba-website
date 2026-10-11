@@ -25,7 +25,11 @@ describe('resolveAction', () => {
     expect(resolveAction({ label: 'Become a member', kind: 'join' })).toEqual({
       ok: true,
       label: 'Become a member',
-      attributes: { href: '?enquiry=member#enquiry', 'data-join': '' },
+      attributes: {
+        href: '?enquiry=member#enquiry',
+        'data-join': '',
+        'data-astro-reload': '',
+      },
     });
   });
 

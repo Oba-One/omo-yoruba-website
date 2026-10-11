@@ -122,7 +122,7 @@ export const siteSettings = defineType({
       title: 'Zeffy membership form URL',
       type: 'url',
       description:
-        "The membership form a button set to open the membership form shows. Paste the form's address from Zeffy's embed code: it starts https://www.zeffy.com/ and has /embed/ticketing/ in it. While this is empty such a button opens the member form instead.",
+        "Zeffy's membership form. A button opens it when its action is set to the Zeffy membership form. Paste the form's address from Zeffy's embed code: it starts https://www.zeffy.com/ and has /embed/ticketing/ in it. While this is empty, such a button opens the Membership enquiry form instead.",
       group: 'services',
     }),
     defineField({

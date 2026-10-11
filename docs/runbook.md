@@ -38,7 +38,7 @@ is: the site drops that parameter, which would make the form draw a close button
 pop-up script, and the site loads no Zeffy script (ADR 0045). The membership form's address is
 pasted the same way (`https://www.zeffy.com/embed/ticketing/<slug>`, from the `data-zeffy-embed-src`
 of Zeffy's embed code, never the code's script address); its frame names the form `join`. A button
-opens it once a Studio action is set to "The membership form".
+opens it once a Studio action is set to "The Zeffy membership form".
 
 Local: Node 22 and Bun 1.4 through `mise` (`mise trust` once, then `mise install`).
 `bun install` installs the git hooks. `LEFTHOOK=0 git commit` skips them once; do not
