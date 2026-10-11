@@ -5,12 +5,15 @@
  * chip while the album's credit is not confirmed (spec Q8), the row that lists it. A confirmed album
  * with no photographer named shows no line. The name links to the photographer's page when the Studio
  * holds one the site may link (ADR 0046). Inside a sentence (the Lightbox's bar, after the caption) it
- * is a `span` that keeps the text's own size and colour.
+ * is a `span` that keeps the text's own size and colour. The `label` names what the credit is for: the
+ * photographs by default, an album's video under a `VideoGrid` tile (ADR 0050).
  */
 import { safeHref } from '../../core/ActionButton/action';
 import Pending from '../../core/Pending/Pending.astro';
 
 interface Props {
+  /** What the credit is for, before the name: "Photographs" unless another kind of work is credited. */
+  label?: string;
   credit?: string | null;
   /** The photographer's page, which the name links to. */
   href?: string | null;
@@ -24,6 +27,7 @@ interface Props {
 
 // With an `as` prop Astro reads the props as untyped unless cast; the cast keeps every caller's props checked.
 const {
+  label = 'Photographs',
   credit,
   href,
   confirmed = false,
@@ -39,7 +43,7 @@ const link = safeHref(href);
 {
   (name || owed) && (
     <Tag class:list={['oy-credit-line', Tag === 'span' && 'oy-credit-line--inline', className]}>
-      Photographs: {name && <>{link ? <a href={link}>{name}</a> : name}{owed ? ' ' : '.'}</>}
+      {label}: {name && <>{link ? <a href={link}>{name}</a> : name}{owed ? ' ' : '.'}</>}
       {owed && <Pending what={pending} />}
     </Tag>
   )

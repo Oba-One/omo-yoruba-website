@@ -51,8 +51,8 @@ messages and the timer (ADR 0045).
 - Field specs and every form sentence come from `@oy/content/enquiry-kinds`; nothing is copied.
 - An interactive component carries its behaviour in a `<script is:inline>` of plain JavaScript that
   defines a custom element and sets `data-ready` once wired (ADR 0018): `oy-site-nav`,
-  `oy-newsletter`, `oy-enquiry-modal`, `oy-give-dialog`, `oy-photo-carousel` (ADR 0027) and
-  `oy-lightbox` (ADR 0037). `Accordion` and `Disclosure` are native `details` with no script
+  `oy-newsletter`, `oy-enquiry-modal`, `oy-give-dialog`, `oy-photo-carousel` (ADR 0027),
+  `oy-lightbox` (ADR 0037) and `oy-video` (ADR 0050). `Accordion` and `Disclosure` are native `details` with no script
   (ADR 0032). A play function waits for `data-ready`, then drives the keys; Playwright proves what
   a story cannot, such as a touch swipe (ADR 0038).
 

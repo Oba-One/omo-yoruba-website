@@ -1,5 +1,8 @@
 # Coming soon is the consent hold for the albums
 
+Amended by ADR 0050: the hold withholds an album's videos with its photographs, on the album page and under past
+years.
+
 Decided on 27 September 2026, when the owner asked for the deep review's blockers to be fixed (R01 of the deep
 review, `docs/plans/review-alignment-and-quality.md` in pull request 16). The owner's decisions of 26 September treat
 the gallery's `state` as the photo consent switch (a held-back switch, ADR 0042, open-work D5), and the Studio

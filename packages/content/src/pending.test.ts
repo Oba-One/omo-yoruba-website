@@ -521,6 +521,15 @@ describe('the gallery', () => {
     expect(pendingWhat('album', 'photos[]')).toBe('the photographs');
   });
 
+  it("asks for no video: an album's videos are an extra, with no row in the register (ADR 0050)", () => {
+    const asked = PENDING.filter((entry) => entry.type === 'album').flatMap((entry) => [
+      ...(entry.fields ?? []),
+      entry.condition ?? '',
+    ]);
+    expect(asked.filter((text) => text.includes('video'))).toEqual([]);
+    expect(pendingWhat('album', 'videos[]')).toBeUndefined();
+  });
+
   it('keeps the policy as the owner writes it, and counts only albums that hold a photograph', () => {
     expect(pendingWhat('galleryPage', 'creditsAndConsent')).toBe(
       'your photo consent and removal policy',

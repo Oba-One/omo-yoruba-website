@@ -1,5 +1,8 @@
 # Zeffy stays, embedded in our own Give Dialog and sized by its own messages
 
+Amended by ADR 0050: the policy also frames YouTube's no-cookie player, for an album's videos; what the Give
+Dialog may frame stays Zeffy's origin alone.
+
 Decided on 27 September 2026 by the owner, from `docs/research/online-giving-options.md` (pull request 16), which
 ranked four ways to take gifts online: Zeffy embedded properly, Stripe behind our own form, Every.org behind our own
 amount picker, and Give Lively. The owner chose the first. Zeffy charges the organization nothing on a gift, can

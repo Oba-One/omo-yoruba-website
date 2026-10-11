@@ -134,3 +134,43 @@ describe('singletons and documents', () => {
     }
   });
 });
+
+describe("an album's videos (ADR 0050)", () => {
+  interface Def {
+    name: string;
+    type?: string;
+    title?: string;
+    of?: { type: string }[];
+    fields?: Def[];
+  }
+  const type = (name: string) => schemaTypes.find((t) => t.name === name) as unknown as Def;
+
+  it('registers the video object once, with a title, the address, a still and who made it', () => {
+    expect(objectTypes.filter((t) => t.name === 'video')).toHaveLength(1);
+    expect(type('video').fields?.map((f) => [f.name, f.type, f.title])).toEqual([
+      ['title', 'string', 'Title'],
+      ['url', 'url', 'YouTube address'],
+      ['still', 'image', 'Still'],
+      ['credit', 'reference', 'Made by'],
+    ]);
+  });
+
+  // The tile draws the still as decoration, its alt empty beside the play link's name, and shows no caption, so the
+  // Studio asks for neither: a plain hotspot image, never the shared `oyImage` with its required alt text.
+  it('keeps the still a plain hotspot image, asking for no alt text and no caption', () => {
+    const still = type('video').fields?.find((f) => f.name === 'still') as Def & {
+      options?: { hotspot?: boolean };
+    };
+    expect(still).toMatchObject({ type: 'image', options: { hotspot: true } });
+    expect(still.fields).toBeUndefined();
+  });
+
+  it('gives an album a list of videos right after its photographs', () => {
+    const fields = type('album').fields ?? [];
+    const names = fields.map((f) => f.name);
+    expect(names.indexOf('videos')).toBe(names.indexOf('photos') + 1);
+    const videos = fields.find((f) => f.name === 'videos');
+    expect(videos).toMatchObject({ type: 'array', title: 'Videos' });
+    expect(videos?.of?.map((member) => member.type)).toEqual(['video']);
+  });
+});

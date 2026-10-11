@@ -536,14 +536,19 @@ and a batch at 20 reports, and truncates fields, since anyone can post to it.
 
 Allowed today: `'self'` everywhere; scripts and connections to PostHog
 (`us.i.posthog.com`, `us-assets.i.posthog.com`); images from `cdn.sanity.io`; connections
-to `*.api.sanity.io` and `*.apicdn.sanity.io`; frames from `www.zeffy.com`;
-`frame-ancestors 'self'` for the embedded Presentation tool. Eventbrite is a link, not
-an embed. Fonts are self-hosted, so no font origin.
+to `*.api.sanity.io` and `*.apicdn.sanity.io`; frames from `www.zeffy.com` and
+`www.youtube-nocookie.com`; `frame-ancestors 'self'` for the embedded Presentation tool.
+Eventbrite is a link, not an embed. Fonts are self-hosted, so no font origin.
 
 Zeffy is a frame and never a script (ADR 0045). With the v2 parameters on the frame's address,
 Zeffy's form posts to the page with `postMessage`, which the policy does not govern; the dialog
 hears only messages from `https://www.zeffy.com` that name `give`. The link to Zeffy's own page
 for the form is a plain link, which needs no policy entry either.
+
+YouTube is a frame and never a script (ADR 0050): a page makes no request to YouTube or Google until a
+visitor presses an album video's play link, which swaps in YouTube's no-cookie player as a frame, so
+no YouTube or Google origin is in `script-src`, `img-src` or `connect-src`. `framableSrc` names Zeffy's
+origin rather than reading `frame-src`, so the Give Dialog never frames the player.
 
 To allow a new origin: add it to the directive in `csp.ts`, update this list, and note it
 in the phase's handoff. Expect `style-src` reports from Astro's inlined small stylesheets

@@ -21,6 +21,7 @@ import Divider from '@oy/ui/core/Divider/Divider.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
 import CreditLine from '@oy/ui/media/CreditLine/CreditLine.astro';
 import PhotoCarousel from '@oy/ui/media/PhotoCarousel/PhotoCarousel.astro';
+import VideoGrid from '@oy/ui/media/VideoGrid/VideoGrid.astro';
 import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
 import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
@@ -190,6 +191,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
               pending={page.past.album.pending}
             />
           )}
+          <VideoGrid videos={page.past.videos} />
           <ButtonRow>
             <Button variant="secondary" href="/gallery" arrow>
               All gala albums

@@ -5,10 +5,11 @@
  * gallery's kicker, the album's title and its facts (its year, or the year's chip, and the count), the links to the
  * gallery and the edition's page, the credit with its chip, its photographer's link (ADR 0046) and the consent
  * note, the photographs as tiles linking to their photo addresses, the Lightbox's photographs with each one's
- * credit and link and the photograph served open, the credit and permissions section, and the `data-sanity`
- * attributes in draft mode. Keys, the slug, the links and the `?photo=` value are cleaned of stega before they
- * become an address or a comparison. While the gallery holds the albums (`state: soon`, ADR 0043) the view
- * carries no photograph, only the gallery's soon sentence.
+ * credit and link and the photograph served open, the album's videos above them (ADR 0050) and which image asks to
+ * be fetched first, the credit and permissions section, and the `data-sanity` attributes in draft mode. Keys, the
+ * slug, the links and the `?photo=` value are cleaned of stega before they become an address or a comparison.
+ * While the gallery holds the albums (`state: soon`, ADR 0043) the view carries no photograph and no video, only
+ * the gallery's soon sentence.
  */
 import { albumLine, albumYear } from '@oy/content/albums';
 import { withLayoutDefaults } from '@oy/content/layout';
@@ -23,6 +24,7 @@ import { albumHref, editionPage } from '@oy/content/routes';
 import type { ClientReturn } from '@sanity/client';
 import { galleryCredits } from './gallery-credits';
 import { albumsHeld, GALLERY_TITLE, type GalleryLayout, soonNotice } from './gallery-page';
+import { videoViews } from './videos';
 import {
   type BuildOptions,
   cleanText,
@@ -51,7 +53,7 @@ export function buildAlbumPage(
   const albumEdit = (path: string) => (album ? edit(path, album._id, 'album') : undefined);
   const { captions } = withLayoutDefaults<GalleryLayout>('galleryPage', data?.page?.layout);
   // While the gallery holds the albums (ADR 0043) the page keeps its title and year but no photograph
-  // leaves here: no tile, nothing in the Lightbox, and a photo address opens nothing.
+  // leaves here: no tile, nothing in the Lightbox, a photo address opens nothing, and no video plays.
   const held = albumsHeld(data?.page?.layout);
 
   const slug = cleanText(album?.slug) ?? '';
@@ -71,6 +73,10 @@ export function buildAlbumPage(
   const soon = held ? soonNotice() : undefined;
   const albumConfirmed = album?.creditConfirmed === true;
   const albumCreditHref = cleanText(album?.creditUrl);
+  const videos = held ? [] : videoViews(album, options, albumEdit);
+  // The page's largest paint is the first video's still, which sits above the photographs, else the first
+  // photograph; served open, the Lightbox's photograph is, and no image behind it asks to be fetched first.
+  const stillFirst = !openKey && videos[0]?.still !== undefined;
 
   return {
     found: album !== null,
@@ -111,6 +117,7 @@ export function buildAlbumPage(
     soon: soon ? { ...soon, edit: edit('layout.state') } : undefined,
     consentNote: studioText(album?.consentNote),
     consentEdit: albumEdit('consentNote'),
+    videos: { items: videos, priority: stillFirst },
     photos: {
       tiles: photos.map(({ key, photo, edit: photoEdit }) => {
         // The tile is a 200px band about 340px wide: cropped to its shape at the CDN around the hotspot, each
@@ -127,8 +134,7 @@ export function buildAlbumPage(
         };
       }),
       captions,
-      // The first photograph is the page's largest paint; served open, the Lightbox's photograph is instead.
-      priority: !openKey,
+      priority: !openKey && !stillFirst,
       pending: pendingWhat('album', 'photos[]') ?? 'the photographs',
       edit: edit('layout.captions'),
     },

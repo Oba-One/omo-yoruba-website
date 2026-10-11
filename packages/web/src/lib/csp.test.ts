@@ -1,3 +1,4 @@
+import { YOUTUBE_EMBED_ORIGIN, youtubeEmbedSrc } from '@oy/content/videos';
 import { ZEFFY_ORIGIN } from '@oy/ui/forms/GiveDialog/zeffy.ts';
 import { describe, expect, it } from 'vitest';
 import { buildCsp, cspDirectives, cspExempt, framableSrc, reportingEndpointsHeader } from './csp';
@@ -16,10 +17,22 @@ describe('buildCsp', () => {
     expect(cspDirectives['script-src']?.join(' ')).not.toContain('zeffy');
   });
 
+  it("frames YouTube's no-cookie player an album's video swaps in, and loads nothing else from YouTube or Google (ADR 0050)", () => {
+    // The frame's address is built from the id alone (`@oy/content/videos`): the policy must frame exactly that origin.
+    expect(cspDirectives['frame-src']).toContain(new URL(youtubeEmbedSrc('AbC_dEf-123')).origin);
+    expect(cspDirectives['frame-src']).toEqual([ZEFFY_ORIGIN, YOUTUBE_EMBED_ORIGIN]);
+    // A frame and never a script, a thumbnail or a connection: a page makes no request to YouTube before the press.
+    const elsewhere = Object.entries(cspDirectives)
+      .filter(([name]) => name !== 'frame-src')
+      .flatMap(([, values]) => values);
+    expect(elsewhere.join(' ')).not.toMatch(/youtube|ytimg|googlevideo|google/);
+  });
+
   it('allows only the third parties the site uses', () => {
     const header = buildCsp();
     expect(header).toContain('https://cdn.sanity.io');
     expect(header).toContain('https://www.zeffy.com');
+    expect(header).toContain('https://www.youtube-nocookie.com');
     expect(header).toContain('https://us.i.posthog.com');
     expect(header).not.toContain('unsafe-inline');
     expect(header).not.toContain('eventbrite');
@@ -69,5 +82,25 @@ describe('framableSrc', () => {
     ]) {
       expect(framableSrc(value), String(value)).toBeUndefined();
     }
+  });
+
+  // `frame-src` lists YouTube's player for the album videos (ADR 0050), but the Give Dialog's rule is what it was:
+  // Zeffy's origin alone. An address written into the Zeffy field must never turn a video into the donation form.
+  it("keeps the donation form to Zeffy's origin although the policy also frames YouTube's player", () => {
+    const player = youtubeEmbedSrc('AbC_dEf-123');
+    expect(cspDirectives['frame-src']).toContain(new URL(player).origin);
+    for (const value of [
+      player,
+      'https://www.youtube-nocookie.com/embed/AbC_dEf-123',
+      `  ${player}  `,
+      'https:www.youtube-nocookie.com/embed/AbC_dEf-123',
+      'https://www.zeffy.com@www.youtube-nocookie.com/embed/AbC_dEf-123',
+      'https://www.youtube-nocookie.com/https://www.zeffy.com/en-US/embed/donation-form/example',
+      'https://www.youtube.com/embed/AbC_dEf-123',
+    ]) {
+      expect(framableSrc(value), value).toBeUndefined();
+    }
+    const form = 'https://www.zeffy.com/en-US/embed/donation-form/example';
+    expect(framableSrc(form)).toBe(form);
   });
 });

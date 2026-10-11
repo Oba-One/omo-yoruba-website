@@ -6,10 +6,11 @@ import { defineQuery } from 'groq';
  * facts the page reads (the page picks the next one and the past one, ADR 0024), its schedule with
  * the zone names, its vendor terms and attendance, and the first eight photographs of its album (the
  * first album made that names the edition and holds a photograph, ADR 0042) with the album's credit and its
- * photographer's link (ADR 0046); the zones in order; the partners scoped to Odunde. Images project the
- * asset reference, the hotspot and the crop, never a URL string (ADR 0022). Layout values come back
+ * photographer's link (ADR 0046), its cover and its videos in order (ADR 0050: the page shows the first, its still
+ * falling back to the cover, else the first photograph); the zones in order; the partners scoped to Odunde. Images
+ * project the asset reference, the hotspot and the crop, never a URL string (ADR 0022). Layout values come back
  * as stored; the page fills the schema defaults (`withLayoutDefaults`). The gallery's `state` comes
- * too: while it holds the albums, past years show no photograph (ADR 0043).
+ * too: while it holds the albums, past years show no photograph and no video (ADR 0043).
  */
 export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
   header{
@@ -49,7 +50,16 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
       creditConfirmed,
       "credit": coalesce(credit->defaultCredit, credit->name),
       "creditUrl": credit->url,
-      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}
+      cover{_type, alt, caption, hotspot, crop, asset},
+      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset},
+      "videos": videos[]{
+        _key,
+        title,
+        url,
+        still{_type, hotspot, crop, asset},
+        "credit": coalesce(credit->defaultCredit, credit->name),
+        "creditUrl": credit->url
+      }
     }
   },
   "zones": *[_type == "zone" && active != false] | order(order asc){
@@ -73,11 +83,12 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
  * The Gala page in one read (ROUTES section 1): the `galaPage` singleton with its header, actions,
  * section intros and take-part rows; every gala edition with the facts the page
  * reads (the page picks the next one and the past one, ADR 0024), its running order, its ticket
- * tiers in order and the first eight photographs of its album (as the festival's) with the album's credit; the sponsor
+ * tiers in order and the first eight photographs of its album (as the festival's) with the album's credit, its cover
+ * and its videos in order (ADR 0050); the sponsor
  * levels scoped to the Gala or the whole organization, in order, with the edition a level is tied to;
  * every honoree with the edition it belongs to. Images project the asset reference, the hotspot and the crop (ADR 0022). Layout values
  * come back as stored; the page fills the schema defaults (`withLayoutDefaults`).
- * The gallery's `state` comes too: while it holds the albums, past years show no photograph (ADR 0043).
+ * The gallery's `state` comes too: while it holds the albums, past years show no photograph and no video (ADR 0043).
  */
 export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
   header{
@@ -122,7 +133,16 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
       creditConfirmed,
       "credit": coalesce(credit->defaultCredit, credit->name),
       "creditUrl": credit->url,
-      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset}
+      cover{_type, alt, caption, hotspot, crop, asset},
+      "photos": photos[0...8]{_key, _type, alt, caption, hotspot, crop, asset},
+      "videos": videos[]{
+        _key,
+        title,
+        url,
+        still{_type, hotspot, crop, asset},
+        "credit": coalesce(credit->defaultCredit, credit->name),
+        "creditUrl": credit->url
+      }
     }
   },
   "sponsorLevels": *[_type == "sponsorLevel" && scope in ["gala", "org"]] | order(order asc){

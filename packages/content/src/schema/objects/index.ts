@@ -11,3 +11,4 @@ export { scheduleItem } from './scheduleItem';
 export { seo } from './seo';
 export { sourcedFigure } from './sourcedFigure';
 export { takePartRow } from './takePartRow';
+export { video } from './video';

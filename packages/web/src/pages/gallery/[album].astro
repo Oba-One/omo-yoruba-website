@@ -3,7 +3,8 @@
  * An album's page (`18 Photo Gallery.dc.html`'s album and viewer states, ROUTES sections 1 and 3, ADR 0037, ADR
  * 0039): composed from the one album query by slug through `loadQuery`. The slim header with the gallery's kicker,
  * the album's title and its facts; the way back to the gallery and to the edition's page; the credit with its chip
- * and the consent note; the photographs, each opening the Lightbox; photography credit and permissions. A photo
+ * and the consent note; the album's videos, each played from YouTube only when a visitor presses play (ADR 0050);
+ * the photographs, each opening the Lightbox; photography credit and permissions. A photo
  * address (`?photo=<key>`) serves the Lightbox open on that photograph, the one exception beside `#give` to
  * nothing opening on load; a key the album does not hold serves nothing open. An unknown slug is a 404, and a
  * failed read is a 503 in the Pending form that no cache keeps. The Lightbox comes first in the section, so a
@@ -20,6 +21,7 @@ import AlbumIntro from '@oy/ui/media/AlbumIntro/AlbumIntro.astro';
 import GalleryCredits from '@oy/ui/media/GalleryCredits/GalleryCredits.astro';
 import Lightbox from '@oy/ui/media/Lightbox/Lightbox.astro';
 import PhotoGrid from '@oy/ui/media/PhotoGrid/PhotoGrid.astro';
+import VideoGrid from '@oy/ui/media/VideoGrid/VideoGrid.astro';
 import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
@@ -93,6 +95,7 @@ cachePage(Astro, '/gallery/[album]', { draft: preview, failed: Boolean(error) })
             consentNote={page.consentNote}
             consentEdit={page.consentEdit}
           />
+          <VideoGrid videos={page.videos.items} priority={page.videos.priority} />
           <PhotoGrid
             photos={page.photos.tiles}
             lightbox={page.lightbox.id}
