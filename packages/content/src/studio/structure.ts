@@ -105,6 +105,33 @@ function editionsItem(
         .defaultOrdering([
           { field: kind === 'collective' ? 'start' : 'edition', direction: 'desc' },
         ])
+        .child((documentId) => {
+          const details = S.document().schemaType('event').documentId(documentId);
+          if (kind === 'collective') return details;
+          const eventId = documentId.replace(/^drafts\./, '');
+          const types = kind === 'gala' ? ['ticketTier', 'honoree', 'album'] : ['album'];
+          return S.list()
+            .id('edition')
+            .title(`${EVENT_PAGE_NAMES[kind]} edition`)
+            .items([
+              S.listItem().id('details').title('Edition details').child(details),
+              ...types.map((type) =>
+                S.listItem()
+                  .id(type)
+                  .title(LIST_TITLES[type] ?? type)
+                  .child(
+                    S.documentTypeList(type)
+                      .title(LIST_TITLES[type] ?? type)
+                      .apiVersion(STUDIO_API_VERSION)
+                      .filter('_type == $type && event._ref == $eventId')
+                      .params({ type, eventId })
+                      .initialValueTemplates([
+                        S.initialValueTemplateItem(`${type}-for-event`, { eventId }),
+                      ]),
+                  ),
+              ),
+            ]);
+        })
         // Last: the builder infers templates again on any later call, dropping these.
         .initialValueTemplates([S.initialValueTemplateItem(`event-${kind}`)]),
     );

@@ -5,6 +5,8 @@
  * `<Pending what={pendingWhat(type, field)} />` when it finds the field empty, so the chip and the
  * row never disagree.
  */
+
+import { LESSON_FACTS, PAYMENT_FACTS } from './known-facts';
 import { COLLECTIVE_NAME } from './routes';
 
 export interface PendingEntry {
@@ -128,9 +130,9 @@ const takePartRows = (type: string, where: string): PendingEntry[] => [
   { type, fields: ['takePart[]'], where, what: 'the ways in' },
   {
     type,
-    condition: 'count(takePart[!defined(way) || !defined(title) || !defined(label)]) > 0',
+    condition: 'count(takePart[!defined(way)]) > 0',
     where,
-    what: 'a way in, its title or its button label',
+    what: 'which way to take part',
   },
 ];
 
@@ -442,19 +444,13 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'when it runs',
   },
   ...takePartRows('programsPage', 'Programs, take part'),
-  {
+  ...LESSON_FACTS.map(({ name, label, what }) => ({
     type: 'lessonsPage',
-    fields: ['glance[]'],
+    fields: [`lessonDetails.${name}`],
+    condition: `!defined(coalesce(lessonDetails.${name}, glance[lower(label) == "${label.toLowerCase()}"][0].value))`,
     where: 'Lessons, at a glance',
-    what: 'the facts at a glance',
-  },
-  // A glance fact the seed labels and leaves for the owner (the ages); format and cost are seeded.
-  {
-    type: 'lessonsPage',
-    condition: 'count(glance[!defined(value)]) > 0',
-    where: 'Lessons, at a glance',
-    what: 'a glance fact',
-  },
+    what,
+  })),
   {
     type: 'lessonsPage',
     fields: ['teacher'],
@@ -622,18 +618,13 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'which other ways to give you accept',
   },
   // Fees, the receipt and monthly giving depend on how the owner's Zeffy form is set up (spec Q14).
-  {
+  ...PAYMENT_FACTS.map(({ name, label, what }) => ({
     type: 'donatePage',
-    fields: ['giveNow.facts[]'],
+    fields: [`paymentDetails.${name}`],
+    condition: `!defined(coalesce(paymentDetails.${name}, giveNow.facts[lower(label) == "${label.toLowerCase()}"][0].value))`,
     where: 'Donate, give now',
-    what: 'the give-now facts',
-  },
-  {
-    type: 'donatePage',
-    condition: 'count(giveNow.facts[!defined(value)]) > 0',
-    where: 'Donate, give now',
-    what: 'how your Zeffy form handles this',
-  },
+    what,
+  })),
   {
     type: 'donatePage',
     fields: ['largerScale.doors[]'],
@@ -673,13 +664,6 @@ export const PENDING: readonly PendingEntry[] = [
     fields: ['stats[]'],
     where: 'Impact, numbers',
     what: 'the headline figures',
-  },
-  // Six chosen and fewer than six figures referenced: the empty cells wait for the wireframe's two.
-  {
-    type: 'impactPage',
-    condition: 'layout.stats == "six" && count(stats) < 6',
-    where: 'Impact, numbers',
-    what: IMPACT_SIX_PENDING,
   },
   {
     type: 'impactPage',

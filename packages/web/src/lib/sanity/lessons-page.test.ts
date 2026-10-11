@@ -105,15 +105,39 @@ describe('buildLessonsPage', () => {
   it('keeps the glance band with its Pending line while the page holds no facts', () => {
     const view = buildLessonsPage(null, options);
     expect(view.glance).toEqual([]);
-    expect(view.glancePending).toBe('the facts at a glance');
+    expect(view.glancePending).toBe('the lesson details');
   });
 
   it("draws the glance's four facts, the owed one with its chip", () => {
     expect(buildLessonsPage(seeded, options).glance).toEqual([
-      { label: 'Format', value: 'Online, live', note: 'Video call', pending: 'a glance fact' },
-      { label: 'When', value: 'Set with the teacher', note: undefined, pending: 'a glance fact' },
-      { label: 'Ages', value: undefined, note: undefined, pending: 'a glance fact' },
-      { label: 'Cost', value: 'Agreed with her', note: undefined, pending: 'a glance fact' },
+      {
+        key: 'format',
+        label: 'Format',
+        value: 'Online, live',
+        note: 'Video call',
+        pending: 'the lesson format',
+      },
+      {
+        key: 'when',
+        label: 'When',
+        value: 'Set with the teacher',
+        note: undefined,
+        pending: 'when lessons run',
+      },
+      {
+        key: 'ages',
+        label: 'Ages',
+        value: undefined,
+        note: undefined,
+        pending: 'the ages lessons serve',
+      },
+      {
+        key: 'cost',
+        label: 'Cost',
+        value: 'Agreed with her',
+        note: undefined,
+        pending: 'how lesson fees are agreed',
+      },
     ]);
   });
 
@@ -210,7 +234,7 @@ describe('buildLessonsPage', () => {
     expect(hidden.lesson.shown).toBe(false);
   });
 
-  it('carries the questions, closed or the first open by the option, and the lead that counts them', () => {
+  it('keeps questions closed initially and supplies the lead that counts them', () => {
     const faq = buildLessonsPage(seeded, options).faq;
     expect(faq).toMatchObject({
       defaultOpen: false,
@@ -229,7 +253,7 @@ describe('buildLessonsPage', () => {
       { ...seeded, layout: { faq: 'open' } } as LessonsPageData,
       options,
     );
-    expect(open.faq.defaultOpen).toBe(true);
+    expect(open.faq.defaultOpen).toBe(false);
     expect(buildLessonsPage(null, options).faq).toMatchObject({ items: [], lead: undefined });
     const one = buildLessonsPage(
       { ...seeded, faq: seeded.faq?.slice(0, 1) } as LessonsPageData,

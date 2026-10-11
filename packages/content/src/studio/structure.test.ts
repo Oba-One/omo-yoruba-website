@@ -207,6 +207,30 @@ describe('the sidebar follows the site', () => {
     expect(ids(child(cached(ADMIN), 'pages'))).toEqual(SITE_PAGES.map(({ type }) => type));
   });
 
+  it('opens Gala content inside its edition and prefills the correct reference', () => {
+    const gala = child(child(cached(EDITOR), 'events'), 'gala');
+    const editions = child(gala, 'events-gala') as unknown as DocumentListBuilder;
+    const resolve = editions.getChild() as (id: string) => ListBuilder;
+    const hub = resolve('event-gala-2099');
+    expect(ids(hub)).toEqual(['details', 'ticketTier', 'honoree', 'album']);
+    expect((child(hub, 'details') as unknown as DocumentBuilder).getDocumentId()).toBe(
+      'event-gala-2099',
+    );
+    for (const type of ['ticketTier', 'honoree', 'album']) {
+      const list = child(hub, type) as unknown as DocumentListBuilder;
+      expect(list.getFilter()).toBe('_type == $type && event._ref == $eventId');
+      expect(list.getParams()).toEqual({ type, eventId: 'event-gala-2099' });
+      const template = list.getInitialValueTemplates()?.[0] as InitialValueTemplateItemBuilder;
+      expect(template.getParameters()).toEqual({ eventId: 'event-gala-2099' });
+      const value = templates.find((item) => item.id === `${type}-for-event`)?.value as (params: {
+        eventId: string;
+      }) => unknown;
+      expect(value({ eventId: 'drafts.event-gala-2099' })).toEqual({
+        event: { _type: 'reference', _ref: 'event-gala-2099' },
+      });
+    }
+  });
+
   it('groups photos and people, and titles every list by the documents it holds', () => {
     const titles = (list: ListBuilder) => items(list).map((item) => item.getTitle());
     const pages = child(cached(EDITOR), 'pages');
@@ -523,6 +547,12 @@ describe('tools, actions and templates per role', () => {
       expect(offered).not.toContain(id);
     }
     expect(offered).toContain('event-collective');
+    expect(offered).not.toContain('ticketTier-for-event');
+    const scoped = {
+      templateId: 'ticketTier-for-event',
+      parameters: { eventId: 'event-gala-2099' },
+    };
+    expect(newDocumentOptions([scoped] as never, {} as never)).toEqual([scoped]);
   });
 });
 
@@ -531,6 +561,7 @@ describe('what members see but cannot change', () => {
     name: string;
     description?: string;
     readOnly?: unknown;
+    hidden?: unknown;
     fields?: Def[];
     __experimental_omnisearch_visibility?: boolean;
   };
@@ -559,7 +590,7 @@ describe('what members see but cannot change', () => {
     for (const type of schemaTypes as unknown as Def[]) {
       const layout = type.fields?.find((field) => field.name === 'layout');
       for (const option of layout?.fields ?? []) {
-        if (lockedFor(option.readOnly, EDITOR) === true) {
+        if (option.hidden !== true && lockedFor(option.readOnly, EDITOR) === true) {
           expect(lockedFor(option.readOnly, ADMIN), option.name).toBe(false);
           expect(option.description, option.name).toMatch(/ Only an administrator changes it\.$/);
           locked.push(`${type.name}.${option.name}`);

@@ -75,7 +75,7 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
     hero: {
       image: resolveImage(imageSet, hero?.image, { width: 1440 }),
       imageEdit: edit('hero.image'),
-      edit: edit('layout.motion'),
+      edit: undefined,
       kicker: hero?.kicker,
       title: hero?.title,
       emphasis: hero?.emphasis,
@@ -126,11 +126,11 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
     edit: {
       season: edit('layout.season'),
       highlight: edit('layout.highlight'),
-      gallery: edit('layout.gallery'),
-      involved: edit('layout.involved'),
-      newsletter: edit('layout.newsletter'),
-      pattern: edit('layout.pattern'),
-      motion: edit('layout.motion'),
+      gallery: undefined,
+      involved: undefined,
+      newsletter: undefined,
+      pattern: undefined,
+      motion: undefined,
     },
   };
 }

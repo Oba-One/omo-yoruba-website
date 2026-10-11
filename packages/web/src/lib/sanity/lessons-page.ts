@@ -53,8 +53,8 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
     layout,
     root: { ...layout },
     header: { variant: 'slim' as const, ...page.header },
-    glance: glanceFacts('lessonsPage', 'glance', data?.glance),
-    glancePending: pending('glance[]'),
+    glance: glanceFacts('lessonsPage', 'lessonDetails', data?.glance),
+    glancePending: 'the lesson details',
     teacher: {
       intro: data?.teacherIntro ?? undefined,
       person: {

@@ -277,8 +277,8 @@ describe('buildAlbumPage', () => {
       options,
       null,
     );
-    expect(page.root).toEqual({ captions: 'hover' });
-    expect(page.photos.captions).toBe('hover');
+    expect(page.root).toEqual({ captions: 'always' });
+    expect(page.photos.captions).toBe('always');
     expect(page.credits.rows.map((row) => row.label)).toEqual([
       'Credits',
       'Consent policy',
@@ -306,7 +306,7 @@ describe('buildAlbumPage', () => {
     expect(page.lightbox.photos[0]?.edit).toContain(photograph);
     expect(page.credit.edit).toContain('id=album-gala-2025;type=album;path=credit');
     expect(page.consentEdit).toContain('id=album-gala-2025;type=album;path=consentNote');
-    expect(page.photos.edit).toContain('id=galleryPage;type=galleryPage;path=layout.captions');
+    expect(page.photos.edit).toBeUndefined();
     const published = buildAlbumPage(seeded, options, null);
     expect(published.photos.tiles[0]?.edit).toBeUndefined();
     expect(published.lightbox.photos[0]?.edit).toBeUndefined();

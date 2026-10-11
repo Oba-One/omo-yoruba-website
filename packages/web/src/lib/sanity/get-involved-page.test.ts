@@ -116,18 +116,18 @@ describe('buildGetInvolvedPage', () => {
       { ...seeded, layout: { doors: 'rows', hta: 'shown' } } as GetInvolvedPageData,
       options,
     );
-    expect(rows.doors.layout).toBe('row');
+    expect(rows.doors.layout).toBe('card');
   });
 
-  it('gilds the first door only while the header holds no action', () => {
+  it('keeps the first door primary and ignores retired header actions', () => {
     const plain = buildGetInvolvedPage(seeded, options).doors.items;
     expect(plain.map((item) => item.primary)).toEqual([true, false, false, false]);
     const withAction = buildGetInvolvedPage(
       { ...seeded, primaryAction: enquiry('Become a member', 'member') } as GetInvolvedPageData,
       options,
     );
-    expect(withAction.header.actions).toHaveLength(1);
-    expect(withAction.doors.items.every((item) => !item.primary)).toBe(true);
+    expect(withAction.header.actions).toHaveLength(0);
+    expect(withAction.doors.items.map((item) => item.primary)).toEqual([true, false, false, false]);
   });
 
   it('names an empty page of doors and leaves the give box out without a give door', () => {
@@ -210,7 +210,7 @@ describe('buildGetInvolvedPage', () => {
     const view = buildGetInvolvedPage(seeded, options);
     expect(view.edit.doors).toBeUndefined();
     const draft = buildGetInvolvedPage(seeded, { ...options, draft: true });
-    expect(draft.edit.doors).toContain('path=layout.doors');
+    expect(draft.edit.doors).toBeUndefined();
     expect(draft.edit.hta).toContain('path=layout.hta');
     expect(draft.doors.items[0]?.imageEdit).toContain('id=door-member;type=door;path=image');
   });

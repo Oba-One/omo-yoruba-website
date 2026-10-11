@@ -12,9 +12,6 @@ import { PHOTOS } from './photos';
 /** The registry's own wording for a field, so a story never drifts from the chip the site shows. */
 const owed = (type: string, field: string, kind?: string) => pendingWhat(type, field, kind) ?? '';
 
-/** The registry's wording for a glance fact the Lessons page owes. */
-const GLANCE_FACT_PENDING = owed('lessonsPage', 'glance');
-
 /**
  * The four programs as the Programs hub shows them: the seeded cadence of the Lessons and no ages yet
  * (both Pending), and the inline programs linking to their sections on the page.
@@ -134,10 +131,19 @@ export const LESSONS_HEADER = {
 
 /** The glance as the seed writes it: format, when and cost confirmed, the ages owed. */
 export const LESSONS_GLANCE = [
-  { label: 'Format', value: 'Online, live', note: 'Video call', pending: GLANCE_FACT_PENDING },
-  { label: 'When', value: 'Set with the teacher', pending: GLANCE_FACT_PENDING },
-  { label: 'Ages', pending: GLANCE_FACT_PENDING },
-  { label: 'Cost', value: 'Agreed with her', pending: GLANCE_FACT_PENDING },
+  {
+    label: 'Format',
+    value: 'Online, live',
+    note: 'Video call',
+    pending: owed('lessonsPage', 'lessonDetails.format'),
+  },
+  {
+    label: 'When',
+    value: 'Set with the teacher',
+    pending: owed('lessonsPage', 'lessonDetails.when'),
+  },
+  { label: 'Ages', pending: owed('lessonsPage', 'lessonDetails.ages') },
+  { label: 'Cost', value: 'Agreed with her', pending: owed('lessonsPage', 'lessonDetails.cost') },
 ];
 
 export const TEACHER_INTRO =

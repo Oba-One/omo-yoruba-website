@@ -17,6 +17,13 @@ export const oyImage = defineType({
   title: 'Image',
   type: 'image',
   options: { hotspot: true },
+  fieldsets: [
+    {
+      name: 'creditOverride',
+      title: 'Different credit for this photograph',
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
     defineField({
       name: 'alt',
@@ -42,6 +49,7 @@ export const oyImage = defineType({
     }),
     defineField({
       name: 'credit',
+      fieldset: 'creditOverride',
       title: 'Photographer',
       type: 'reference',
       to: [{ type: 'photographer' }],
@@ -49,6 +57,7 @@ export const oyImage = defineType({
     }),
     defineField({
       name: 'creditNote',
+      fieldset: 'creditOverride',
       title: 'Credit, when no photographer fits',
       type: 'string',
       hidden: creditHidden,
@@ -56,6 +65,7 @@ export const oyImage = defineType({
     }),
     defineField({
       name: 'creditConfirmed',
+      fieldset: 'creditOverride',
       title: 'Credit confirmed',
       type: 'boolean',
       description: 'Tick only once the photographer has confirmed the credit.',

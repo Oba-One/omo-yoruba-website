@@ -1,6 +1,7 @@
 import { albumLinkMigration } from './album-link';
 import type { Migration } from './core';
 import { inlineListsMigration } from './inline-lists';
+import { namedFactsMigration } from './named-facts';
 import { oneControlMigration } from './one-control';
 import { retiredFieldsMigration } from './retired-fields';
 import { retiredTypesMigration } from './retired-types';
@@ -12,6 +13,7 @@ export const MIGRATIONS: readonly Migration[] = [
   albumLinkMigration,
   inlineListsMigration,
   oneControlMigration,
+  namedFactsMigration,
   retiredFieldsMigration,
   retiredTypesMigration,
   scopesMigration,

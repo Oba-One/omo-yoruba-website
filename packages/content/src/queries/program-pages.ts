@@ -53,7 +53,12 @@ export const lessonsPageQuery = defineQuery(`*[_type == "lessonsPage" && _id == 
   header{kicker{yo, en}, title, line},
   primaryAction{label, kind, enquiryKind, href, newTab},
   secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},
-  glance[]{_key, label, value, note},
+  "glance": select(defined(lessonDetails) => [
+    {"_key":"format", "label":"Format", "value":coalesce(lessonDetails.format, glance[lower(label) == "format"][0].value), "note":coalesce(lessonDetails.notes.format, glance[lower(label) == "format"][0].note)},
+    {"_key":"when", "label":"When", "value":coalesce(lessonDetails.when, glance[lower(label) == "when"][0].value), "note":coalesce(lessonDetails.notes.when, glance[lower(label) == "when"][0].note)},
+    {"_key":"ages", "label":"Ages", "value":coalesce(lessonDetails.ages, glance[lower(label) == "ages"][0].value), "note":coalesce(lessonDetails.notes.ages, glance[lower(label) == "ages"][0].note)},
+    {"_key":"cost", "label":"Cost", "value":coalesce(lessonDetails.cost, glance[lower(label) == "cost"][0].value), "note":coalesce(lessonDetails.notes.cost, glance[lower(label) == "cost"][0].note)}
+  ], glance[]{_key, label, value, note}),
   "teacher": teacher->{
     _id, name, role, bioShort,
     portrait{_type, alt, caption, hotspot, crop, asset}

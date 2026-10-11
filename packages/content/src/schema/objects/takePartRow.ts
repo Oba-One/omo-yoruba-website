@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { takePartWords } from '../../editing-defaults';
 import { KIND_TITLES } from '../../enquiry-kinds';
 import { WAY_INS } from '../../take-part';
 import { voice } from '../../validation/rules';
@@ -14,6 +15,13 @@ export const takePartRow = defineType({
   name: 'takePartRow',
   title: 'Take-part row',
   type: 'object',
+  fieldsets: [
+    {
+      name: 'wording',
+      title: 'Custom wording (optional)',
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
     defineField({
       name: 'way',
@@ -24,11 +32,12 @@ export const takePartRow = defineType({
         layout: 'radio',
       },
       description:
-        'Each way in opens its own form. Give opens the donation form; Updates goes to the newsletter signup on the page.',
+        'The title and button wording are supplied for you. Give opens the donation form; Updates goes to the newsletter signup on the page.',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'chip',
+      fieldset: 'wording',
       title: 'Chip',
       type: 'string',
       description:
@@ -37,9 +46,11 @@ export const takePartRow = defineType({
     }),
     defineField({
       name: 'title',
+      fieldset: 'wording',
       title: 'Title',
       type: 'string',
-      validation: voice.requiredHeading,
+      description: 'Optional. Empty uses the title supplied for this page and way in.',
+      validation: voice.heading,
     }),
     defineField({
       name: 'line',
@@ -51,17 +62,18 @@ export const takePartRow = defineType({
     }),
     defineField({
       name: 'label',
+      fieldset: 'wording',
       title: 'Button label',
       type: 'string',
-      description: 'Starts with a verb, sentence case ("Apply for a booth").',
-      validation: voice.requiredHeading,
+      description: 'Optional. Empty uses the button wording supplied for this page and way in.',
+      validation: voice.heading,
     }),
   ],
   preview: {
     select: { title: 'title', way: 'way', label: 'label' },
     prepare: ({ title, way, label }) => ({
-      title,
-      subtitle: [way, label].filter(Boolean).join(' • '),
+      title: title || takePartWords('', way)?.title,
+      subtitle: [way, label || takePartWords('', way)?.label].filter(Boolean).join(' • '),
     }),
   },
 });

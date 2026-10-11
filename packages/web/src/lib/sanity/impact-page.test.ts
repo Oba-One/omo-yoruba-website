@@ -1,7 +1,6 @@
 import { createImageSet } from '@oy/content/images';
 import {
   GOVERNANCE_NOTE_PENDING,
-  IMPACT_SIX_PENDING,
   OUTCOME_PENDING,
   PARTNERSHIPS_RESPONDS_PENDING,
 } from '@oy/content/pending';
@@ -167,7 +166,7 @@ describe('buildImpactPage', () => {
     });
     expect(view.lead).toMatch(/^Every number carries a source line/);
     const six = buildImpactPage(withData({ layout: { stats: 'six' } }), options).numbers;
-    expect(six).toMatchObject({ columns: 6, padPending: IMPACT_SIX_PENDING });
+    expect(six).toMatchObject({ columns: 4, padPending: undefined });
     const hidden = buildImpactPage(withData({ layout: { sources: 'hidden' } }), options);
     expect(hidden.numbers).toMatchObject({ sources: false, lead: undefined });
     expect(hidden.outcomes.sources).toBe(false);
@@ -190,7 +189,7 @@ describe('buildImpactPage', () => {
     expect(view.layout).toBe('card');
     expect(
       buildImpactPage(withData({ layout: { outcomes: 'rows' } }), options).outcomes.layout,
-    ).toBe('row');
+    ).toBe('card');
   });
 
   it('heads an outcome by its subject, a figure with its source or a statement, and fills the rest with slots', () => {
@@ -413,7 +412,8 @@ describe('buildImpactPage', () => {
   it('puts the edit attributes on the options in draft mode only', () => {
     expect(buildImpactPage(seeded, options).edit.stats).toBeUndefined();
     const draft = buildImpactPage(seeded, { ...options, draft: true });
-    for (const option of ['stats', 'outcomes', 'sources', 'funders']) {
+    for (const option of ['stats', 'outcomes']) expect(draft.edit[option]).toBeUndefined();
+    for (const option of ['sources', 'funders']) {
       expect(draft.edit[option], option).toContain(`path=layout.${option}`);
     }
     expect(draft.how.photoEdit).toContain('path=howWeWorkImage');

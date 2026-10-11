@@ -182,7 +182,7 @@ const withLayout = (layout: Record<string, string>) =>
 describe('buildProgramsPage', () => {
   it('fills the layout defaults and puts every option on the body', () => {
     const view = buildProgramsPage(withLayout({ cards: 'pairs' }), options);
-    expect(view.layout).toEqual({ cards: 'pairs', inline: 'expanded', yearstrip: 'shown' });
+    expect(view.layout).toEqual({ cards: 'four', inline: 'expanded', yearstrip: 'shown' });
     expect(view.root).toEqual(view.layout);
     expect(buildProgramsPage(null, options).layout.cards).toBe('four');
   });
@@ -200,7 +200,7 @@ describe('buildProgramsPage', () => {
     expect(buildProgramsPage(null, options).title).toBe('Our programs');
   });
 
-  it('shows every program in order, four across or in pairs, and the first three under three', () => {
+  it('keeps every program in four columns despite old presentation choices', () => {
     const four = buildProgramsPage(seeded, options).cards;
     expect(four.columns).toBe(4);
     expect(four.items.map((card) => card.program._id)).toEqual([
@@ -210,13 +210,13 @@ describe('buildProgramsPage', () => {
       'program-cultural-exchange',
     ]);
     const pairs = buildProgramsPage(withLayout({ cards: 'pairs' }), options).cards;
-    expect(pairs.columns).toBe(2);
+    expect(pairs.columns).toBe(4);
     expect(pairs.items).toHaveLength(4);
     const three = buildProgramsPage(withLayout({ cards: 'three' }), options).cards;
-    expect(three.columns).toBe(3);
-    expect(three.items.map((card) => card.program._id)).not.toContain('program-cultural-exchange');
-    // The prototype's photographs: 160px on four and pairs, 200px on three.
-    expect([four.mediaHeight, pairs.mediaHeight, three.mediaHeight]).toEqual([160, 160, 200]);
+    expect(three.columns).toBe(4);
+    expect(three.items.map((card) => card.program._id)).toContain('program-cultural-exchange');
+    // Old choices keep the settled photograph height.
+    expect([four.mediaHeight, pairs.mediaHeight, three.mediaHeight]).toEqual([160, 160, 160]);
   });
 
   it('links a program with a page to it, and an inline program to its section on this page', () => {
@@ -248,7 +248,7 @@ describe('buildProgramsPage', () => {
       intro: 'Three ways to be part of the programs.',
       labels: 'column',
       pending: 'the ways in',
-      rowPending: 'a way in, its title or its button label',
+      rowPending: 'which way to take part',
     });
     const one = buildProgramsPage(
       { ...seeded, takePart: seeded.takePart?.slice(0, 1) } as ProgramsPageData,
@@ -279,8 +279,8 @@ describe('buildProgramsPage', () => {
     ]);
     expect(kids.subprograms[1]?.action?.enquiryKind).toBe('contact');
     const collapsed = buildProgramsPage(withLayout({ inline: 'collapsed' }), options);
-    expect(collapsed.kids.open).toBe(false);
-    expect(collapsed.exchange.open).toBe(false);
+    expect(collapsed.kids.open).toBe(true);
+    expect(collapsed.exchange.open).toBe(true);
   });
 
   it("carries Cultural Exchange's facts, each its own chip while owed, and the photograph's", () => {
@@ -309,10 +309,10 @@ describe('buildProgramsPage', () => {
     expect(written.exchange.facts[1]?.value).toBe('[ Cadence ]');
   });
 
-  it('hides the section of the program the three cards leave out, and keeps both without programs', () => {
+  it('keeps both inline sections despite an old three-card choice or missing programs', () => {
     const three = buildProgramsPage(withLayout({ cards: 'three' }), options);
     expect(three.kids.shown).toBe(true);
-    expect(three.exchange.shown).toBe(false);
+    expect(three.exchange.shown).toBe(true);
     const reordered = buildProgramsPage(
       {
         ...seeded,
@@ -321,7 +321,7 @@ describe('buildProgramsPage', () => {
       } as unknown as ProgramsPageData,
       options,
     );
-    expect([reordered.kids.shown, reordered.exchange.shown]).toEqual([false, true]);
+    expect([reordered.kids.shown, reordered.exchange.shown]).toEqual([true, true]);
     const none = buildProgramsPage(null, options);
     expect([none.kids.shown, none.exchange.shown]).toEqual([true, true]);
     expect(none.kids.subprograms).toEqual([]);
@@ -348,12 +348,12 @@ describe('buildProgramsPage', () => {
   it('writes edit attributes only in draft mode', () => {
     expect(buildProgramsPage(seeded, options).edit.cards).toBeUndefined();
     const draft = buildProgramsPage(seeded, { ...options, draft: true });
-    expect(draft.edit.cards).toContain('path=layout.cards');
+    expect(draft.edit.cards).toBeUndefined();
     expect(draft.cards.items[0]?.imageEdit).toContain('id=program-yoruba-lessons;type=program');
     expect(draft.takePart.rows[1]?.edit).toContain('path=takePart:way-2');
     expect(draft.kids.subprograms[0]?.imageEdit).toContain('path=kidsStem.subprograms:sub-1.image');
     expect(draft.exchange.imageEdit).toContain('path=culturalExchange.image');
-    expect(draft.edit.inline).toContain('path=layout.inline');
+    expect(draft.edit.inline).toBeUndefined();
     expect(draft.year.edit).toContain('path=yearStrip');
   });
 

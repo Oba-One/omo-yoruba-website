@@ -47,15 +47,13 @@ test.describe('the Yoruba Language Lessons page', () => {
     if (PLACEHOLDER_PROJECT) {
       // No facts: the band keeps its place with the registry's line.
       await expect(glance).toHaveCount(0);
-      await expect(page.locator('#glance .oy-pend-line')).toContainText(
-        pendingWhat('lessonsPage', 'glance[]') ?? '',
-      );
+      await expect(page.locator('#glance .oy-pend-line')).toContainText('the lesson details');
     } else {
       await expect(glance).toHaveCount(4);
     }
     expectNoMockWhileOwed(main, [
-      [/\$180|\$75/, pendingWhat('lessonsPage', 'glance')],
-      [/5 to adult/i, pendingWhat('lessonsPage', 'glance')],
+      [/\$180|\$75/, pendingWhat('lessonsPage', 'lessonDetails.cost')],
+      [/5 to adult/i, pendingWhat('lessonsPage', 'lessonDetails.ages')],
       [
         /Yetunde Ojo|Segun Adewale|Bisi Olatunji|Kunle Fashola/,
         pendingWhat('lessonsPage', 'teacher'),
@@ -171,9 +169,9 @@ test.describe('the Yoruba Language Lessons page', () => {
     page,
   }) => {
     await page.goto('/programs/yoruba-lessons');
-    // The card's trigger is always there; the header's comes from the Studio, so not in the placeholder project.
+    // Both actions are supplied by the website, even while the CMS has no content.
     const header = page.locator('header#top a[data-enquiry="enrol"]');
-    await expect(header).toHaveCount(PLACEHOLDER_PROJECT ? 0 : 1);
+    await expect(header).toHaveCount(1);
     for (const trigger of [
       header,
       page.locator('#teacher .oy-enquiry-card a[data-enquiry="enrol"]'),

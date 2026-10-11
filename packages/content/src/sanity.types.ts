@@ -269,6 +269,9 @@ export type Album = {
   slug?: Slug;
   date?: string;
   event?: EventReference;
+  credit?: PhotographerReference;
+  creditConfirmed?: boolean;
+  consentNote?: string;
   cover?: OyImage;
   photos?: Array<{
     _key: string;
@@ -276,9 +279,6 @@ export type Album = {
   videos?: Array<{
     _key: string;
   } & Video>;
-  credit?: PhotographerReference;
-  creditConfirmed?: boolean;
-  consentNote?: string;
 };
 
 export type Slug = {
@@ -426,6 +426,18 @@ export type DonatePage = {
     facts?: Array<{
       _key: string;
     } & Fact>;
+  };
+  paymentDetails?: {
+    fees?: string;
+    receipt?: string;
+    monthly?: string;
+    fallback?: string;
+    notes?: {
+      fees?: string;
+      receipt?: string;
+      monthly?: string;
+      fallback?: string;
+    };
   };
   largerScale?: {
     title?: string;
@@ -666,6 +678,18 @@ export type LessonsPage = {
   glance?: Array<{
     _key: string;
   } & Fact>;
+  lessonDetails?: {
+    format?: string;
+    when?: string;
+    ages?: string;
+    cost?: string;
+    notes?: {
+      format?: string;
+      when?: string;
+      ages?: string;
+      cost?: string;
+    };
+  };
   teacher?: PersonReference;
   teacherIntro?: string;
   learn?: BlockContent;
@@ -3586,7 +3610,7 @@ export type ProgramsPageQueryResult = {
 
 // Source: src/queries/program-pages.ts
 // Variable: lessonsPageQuery
-// Query: *[_type == "lessonsPage" && _id == "lessonsPage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  glance[]{_key, label, value, note},  "teacher": teacher->{    _id, name, role, bioShort,    portrait{_type, alt, caption, hotspot, crop, asset}  },  teacherIntro,  learn,  levels[]{_key, name, blurb},  oneLesson[]{_key, step, title, detail},  faq[]{_key, question, answer},  takePart[]{_key, way, chip, title, line, label},  "teacherEmail": *[_id == "siteSettings"][0].contacts[role == "teacher"][0].email,  layout{lesson, portraits, faq},  seo{title, description}}
+// Query: *[_type == "lessonsPage" && _id == "lessonsPage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  "glance": select(defined(lessonDetails) => [    {"_key":"format", "label":"Format", "value":coalesce(lessonDetails.format, glance[lower(label) == "format"][0].value), "note":coalesce(lessonDetails.notes.format, glance[lower(label) == "format"][0].note)},    {"_key":"when", "label":"When", "value":coalesce(lessonDetails.when, glance[lower(label) == "when"][0].value), "note":coalesce(lessonDetails.notes.when, glance[lower(label) == "when"][0].note)},    {"_key":"ages", "label":"Ages", "value":coalesce(lessonDetails.ages, glance[lower(label) == "ages"][0].value), "note":coalesce(lessonDetails.notes.ages, glance[lower(label) == "ages"][0].note)},    {"_key":"cost", "label":"Cost", "value":coalesce(lessonDetails.cost, glance[lower(label) == "cost"][0].value), "note":coalesce(lessonDetails.notes.cost, glance[lower(label) == "cost"][0].note)}  ], glance[]{_key, label, value, note}),  "teacher": teacher->{    _id, name, role, bioShort,    portrait{_type, alt, caption, hotspot, crop, asset}  },  teacherIntro,  learn,  levels[]{_key, name, blurb},  oneLesson[]{_key, step, title, detail},  faq[]{_key, question, answer},  takePart[]{_key, way, chip, title, line, label},  "teacherEmail": *[_id == "siteSettings"][0].contacts[role == "teacher"][0].email,  layout{lesson, portraits, faq},  seo{title, description}}
 export type LessonsPageQueryResult = {
   header: {
     kicker: {
@@ -3614,6 +3638,26 @@ export type LessonsPageQueryResult = {
   glance: Array<{
     _key: string;
     label: string | null;
+    value: string | null;
+    note: string | null;
+  }> | Array<{
+    _key: "ages";
+    label: "Ages";
+    value: string | null;
+    note: string | null;
+  } | {
+    _key: "cost";
+    label: "Cost";
+    value: string | null;
+    note: string | null;
+  } | {
+    _key: "format";
+    label: "Format";
+    value: string | null;
+    note: string | null;
+  } | {
+    _key: "when";
+    label: "When";
     value: string | null;
     note: string | null;
   }> | null;
@@ -4206,7 +4250,7 @@ export type StoryPageQueryResult = {
 
 // Source: src/queries/trust-pages.ts
 // Variable: donatePageQuery
-// Query: *[_type == "donatePage" && _id == "donatePage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  giveNow{title, blurb, facts[]{_key, label, value, note}},  largerScale{    title,    blurb,    "doors": doors[]->{      _id, key, title, blurb,      action{label, kind, enquiryKind, href, newTab},      image{_type, alt, caption, hotspot, crop, asset}    }  },  "levels": whatYourGiftDoes[_type != "reference" || defined(@->)]{    _key,    ...coalesce(@->, @){amount, what, frequency, source}  },  otherWays[]{_key, kind, title, blurb, detail},  taxLine,  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{orgName, ein, address},  "impactSources": *[_type == "impactPage" && _id == "impactPage"][0].layout.sources,  layout{impact},  seo{title, description}}
+// Query: *[_type == "donatePage" && _id == "donatePage"][0]{  header{kicker{yo, en}, title, line},  primaryAction{label, kind, enquiryKind, href, newTab},  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},  "giveNow": {    "title": giveNow.title, "blurb": giveNow.blurb,    "facts": select(defined(paymentDetails) => [    {"_key":"fees", "label":"Fees", "value":coalesce(paymentDetails.fees, giveNow.facts[lower(label) == "fees"][0].value), "note":coalesce(paymentDetails.notes.fees, giveNow.facts[lower(label) == "fees"][0].note)},    {"_key":"receipt", "label":"Receipt", "value":coalesce(paymentDetails.receipt, giveNow.facts[lower(label) == "receipt"][0].value), "note":coalesce(paymentDetails.notes.receipt, giveNow.facts[lower(label) == "receipt"][0].note)},    {"_key":"monthly", "label":"Monthly", "value":coalesce(paymentDetails.monthly, giveNow.facts[lower(label) == "monthly"][0].value), "note":coalesce(paymentDetails.notes.monthly, giveNow.facts[lower(label) == "monthly"][0].note)},    {"_key":"fallback", "label":"If the form fails", "value":coalesce(paymentDetails.fallback, giveNow.facts[lower(label) == "if the form fails"][0].value), "note":coalesce(paymentDetails.notes.fallback, giveNow.facts[lower(label) == "if the form fails"][0].note)}    ], giveNow.facts[]{_key, label, value, note})  },  largerScale{    title,    blurb,    "doors": doors[]->{      _id, key, title, blurb,      action{label, kind, enquiryKind, href, newTab},      image{_type, alt, caption, hotspot, crop, asset}    }  },  "levels": whatYourGiftDoes[_type != "reference" || defined(@->)]{    _key,    ...coalesce(@->, @){amount, what, frequency, source}  },  otherWays[]{_key, kind, title, blurb, detail},  taxLine,  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{orgName, ein, address},  "impactSources": *[_type == "impactPage" && _id == "impactPage"][0].layout.sources,  layout{impact},  seo{title, description}}
 export type DonatePageQueryResult = {
   header: {
     kicker: {
@@ -4239,8 +4283,28 @@ export type DonatePageQueryResult = {
       label: string | null;
       value: string | null;
       note: string | null;
+    }> | Array<{
+      _key: "fallback";
+      label: "If the form fails";
+      value: string | null;
+      note: string | null;
+    } | {
+      _key: "fees";
+      label: "Fees";
+      value: string | null;
+      note: string | null;
+    } | {
+      _key: "monthly";
+      label: "Monthly";
+      value: string | null;
+      note: string | null;
+    } | {
+      _key: "receipt";
+      label: "Receipt";
+      value: string | null;
+      note: string | null;
     }> | null;
-  } | null;
+  };
   largerScale: {
     title: string | null;
     blurb: string | null;
@@ -4305,7 +4369,7 @@ declare global {
     "{\n  \"album\": *[_type == \"album\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    date,\n    consentNote,\n    creditConfirmed,\n    \"credit\": coalesce(credit->defaultCredit, credit->name),\n    \"creditUrl\": credit->url,\n    \"edition\": event->{\"year\": edition, kind},\n    cover{_type, alt, caption, hotspot, crop, asset},\n    \"videos\": videos[]{\n      _key,\n      title,\n      url,\n      still{_type, hotspot, crop, asset},\n      \"credit\": coalesce(credit->defaultCredit, credit->name),\n      \"creditUrl\": credit->url\n    },\n    \"photos\": photos[]{\n      _key,\n      _type,\n      alt,\n      caption,\n      hotspot,\n      crop,\n      asset,\n      creditConfirmed,\n      \"credit\": coalesce(credit->defaultCredit, credit->name, creditNote),\n      \"creditUrl\": select(defined(coalesce(credit->defaultCredit, credit->name)) => credit->url)\n    }\n  },\n  \"page\": *[_type == \"galleryPage\" && _id == \"galleryPage\"][0]{\n    header{kicker{yo, en}},\n    creditsAndConsent,\n    layout{captions, state}\n  },\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{generalEmail}\n}": AlbumPageQueryResult;
     "*[_id == \"homepage\"][0]{\n  hero{\n    kicker{yo, en},\n    title,\n    emphasis,\n    sub,\n    blessing{yo, en},\n    image{_type, alt, caption, hotspot, crop, asset},\n    primaryAction{label, kind, enquiryKind, href, newTab},\n    secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}\n  },\n  \"events\": *[_type == \"event\" && kind in [\"festival\", \"gala\"]] | order(edition desc){\n    _id, kind, title, edition, start, end, \"venueName\": venue.name, summary\n  },\n  \"stats\": stats[]->{_id, value, label, shortLabel, source},\n  programsIntro,\n  \"programs\": *[_type == \"program\"] | order(order asc)[0...3]{\n    _id, name, \"slug\": slug.current, kicker{yo, en}, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  voicesIntro,\n  voicesProverb{yo, en},\n  yearInLife[]{_key, _type, alt, caption, hotspot, crop, asset},\n  raiseYourHand{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb, bullets,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  layout{season, highlight, gallery, involved, newsletter, pattern, motion},\n  seo{title, description}\n}": HomepageQueryResult;
     "*[_type == \"programsPage\" && _id == \"programsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  takePart[]{_key, way, chip, title, line, label},\n  kidsStem{\n    title,\n    blurb,\n    subprograms[]{\n      _key, name, blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      facts[]{_key, label, value, note},\n      action{label, kind, enquiryKind, href, newTab}\n    }\n  },\n  culturalExchange{\n    title, blurb, cadence, eligibility, howToJoin,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  yearStrip[]{_key, when, kind, note, \"program\": program->name},\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  layout{cards, inline, yearstrip},\n  seo{title, description}\n}": ProgramsPageQueryResult;
-    "*[_type == \"lessonsPage\" && _id == \"lessonsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  glance[]{_key, label, value, note},\n  \"teacher\": teacher->{\n    _id, name, role, bioShort,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  teacherIntro,\n  learn,\n  levels[]{_key, name, blurb},\n  oneLesson[]{_key, step, title, detail},\n  faq[]{_key, question, answer},\n  takePart[]{_key, way, chip, title, line, label},\n  \"teacherEmail\": *[_id == \"siteSettings\"][0].contacts[role == \"teacher\"][0].email,\n  layout{lesson, portraits, faq},\n  seo{title, description}\n}": LessonsPageQueryResult;
+    "*[_type == \"lessonsPage\" && _id == \"lessonsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"glance\": select(defined(lessonDetails) => [\n    {\"_key\":\"format\", \"label\":\"Format\", \"value\":coalesce(lessonDetails.format, glance[lower(label) == \"format\"][0].value), \"note\":coalesce(lessonDetails.notes.format, glance[lower(label) == \"format\"][0].note)},\n    {\"_key\":\"when\", \"label\":\"When\", \"value\":coalesce(lessonDetails.when, glance[lower(label) == \"when\"][0].value), \"note\":coalesce(lessonDetails.notes.when, glance[lower(label) == \"when\"][0].note)},\n    {\"_key\":\"ages\", \"label\":\"Ages\", \"value\":coalesce(lessonDetails.ages, glance[lower(label) == \"ages\"][0].value), \"note\":coalesce(lessonDetails.notes.ages, glance[lower(label) == \"ages\"][0].note)},\n    {\"_key\":\"cost\", \"label\":\"Cost\", \"value\":coalesce(lessonDetails.cost, glance[lower(label) == \"cost\"][0].value), \"note\":coalesce(lessonDetails.notes.cost, glance[lower(label) == \"cost\"][0].note)}\n  ], glance[]{_key, label, value, note}),\n  \"teacher\": teacher->{\n    _id, name, role, bioShort,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  teacherIntro,\n  learn,\n  levels[]{_key, name, blurb},\n  oneLesson[]{_key, step, title, detail},\n  faq[]{_key, question, answer},\n  takePart[]{_key, way, chip, title, line, label},\n  \"teacherEmail\": *[_id == \"siteSettings\"][0].contacts[role == \"teacher\"][0].email,\n  layout{lesson, portraits, faq},\n  seo{title, description}\n}": LessonsPageQueryResult;
     "*[_type == \"collectivePage\" && _id == \"collectivePage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  argument,\n  \"photo\": *[_type == \"program\" && page == \"collective\"] | order(order asc)[0]{\n    _id,\n    name,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"initiatives\": initiatives[_type != \"reference\" || defined(@->)]{\n    _key,\n    ...coalesce(@->, @){\n      name,\n      memberLed,\n      status,\n      statusLine,\n      blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      serves,\n      since,\n      next\n    }\n  },\n  \"voice\": voice->{_id, quote, name, relation, permissionToName},\n  \"events\": *[_type == \"event\" && kind == \"collective\" && defined(start)] | order(start asc){\n    _id,\n    kind,\n    title,\n    start,\n    end,\n    summary,\n    venue{name}\n  },\n  takePart[]{_key, way, chip, title, line, label},\n  layout{initiatives, green, status, events},\n  seo{title, description}\n}": CollectivePageQueryResult;
     "*[_id == \"siteSettings\"][0]{\n  orgName,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  zeffyMembershipUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;
@@ -4313,7 +4377,7 @@ declare global {
     "*[_type == \"getInvolvedPage\" && _id == \"getInvolvedPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"doors\": doors[]->{\n    _id, key, title, blurb, bullets,\n    action{label, kind, enquiryKind, href, newTab},\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  hometownAssociations{\n    title,\n    prose,\n    \"stat\": stat->{_id, value, label}\n  },\n  \"associations\": *[_type == \"hometownAssociation\"] | order(name asc){_id, name, url},\n  fallback{title, blurb},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    generalEmail,\n    phone,\n    \"general\": contacts[role == \"general\"][0]{name, responds}\n  },\n  layout{doors, hta},\n  seo{title, description}\n}": GetInvolvedPageQueryResult;
     "*[_type == \"impactPage\" && _id == \"impactPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"stats\": stats[]->{_id, value, label, source},\n  howWeWork,\n  howWeWorkImage{_type, alt, caption, hotspot, crop, asset},\n  \"outcomes\": outcomes[_type != \"reference\" || defined(@->)]{\n    _key,\n    ...coalesce(@->, @){\n      kind,\n      plainStatement,\n      figure{value, label, source},\n      \"program\": program->{_id, name, page, \"slug\": slug.current}\n    }\n  },\n  \"programs\": *[_type == \"program\"] | order(order asc){_id, name, page, \"slug\": slug.current},\n  civicInfra,\n  \"festivals\": *[_type == \"event\" && kind == \"festival\"] | order(edition desc){\n    _id,\n    kind,\n    edition,\n    start,\n    end,\n    cost,\n    attendance{value, label, source},\n    vendorsHosted{value, label, source},\n    \"album\": *[_type == \"album\" && event._ref == ^._id && count(photos) > 0] | order(_createdAt asc)[0]{_id, \"photos\": count(photos)}\n  },\n  \"festivalPartners\": count(*[_type == \"partner\" && \"odunde\" in scope]),\n  \"voices\": voices[]->{_id, quote, name, relation, permissionToName, context},\n  photos[]{_key, _type, alt, caption, hotspot, crop, asset},\n  \"governance\": {\n    \"form990\": *[_type == \"governanceDoc\" && kind == \"form990\"] | order(defined(year) desc, year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    },\n    \"annualReport\": *[_type == \"governanceDoc\" && kind == \"annualReport\"] | order(defined(year) desc, year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    },\n    \"audit\": *[_type == \"governanceDoc\" && kind == \"audit\"] | order(defined(year) desc, year desc)[0]{\n      _id, year, note, \"file\": file.asset->{url, originalFilename, extension}\n    }\n  },\n  \"boardCount\": count(*[_type == \"person\" && group == \"board\"]),\n  \"partners\": *[_type == \"partner\"] | order(name asc){\n    _id,\n    name,\n    url,\n    kind,\n    logo{_type, alt, caption, hotspot, crop, asset}\n  },\n  fundersIntro,\n  nextYear{title},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    ein,\n    address,\n    \"partnerships\": contacts[role == \"partnerships\"][0]{name, email, responds}\n  },\n  layout{stats, outcomes, sources, funders},\n  seo{title, description}\n}": ImpactPageQueryResult;
     "*[_type == \"storyPage\" && _id == \"storyPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  founding,\n  foundingFacts[]{_key, label, value, note},\n  foundingImage{_type, alt, caption, hotspot, crop, asset},\n  \"timeline\": timeline[_type != \"reference\" || defined(@->)]{\n    _key,\n    ...coalesce(@->, @){year, blurb, milestone}\n  },\n  boardIntro,\n  staffIntro,\n  \"board\": *[_type == \"person\" && group == \"board\"] | order(order asc, name asc){\n    _id, name, role, bioShort, bioFull,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"staff\": *[_type == \"person\" && group in [\"staff\", \"volunteer\"]] | order(group asc, order asc, name asc){\n    _id, group, name, role,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  reachUs{title, blurb},\n  takePart[]{_key, way, chip, title, line, label},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    generalEmail,\n    phone,\n    address,\n    \"general\": contacts[role == \"general\"][0]{name}\n  },\n  layout{timeline, bios, portraits},\n  seo{title, description}\n}": StoryPageQueryResult;
-    "*[_type == \"donatePage\" && _id == \"donatePage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  giveNow{title, blurb, facts[]{_key, label, value, note}},\n  largerScale{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"levels\": whatYourGiftDoes[_type != \"reference\" || defined(@->)]{\n    _key,\n    ...coalesce(@->, @){amount, what, frequency, source}\n  },\n  otherWays[]{_key, kind, title, blurb, detail},\n  taxLine,\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{orgName, ein, address},\n  \"impactSources\": *[_type == \"impactPage\" && _id == \"impactPage\"][0].layout.sources,\n  layout{impact},\n  seo{title, description}\n}": DonatePageQueryResult;
+    "*[_type == \"donatePage\" && _id == \"donatePage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"giveNow\": {\n    \"title\": giveNow.title, \"blurb\": giveNow.blurb,\n    \"facts\": select(defined(paymentDetails) => [\n    {\"_key\":\"fees\", \"label\":\"Fees\", \"value\":coalesce(paymentDetails.fees, giveNow.facts[lower(label) == \"fees\"][0].value), \"note\":coalesce(paymentDetails.notes.fees, giveNow.facts[lower(label) == \"fees\"][0].note)},\n    {\"_key\":\"receipt\", \"label\":\"Receipt\", \"value\":coalesce(paymentDetails.receipt, giveNow.facts[lower(label) == \"receipt\"][0].value), \"note\":coalesce(paymentDetails.notes.receipt, giveNow.facts[lower(label) == \"receipt\"][0].note)},\n    {\"_key\":\"monthly\", \"label\":\"Monthly\", \"value\":coalesce(paymentDetails.monthly, giveNow.facts[lower(label) == \"monthly\"][0].value), \"note\":coalesce(paymentDetails.notes.monthly, giveNow.facts[lower(label) == \"monthly\"][0].note)},\n    {\"_key\":\"fallback\", \"label\":\"If the form fails\", \"value\":coalesce(paymentDetails.fallback, giveNow.facts[lower(label) == \"if the form fails\"][0].value), \"note\":coalesce(paymentDetails.notes.fallback, giveNow.facts[lower(label) == \"if the form fails\"][0].note)}\n    ], giveNow.facts[]{_key, label, value, note})\n  },\n  largerScale{\n    title,\n    blurb,\n    \"doors\": doors[]->{\n      _id, key, title, blurb,\n      action{label, kind, enquiryKind, href, newTab},\n      image{_type, alt, caption, hotspot, crop, asset}\n    }\n  },\n  \"levels\": whatYourGiftDoes[_type != \"reference\" || defined(@->)]{\n    _key,\n    ...coalesce(@->, @){amount, what, frequency, source}\n  },\n  otherWays[]{_key, kind, title, blurb, detail},\n  taxLine,\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{orgName, ein, address},\n  \"impactSources\": *[_type == \"impactPage\" && _id == \"impactPage\"][0].layout.sources,\n  layout{impact},\n  seo{title, description}\n}": DonatePageQueryResult;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

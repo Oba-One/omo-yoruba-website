@@ -141,12 +141,57 @@ describe('seatsFrom', () => {
 });
 
 describe('buildGalaPage', () => {
+  it('supplies ordinary actions and take-part wording, with optional row overrides', () => {
+    const view = buildGalaPage(
+      {
+        ...seeded,
+        primaryAction: null,
+        secondaryActions: [],
+        takePart: [
+          { _key: 's', way: 'sponsor' },
+          { _key: 'v', way: 'volunteer', title: 'Help welcome guests', label: 'Offer your time' },
+        ],
+      } as unknown as GalaPageData,
+      options,
+    );
+    expect(view.header.actions.map((action) => action.label)).toEqual([
+      'Get tickets',
+      'Sponsor the evening',
+    ]);
+    expect(view.takePart.rows[0]).toMatchObject({
+      title: 'Sponsor the evening',
+      label: 'Sponsor the Gala',
+    });
+    expect(view.takePart.rows[1]).toMatchObject({
+      title: 'Help welcome guests',
+      label: 'Offer your time',
+    });
+  });
+
+  it('supplies ticket instructions only for an embedded form and keeps custom introductions', () => {
+    const make = (ticketsUrl: string | null, tiersIntro: string | null = null) =>
+      buildGalaPage(
+        {
+          ...seeded,
+          tiersIntro,
+          editions: [edition('event-gala-2026', 2026, { ticketsUrl })],
+        } as unknown as GalaPageData,
+        options,
+      ).seats.intro;
+    const standard = 'Choose your tickets and pay through the ticket form on this page.';
+    expect(make('https://www.zeffy.com/embed/ticketing/a-gala')).toBe(standard);
+    expect(make('https://example.org/tickets', standard)).toBeUndefined();
+    expect(make(null, standard)).toBeUndefined();
+    expect(make('https://example.org/tickets', 'A custom introduction')).toBe(
+      'A custom introduction',
+    );
+  });
   it('fills the layout defaults and puts every option on the body', () => {
     const view = buildGalaPage(
       { ...seeded, layout: { treatment: 'warm' } } as GalaPageData,
       options,
     );
-    expect(view.layout.treatment).toBe('warm');
+    expect(view.layout.treatment).toBe('formal');
     expect(view.layout.labels).toBe('column');
     expect(view.root).toEqual(view.layout);
     expect(buildGalaPage(null, options).layout.treatment).toBe('formal');
@@ -267,7 +312,7 @@ describe('buildGalaPage', () => {
     expect(view.title).toBe('End-of-Year Gala');
     expect(view.edit.treatment).toBeUndefined();
     const draft = buildGalaPage(seeded, { ...options, draft: true });
-    expect(draft.edit.treatment).toContain('path=layout.treatment');
+    expect(draft.edit.treatment).toBeUndefined();
     expect(draft.takePart.rows[0]?.edit).toContain('path=takePart:way-1');
     expect(buildGalaPage(null, options).title).toBe('End-of-Year Gala');
   });
@@ -322,7 +367,7 @@ describe('buildGalaPage', () => {
     // Eventbrite is a link, never a frame: no Tickets Dialog.
     expect(draft.seats.ticketsForm).toBeUndefined();
     expect(draft.seats.ticketsPage).toBeUndefined();
-    expect(draft.seats.layout).toBe('rows');
+    expect(draft.seats.layout).toBe('columns');
     // No table tier, so the section's heading names seats alone.
     expect(view.seats.tables).toBe(false);
     expect(draft.seats.tables).toBe(false);

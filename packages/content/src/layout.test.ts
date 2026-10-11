@@ -21,10 +21,10 @@ describe('layoutDefaults', () => {
 });
 
 describe('withLayoutDefaults', () => {
-  it('keeps a stored value the option knows and fills the rest', () => {
+  it('keeps editorial choices and ignores retired presentation choices', () => {
     expect(withLayoutDefaults('homepage', { season: 'odunde', gallery: '3' })).toMatchObject({
       season: 'odunde',
-      gallery: '3',
+      gallery: '7',
       involved: 'doors',
       newsletter: 'footer',
     });

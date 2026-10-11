@@ -125,22 +125,22 @@ describe('buildHomepage', () => {
     expect(view.layout).toEqual({
       season: 'auto',
       highlight: 'school',
-      gallery: '3',
+      gallery: '7',
       involved: 'doors',
-      newsletter: 'band',
+      newsletter: 'footer',
       pattern: 'rich',
-      motion: 'off',
+      motion: 'on',
     });
     expect(view.root).toEqual({
       highlight: 'school',
       pattern: 'rich',
-      motion: 'false',
+      motion: 'true',
       season: 'auto',
       involved: 'doors',
-      newsletter: 'band',
-      gallery: '3',
+      newsletter: 'footer',
+      gallery: '7',
     });
-    expect(view.hero.motion).toBe(false);
+    expect(view.hero.motion).toBe(true);
   });
 
   it('picks the lead edition with the season rule: the Gala in September when nothing is dated', () => {
@@ -272,7 +272,7 @@ describe('buildHomepage', () => {
     );
     expect(view.title).toBe('Yoruba culture');
     expect(view.description).toBe('Line');
-    expect(view.hero.edit).toBe('id=homepage;type=homepage;path=layout.motion;base=%2Fadmin');
+    expect(view.hero.edit).toBeUndefined();
   });
 
   it('renders the edit attributes only in draft mode', () => {
@@ -287,7 +287,7 @@ describe('buildHomepage', () => {
     expect(draft.programs[0]?.imageEdit).toBe(
       'id=program-lessons;type=program;path=image;base=%2Fadmin',
     );
-    expect(draft.edit.gallery).toBe('id=homepage;type=homepage;path=layout.gallery;base=%2Fadmin');
+    expect(draft.edit.gallery).toBeUndefined();
   });
 
   it('titles the page from the seo field, then the hero, then the organisation', () => {

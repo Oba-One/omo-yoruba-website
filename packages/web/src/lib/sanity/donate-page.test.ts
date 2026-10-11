@@ -83,15 +83,15 @@ describe('buildDonatePage', () => {
   it('carries the give-now facts, the Zeffy ones owed with one chip wording', () => {
     const view = buildDonatePage(seeded, options).give;
     expect(view.title).toBe('Give now');
-    expect(view.factsPending).toBe('the give-now facts');
+    expect(view.factsPending).toBe('the donation form details');
     expect(view.facts.map((fact) => [fact.label, fact.value, fact.pending])).toEqual([
-      ['Fees', undefined, 'how your Zeffy form handles this'],
-      ['Receipt', undefined, 'how your Zeffy form handles this'],
-      ['Monthly', undefined, 'how your Zeffy form handles this'],
+      ['Fees', undefined, 'how the donation form handles fees'],
+      ['Receipt', undefined, 'how the donation form handles receipts'],
+      ['Monthly', undefined, 'whether monthly giving is offered'],
       [
         'If the form fails',
         'The dialog offers contact and a mailing address instead.',
-        'how your Zeffy form handles this',
+        'how to give if the form fails',
       ],
     ]);
   });
@@ -224,7 +224,7 @@ describe('buildDonatePage', () => {
         value: 'To the extent allowed by law',
         pending: 'the tax-deductible line',
       },
-      { label: 'Receipt', value: undefined, pending: 'how your Zeffy form handles this' },
+      { label: 'Receipt', value: undefined, pending: 'how the donation form handles receipts' },
     ]);
     const renamed = withData({
       giveNow: {

@@ -1,4 +1,11 @@
-import { type ConditionalProperty, defineField, defineType, type FieldDefinition } from 'sanity';
+import {
+  ALL_FIELDS_GROUP,
+  type ConditionalProperty,
+  defineField,
+  defineType,
+  type FieldDefinition,
+} from 'sanity';
+import { fixedLayoutValue } from '../../editing-defaults';
 import type { LayoutSpec } from '../../layout-options';
 import { layoutOption } from '../objects/layoutOption';
 
@@ -22,8 +29,8 @@ export interface PageSpec {
 }
 
 /**
- * One page singleton: content fields, the header, one primary action with secondary actions
- * (the gold rule, CONTENT-MODEL principle 5), the layout options (ADR 0006) and SEO.
+ * A short everyday form, with supporting copy and publishing options under Advanced (ADR 0053).
+ * Legacy presentation and action fields stay hidden so existing drafts keep their stored shape.
  */
 export function definePage({
   name,
@@ -36,11 +43,19 @@ export function definePage({
   readOnly,
 }: PageSpec) {
   const groups = [
+    { ...ALL_FIELDS_GROUP, hidden: true },
     { name: 'content', title: 'Content', default: true },
-    ...(actions ? [{ name: 'actions', title: 'Actions' }] : []),
-    ...(layout.length > 0 ? [{ name: 'layout', title: 'Layout' }] : []),
-    { name: 'seo', title: 'Search and sharing' },
+    { name: 'advanced', title: 'Advanced' },
   ];
+  const supportingFields: Readonly<Record<string, readonly string[]>> = {
+    homepage: ['programsIntro', 'voicesIntro', 'voicesProverb'],
+    festivalPage: ['zonesIntro', 'pastYearsIntro', 'partnersIntro'],
+    galaPage: ['tiersIntro', 'sponsorIntro', 'honoreesIntro', 'pastIntro'],
+    lessonsPage: ['teacherIntro'],
+    impactPage: ['fundersIntro', 'nextYear'],
+    storyPage: ['boardIntro', 'staffIntro', 'reachUs'],
+    getInvolvedPage: ['fallback'],
+  };
   return defineType({
     name,
     title,
@@ -59,7 +74,11 @@ export function definePage({
             }),
           ]
         : []),
-      ...fields.map((field) => ({ ...field, group: field.group ?? 'content' })),
+      ...fields.map((field) => ({
+        ...field,
+        group:
+          field.group ?? (supportingFields[name]?.includes(field.name) ? 'advanced' : 'content'),
+      })),
       ...(actions
         ? [
             defineField({
@@ -67,7 +86,8 @@ export function definePage({
               title: 'Primary action',
               type: 'cta',
               description: 'The one gold button on the page.',
-              group: 'actions',
+              hidden: true,
+              readOnly: true,
             }),
             defineField({
               name: 'secondaryActions',
@@ -75,7 +95,8 @@ export function definePage({
               type: 'array',
               of: [{ type: 'cta' }],
               description: 'Outline buttons.',
-              group: 'actions',
+              hidden: true,
+              readOnly: true,
             }),
           ]
         : []),
@@ -83,19 +104,28 @@ export function definePage({
         ? [
             defineField({
               name: 'layout',
-              title: 'Layout options',
+              title: 'Sections and promotion',
               type: 'object',
-              group: 'layout',
-              options: { collapsible: false },
+              group: 'advanced',
+              options: { collapsible: true, collapsed: true },
               fields: layout.map((option) =>
                 layoutOption(option.name, option.title, option.options, option.description, {
                   heldBack: option.heldBack,
+                  fixed: fixedLayoutValue(name, option.name),
                 }),
               ),
             }),
           ]
         : []),
-      defineField({ name: 'seo', title: 'Search and sharing', type: 'seo', group: 'seo' }),
+      defineField({
+        name: 'seo',
+        title: 'Search and sharing',
+        type: 'seo',
+        group: 'advanced',
+        description:
+          'Optional. The heading and introduction already supply the search title and description.',
+        options: { collapsible: true, collapsed: true },
+      }),
     ],
     preview: { prepare: () => ({ title }) },
   });

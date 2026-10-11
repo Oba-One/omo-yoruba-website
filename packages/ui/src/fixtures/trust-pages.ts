@@ -324,13 +324,13 @@ export const GIVE_NOW = {
 
 /** The give-now facts as the seed writes them: only the Give Dialog's own fallback is ours to state. */
 export const GIVE_FACTS = [
-  { label: 'Fees', pending: owed('donatePage', 'giveNow.facts') },
-  { label: 'Receipt', pending: owed('donatePage', 'giveNow.facts') },
-  { label: 'Monthly', pending: owed('donatePage', 'giveNow.facts') },
+  { label: 'Fees', pending: owed('donatePage', 'paymentDetails.fees') },
+  { label: 'Receipt', pending: owed('donatePage', 'paymentDetails.receipt') },
+  { label: 'Monthly', pending: owed('donatePage', 'paymentDetails.monthly') },
   {
     label: 'If the form fails',
     value: 'The dialog offers contact and a mailing address instead.',
-    pending: owed('donatePage', 'giveNow.facts'),
+    pending: owed('donatePage', 'paymentDetails.fallback'),
   },
 ];
 
@@ -364,5 +364,5 @@ export const TRUST_CELLS = [
   { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' },
   { label: 'EIN', pending: owed('siteSettings', 'ein') },
   { label: 'Deductible', value: 'To the extent allowed by law' },
-  { label: 'Receipt', pending: owed('donatePage', 'giveNow.facts') },
+  { label: 'Receipt', pending: owed('donatePage', 'paymentDetails.receipt') },
 ];

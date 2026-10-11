@@ -204,12 +204,13 @@ describe('inputs that change nothing are hidden, or gone (ADR 0042)', () => {
   // one the module names; this list fails first when one is added on one side only.
   it('hides with a fixed rule only the inputs hidden-inputs.ts names', () => {
     const fixed = matching((field) => field.hidden === true);
-    expect(fixed.sort()).toEqual(['seo.ogImage', 'sourcedFigure.asOf']);
-    for (const [type, fields] of [
-      ['homepage', ['seo', 'ogImage']],
-      ['event', ['attendance', 'asOf']],
-    ] as const) {
-      expect(hiddenForGood(type, fields), fields.join('.')).toBe(true);
+    expect(fixed).toContain('person.bioFull');
+    expect(fixed).toContain('galaPage.primaryAction');
+    for (const path of fixed) {
+      const [type, ...fields] = path.split('.');
+      if (type === 'seo') fields.unshift('seo');
+      if (type === 'sourcedFigure') fields.unshift('attendance');
+      expect(hiddenForGood(type ?? '', fields), path).toBe(true);
     }
   });
 
