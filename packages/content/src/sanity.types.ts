@@ -233,7 +233,7 @@ export type OyImage = {
 export type Cta = {
   _type: "cta";
   label?: string;
-  kind?: "enquiry" | "give" | "url" | "anchor";
+  kind?: "enquiry" | "give" | "join" | "url" | "anchor";
   enquiryKind?: "sponsor" | "performer" | "table" | "member" | "volunteer" | "enrol" | "vendor" | "contact";
   href?: string;
   newTab?: boolean;
@@ -915,6 +915,7 @@ export type SiteSettings = {
   newsletterTitle?: string;
   newsletterBlurb?: string;
   zeffyEmbedUrl?: string;
+  zeffyMembershipUrl?: string;
   analyticsEnabled?: boolean;
   theme?: "adire" | "calm" | "festival";
 };
@@ -1404,7 +1405,7 @@ export type FestivalPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1412,7 +1413,7 @@ export type FestivalPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1544,7 +1545,7 @@ export type FestivalPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1552,7 +1553,7 @@ export type FestivalPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1691,7 +1692,7 @@ export type FestivalPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1699,7 +1700,7 @@ export type FestivalPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1838,7 +1839,7 @@ export type FestivalPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -1846,7 +1847,7 @@ export type FestivalPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2201,7 +2202,7 @@ export type GalaPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2209,7 +2210,7 @@ export type GalaPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2331,7 +2332,7 @@ export type GalaPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2339,7 +2340,7 @@ export type GalaPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2468,7 +2469,7 @@ export type GalaPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2476,7 +2477,7 @@ export type GalaPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2605,7 +2606,7 @@ export type GalaPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2613,7 +2614,7 @@ export type GalaPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2739,7 +2740,7 @@ export type GalleryPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2747,7 +2748,7 @@ export type GalleryPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -2879,7 +2880,7 @@ export type HomepageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -2928,7 +2929,7 @@ export type HomepageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -2994,7 +2995,7 @@ export type HomepageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3048,7 +3049,7 @@ export type HomepageQueryResult = {
     } | null;
     primaryAction: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3056,7 +3057,7 @@ export type HomepageQueryResult = {
     secondaryActions: Array<{
       _key: string;
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3102,7 +3103,7 @@ export type HomepageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3141,7 +3142,7 @@ export type HomepageQueryResult = {
       bullets: Array<string> | null;
       action: {
         label: string | null;
-        kind: "anchor" | "enquiry" | "give" | "url" | null;
+        kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
         enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
         href: string | null;
         newTab: boolean | null;
@@ -3185,7 +3186,7 @@ export type ProgramsPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3193,7 +3194,7 @@ export type ProgramsPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3229,7 +3230,7 @@ export type ProgramsPageQueryResult = {
       }> | null;
       action: {
         label: string | null;
-        kind: "anchor" | "enquiry" | "give" | "url" | null;
+        kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
         enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
         href: string | null;
         newTab: boolean | null;
@@ -3276,7 +3277,7 @@ export type ProgramsPageQueryResult = {
     page: "collective" | "lessons" | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3307,7 +3308,7 @@ export type LessonsPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3315,7 +3316,7 @@ export type LessonsPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3392,7 +3393,7 @@ export type CollectivePageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3400,7 +3401,7 @@ export type CollectivePageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3477,7 +3478,7 @@ export type CollectivePageQueryResult = {
 
 // Source: src/queries/site.ts
 // Variable: siteSettingsQuery
-// Query: *[_id == "siteSettings"][0]{  orgName,  ein,  address,  phone,  generalEmail,  contacts[]{role, name, email, phone, responds},  socials[]{network, url},  newsletterTitle,  newsletterBlurb,  zeffyEmbedUrl,  analyticsEnabled,  theme}
+// Query: *[_id == "siteSettings"][0]{  orgName,  ein,  address,  phone,  generalEmail,  contacts[]{role, name, email, phone, responds},  socials[]{network, url},  newsletterTitle,  newsletterBlurb,  zeffyEmbedUrl,  zeffyMembershipUrl,  analyticsEnabled,  theme}
 export type SiteSettingsQueryResult = {
   orgName: null;
   ein: null;
@@ -3489,6 +3490,7 @@ export type SiteSettingsQueryResult = {
   newsletterTitle: null;
   newsletterBlurb: null;
   zeffyEmbedUrl: null;
+  zeffyMembershipUrl: null;
   analyticsEnabled: null;
   theme: null;
 } | {
@@ -3511,6 +3513,7 @@ export type SiteSettingsQueryResult = {
   newsletterTitle: string | null;
   newsletterBlurb: string | null;
   zeffyEmbedUrl: string | null;
+  zeffyMembershipUrl: string | null;
   analyticsEnabled: boolean | null;
   theme: "adire" | "calm" | "festival" | null;
 } | null;
@@ -3553,7 +3556,7 @@ export type GetInvolvedPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3561,7 +3564,7 @@ export type GetInvolvedPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3574,7 +3577,7 @@ export type GetInvolvedPageQueryResult = {
     bullets: Array<string> | null;
     action: {
       label: string | null;
-      kind: "anchor" | "enquiry" | "give" | "url" | null;
+      kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
       enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
       href: string | null;
       newTab: boolean | null;
@@ -3638,7 +3641,7 @@ export type ImpactPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3646,7 +3649,7 @@ export type ImpactPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3815,7 +3818,7 @@ export type StoryPageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3823,7 +3826,7 @@ export type StoryPageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3925,7 +3928,7 @@ export type DonatePageQueryResult = {
   } | null;
   primaryAction: {
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3933,7 +3936,7 @@ export type DonatePageQueryResult = {
   secondaryActions: Array<{
     _key: string;
     label: string | null;
-    kind: "anchor" | "enquiry" | "give" | "url" | null;
+    kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
     enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
     href: string | null;
     newTab: boolean | null;
@@ -3958,7 +3961,7 @@ export type DonatePageQueryResult = {
       blurb: string | null;
       action: {
         label: string | null;
-        kind: "anchor" | "enquiry" | "give" | "url" | null;
+        kind: "anchor" | "enquiry" | "give" | "join" | "url" | null;
         enquiryKind: "contact" | "enrol" | "member" | "performer" | "sponsor" | "table" | "vendor" | "volunteer" | null;
         href: string | null;
         newTab: boolean | null;
@@ -4014,7 +4017,7 @@ declare global {
     "*[_type == \"programsPage\" && _id == \"programsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  takePart[]{_key, way, chip, title, line, label},\n  kidsStem{\n    title,\n    blurb,\n    subprograms[]{\n      _key, name, blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      facts[]{_key, label, value, note},\n      action{label, kind, enquiryKind, href, newTab}\n    }\n  },\n  culturalExchange{\n    title, blurb, cadence, eligibility, howToJoin,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  yearStrip[]{_key, when, kind, note, \"program\": program->name},\n  \"programs\": *[_type == \"program\"] | order(order asc){\n    _id, name, \"slug\": slug.current, blurb,\n    image{_type, alt, caption, hotspot, crop, asset},\n    cadence, ages, page,\n    action{label, kind, enquiryKind, href, newTab}\n  },\n  layout{cards, inline, yearstrip},\n  seo{title, description}\n}": ProgramsPageQueryResult;
     "*[_type == \"lessonsPage\" && _id == \"lessonsPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  glance[]{_key, label, value, note},\n  \"teacher\": teacher->{\n    _id, name, role, bioShort,\n    portrait{_type, alt, caption, hotspot, crop, asset}\n  },\n  teacherIntro,\n  learn,\n  levels[]{_key, name, blurb},\n  oneLesson[]{_key, step, title, detail},\n  faq[]{_key, question, answer},\n  takePart[]{_key, way, chip, title, line, label},\n  \"teacherEmail\": *[_id == \"siteSettings\"][0].contacts[role == \"teacher\"][0].email,\n  layout{lesson, portraits, faq},\n  seo{title, description}\n}": LessonsPageQueryResult;
     "*[_type == \"collectivePage\" && _id == \"collectivePage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  argument,\n  \"photo\": *[_type == \"program\" && page == \"collective\"] | order(order asc)[0]{\n    _id,\n    name,\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  \"initiatives\": initiatives[_type != \"reference\" || defined(@->)]{\n    _key,\n    ...coalesce(@->, @){\n      name,\n      memberLed,\n      status,\n      statusLine,\n      blurb,\n      image{_type, alt, caption, hotspot, crop, asset},\n      serves,\n      since,\n      next\n    }\n  },\n  \"voice\": voice->{_id, quote, name, relation, permissionToName},\n  \"events\": *[_type == \"event\" && kind == \"collective\" && defined(start)] | order(start asc){\n    _id,\n    kind,\n    title,\n    start,\n    end,\n    summary,\n    venue{name}\n  },\n  takePart[]{_key, way, chip, title, line, label},\n  layout{initiatives, green, status, events},\n  seo{title, description}\n}": CollectivePageQueryResult;
-    "*[_id == \"siteSettings\"][0]{\n  orgName,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
+    "*[_id == \"siteSettings\"][0]{\n  orgName,\n  ein,\n  address,\n  phone,\n  generalEmail,\n  contacts[]{role, name, email, phone, responds},\n  socials[]{network, url},\n  newsletterTitle,\n  newsletterBlurb,\n  zeffyEmbedUrl,\n  zeffyMembershipUrl,\n  analyticsEnabled,\n  theme\n}": SiteSettingsQueryResult;
     "*[_id == \"siteSettings\"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}": RoutingQueryResult;
     "*[_type == \"subscriber\" && email == $email][0]._id": SubscriberByEmailQueryResult;
     "*[_type == \"getInvolvedPage\" && _id == \"getInvolvedPage\"][0]{\n  header{kicker{yo, en}, title, line},\n  primaryAction{label, kind, enquiryKind, href, newTab},\n  secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},\n  \"doors\": doors[]->{\n    _id, key, title, blurb, bullets,\n    action{label, kind, enquiryKind, href, newTab},\n    image{_type, alt, caption, hotspot, crop, asset}\n  },\n  hometownAssociations{\n    title,\n    prose,\n    \"stat\": stat->{_id, value, label}\n  },\n  \"associations\": *[_type == \"hometownAssociation\"] | order(name asc){_id, name, url},\n  fallback{title, blurb},\n  \"settings\": *[_type == \"siteSettings\" && _id == \"siteSettings\"][0]{\n    generalEmail,\n    phone,\n    \"general\": contacts[role == \"general\"][0]{name, responds}\n  },\n  layout{doors, hta},\n  seo{title, description}\n}": GetInvolvedPageQueryResult;

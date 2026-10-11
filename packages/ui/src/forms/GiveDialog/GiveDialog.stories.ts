@@ -80,7 +80,7 @@ export const OpensFromTrigger: Story = {
   args: { open: false, timeout: 300 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const root = canvasElement.querySelector<HTMLElement>('oy-give-dialog');
+    const root = canvasElement.querySelector<HTMLElement>('oy-zeffy-dialog');
     await waitFor(() => expect(root?.dataset.ready).toBe('true'), { timeout: 5000 });
     const trigger = document.createElement('a');
     trigger.href = '/donate#give';
@@ -104,7 +104,7 @@ export const FallsBackWithoutEmbed: Story = {
   args: { open: false, timeout: 300, slots: {} },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const root = canvasElement.querySelector<HTMLElement>('oy-give-dialog');
+    const root = canvasElement.querySelector<HTMLElement>('oy-zeffy-dialog');
     await waitFor(() => expect(root?.dataset.ready).toBe('true'), { timeout: 5000 });
     const trigger = document.createElement('a');
     trigger.href = '/donate#give';
@@ -127,7 +127,7 @@ export const OpensAfterReconnection: Story = {
   args: { open: false, timeout: 300 },
   play: async (context) => {
     const { canvasElement } = context;
-    const root = canvasElement.querySelector<HTMLElement>('oy-give-dialog');
+    const root = canvasElement.querySelector<HTMLElement>('oy-zeffy-dialog');
     await waitFor(() => expect(root?.dataset.ready).toBe('true'), { timeout: 5000 });
     let prevented: boolean | undefined;
     document.addEventListener(

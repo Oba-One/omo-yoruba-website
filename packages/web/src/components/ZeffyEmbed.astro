@@ -11,22 +11,19 @@
  */
 import { siteSettingsQuery } from '@oy/content/queries';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
-import { zeffyFrameSrc } from '@oy/ui/forms/GiveDialog/zeffy.ts';
 import { framableSrc } from '../lib/csp';
 import { loadQuery } from '../lib/sanity/load-query';
+import ZeffyFrame from './ZeffyFrame.astro';
 
 const { data } = await loadQuery(siteSettingsQuery, {}, { cookies: Astro.cookies });
 // Only an address the policy frames becomes an iframe (a javascript: URL written through the API
 // would run in the site's origin); anything else answers Pending, as an empty field does.
 const form = framableSrc(data?.zeffyEmbedUrl);
-const src = form ? zeffyFrameSrc(form) : undefined;
 ---
 
 {
-  src ? (
-    <template data-zeffy>
-      <iframe src={src} title="Zeffy donation form" allow="payment" loading="lazy"></iframe>
-    </template>
+  form ? (
+    <ZeffyFrame address={form} form="give" title="Zeffy donation form" />
   ) : (
     <Pending what="the Zeffy link" />
   )
