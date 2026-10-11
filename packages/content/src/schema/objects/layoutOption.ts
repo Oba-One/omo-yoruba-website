@@ -17,7 +17,7 @@ export function layoutOption(
   title: string,
   options: readonly LayoutValue[],
   description?: string,
-  { heldBack = false }: { heldBack?: boolean } = {},
+  { heldBack = false, fixed }: { heldBack?: boolean; fixed?: string } = {},
 ) {
   const list = options.map((option) =>
     typeof option === 'string' ? { title: valueTitle(option), value: option } : option,
@@ -32,5 +32,7 @@ export function layoutOption(
     options: { list, layout: 'radio', direction: 'horizontal' },
     initialValue: list[0]?.value,
     ...(heldBack ? { readOnly: forMembers } : {}),
+    // Stored values remain compatible; the site uses its fixed presentation choice.
+    ...(fixed !== undefined ? { hidden: true, readOnly: true } : {}),
   });
 }

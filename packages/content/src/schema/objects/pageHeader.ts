@@ -7,10 +7,18 @@ export const pageHeader = defineType({
   name: 'pageHeader',
   title: 'Page header',
   type: 'object',
+  fieldsets: [
+    {
+      name: 'identity',
+      title: 'Heading and kicker',
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
-    defineField({ name: 'kicker', title: 'Kicker', type: 'bilingual' }),
+    defineField({ name: 'kicker', title: 'Kicker', type: 'bilingual', fieldset: 'identity' }),
     defineField({
       name: 'title',
+      fieldset: 'identity',
       title: 'Heading',
       type: 'string',
       validation: voice.requiredHeading,

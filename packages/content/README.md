@@ -15,6 +15,8 @@ The site and the component library import the plain modules by subpath (`@oy/con
   `sanity.cli.ts` holds the schema extraction and TypeGen settings (ADR 0017).
 - `src/queries/`: every query the site runs, each page in one read, typed by TypeGen.
 - `src/pending.ts`: the Pending registry (ADR 0014) behind the site's chips and the Studio's To do.
+- `src/editing-defaults.ts`: settled presentation, ordinary page actions and take-part
+  wording (ADR 0053). `src/known-facts.ts` names the Lessons and Donate detail inputs.
 - `src/enquiry-kinds.ts`: the one spec of the eight enquiry kinds and the newsletter (ADR 0007);
   `src/enquiry-zod.ts` derives the action schemas from it.
 - `src/routes.ts`: the public routes and the types each reads, the one map behind the Presentation

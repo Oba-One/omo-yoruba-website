@@ -12,6 +12,8 @@
     "./queries": "./src/queries/index.ts",
     "./images": "./src/images.ts",
     "./layout": "./src/layout.ts",
+    "./editing-defaults": "./src/editing-defaults.ts",
+    "./known-facts": "./src/known-facts.ts",
     "./lead-event": "./src/lead-event.ts",
     "./stega": "./src/stega.ts",
     "./api-version": "./src/api-version.ts",

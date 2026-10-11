@@ -6,6 +6,7 @@ import type {
 } from 'sanity';
 import { SINGLETON_NAMES } from '../schema/singletons';
 import { ADMIN_ONLY_TYPES, ADMIN_TOOLS, HELD_BACK_PAGES, isAdministrator } from './roles';
+import { EDITION_CONTENT_TYPES } from './templates';
 
 /** Types the Studio never creates: singletons (they exist), and the documents the site or a function writes. */
 export const NO_CREATE = new Set<string>([
@@ -22,7 +23,12 @@ export const STUDIO_HIDDEN_TYPES = NO_CREATE;
 const NO_DELETE = new Set<string>(SINGLETON_NAMES);
 
 export const newDocumentOptions: NewDocumentOptionsResolver = (prev) =>
-  prev.filter((item) => !NO_CREATE.has(item.templateId));
+  prev.filter(
+    (item) =>
+      !NO_CREATE.has(item.templateId) &&
+      (!EDITION_CONTENT_TYPES.some((type) => item.templateId === `${type}-for-event`) ||
+        typeof item.parameters?.eventId === 'string'),
+  );
 
 /**
  * Sanity's custom roles need an Enterprise plan, so members are held back by the sidebar, read-only

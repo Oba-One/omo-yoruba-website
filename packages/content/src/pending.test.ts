@@ -266,7 +266,7 @@ describe('the inline programs on the Programs hub', () => {
 
 describe('the Lessons page', () => {
   it('names a glance fact, the teacher and her email the way the page shows them, and no voices', () => {
-    expect(pendingWhat('lessonsPage', 'glance')).toBe('a glance fact');
+    expect(pendingWhat('lessonsPage', 'lessonDetails.ages')).toBe('the ages lessons serve');
     expect(pendingWhat('lessonsPage', 'teacher')).toBe("the teacher's name and bio");
     const email = PENDING.find(
       (row) => row.type === 'siteSettings' && row.what === "the teacher's email",
@@ -301,7 +301,7 @@ describe("the Collective's one voice", () => {
 
 describe('the Lessons page, beyond its sections', () => {
   it("asks for the glance when the page holds none, and for a linked teacher's short bio", () => {
-    expect(pendingWhat('lessonsPage', 'glance[]')).toBe('the facts at a glance');
+    expect(pendingWhat('lessonsPage', 'lessonDetails.format')).toBe('the lesson format');
     expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
     const bio = PENDING.find((row) => row.type === 'person' && row.fields?.includes('bioShort'));
     // Only the person the Lessons page links is listed, never every person without a bio.
@@ -340,7 +340,7 @@ describe('the take-part rows every page with a band registers', () => {
       'collectivePage',
     ]) {
       expect(pendingWhat(type, 'takePart[]'), type).toBe('the ways in');
-      expect(pendingWhat(type, 'takePart'), type).toBe('a way in, its title or its button label');
+      expect(pendingWhat(type, 'takePart'), type).toBe('which way to take part');
     }
   });
 });
@@ -419,12 +419,11 @@ describe('Get Involved', () => {
 });
 
 describe('Impact', () => {
-  it('names the headline figures, the six cells and the photograph beside How we work', () => {
+  it('names four headline figures and the photograph, with no retired six-cell task', () => {
     expect(pendingWhat('impactPage', 'stats[]')).toBe('the headline figures');
     expect(pendingWhat('stat', 'source')).toBe('a source line under the figure');
     const six = PENDING.find((row) => row.what === IMPACT_SIX_PENDING);
-    // Listed only while the page asks for six.
-    expect(six?.condition).toContain('layout.stats == "six"');
+    expect(six).toBeUndefined();
     expect(pendingWhat('impactPage', 'howWeWorkImage')).toBe('a photograph of the work');
   });
 
@@ -545,7 +544,9 @@ describe('the gallery', () => {
 
 describe('Donate', () => {
   it("names the Zeffy form's facts, the doors, the tax line and a giving level's missing line and source", () => {
-    expect(pendingWhat('donatePage', 'giveNow.facts')).toBe('how your Zeffy form handles this');
+    expect(pendingWhat('donatePage', 'paymentDetails.receipt')).toBe(
+      'how the donation form handles receipts',
+    );
     expect(pendingWhat('donatePage', 'largerScale.doors[]')).toBe(
       'the ways to get involved for organizations',
     );

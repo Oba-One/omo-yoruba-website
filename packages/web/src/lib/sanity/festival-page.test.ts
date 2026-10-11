@@ -131,7 +131,7 @@ describe('buildFestivalPage', () => {
       options,
     );
     expect(view.layout).toEqual({
-      phead: 'slim',
+      phead: 'photo',
       zones: 'mosaic',
       schedule: 'shown',
       labels: 'column',
@@ -302,7 +302,7 @@ describe('buildFestivalPage', () => {
   it('writes edit attributes only in draft mode', () => {
     expect(buildFestivalPage(seeded, options).edit.phead).toBeUndefined();
     const draft = buildFestivalPage(seeded, { ...options, draft: true });
-    expect(draft.edit.phead).toContain('path=layout.phead');
+    expect(draft.edit.phead).toBeUndefined();
     expect(draft.header.imageEdit).toContain('path=header.image');
     expect(draft.figure.edit).toContain('path=whatItIsImage');
   });
@@ -316,7 +316,7 @@ describe('buildFestivalPage', () => {
       vendorTerms: null,
       vendorTermsPending: 'fees, deadline and permit rules',
       pending: 'the ways in',
-      rowPending: 'a way in, its title or its button label',
+      rowPending: 'which way to take part',
     });
     const withTerms = {
       ...seeded,

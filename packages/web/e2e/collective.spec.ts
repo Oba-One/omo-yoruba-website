@@ -84,7 +84,7 @@ test.describe('the Yoruba Cultural Collective page', () => {
     expect(await greenOutsideMain(page, greens)).toEqual([]);
   });
 
-  test("heads the page with the Studio's heading and actions, the first gold, or the heading's chip", async ({
+  test('keeps its default actions with either the Studio heading or its Pending chip', async ({
     page,
   }) => {
     await page.goto('/programs/cultural-collective');
@@ -94,15 +94,17 @@ test.describe('the Yoruba Cultural Collective page', () => {
       await expect(header.locator('h1')).toContainText(
         pendingWhat('collectivePage', 'header.title') ?? '',
       );
-      await expect(actions).toHaveCount(0);
-      return;
+    } else {
+      await expect(header.locator('h1')).toHaveText('Yoruba Cultural Collective');
     }
-    // As the seed writes it: "Partner with the Collective" in gold, "See what is on" to the events.
-    await expect(header.locator('h1')).toHaveText('Yoruba Cultural Collective');
-    await expect(actions.first()).toHaveClass(/oy-btn--primary/);
+    // Ordinary actions come from code, including when the page's editorial content is owed.
     const partner = actions.first();
-    if (await partner.getAttribute('data-enquiry')) await expectEnquiryRoundTrip(page, partner);
+    await expect(partner).toHaveClass(/oy-btn--primary/);
+    await expect(partner).toHaveAccessibleName('Partner with the Collective');
+    await expect(partner).toHaveAttribute('data-enquiry', 'sponsor');
+    await expectEnquiryRoundTrip(page, partner);
     const events = (await page.locator('body').getAttribute('data-events')) !== 'hidden';
+    await expect(actions).toHaveCount(events ? 2 : 1);
     await expect(header.locator('a[href="#events"]')).toHaveCount(events ? 1 : 0);
   });
 

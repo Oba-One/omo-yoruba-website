@@ -1,3 +1,4 @@
+import { fixedLayoutValue, PAGE_ACTIONS } from './editing-defaults';
 import { EDITION_FIELDS, editionFieldShown } from './edition-fields';
 
 /**
@@ -30,6 +31,13 @@ const PHOTO_CREDIT_FIELDS: ReadonlySet<string> = new Set([
  */
 export function hiddenForGood(documentType: string, fields: readonly string[]): boolean {
   const [first, second] = fields;
+  if (documentType === 'person' && first === 'bioFull') return true;
+  if (documentType === 'lessonsPage' && first === 'glance') return true;
+  if (documentType === 'donatePage' && first === 'giveNow' && second === 'facts') return true;
+  if (first === 'layout' && second && fixedLayoutValue(documentType, second) !== undefined)
+    return true;
+  if (PAGE_ACTIONS[documentType] && (first === 'primaryAction' || first === 'secondaryActions'))
+    return true;
   if (fields.some((field, at) => field === 'ogImage' && fields[at - 1] === 'seo')) return true;
   if (first === 'header' && second === 'image' && !headerPhotoShown(documentType)) return true;
   // Both of the rest sit inside an object, never at the top of a document: a sourced figure's

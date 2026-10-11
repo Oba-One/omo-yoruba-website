@@ -280,6 +280,13 @@ export const ticketTier = defineType({
   name: 'ticketTier',
   title: 'Ticket tier',
   type: 'document',
+  fieldsets: [
+    {
+      name: 'options',
+      title: 'Buying and display options',
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
     galaEdition(
       'The Gala edition this tier sells seats for.',
@@ -296,6 +303,7 @@ export const ticketTier = defineType({
     lines('includes', 'Includes'),
     defineField({
       name: 'variant',
+      fieldset: 'options',
       title: 'How it is bought',
       type: 'string',
       options: {
@@ -307,8 +315,14 @@ export const ticketTier = defineType({
       },
       initialValue: 'buyNow',
     }),
-    defineField({ name: 'featured', title: 'Featured', type: 'boolean', initialValue: false }),
-    order,
+    defineField({
+      name: 'featured',
+      title: 'Featured',
+      type: 'boolean',
+      initialValue: false,
+      fieldset: 'options',
+    }),
+    { ...order, fieldset: 'options' },
   ],
   orderings: [{ title: 'Order', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
   preview: {
@@ -513,7 +527,13 @@ export const person = defineType({
       description: 'Optional; the card without a portrait is a real design.',
     }),
     text('bioShort', 'Short bio', 3),
-    defineField({ name: 'bioFull', title: 'Full bio', type: 'blockContent' }),
+    defineField({
+      name: 'bioFull',
+      title: 'Full bio',
+      type: 'blockContent',
+      hidden: true,
+      readOnly: true,
+    }),
     order,
   ],
   orderings: [
@@ -637,23 +657,6 @@ export const album = defineType({
       description:
         "The edition the photographs come from: its year dates the album, the album page links to the edition's page, and the edition's page shows the first album that names it under past years.",
     }),
-    defineField({ name: 'cover', title: 'Cover', type: 'oyImage' }),
-    defineField({
-      name: 'photos',
-      title: 'Photographs',
-      type: 'array',
-      of: [{ type: 'oyImage' }],
-      description:
-        "In the order the album page and the photo viewer show them; the first is the gallery tile's photograph when no cover is chosen. A shared link to a photograph keeps working while the photograph stays in the album. The album's credit applies to every photograph unless one sets its own.",
-    }),
-    defineField({
-      name: 'videos',
-      title: 'Videos',
-      type: 'array',
-      of: [{ type: 'video' }],
-      description:
-        "Videos from YouTube, in the order the album page shows them, above the photographs. The first one also shows on the edition's page under past years. Nothing is requested from YouTube until a visitor presses play.",
-    }),
     defineField({
       name: 'credit',
       title: 'Photographer',
@@ -672,6 +675,23 @@ export const album = defineType({
       2,
       'Anything specific to this album about faces and permission.',
     ),
+    defineField({ name: 'cover', title: 'Cover', type: 'oyImage' }),
+    defineField({
+      name: 'photos',
+      title: 'Photographs',
+      type: 'array',
+      of: [{ type: 'oyImage' }],
+      description:
+        "In the order the album page and the photo viewer show them; the first is the gallery tile's photograph when no cover is chosen. A shared link to a photograph keeps working while the photograph stays in the album. The album's credit applies to every photograph unless one sets its own.",
+    }),
+    defineField({
+      name: 'videos',
+      title: 'Videos',
+      type: 'array',
+      of: [{ type: 'video' }],
+      description:
+        "Videos from YouTube, in the order the album page shows them, above the photographs. The first one also shows on the edition's page under past years. Nothing is requested from YouTube until a visitor presses play.",
+    }),
   ],
   orderings: [
     { title: 'Newest first', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] },

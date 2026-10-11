@@ -152,7 +152,7 @@ describe('buildStoryPage', () => {
     });
   });
 
-  it('draws the board with portraits by the option and the full bio by `bios`', () => {
+  it('draws portraits by the editorial option and keeps biographies short', () => {
     const board = [
       member('person-a', {
         bioShort: '[ A short bio ]',
@@ -175,7 +175,7 @@ describe('buildStoryPage', () => {
     expect(hidden.people.every((person) => person.variant === 'nophoto' && !person.image)).toBe(
       true,
     );
-    expect(hidden.full).toBe(true);
+    expect(hidden.full).toBe(false);
   });
 
   it('carries Reach us from the settings, the urgent line only with a phone', () => {
@@ -212,7 +212,7 @@ describe('buildStoryPage', () => {
       ...options,
       draft: true,
     });
-    expect(draft.edit.bios).toContain('path=layout.bios');
+    expect(draft.edit.bios).toBeUndefined();
     expect(draft.board.people[0]?.edit).toContain('id=person-a;type=person');
     expect(draft.founding.photoEdit).toContain('path=foundingImage');
   });

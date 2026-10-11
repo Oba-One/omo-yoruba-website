@@ -136,7 +136,7 @@ export function buildAlbumPage(
       captions,
       priority: !openKey && !stillFirst,
       pending: pendingWhat('album', 'photos[]') ?? 'the photographs',
-      edit: edit('layout.captions'),
+      edit: undefined,
     },
     lightbox: {
       id: ALBUM_LIGHTBOX_ID,

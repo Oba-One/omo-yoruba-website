@@ -10,6 +10,8 @@
  * the head's title and description cleaned of stega, and the `data-sanity` attributes for
  * click-to-edit in draft mode. The parts every page singleton shares come from `pageSkeleton`.
  */
+
+import { GALA_INTROS } from '@oy/content/editing-defaults';
 import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { galaPageQuery } from '@oy/content/queries';
@@ -172,7 +174,12 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       },
     },
     seats: {
-      intro: data?.tiersIntro ?? undefined,
+      intro:
+        cleanText(data?.tiersIntro) && cleanText(data?.tiersIntro) !== GALA_INTROS.tiers
+          ? (data?.tiersIntro ?? undefined)
+          : tickets?.dialog
+            ? GALA_INTROS.tiers
+            : undefined,
       tiers: (edition?.tiers ?? [])
         .filter((tier) => tier !== null)
         .map((tier) => ({ ...tier, edit: edit('name', tier._id, 'ticketTier') })),
@@ -191,7 +198,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       includesPending: pendingWhat('ticketTier', 'includes[]') ?? 'what the ticket includes',
     },
     sponsor: {
-      intro: data?.sponsorIntro ?? undefined,
+      intro: data?.sponsorIntro ?? GALA_INTROS.sponsor,
       // A level tied to an edition shows only with that edition; an untied level every year.
       levels: (data?.sponsorLevels ?? [])
         .filter((level) => level !== null)
@@ -204,7 +211,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
     },
     honorees: {
       shown: layout.awards === 'shown',
-      intro: data?.honoreesIntro ?? undefined,
+      intro: data?.honoreesIntro ?? GALA_INTROS.honorees,
       items: honoreeCards(data?.honorees, editions, edition).map((card) => ({
         ...card,
         image: resolveImage(imageSet, card.image, { width: 680 }),

@@ -30,15 +30,31 @@ one of the lists beside it for its programs, ways to get involved or partners.
 
 Choose **Programs page** to edit the page's text, or **Programs** to edit its list.
 
+Start in **Content** for the copy, photographs and lists you change regularly.
+**Advanced** holds supporting introductions, search and sharing overrides, and
+section or promotion switches. Heading and kicker fields are collapsed in the
+header. Layout styles and ordinary page buttons are supplied by the website.
+
+On the Gala page, the header photograph and evening description are in Content.
+Dates, venue and the ticket form belong to its edition. Supporting introductions
+are optional overrides in Advanced.
+
+For a take-part row, choose its **Way in** and write its descriptive line. The
+website supplies the title and button wording. Open **Custom wording** only to
+change those words. Lessons and Donate have named detail inputs: enter confirmed
+values and leave anything unknown empty. Additional notes are optional.
+
 ## Add an event
 
 1. Open **Events**. For the festival or Gala, choose its name, then **Editions**.
    For the Collective, choose **Yoruba Cultural Collective events**.
 2. Start a new item. Add the title, dates, venue and summary. Festival and Gala
    editions also need an **Edition year**. Times are in Los Angeles time.
-3. Add confirmed details in the other tabs. The Gala's ticket tiers, sponsor
-   levels and honorees have their own lists: select the matching **Edition**
-   on each item.
+3. Open **Edition details** to edit an existing festival or Gala edition. Its
+   **Albums** list shows photographs and videos for that edition. A Gala edition
+   also has **Ticket tiers** and **Honorees**. New items in these lists already
+   name the correct edition; check it before publishing. Sponsor levels remain
+   in their own list beside Editions.
 4. Keep the event as a draft until its agreed announcement day, then **Publish**.
    Publishing is manual; it is not scheduled for you.
 
@@ -64,13 +80,16 @@ The tabs group an edition's details. Start with its title and year.
    or first photograph shows under the play mark. Videos appear above the
    photographs, and the first one also appears on the event's page. Nothing
    loads from YouTube until a visitor presses play.
-5. Choose the **Photographer**. Tick **Credit confirmed** only once the owner
+5. At the top of the album, choose the **Photographer**. Tick **Credit confirmed** only once the owner
    confirms the credit. Add a **Consent note** for permission specific to this
    album. Check it, then **Publish**.
 
 <img src="screenshots/member-guide/album-controls.jpg" alt="The album's Add item button, Photographer, Credit confirmed and Consent note" width="630" height="552" loading="lazy" />
 
-Add item sits below the photographs. The credit and permission fields follow it.
+Add item sits below the photographs. The current form puts album credit and
+permission before the photographs; this screenshot shows the earlier order.
+Open **Different credit for this photograph** only when one photograph needs
+an exception to the album's credit.
 
 Use only photographs the organization has permission to publish, including for
 children shown. If unsure, keep a draft and ask. An album needs a photograph to

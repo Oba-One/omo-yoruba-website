@@ -29,9 +29,6 @@ const pending = (field: string) => pendingWhat('donatePage', field) ?? 'this par
 const GIVE_NOW_TITLE = 'Give now';
 const LARGER_SCALE_TITLE = 'Giving at a larger scale';
 
-/** The label of the give-now fact the trust block's Receipt cell reads (spec Q14). */
-const RECEIPT_LABEL = 'receipt';
-
 /** The box under the trust block: its promise of a source line holds only while Impact shows them. */
 const IMPACT_HANDOFF = 'What your gift has built so far';
 
@@ -45,8 +42,8 @@ export function buildDonatePage(data: DonatePageData | null, options: BuildOptio
   const ein = cleanText(settings?.ein);
   const orgName = cleanText(settings?.orgName);
   const address = oneLine(settings?.address);
-  const giveFacts = glanceFacts('donatePage', 'giveNow.facts', data?.giveNow?.facts);
-  const receipt = giveFacts.find((item) => cleanText(item.label)?.toLowerCase() === RECEIPT_LABEL);
+  const giveFacts = glanceFacts('donatePage', 'paymentDetails', data?.giveNow?.facts);
+  const receipt = giveFacts.find((item) => item.key === 'receipt');
   const doors = (data?.largerScale?.doors ?? []).filter(present);
 
   // What a way to give carries from the settings (ADR 0035): its sentence, and the chip while the settings
@@ -74,7 +71,7 @@ export function buildDonatePage(data: DonatePageData | null, options: BuildOptio
       title: textOr(data?.giveNow?.title, GIVE_NOW_TITLE),
       blurb: data?.giveNow?.blurb ?? undefined,
       facts: giveFacts,
-      factsPending: pending('giveNow.facts[]'),
+      factsPending: 'the donation form details',
     },
     larger: {
       title: textOr(data?.largerScale?.title, LARGER_SCALE_TITLE),

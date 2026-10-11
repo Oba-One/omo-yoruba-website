@@ -5,7 +5,10 @@
  * every layout option, the glance facts a singleton keeps as fact rows, and past years (the newest past
  * edition of a kind with photographs, ADR 0024). Each builder adds what only its page has.
  */
-import { withLayoutDefaults } from '@oy/content/layout';
+
+import { PAGE_ACTIONS, takePartWords } from '@oy/content/editing-defaults';
+import { LESSON_FACTS, PAYMENT_FACTS } from '@oy/content/known-facts';
+import { fixedLayoutValue, withLayoutDefaults } from '@oy/content/layout';
 import { type LeadCandidate, type LeadKind, pastEdition } from '@oy/content/lead-event';
 import { ALBUM_CREDIT_PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { ActionLike } from '@oy/ui/core/ActionButton/action.ts';
@@ -37,6 +40,7 @@ export interface PageSingletonLike {
         _key: string;
         way?: string | null;
         title?: string | null;
+        chip?: string | null;
         line?: string | null;
         label?: string | null;
       } | null)[]
@@ -53,6 +57,7 @@ export const TAX_STATUS_CELL = { label: 'Tax status', value: '501(c)(3)', note: 
 
 /** One cell of the glance strip, as `GlanceStrip` takes it. */
 export interface GlanceFactView {
+  key?: string;
   label: string;
   value?: string;
   note?: string;
@@ -94,21 +99,37 @@ export function pageSkeleton<L extends Record<string, string>>(
       image: resolveImage(options.imageSet, header?.image, { width: 1440 }),
       imageEdit: edit('header.image'),
       // The first is the page's gold action, the second an outline.
-      actions: [data?.primaryAction, ...(data?.secondaryActions ?? [])].filter(present).slice(0, 2),
+      actions: [
+        ...(PAGE_ACTIONS[type] ??
+          [data?.primaryAction, ...(data?.secondaryActions ?? [])].filter(present).slice(0, 2)),
+      ],
     },
     takePart: {
-      rows: rows.map((row) => ({ ...row, edit: edit(`takePart[_key=="${row._key}"]`) })),
+      rows: rows.map((row) => {
+        const defaults = takePartWords(type, cleanText(row.way));
+        return {
+          ...row,
+          title: cleanText(row.title) ? row.title : defaults?.title,
+          label: cleanText(row.label) ? row.label : defaults?.label,
+          chip: cleanText(row.chip) ? row.chip : defaults?.chip,
+          edit: edit(`takePart[_key=="${row._key}"]`),
+        };
+      }),
       pending: pendingWhat(type, 'takePart[]') ?? 'the ways in',
       rowPending: pendingWhat(type, 'takePart') ?? 'a way in, its title or its button label',
     },
     // One attribute per option, so click-to-edit reaches each option from the block it draws.
     layoutEdit: Object.fromEntries(
-      Object.keys(layout).map((name) => [name, edit(`layout.${name}`)]),
+      Object.keys(layout).map((name) => [
+        name,
+        fixedLayoutValue(type, name) === undefined ? edit(`layout.${name}`) : undefined,
+      ]),
     ) as Record<keyof L, string | undefined>,
   };
 }
 
 interface FactLike {
+  _key?: string;
   label?: string | null;
   value?: string | null;
   note?: string | null;
@@ -124,12 +145,20 @@ export function glanceFacts(
   facts: readonly (FactLike | null)[] | null | undefined,
 ): GlanceFactView[] {
   const pending = pendingWhat(type, field) ?? 'a glance fact';
-  return (facts ?? []).filter(present).map((fact) => ({
-    label: fact.label ?? '',
-    value: fact.value ?? undefined,
-    note: fact.note ?? undefined,
-    pending,
-  }));
+  const spec =
+    field === 'lessonDetails' ? LESSON_FACTS : field === 'paymentDetails' ? PAYMENT_FACTS : [];
+  return (facts ?? []).filter(present).map((fact) => {
+    const known =
+      spec.find((item) => item.name === fact._key) ??
+      spec.find((item) => item.label.toLowerCase() === cleanText(fact.label)?.toLowerCase());
+    return {
+      ...(known ? { key: known.name } : {}),
+      label: fact.label ?? '',
+      value: fact.value ?? undefined,
+      note: fact.note ?? undefined,
+      pending: known?.what ?? pending,
+    };
+  });
 }
 
 interface AlbumLike {

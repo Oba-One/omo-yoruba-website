@@ -682,12 +682,12 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Yoruba Language Lessons',
         line: 'Live online lessons with one teacher, for children and adults who want to speak, read, and carry the language forward. Times are set with her, one learner or one family at a time.',
       },
-      glance: withKeys('fact', [
-        fact('Format', 'Online, live', 'Video call'),
-        fact('When', 'Set with the teacher'),
-        fact('Ages'),
-        fact('Cost', 'Agreed with her'),
-      ]),
+      lessonDetails: {
+        format: 'Online, live',
+        when: 'Set with the teacher',
+        cost: 'Agreed with her',
+        notes: { format: 'Video call' },
+      },
       teacherIntro:
         'There is no sign-up form and no fixed timetable. You write, she places the learner and proposes a time, and the first lesson follows.',
       faq: withKeys(
@@ -872,14 +872,9 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
         title: 'Give now',
         blurb:
           'Choose an amount, one time or monthly, and pay securely through Zeffy without leaving this page. Your receipt arrives by email straight away.',
-        // Only the Give Dialog's own fallback is ours to state; the rest depends on the Zeffy form (spec Q14).
-        facts: withKeys('fact', [
-          fact('Fees'),
-          fact('Receipt'),
-          fact('Monthly'),
-          fact('If the form fails', 'The dialog offers contact and a mailing address instead.'),
-        ]),
       },
+      // Only the Give Dialog's own fallback is ours to state; the rest depends on the Zeffy form (spec Q14).
+      paymentDetails: { fallback: 'The dialog offers contact and a mailing address instead.' },
       largerScale: {
         title: 'Giving at a larger scale',
         blurb:

@@ -1,4 +1,7 @@
+import { fixedLayoutValue } from './editing-defaults';
 import { type LayoutSpec, PAGE_LAYOUTS } from './layout-options';
+
+export { fixedLayoutValue } from './editing-defaults';
 
 const optionValue = (option: LayoutSpec['options'][number]) =>
   typeof option === 'string' ? option : option.value;
@@ -26,7 +29,7 @@ export function withLayoutDefaults<T extends Record<string, string>>(
 ): T {
   const result: Record<string, string> = { ...(layoutDefaults(typeName) ?? {}) };
   for (const spec of (PAGE_LAYOUTS as Record<string, readonly LayoutSpec[]>)[typeName] ?? []) {
-    const value = raw?.[spec.name as keyof T];
+    const value = fixedLayoutValue(typeName, spec.name) ?? raw?.[spec.name as keyof T];
     if (typeof value === 'string' && spec.options.map(optionValue).includes(value)) {
       result[spec.name] = value;
     }

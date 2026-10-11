@@ -226,7 +226,7 @@ describe('buildCollectivePage', () => {
       } as unknown as CollectivePageData,
       options,
     ).initiatives;
-    expect(written.layout).toBe('stacked');
+    expect(written.layout).toBe('side');
     expect(written.status).toBe(false);
     expect(written.items).toHaveLength(1);
     expect(written.items[0]?.initiative).toMatchObject({
@@ -346,14 +346,14 @@ describe('buildCollectivePage', () => {
   it('adds edit attributes in draft mode only', () => {
     expect(buildCollectivePage(seeded, options).edit.green).toBeUndefined();
     const draft = buildCollectivePage(seeded, { ...options, draft: true });
-    expect(draft.edit.green).toContain('path=layout.green');
+    expect(draft.edit.green).toBeUndefined();
     expect(draft.why.edit).toContain('path=argument');
     expect(draft.why.photoEdit).toContain('id=program-cultural-collective;type=program');
     expect(draft.voice.edit).toContain('path=voice');
     expect(draft.initiatives.items[0]?.imageEdit).toContain(
       'id=collectivePage;type=collectivePage;path=initiatives:initiative-1.image',
     );
-    expect(draft.edit.initiatives).toContain('path=layout.initiatives');
+    expect(draft.edit.initiatives).toBeUndefined();
     expect(draft.edit.status).toContain('path=layout.status');
     const linked = buildCollectivePage({ ...seeded, voice } as CollectivePageData, {
       ...options,

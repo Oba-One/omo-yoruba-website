@@ -126,7 +126,7 @@ describe('buildGalleryPage', () => {
     ]);
   });
 
-  it('links each tile to its first photograph under open: viewer, and to its page under open: grid', () => {
+  it('opens each tile at its first photograph despite an old grid setting', () => {
     const viewer = buildGalleryPage(seeded, options).albums.tiles.map((tile) => tile.href);
     expect(viewer).toEqual([
       '/gallery/odunde-2026?photo=odunde-2026-kid-playing-with-elder',
@@ -136,7 +136,7 @@ describe('buildGalleryPage', () => {
     const grid = buildGalleryPage(withLayout({ open: 'grid' }), options).albums.tiles.map(
       (tile) => tile.href,
     );
-    expect(grid).toEqual(['/gallery/odunde-2026', '/gallery/gala-2025', '/gallery/summer-camp']);
+    expect(grid).toEqual(viewer);
   });
 
   it('keeps stega out of every comparison, sort and address', () => {
@@ -187,8 +187,8 @@ describe('buildGalleryPage', () => {
 
   it('carries the layout options on the page root and shows the albums under built', () => {
     const page = buildGalleryPage(withLayout({ captions: 'hover' }), options);
-    expect(page.root).toEqual({ open: 'viewer', captions: 'hover', state: 'built' });
-    expect(page.albums.captions).toBe('hover');
+    expect(page.root).toEqual({ open: 'viewer', captions: 'always', state: 'built' });
+    expect(page.albums.captions).toBe('always');
     expect(page.soon).toBeUndefined();
   });
 
@@ -255,8 +255,8 @@ describe('buildGalleryPage', () => {
 
   it('reaches every option and cover from click-to-edit in draft mode, and nothing outside it', () => {
     const page = buildGalleryPage(seeded, draft);
-    expect(page.edit.open).toContain('layout.open');
-    expect(page.edit.captions).toContain('layout.captions');
+    expect(page.edit.open).toBeUndefined();
+    expect(page.edit.captions).toBeUndefined();
     expect(page.edit.state).toContain('layout.state');
     expect(page.albums.tiles[0]?.edit).toContain('album-odunde-2026');
     expect(page.albums.tiles[0]?.edit).toContain('cover');

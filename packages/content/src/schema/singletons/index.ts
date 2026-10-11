@@ -1,10 +1,12 @@
 import { defineField } from 'sanity';
 import { EVENT_LIST_TITLES } from '../../edition-fields';
 import { OTHER_WAY_KINDS, OTHER_WAY_TITLES } from '../../giving';
+import { LESSON_FACTS, PAYMENT_FACTS } from '../../known-facts';
 import { PAGE_LAYOUTS } from '../../layout-options';
 import { COLLECTIVE_NAME, EVENT_PAGE_NAMES } from '../../routes';
 import { voice } from '../../validation/rules';
 import { facts, itemList, refs, text } from '../helpers';
+import { namedFacts } from '../objects/namedFacts';
 import { definePage } from './page';
 import { siteSettings } from './siteSettings';
 
@@ -31,6 +33,13 @@ export const homepage = definePage({
       name: 'hero',
       title: 'Hero',
       type: 'object',
+      fieldsets: [
+        {
+          name: 'options',
+          title: 'Campaign buttons and decoration',
+          options: { collapsible: true, collapsed: true },
+        },
+      ],
       fields: [
         defineField({ name: 'kicker', title: 'Kicker', type: 'bilingual' }),
         defineField({
@@ -41,6 +50,7 @@ export const homepage = definePage({
         }),
         defineField({
           name: 'emphasis',
+          fieldset: 'options',
           title: 'Words in gold',
           type: 'string',
           description:
@@ -63,25 +73,31 @@ export const homepage = definePage({
         defineField({ name: 'image', title: 'Photo', type: 'oyImage' }),
         defineField({
           name: 'blessing',
+          fieldset: 'options',
           title: 'Blessing line',
           type: 'bilingual',
           description: 'The line under the buttons: "Oòdúà á gbè wá o! • May Odùduwà bless us".',
         }),
         defineField({
           name: 'primaryAction',
+          fieldset: 'options',
           title: 'Primary action',
           type: 'cta',
           description: 'The gold button.',
         }),
         defineField({
           name: 'secondaryActions',
+          fieldset: 'options',
           title: 'Secondary actions',
           type: 'array',
           of: [{ type: 'cta' }],
         }),
       ],
     }),
-    refs('stats', 'Headline figures', 'stat', 'Four, in order.'),
+    {
+      ...refs('stats', 'Headline figures', 'stat', 'Up to four, in order.'),
+      validation: (rule) => rule.max(4),
+    },
     text('programsIntro', 'Programs intro', 2),
     text('voicesIntro', 'Member voices intro', 2),
     refs('voices', 'Member voices', 'testimonial'),
@@ -96,7 +112,7 @@ export const homepage = definePage({
       title: 'A year in the life',
       type: 'array',
       of: [{ type: 'oyImage' }],
-      description: 'Up to seven tiles; the layout option picks how many show.',
+      description: 'Up to seven photographs, in the order shown on the homepage.',
       validation: (rule) => rule.max(7),
     }),
     defineField({
@@ -151,7 +167,12 @@ export const galaPage = definePage({
   pointer: `The date, doors, venue, dress, tickets and running order belong to the edition: Events, then ${EVENT_PAGE_NAMES.gala}, then Editions; the ticket tiers, sponsor levels and honorees sit beside them.`,
   fields: [
     text('eveningIntro', 'The evening intro'),
-    text('tiersIntro', 'Seats and tables intro', 2),
+    text(
+      'tiersIntro',
+      'Seats intro override',
+      2,
+      'Optional. Ticket instructions are supplied automatically.',
+    ),
     text('sponsorIntro', 'Sponsor intro', 2),
     text('honoreesIntro', 'Honorees intro', 2),
     text('pastIntro', 'Past galas intro', 2),
@@ -298,7 +319,8 @@ export const lessonsPage = definePage({
   name: 'lessonsPage',
   title: 'Yoruba Language Lessons page',
   fields: [
-    facts('glance', 'At a glance', 'Format, when, ages, cost.'),
+    { ...facts('glance', 'Previous at-a-glance facts'), hidden: true, readOnly: true },
+    namedFacts('lessonDetails', 'Lesson details', LESSON_FACTS),
     defineField({ name: 'teacher', title: 'Teacher', type: 'reference', to: [{ type: 'person' }] }),
     text('teacherIntro', 'Teacher intro', 2),
     defineField({
@@ -435,12 +457,15 @@ export const impactPage = definePage({
   name: 'impactPage',
   title: 'Impact page',
   fields: [
-    refs(
-      'stats',
-      'Headline figures',
-      'stat',
-      'Four or six, in order; each shows its source line under the figure.',
-    ),
+    {
+      ...refs(
+        'stats',
+        'Headline figures',
+        'stat',
+        'Up to four, in order; each shows its source line under the figure.',
+      ),
+      validation: (rule) => rule.max(4),
+    },
     defineField({ name: 'howWeWork', title: 'How we work', type: 'blockContent' }),
     defineField({
       name: 'howWeWorkImage',
@@ -537,13 +562,18 @@ export const donatePage = definePage({
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
         text('blurb', 'Blurb'),
-        facts(
-          'facts',
-          'Facts beside it',
-          'Fees, the receipt, monthly giving and what happens if the form fails. Fees, the receipt and monthly depend on how your Zeffy form is set up; empty values show Pending. "Tax-deductible, and where it goes" reads the receipt fact too.',
-        ),
+        {
+          ...facts(
+            'facts',
+            'Facts beside it',
+            'Fees, the receipt, monthly giving and what happens if the form fails. Fees, the receipt and monthly depend on how your Zeffy form is set up; empty values show Pending. "Tax-deductible, and where it goes" reads the receipt fact too.',
+          ),
+          hidden: true,
+          readOnly: true,
+        },
       ],
     }),
+    namedFacts('paymentDetails', 'Donation form details', PAYMENT_FACTS),
     defineField({
       name: 'largerScale',
       title: 'Giving at a larger scale',

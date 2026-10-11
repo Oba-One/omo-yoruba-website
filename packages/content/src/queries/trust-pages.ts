@@ -162,7 +162,15 @@ export const donatePageQuery = defineQuery(`*[_type == "donatePage" && _id == "d
   header{kicker{yo, en}, title, line},
   primaryAction{label, kind, enquiryKind, href, newTab},
   secondaryActions[]{_key, label, kind, enquiryKind, href, newTab},
-  giveNow{title, blurb, facts[]{_key, label, value, note}},
+  "giveNow": {
+    "title": giveNow.title, "blurb": giveNow.blurb,
+    "facts": select(defined(paymentDetails) => [
+    {"_key":"fees", "label":"Fees", "value":coalesce(paymentDetails.fees, giveNow.facts[lower(label) == "fees"][0].value), "note":coalesce(paymentDetails.notes.fees, giveNow.facts[lower(label) == "fees"][0].note)},
+    {"_key":"receipt", "label":"Receipt", "value":coalesce(paymentDetails.receipt, giveNow.facts[lower(label) == "receipt"][0].value), "note":coalesce(paymentDetails.notes.receipt, giveNow.facts[lower(label) == "receipt"][0].note)},
+    {"_key":"monthly", "label":"Monthly", "value":coalesce(paymentDetails.monthly, giveNow.facts[lower(label) == "monthly"][0].value), "note":coalesce(paymentDetails.notes.monthly, giveNow.facts[lower(label) == "monthly"][0].note)},
+    {"_key":"fallback", "label":"If the form fails", "value":coalesce(paymentDetails.fallback, giveNow.facts[lower(label) == "if the form fails"][0].value), "note":coalesce(paymentDetails.notes.fallback, giveNow.facts[lower(label) == "if the form fails"][0].note)}
+    ], giveNow.facts[]{_key, label, value, note})
+  },
   largerScale{
     title,
     blurb,

@@ -18,9 +18,9 @@ describe('the Donate page-section stories', () => {
       (fact) => `${text(fact.querySelector('dt'))}: ${text(fact.querySelector('dd'))}`,
     );
     expect(facts).toEqual([
-      'Fees: Pending: how your Zeffy form handles this',
-      'Receipt: Pending: how your Zeffy form handles this',
-      'Monthly: Pending: how your Zeffy form handles this',
+      'Fees: Pending: how the donation form handles fees',
+      'Receipt: Pending: how the donation form handles receipts',
+      'Monthly: Pending: whether monthly giving is offered',
       'If the form fails: The dialog offers contact and a mailing address instead.',
     ]);
     expect(

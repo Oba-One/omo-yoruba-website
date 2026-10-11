@@ -15,7 +15,8 @@ import {
 // null. One decision at the top: the header's gold Give now. None of the register's inventions (Zeffy's fee
 // and receipt claims, the preset amounts and what they buy, the platforms, the EIN) stands in.
 
-const ZEFFY_PENDING = pendingWhat('donatePage', 'giveNow.facts');
+const FEES_PENDING = pendingWhat('donatePage', 'paymentDetails.fees');
+const RECEIPT_PENDING = pendingWhat('donatePage', 'paymentDetails.receipt');
 
 test.describe('the Donate page', () => {
   test('carries its blocks in order, one h1, the option on the body and nothing open', async ({
@@ -46,11 +47,6 @@ test.describe('the Donate page', () => {
   }) => {
     await page.goto('/donate');
     const gold = page.locator('main .oy-btn--primary');
-    if (PLACEHOLDER_PROJECT) {
-      // The header's actions come from the Studio: the placeholder project draws none.
-      await expect(gold).toHaveCount(0);
-      return;
-    }
     await expect(gold).toHaveCount(1);
     const trigger = page.locator('header#top a[data-give]');
     await expect(trigger).toContainText('Give now');
@@ -85,7 +81,8 @@ test.describe('the Donate page', () => {
       );
     }
     expectNoMockWhileOwed(await section.innerText(), [
-      [/100%|None\. 100%|Emailed by Zeffy|visible from the start|optional tip/i, ZEFFY_PENDING],
+      [/100%|None\. 100%|visible from the start|optional tip/i, FEES_PENDING],
+      [/Emailed by Zeffy/i, RECEIPT_PENDING],
     ]);
   });
 
@@ -164,7 +161,7 @@ test.describe('the Donate page', () => {
     await expect(section.locator('.oy-glance > div').first()).toContainText('501(c)(3)');
     expectNoMockWhileOwed(await section.innerText(), [
       [/95-4612387/, pendingWhat('siteSettings', 'ein')],
-      [/Sent by Zeffy on completion/, ZEFFY_PENDING],
+      [/Sent by Zeffy on completion/, RECEIPT_PENDING],
     ]);
     await expect(section.locator('.oy-handoff a[href="/impact"]')).toContainText('See our impact');
   });
