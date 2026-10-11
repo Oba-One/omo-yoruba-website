@@ -1,6 +1,6 @@
 import { ENQUIRY_KINDS, ENQUIRY_SPECS, successCopy } from '@oy/content/enquiry-kinds';
 import { expect, test } from '@playwright/test';
-import { interceptActions, openEnquiry } from './helpers';
+import { interceptActions, openEnquiry, settle } from './helpers';
 
 // Every kind: open from a real trigger where the home page has one (the member and partner
 // doors, the footer's volunteer and contact links) and from the `?enquiry=<kind>` opener where it
@@ -119,15 +119,20 @@ test('a dialog sits in the middle of the screen, a long form scrolls inside it a
 
 test('under 720px a dialog is a bottom sheet that fits the screen, its head in reach while the form scrolls', async ({
   page,
+  isMobile,
 }) => {
-  await page.setViewportSize({ width: 375, height: 740 });
+  test.skip(!isMobile, 'The bottom sheet runs in the mobile project.');
+  const size = page.viewportSize();
+  if (!size) throw new Error('the mobile project sets a viewport');
   await page.goto('/?enquiry=vendor');
   const dialog = page.locator('dialog#enquiry');
   await expect(dialog).toHaveAttribute('open', '');
+  // The sheet slides up as it opens: measure it at rest.
+  await settle(page);
   const box = await dialog.locator('.oy-modal').boundingBox();
   if (!box) throw new Error('the sheet is not drawn');
   // The sheet rests on the bottom edge and leaves the top of the page in view.
-  expect(Math.abs(box.y + box.height - 740)).toBeLessThanOrEqual(1);
+  expect(Math.abs(box.y + box.height - size.height)).toBeLessThanOrEqual(1);
   expect(box.y).toBeGreaterThan(0);
   const body = dialog.locator('.oy-modal-body');
   expect(await body.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
