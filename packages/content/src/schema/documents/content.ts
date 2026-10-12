@@ -492,7 +492,7 @@ export const person = defineType({
       name: 'role',
       title: 'Role',
       type: 'string',
-      description: '"Chair", "Head teacher".',
+      description: '"Chair", "Festival coordinator".',
       validation: voice.heading,
     }),
     defineField({
