@@ -19,6 +19,7 @@
     "./api-version": "./src/api-version.ts",
     "./take-part": "./src/take-part.ts",
     "./doors": "./src/doors.ts",
+    "./partners": "./src/partners.ts",
     "./giving": "./src/giving.ts",
     "./albums": "./src/albums.ts",
     "./videos": "./src/videos.ts"

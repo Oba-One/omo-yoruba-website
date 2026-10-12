@@ -92,7 +92,7 @@ describe('the Impact page-section stories', () => {
     // The ask is a card inside Partners and funders, on the section's own ground: no dark band of its
     // own above the dark footer (ADR 0057). It keeps the anchor `#fund`.
     expect(shown?.querySelector('.oy-section.oy-dark')).toBeNull();
-    const ask = shown?.querySelector('#funders aside.oy-ask-card#fund');
+    const ask = shown?.querySelector('#funders .oy-ask-card#fund');
     expect(text(ask?.querySelector('h3'))).toBe('Fund the next year');
     expect(text(ask?.querySelector('.oy-ask-card-copy p'))).toBe(
       'Our partnerships lead answers Pending: how soon the partnerships lead replies',

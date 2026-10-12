@@ -44,7 +44,7 @@ export const getInvolvedPageQuery =
  * vendors hosted, the next one the cost), the count of the festival page's partners, the voices, the six
  * photographs, the newest governance document of each kind with its file's URL (a dated one first, since
  * GROQ sorts a missing year ahead of every year in descending order), the board count, every
- * partner, and the settings the governance block and the closing band draw. Images project the asset
+ * partner, and the settings the governance block and the closing ask draw. Images project the asset
  * reference (ADR 0022). Layout values come back as stored; the page fills the schema defaults.
  */
 export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "impactPage"][0]{

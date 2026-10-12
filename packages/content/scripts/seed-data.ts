@@ -941,7 +941,7 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
     'yearStrip[].event',
   ],
   lessonsPage: ['voices'],
-  // The closing band's line names the partnerships lead instead (ADR 0035).
+  // The closing ask's line names the partnerships lead instead (ADR 0035).
   impactPage: ['nextYear.blurb'],
   // The header line says what the intro would (ADR 0039).
   galleryPage: ['intro'],

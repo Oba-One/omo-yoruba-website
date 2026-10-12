@@ -218,9 +218,7 @@ test.describe('the Impact page', () => {
     await expect(page.locator('#fund')).toHaveCount(1);
     await expect(page.locator('main .oy-section.oy-dark')).toHaveCount(0);
     const shown = (await body(page, 'funders')) === 'shown';
-    const ask = page.locator(
-      shown ? '#funders aside.oy-ask-card#fund' : 'section#fund .oy-ask-card',
-    );
+    const ask = page.locator(shown ? '#funders .oy-ask-card#fund' : 'section#fund .oy-ask-card');
     await expect(ask.locator(shown ? 'h3' : 'h2')).toHaveText(/\S/);
     const line = await ask.locator('.oy-ask-card-copy p').innerText();
     expect(line).toMatch(/partnerships lead/i);

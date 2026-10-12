@@ -1,7 +1,7 @@
 # 33: The closing band's heading sits 12px higher than the prototype's and its line is smaller and dimmer
 
 Labels: design, later
-Status: open
+Status: closed
 Blocked by: none
 
 **Finding** (R33 in `docs/plans/review-alignment-and-quality.md`; /impact; polish; drift): ADR 0036 dropped the band's swatch to match the prototype but kept SectionHead's light-ground spacing and intro colour. The band is Impact's last ask, so its heading and sentence are what a funder reads beside the gold Sponsor or partner.
@@ -14,3 +14,7 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+11 October 2026: closed without the fix. ADR 0057 took the dark band off Impact: the ask is an `AskCard` on
+the section's own ground, with its sentence at 17px, and `SectionHead` no longer has `swatch`. Nothing on the
+site draws a section head on the dark ground with a kicker now, so there is no gap to correct.

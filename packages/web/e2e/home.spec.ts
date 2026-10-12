@@ -72,7 +72,7 @@ test.describe('the homepage', () => {
     expect(
       await cards.evaluateAll((all) => all.map((card) => card.getAttribute('data-event'))),
     ).toEqual(['festival', 'gala']);
-    await expect(cards.nth(0).getByRole('link', { name: 'See the festival' })).toHaveAttribute(
+    await expect(cards.nth(0).getByRole('link', { name: 'See Odunde' })).toHaveAttribute(
       'href',
       '/odunde',
     );
