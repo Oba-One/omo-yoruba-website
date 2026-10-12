@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'astro/types';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import ReadingGuide from './ReadingGuide.astro';
+import ReadingGuideSample from './ReadingGuideSample.astro';
 
 type Args = StoryArgs<ComponentProps<typeof ReadingGuide>>;
 
@@ -9,12 +10,17 @@ const meta = {
   component: ReadingGuide,
   args: {
     sections: [
-      { slug: 'get-started', text: 'Get started' },
-      { slug: 'before-you-publish', text: 'Before you publish' },
+      { slug: 'add-or-change-a-person', text: 'Add or change a person' },
+      { slug: 'check-your-work-and-publish', text: 'Check your work and publish' },
     ],
-    slots: {
-      default:
-        '<h1>Your guide to Studio</h1><h2 id="get-started">Get started</h2><p>Changes save as a <strong>draft</strong> while you work.</p><h2 id="before-you-publish">Before you publish</h2><p>Use confirmed facts and short sentences.</p>',
+    slots: { default: { component: ReadingGuideSample } },
+  },
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A step-by-step guide read beside the tool it describes. On a wide screen the list of tasks stays in view while the steps scroll; on a narrow one it sits above them. The reading column takes rendered Markdown: numbered steps, a figure for a screenshot with its caption, and an aside for a note that is not a step.',
+      },
     },
   },
 } satisfies Meta<Args>;

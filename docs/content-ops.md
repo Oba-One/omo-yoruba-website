@@ -1,184 +1,550 @@
-# Your guide to Studio
+# How to update our website
 
-Welcome! Studio is where we keep our website up to date. Ask an administrator
-whenever you are unsure.
+Ẹ káàbọ̀, welcome. This guide shows you, one step at a time, how to add and change
+what is on our website.
 
-Find this guide in the **Member guide** tab at the top of Studio.
+Take your time. Looking around changes nothing, and visitors see nothing you type
+until you press **Publish**.
 
-## Get started
+Words in **bold** are words you will see on the screen. The pictures are
+examples, so your lists may look a little different.
 
-Open <a href="https://www.omoyorubasocal.org/admin" target="_blank" rel="noopener">Studio</a> and sign in with your
-invited account. Ask your administrator if you cannot sign in.
+You can open this guide at any time from the **Member guide** tab at the top of
+Studio. To keep it beside you while you work, or to print it,
+<a href="/member-guide" target="_blank" rel="noopener">open this guide in its own browser tab</a>.
 
-Search before adding something new to avoid duplicates. Changes save as a
-**draft** while you work. **Publish** makes them available on the website. Leave
-unfinished work as a draft, and wait for saving to finish before closing.
+## Before you start
 
-The screenshots show example items. Your lists and details may differ.
+Studio is the private part of our website. It holds the words, photographs and
+event details that visitors see. Only people we have invited can open it.
 
-<img src="screenshots/member-guide/events.jpg" alt="Studio's main sections and the three event lists" width="702" height="243" loading="lazy" />
+1. Open Studio at
+   <a href="https://www.omoyorubasocal.org/admin" target="_blank" rel="noopener">omoyorubasocal.org/admin</a>.
+   It opens in a new browser tab.
+2. Sign in the same way you did when you accepted your invitation: with
+   **Google**, or with **E-mail / password**.
+3. If you cannot sign in, ask an administrator.
 
-Choose a section on the left, then the list you need beside it.
+An administrator is one of the people who look after the website for us. If you
+do not know who that is, ask the person who invited you to Studio.
 
-## Edit a page
+Three things to know before you change anything:
 
-Open **Pages** and choose the page you want. Programs, Get Involved and Impact
-open another list: choose the entry ending in **page** for the page's text, or
-one of the lists beside it for its programs, ways to get involved or partners.
+- Studio saves your work for you as you type. There is no Save button. Wait a
+  moment after you stop typing before you close the page.
+- Your work is kept as a draft. A draft is a working copy that only people signed
+  in to Studio can see.
+- Visitors see your work only after you press **Publish**.
 
-<img src="screenshots/member-guide/pages.jpg" alt="Pages with Programs selected, showing Programs page and the Programs list" width="702" height="455" loading="lazy" />
+## Find your way around
 
-Choose **Programs page** to edit the page's text, or **Programs** to edit its list.
+<figure>
+<img src="screenshots/member-guide/studio-screen.jpg" alt="Studio with its three tabs across the top, the menu on the left, the Pages list beside it and the Our Story form with Publish at the bottom right" width="1460" height="780" loading="lazy" />
+<figcaption>Studio, with the Our Story page open. <a href="screenshots/member-guide/studio-screen.jpg" target="_blank" rel="noopener">Open the larger picture in a new browser tab</a>.</figcaption>
+</figure>
 
-Start in **Content** for the copy, photographs and lists you change regularly.
-**Advanced** holds supporting introductions, search and sharing overrides, and
-section or promotion switches. Heading and kicker fields are collapsed in the
-header. Layout styles and ordinary page buttons are supplied by the website.
+When Studio opens, this is what you see:
 
-On the Gala page, the header photograph and evening description are in Content.
-Dates, venue and the ticket form belong to its edition. Supporting introductions
-are optional overrides in Advanced.
+- Across the top are three tabs. **Structure** is where you make changes.
+  **Presentation** shows how a page will look. **Member guide** is this guide.
+- On the left is the menu: **Missing content**, **Events**, **Photos**, **People**
+  and **Pages**.
+- Each choice in the menu opens a list beside it. Keep choosing until a form
+  opens.
+- The form is where you type. The small grey words under a box's name tell you
+  what to write there. Some forms have tabs of their own near the top, such as
+  **Content** and **Advanced**.
+- **Publish** is at the bottom right of the form. The three dots beside it open
+  a short list of other things you can do.
 
-For a take-part row, choose its **Way in** and write its descriptive line. The
-website supplies the title and button wording. Open **Custom wording** only to
-change those words. Lessons and Donate have named detail inputs: enter confirmed
-values and leave anything unknown empty. Additional notes are optional.
+To find something by name, press the magnifying glass at the top and type the
+name. Do this before you add a person or an album, so nothing is entered twice.
 
-## Add an event
+### Where to find things
 
-1. Open **Events**. For the festival or Gala, choose its name, then **Editions**.
-   For the Collective, choose **Yoruba Cultural Collective events**.
-2. Start a new item. Add the title, dates, venue and summary. Festival and Gala
-   editions also need an **Edition year**. Times are in Los Angeles time.
-3. Open **Edition details** to edit an existing festival or Gala edition. Its
-   **Albums** list shows photographs and videos for that edition. A Gala edition
-   also has **Ticket tiers** and **Honorees**. New items in these lists already
-   name the correct edition; check it before publishing. Sponsor levels remain
-   in their own list beside Editions.
-4. Keep the event as a draft until its agreed announcement day, then **Publish**.
-   Publishing is manual; it is not scheduled for you.
+- The words or photographs on a page: **Pages**, then the page.
+- The date, time or place of the festival or the Gala: **Events**, then the
+  event, then **Editions**, then the year. An edition is one year of an event.
+- Gala ticket prices: the Gala's year, then **Ticket tiers**.
+- The festival's zones: **Events**, then **Odunde Festival**, then
+  **Festival zones**.
+- A Collective event: **Events**, then **Yoruba Cultural Collective events**.
+- Photo albums and videos: **Photos**, then **Albums**.
+- The board, staff and volunteers: **People**, then **People**.
+- Quotes from our members: **People**, then **Member voices**.
+- Our programs, with their photographs and details: **Pages**, then
+  **Programs**, then **Programs**.
+- The ways to get involved: **Pages**, then **Get Involved**, then
+  **Ways to get involved**.
+- Partners and funders: **Pages**, then **Impact**, then **Partners**.
+- Anything the website marks as Pending, its label for a fact we have not given
+  it yet: **Missing content**.
 
-A Collective event needs a start date to appear on the site.
+## Change the words on a page
 
-<img src="screenshots/member-guide/event-form.jpg" alt="Festival edition form with its tabs, title and edition year" width="630" height="719" loading="lazy" />
+1. Open **Pages** and choose the page, for example **Our Story**.
+2. **Programs**, **Get Involved** and **Impact** open a short list first. Choose
+   the entry that ends in **page**, for example **Programs page**.
+3. The form opens on **Content**. Find the box you want and type your change.
+4. To change the page's main heading, open **Heading and kicker** near the top.
+   The kicker is the small line in capitals above the heading, in Yoruba and
+   English.
+5. Check your work and publish it. The steps are under
+   [Check your work and publish](#check-your-work-and-publish).
 
-The tabs group an edition's details. Start with its title and year.
+<figure>
+<img src="screenshots/member-guide/pages.jpg" alt="The Pages list with Programs chosen, showing Programs page and Programs beside it" width="702" height="455" loading="lazy" />
+<figcaption>Programs opens a short list. Programs page holds the page's words. Programs holds each program.</figcaption>
+</figure>
 
-## Add an album
+<figure>
+<img src="screenshots/member-guide/page-form.jpg" alt="The Our Story page form: Used on one page, the Content and Advanced tabs, Heading and kicker, and One line under the heading" width="710" height="520" loading="lazy" />
+<figcaption>A page's form. It opens on Content, with Advanced beside it. Heading and kicker opens when you press it.</figcaption>
+</figure>
 
-1. Open **Photos → Albums** and start a new album. Add its **Title**, then
-   generate the **Web address** once. Keep an existing album's address unchanged.
-2. Choose the matching **Edition** for event photographs. Add a confirmed
-   **Date** when there is no edition or the exact day matters.
-3. Choose **Add item** under **Photographs** to add a photograph. Keep them in
-   the order you want them shown. Give each one **Alt text** describing who is
-   doing what and where, plus a **Caption**.
-   The first photograph is the cover unless you choose another **Cover**.
-4. To add a video, choose **Add item** under **Videos**. Give it a **Title**
-   and paste the **YouTube address** that the video's Share button gives. A
-   **Still** and **Made by** are optional: without a still, the album's cover
-   or first photograph shows under the play mark. Videos appear above the
-   photographs, and the first two also appear on the event's page. Nothing
-   loads from YouTube until a visitor presses play.
-5. At the top of the album, choose the **Photographer**. Tick **Credit confirmed** only once the owner
-   confirms the credit. Add a **Consent note** for permission specific to this
-   album. Check it, then **Publish**.
+<aside>
 
-<img src="screenshots/member-guide/album-controls.jpg" alt="The album's Add item button, Photographer, Credit confirmed and Consent note" width="630" height="552" loading="lazy" />
+Good to know
 
-Add item sits below the photographs. The current form puts album credit and
-permission before the photographs; this screenshot shows the earlier order.
-Open **Different credit for this photograph** only when one photograph needs
-an exception to the album's credit.
+- **Advanced**, beside **Content**, holds what we rarely change: short
+  introductions to some sections, switches that show or hide a section, and the
+  title that search engines show. You can leave it alone.
+- On the homepage, the heading, the line under it and the main photograph are
+  under **Hero**. Its buttons are there too, under
+  **Campaign buttons and decoration**.
+- On every other page, the buttons at the top are built into the website. So is
+  the way each page is laid out. To change one, ask an administrator.
+- The festival and Gala pages do not hold the date, time, place or tickets. Those
+  belong to that year's edition. See
+  [Add or change an event](#add-or-change-an-event).
+- On the **Yoruba Language Lessons** page, **Lesson details** has a box each for
+  the format, when, ages and cost. On the **Donate** page, **Donation form
+  details** works the same way. Fill in only what is confirmed.
+  **Additional notes (optional)** is there if a detail needs a few more words.
 
-Use only photographs the organization has permission to publish, including for
-children shown. If unsure, keep a draft and ask. An album needs a photograph to
-appear in the gallery.
+</aside>
 
-Edit existing photographs in place. Removing and adding one again can break
-shared links.
+### Change a photograph
 
-<img src="screenshots/member-guide/photo-details.jpg" alt="A photograph with its Alt text and Caption fields" width="642" height="640" loading="lazy" />
+1. Find the photograph in the form. It may be called **Photo** or
+   **Photo band image**.
+2. If the box is empty, press **Upload** and pick the photograph from your
+   computer.
+3. To replace a photograph that is already there, press the three dots at its
+   top right, then choose **Upload**.
+4. Fill in **Alt text**: one plain sentence saying who is in the photograph,
+   what they are doing and where. People who cannot see the photograph hear this
+   sentence read aloud.
+5. Fill in **Caption** if you want a line of words shown with the photograph.
+6. To choose which part always shows, press the crop button, beside the three
+   dots. Then move the circle onto the faces.
 
-Open a photograph to add alt text and a caption. Photograph: Red Carpet Films.
+The picture under [Add photographs or a video](#add-photographs-or-a-video)
+shows these boxes and buttons.
 
-## Add a person
+Use only photographs we have permission to publish. Take extra care with
+photographs of children.
 
-1. Open **People → People**. Use the create button at the top right of the list.
-2. Add their **Name**, **Role** and **Short bio**. Choose the right **Group**:
-   board, staff or volunteers. This lets Our Story list them.
-3. A portrait is optional. If you add one, confirm permission and include alt
-   text and a caption.
-4. Check their details and choose **Publish**.
+### Change the ways to take part
 
-For the Language Lessons teacher, leave **Group** empty and select that person
-under **Pages → Yoruba Language Lessons → Teacher**.
+Several pages end with a band of ways to take part: volunteer, sponsor, give and
+so on. In the form it is called **Take-part band**.
 
-<img src="screenshots/member-guide/people.jpg" alt="People section with People selected and the create button at the top right" width="702" height="195" loading="lazy" />
+1. Open a row, or press **Add item** for a new one.
+2. Choose its **Way in**. The website supplies the row's title and its button.
+3. Write its **One line**: a sentence saying what we are asking of the reader.
+4. Open **Custom wording (optional)** only if this page needs different words.
 
-Use the create button at the top right, beside the menu.
+Each way in can be used once on a page.
 
-## Finish missing content
+## Add or change an event
 
-1. Open **Missing content**. Choose a page to focus the list.
-2. Expand a document's missing details, then open its title to edit it.
-3. Fill in confirmed information, check it and **Publish** when ready.
+Each year of the festival or the Gala is called an edition: Odunde Festival
+2027, End-of-Year Gala 2026. Everything that changes from year to year is kept
+on the edition.
 
-Each document appears once, with its missing fields together. The next festival
-and Gala essentials come first. Other site content follows, then owner decisions
-and items to add. **Wording to check** holds text corrections across the site.
+### Change this year's details
 
-The checklist includes saved drafts. A task disappearing means its draft has
-the details, not that the changes are published. Check the public page too.
+1. Open **Events**.
+2. Choose **Odunde Festival** or **End-of-Year Gala**.
+3. Choose **Editions**, then the year.
+4. Choose **Edition details**.
+5. Change what you need: **Starts**, **Ends**, **Venue**, **Summary**. The
+   festival also has **Cost**. The Gala also has **Doors**, **Dress** and
+   **Tickets link**. Times are Los Angeles time.
+6. For the running order, open the tab called **The day**. The festival's booth
+   fees and dates are under **Vendors**.
+7. Check your work and publish it.
 
-<img src="screenshots/member-guide/missing-content.jpg" alt="Missing content filtered to the Gala, with its three remaining details and the edition editor beside it" loading="lazy" />
+Beside **Edition details** you will find that year's **Albums**. A Gala year
+also has its **Ticket tiers** and **Honorees** there.
 
-## Manage messages in the Inbox
+<figure>
+<img src="screenshots/member-guide/edition.jpg" alt="The Gala's editions with 2026 chosen and, beside them, Edition details, Ticket tiers, Honorees and Albums" width="704" height="210" loading="lazy" />
+<figcaption>Choose the year, then Edition details. That year's tickets, honorees and albums are beside it.</figcaption>
+</figure>
 
-Administrators can open **Inbox → New** to read website enquiries. Open the
-document actions menu at the bottom right. **Start handling** moves a message
-to **In progress**. Use the **Reply to** email link to open your
-email app, and add a note naming who is handling it and the next step. Notes save
-automatically. Choose **Mark handled** when finished, or **Move to new** to reopen
-it. These actions do not send another notification.
+<figure>
+<img src="screenshots/member-guide/event-form.jpg" alt="A festival edition's form with its tabs, title and edition year" width="630" height="719" loading="lazy" />
+<figcaption>A festival edition's form. The tabs near the top are All fields, Edition, The day and Vendors.</figcaption>
+</figure>
 
-**Not emailed** lists enquiries without an email receipt. Open one to see any
-problem. After fixing its cause, choose **Retry email notification** from the
-document actions. An old uncertain result needs a check in Resend first to avoid
-sending twice. **Email accepted** means Resend accepted it; check Resend for final
-delivery if needed. Replies happen in your email app and are not copied into CMS
-notes automatically.
+### Add next year's edition
 
-**Subscribers** keeps newsletter sign-ups. It does not send newsletters. The
-live CMS has no Vision tab; it was a developer query tool, not an editing step.
+1. Open **Events**, then the event, then **Editions**.
+2. Press the **+** button at the top right of the list.
+3. Type the **Title**, for example Odunde Festival 2027.
+4. Type the **Edition year**.
+5. Fill in what is confirmed. Leave the rest empty.
+6. Leave it as a draft until the day we agree to announce it. Then press
+   **Publish**. Studio does not publish on a set date by itself.
 
-## Before you publish
+### Gala tickets and honorees
 
-Use confirmed facts and short sentences. Keep the marks on Yorùbá words and
-names. Leave unknown details empty; if a required detail is missing, keep a
-draft. Fix field errors and ask about warnings you do not understand.
+1. Open **Events**, then **End-of-Year Gala**, then **Editions**, then the year.
+2. Choose **Ticket tiers** or **Honorees**.
+3. Choose one to change it. To add one, press the **+** button at the top right
+   of the list.
+4. For a new one, check that **Edition** shows the right year.
+5. Check your work and publish it.
 
-To preview the page you are editing, open the **Used on** row above the fields and
-choose a page link. This opens **Presentation**. Use the viewport button to
-check a narrow screen too. When ready, choose **Publish** at the bottom right,
-then check the public website.
+<aside>
 
-<img src="screenshots/member-guide/preview-and-publish.jpg" alt="Presentation with the page preview on the left, Draft and Published views at the top, and Publish at the bottom right" width="1900" height="940" loading="lazy" />
+Good to know
 
-The preview sits beside the form. This example has no changes to publish, so
-the Publish button is dimmed. <a href="screenshots/member-guide/preview-and-publish.jpg" target="_blank" rel="noopener">Open the larger image in a new tab</a>.
+- A ticket tier is one kind of ticket, with its **Name**, its **Price** and what
+  it **Includes**.
+- The price here is only what the website shows. Tickets are sold through
+  Zeffy, the service that takes our payments, and Zeffy charges the price set
+  there. When a price changes, change it in Zeffy first, then make this one
+  match.
+- Honorees appear on the website only after an administrator turns the awards
+  on.
+- **Sponsor levels** are in their own list, beside **Editions**.
 
-## When to ask for help
+</aside>
 
-Ask an administrator about locked fields, removing or unpublishing an item, or
-changes still missing after a minute. Include the page name and any message.
+### Add a Collective event
 
-Administrators handle **Organization details**, the **Inbox**, and the switches
-for gallery visibility, Our Story's timeline and Gala awards. **Coming soon**
-hides album photographs and videos, including on event pages, but leaves
-photographs added directly to pages. Tell an administrator which pages need attention if
-permission changes.
+1. Open **Events**, then **Yoruba Cultural Collective events**.
+2. Press the **+** button at the top right of the list.
+3. Fill in the **Title**, **Starts**, the venue's **Name** and a **Summary**.
+4. Check your work and publish it.
 
-Your account may still access enquiries and subscriber details outside these
-menus. Keep that information private; share it only with those responsible for
-handling it.
+The event shows on the Collective's page once it has a start date, and until
+that day has passed.
+
+## Add photographs or a video
+
+Photographs and videos are kept in albums. Visitors see the albums in our Photo
+Gallery. The festival and Gala pages also show photographs from their most
+recent past year.
+
+### Start a new album
+
+1. Open **Photos**, then **Albums**.
+2. Press the **+** button at the top right of the list.
+3. Type the **Title**.
+4. Press **Generate** beside **Web address**. Do this once.
+5. Under **Edition**, choose the event and year the photographs come from. This
+   is what puts them on that event's page.
+6. Fill in **Date** if the photographs come from no event, or if the exact day
+   matters.
+7. Under **Photographer**, choose who took them.
+8. Turn on **Credit confirmed** only when the photographer has agreed to the
+   credit. If you are not sure, leave it off and ask an administrator.
+9. Use **Consent note** for anything special about permission for this album.
+
+<figure>
+<img src="screenshots/member-guide/album-form.jpg" alt="The top of an album's form: Title, Web address with its Generate button, and Date" width="690" height="620" loading="lazy" />
+<figcaption>The top of an album's form. Generate is beside Web address. Edition, Photographer and Credit confirmed come next.</figcaption>
+</figure>
+
+<aside>
+
+Good to know
+
+- If the photographer's name is not in the list, add it first. Open **Photos**,
+  then **Photographers**, press the **+** button, fill in the name and publish
+  it.
+- Never change the **Web address** of an album that is already on the website,
+  because people may have shared its link.
+- An album appears in the gallery once it has a web address and at least one
+  photograph.
+
+</aside>
+
+### Add photographs to an album
+
+1. Open **Photos**, then **Albums**, then the album.
+2. Under **Photographs**, press **Add item**.
+3. Press **Upload** and pick the photograph from your computer.
+4. Fill in its **Alt text**.
+5. Fill in its **Caption**.
+6. Close the photograph with the × at its top right. Do the same for the next
+   one.
+7. To change the order, drag a photograph by the handle on its left.
+8. Check your work and publish it.
+
+<figure>
+<img src="screenshots/member-guide/photo-details.jpg" alt="A photograph opened, with the crop button and the three dots at its top right and the Alt text and Caption boxes below" width="642" height="640" loading="lazy" />
+<figcaption>A photograph, opened. The crop button and the three dots are at its top right. Alt text and Caption are below. Photograph: Red Carpet Films.</figcaption>
+</figure>
+
+<figure>
+<img src="screenshots/member-guide/photo-order.jpg" alt="An album's photographs in a list, each with a dotted handle on its left and three dots on its right" width="660" height="370" loading="lazy" />
+<figcaption>An album's photographs. Drag one by the dotted handle on its left to move it. Photographs: Red Carpet Films.</figcaption>
+</figure>
+
+<aside>
+
+Good to know
+
+- The first photograph is the album's cover: the one the gallery shows for the
+  album. To use a different one, add it under **Cover**.
+- To correct a photograph that is already in an album, open it and change it
+  there. Do not remove it and add it again, because that breaks links people
+  have shared.
+- Open **Different credit for this photograph** only when one photograph was
+  taken by someone else.
+- Use only photographs we have permission to publish. Take extra care with
+  photographs of children. If you are not sure, leave the album as a draft and
+  ask.
+
+</aside>
+
+### Add a video
+
+1. Open **Photos**, then **Albums**, then the album.
+2. Under **Videos**, press **Add item**.
+3. Type a **Title**.
+4. On YouTube, press **Share** under the video and copy the address it gives.
+5. Paste the address into **YouTube address**.
+6. Check your work and publish it.
+
+Videos show above the album's photographs. The album's festival or Gala page
+also shows its first two videos, so put the best ones first.
+
+**Still** is the picture shown before the video plays. Leave it empty to use the
+album's cover. **Made by** names whoever made the video. Both are optional.
+Nothing loads from YouTube until a visitor presses play.
+
+## Add or change a person
+
+1. Open **People**, then **People**.
+2. Choose the person to change. To add someone new, press the **+** button at
+   the top right of the list.
+3. Fill in their **Name** and their **Role**, for example Chair.
+4. Choose their **Group**: **Board**, **Staff** or **Volunteers**. Our Story
+   lists people by group.
+5. Write a **Short bio**.
+6. A **Portrait** is optional. Add one only if the person agrees, and fill in
+   its alt text.
+7. To move someone up their group's list, give them a lower number in
+   **Order**.
+8. Check your work and publish it.
+
+<figure>
+<img src="screenshots/member-guide/people.jpg" alt="The People list with the + button at its top right" width="702" height="195" loading="lazy" />
+<figcaption>The + button is at the top right of the list.</figcaption>
+</figure>
+
+Our Yoruba Language Lessons teacher is set up differently. Leave the teacher's
+**Group** empty. Then open **Pages**, then **Yoruba Language Lessons**, and
+choose the teacher under **Teacher**.
+
+## Add to another list
+
+Member voices, partners, festival zones and the other lists all work the same
+way.
+
+1. Open the list. [Where to find things](#where-to-find-things) shows where
+   each one is.
+2. Press the **+** button at the top right of the list.
+3. Fill in the boxes. The small grey words under each name say what to write.
+4. Check your work and publish it.
+
+For a member's quote, turn on **Permission to name** only if the person has
+agreed to be named. While it is off, the website shows their initials.
+
+## Fill in what is missing
+
+**Missing content** is our to-do list. It finds every place where the website is
+still waiting for a fact, and shows them together.
+
+1. Open **Missing content**, at the top of the menu on the left.
+2. To see one page only, choose it under **Page**.
+3. Each item in the list is one thing to finish. Press the line that says how
+   many details are missing to see what it still needs.
+4. Press the item's name to open it, and fill in what is confirmed.
+5. Check your work and publish it.
+
+<figure>
+<img src="screenshots/member-guide/missing-content.jpg" alt="Missing content with End-of-Year Gala chosen under Page, and the two details the Gala's 2026 edition still needs" width="650" height="680" loading="lazy" />
+<figcaption>Missing content, with one page chosen. Pressing the line with the number shows what the item still needs.</figcaption>
+</figure>
+
+<aside>
+
+Good to know
+
+- What the next festival and Gala need comes first, under
+  **Next event essentials**.
+- An item leaves the list as soon as its draft has the details. That does not
+  mean it is on the website. You still need to publish it.
+- **Owner decisions and items to add** lists what still needs a decision from
+  our leaders, or a new entry such as a member's quote. Add an entry only when
+  its facts are confirmed.
+- **Wording to check**, at the bottom, appears when published words have a long
+  dash or a Yoruba word without its marks. Open it to see what to correct.
+
+</aside>
+
+## Check your work and publish
+
+1. Read your work once more. The checklist below helps.
+2. Press the line that begins **Used on**, above the form, then choose a page.
+   The page opens beside your form, with your changes in it.
+3. To see the page as a phone shows it, press the phone button above the page.
+4. Press **Publish**, at the bottom right.
+5. Open our website and look at the page. A change can take a minute to appear.
+
+<figure>
+<img src="screenshots/member-guide/preview-and-publish.jpg" alt="The Our Story page shown beside its form, with the phone button above the page and Publish at the bottom right" width="1460" height="780" loading="lazy" />
+<figcaption>The page beside its form. The phone button is above the page, and Publish is at the bottom right. <a href="screenshots/member-guide/preview-and-publish.jpg" target="_blank" rel="noopener">Open the larger picture in a new browser tab</a>.</figcaption>
+</figure>
+
+Before you publish, check that:
+
+- Every fact is confirmed. If we do not know a date, a price or a name yet,
+  leave the box empty. The website shows a small Pending label there until we
+  know.
+- Yoruba words and names have their marks, as in Ẹ káàbọ̀ and Ọjà Balógun. If you
+  cannot type a mark, copy the word from a place where it is already written
+  correctly, or ask.
+- Odunde is one word, written without marks. Our lessons are called Yoruba
+  Language Lessons.
+- There is no long dash. Use a comma, a colon or a new sentence. Studio will not
+  publish words that contain one.
+- Headings have a capital letter on the first word and on names only.
+- Every photograph has its alt text.
+
+A red warning beside a box means it must be put right before Studio will
+publish. A yellow one is advice.
+
+## If something does not look right
+
+### Publish is grey
+
+Either there is nothing new to publish, or a box has a red warning. Put that box
+right and try again.
+
+### Your change is not on the website
+
+Check that you pressed **Publish**. Wait a minute, then load the page again.
+
+### You changed the wrong thing
+
+Press the three dots beside **Publish** and choose **Discard changes**. The form
+goes back to what is on the website. This undoes everything changed in that form
+since it was last published.
+
+### A box is grey and you cannot type in it
+
+It belongs to an administrator. Ask one to change it.
+
+### Studio says your changes are not saving
+
+Check your internet connection and keep the page open. Studio keeps trying.
+
+### Studio asks you to sign in again
+
+Sign in as before. Your drafts are safe.
+
+## When to ask an administrator
+
+Ask an administrator when:
+
+- you cannot sign in
+- something needs to come off the website, for example a photograph someone
+  has asked us to remove
+- a box you need is locked
+- your change is still not on the website after a few minutes
+- you are not sure a fact is confirmed, or that we have permission for a
+  photograph
+
+Tell them which page you were on, and copy any message you saw.
+
+If you ever come across a visitor's message or email address in Studio, keep it
+private.
+
+## For administrators
+
+This part is for administrators. Members do not see **Inbox** or
+**Organization details**, and the switches below are locked for them.
+
+### Messages from the website
+
+Messages sent through the website's own forms arrive in **Inbox**. Donations,
+tickets and paid memberships go to Zeffy instead.
+
+1. Open **Inbox**, then **New**, then the message.
+2. When you take it on, press the three dots at the bottom right and choose
+   **Start handling**. The message moves to **In progress**.
+3. To answer, press the address beside **Reply to**. Your own email opens.
+   Replies are not kept in Studio.
+4. In **Notes**, write who is dealing with it and what happens next. Notes save
+   by themselves.
+5. Press **Mark handled** when it is done. **Move to new** opens it again.
+
+<figure>
+<img src="screenshots/member-guide/inbox.jpg" alt="The menu as an administrator sees it, with Organization details and Inbox, and the Inbox's lists beside it" width="702" height="340" loading="lazy" />
+<figcaption>The menu as an administrator sees it, with the Inbox's lists beside it.</figcaption>
+</figure>
+
+None of these steps needs **Publish**, and none sends another email.
+
+- Each new message is also emailed to us. **Not emailed** lists the messages
+  whose email has not gone out. Open one to read the problem. Once the cause is
+  put right, choose **Retry email notification**. If the message is more than a
+  day old, look in Resend, our mail service, first, so the same email is not
+  sent twice.
+- **Email accepted** means the mail service took the email. To be sure it
+  arrived, look in Resend.
+- **Subscribers** keeps the addresses of people who asked for our newsletter.
+  Studio does not send newsletters.
+
+### Switches only administrators change
+
+Each is on its page's form, under **Advanced**, then **Sections and promotion**.
+
+- **Photo Gallery**, **Albums**. **Coming soon** takes every album's
+  photographs and videos off the website, on the festival and Gala pages too.
+  Photographs placed directly on a page stay.
+- **Our Story**, **Timeline**. Shows or hides the timeline.
+- **End-of-Year Gala**, **Awards**. Shows or hides the honorees.
+
+### Organization details
+
+**Organization details** holds our name, EIN, address, phone and email, who
+receives each kind of message, the footer, and the addresses of our Zeffy
+donation and membership forms.
+
+## Words Studio uses
+
+- Studio: the private part of our website, where we make changes.
+- Administrator: one of the people who look after the website. An
+  administrator can change everything in Studio.
+- Draft: your changes before they are published. Only people signed in to
+  Studio can see a draft.
+- Publish: put your changes on the website for everyone to see.
+- Edition: one year of the festival or the Gala.
+- Alt text: a sentence describing a photograph, for people who cannot see it.
+- Caption: the line of words shown with a photograph.
+- Kicker: the small line in capitals above a heading, Yoruba first, then
+  English.
+- Pending: the label the website shows where a fact is still missing.
+- Web address: the end of a page's link, made from its title.
+- Way in: one way a visitor can take part, such as volunteering or giving.
+- Zeffy: the service that takes payments for our tickets, donations and
+  memberships.
