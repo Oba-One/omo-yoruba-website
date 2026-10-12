@@ -7,6 +7,7 @@ import {
   EVENT_KINDS,
   editionFieldShown,
 } from '../../edition-fields';
+import { PARTNER_KIND_TITLES, PARTNER_KINDS } from '../../partners';
 import { COLLECTIVE_NAME, EVENT_PAGE_NAMES } from '../../routes';
 import {
   PARTNER_SCOPE_TITLES,
@@ -740,8 +741,6 @@ export const photographer = defineType({
   preview: { select: { title: 'name', subtitle: 'defaultCredit' } },
 });
 
-export const PARTNER_KINDS = ['funder', 'partner', 'sponsor'] as const;
-
 export const partner = defineType({
   name: 'partner',
   title: 'Partner',
@@ -752,14 +751,25 @@ export const partner = defineType({
       name: 'logo',
       title: 'Logo',
       type: 'oyImage',
-      description: 'Optional; a text chip shows without one.',
+      description: 'Optional; the card shows without one.',
     }),
     defineField({ name: 'url', title: 'Link', type: 'url' }),
+    defineField({
+      name: 'line',
+      title: 'What they do with us',
+      type: 'string',
+      description: 'One line on their card: what they bring or do. Optional.',
+      validation: voice.text,
+    }),
     defineField({
       name: 'kind',
       title: 'Kind',
       type: 'string',
-      options: { list: titled(PARTNER_KINDS), layout: 'radio', direction: 'horizontal' },
+      options: {
+        list: titled(PARTNER_KINDS, PARTNER_KIND_TITLES),
+        layout: 'radio',
+        direction: 'horizontal',
+      },
     }),
     defineField({
       name: 'scope',

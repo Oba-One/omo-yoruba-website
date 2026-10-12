@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './Handoff.stories';
 
-const { Default, Quiet, ButtonOnly, Box, BoxTwoButtons, BoxPending } = composeStories(stories);
+const { Default, Quiet, ButtonOnly, Box, BoxQuiet, BoxTwoButtons, BoxPending } =
+  composeStories(stories);
 
 describe('Handoff', () => {
   it('renders the outline button and the line beside it', async () => {
@@ -22,15 +23,21 @@ describe('Handoff', () => {
     expect((await renderToBody(ButtonOnly)).querySelector('.oy-handoff-text')).toBeNull();
   });
 
-  it('draws the box with the line first and the quiet Donate after it', async () => {
+  it('draws the box with the line first and Donate as the outline after it', async () => {
     const box = (await renderToBody(Box)).querySelector('.oy-handoff');
     expect(text(box?.querySelector('p.oy-handoff-say'))).toBe(
       'Too small to sponsor, but want the day to happen? A gift does the same work.',
     );
     const buttons = box?.querySelectorAll('.oy-handoff-actions a.oy-btn');
     expect(buttons).toHaveLength(1);
-    expect(buttons?.[0]?.className).toContain('oy-btn--quiet');
+    expect(buttons?.[0]?.className).toContain('oy-btn--secondary');
     expect(buttons?.[0]?.hasAttribute('data-give')).toBe(true);
+  });
+
+  it('takes a quiet link in the box', async () => {
+    const link = (await renderToBody(BoxQuiet)).querySelector('.oy-handoff-actions a.oy-btn');
+    expect(link?.className).toContain('oy-btn--quiet');
+    expect(link?.getAttribute('href')).toBe('/gallery');
   });
 
   it('adds the second button as the outline without an arrow', async () => {

@@ -57,7 +57,7 @@ function span(text: string, index: number) {
 }
 const blocks = (...paragraphs: string[]) => paragraphs.map(span);
 
-// The festival's words that count its zones, and how the earlier seed counted them (ADR 0055).
+// The festival's words that count its zones, and how the earlier seed counted them (ADR 0056).
 const ODUNDE_SUMMARY = 'One village, three zones, one family.';
 const FESTIVAL_LINE =
   'A day of Yoruba culture at Leimert Park, held each June. Three zones, one village, open to everyone.';
@@ -299,7 +299,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
     title: 'Odunde Festival 2027',
     edition: 2027,
     venue: { name: 'Leimert Park' },
-    // The edition's line on the homepage band (02 Homepage); three zones is the confirmed count (ADR 0055).
+    // The edition's line on the homepage band (02 Homepage); three zones is the confirmed count (ADR 0056).
     summary: ODUNDE_SUMMARY,
   });
   docs.push({
@@ -941,7 +941,7 @@ export const RETIRED_FIELDS: Record<string, readonly string[]> = {
     'yearStrip[].event',
   ],
   lessonsPage: ['voices'],
-  // The closing band's line names the partnerships lead instead (ADR 0035).
+  // The closing ask's line names the partnerships lead instead (ADR 0035).
   impactPage: ['nextYear.blurb'],
   // The header line says what the intro would (ADR 0039).
   galleryPage: ['intro'],
@@ -1033,7 +1033,7 @@ export function buildRevisions(assets: SeedAssets): SeedRevision[] {
       was: 'hometown associations',
       now: ASSOCIATIONS_LABEL,
     },
-    // The festival has three zones (ADR 0055): the earlier seed wrote four in these four places.
+    // The festival has three zones (ADR 0056): the earlier seed wrote four in these four places.
     { type: 'stat', id: 'stat-zones', path: 'value', was: '4', now: '3' },
     {
       type: 'event',

@@ -9,7 +9,7 @@
    treatment and the seam) is ported to the end of this file, with a narrow warm scrim in the formal
    scrim's vertical form; the Pending chip's corners are 16px instead of a full pill, the same on one
    line and a rounded box when a long chip wraps in a narrow cell, and a chip keeps its own box in a
-   sponsor level's amount (Phase 5); after the first showing (ADR 0055) a dialog's panel sits in the
+   sponsor level's amount (Phase 5); after the first showing (ADR 0056) a dialog's panel sits in the
    middle of the scrim and never outgrows the screen, with the page behind it held; a take-part band's
    rows share their columns; a glance strip's cells share their rows; a lone ticket tier lies across
    the width; and the mosaic lays out three zones.
@@ -636,7 +636,7 @@
   padding-top: 14px;
   padding-bottom: 18px;
 }
-/* Three zones, the festival's count (ADR 0055): the second and third lie beside the market, one above
+/* Three zones, the festival's count (ADR 0056): the second and third lie beside the market, one above
    the other across the rest of the row, each with its photograph at the left of its words, so the
    mosaic has no empty corner. */
 @media (width > 820px) {
@@ -1173,7 +1173,7 @@
   border-left: 1px solid var(--border-soft);
 }
 /* The cells share the strip's rows, so a label that wraps to two lines keeps every value, and every
-   note under it, on one level across the strip (ADR 0055). A browser without subgrid stacks each cell
+   note under it, on one level across the strip (ADR 0056). A browser without subgrid stacks each cell
    on its own, as before. */
 @supports (grid-template-rows: subgrid) {
   .oy-glance > div {
@@ -1310,7 +1310,7 @@
 .oy-takepart[data-labels="column"] .oy-path-chip {
   width: 124px;
 }
-/* One width for every button in a band (ADR 0055): the rows share the band's three columns, so the
+/* One width for every button in a band (ADR 0056): the rows share the band's three columns, so the
    longest label sets the width and the buttons line up down the right edge. Under 720px the row wraps
    and its button fills the width, as before; a browser without subgrid keeps the rows as they were. */
 @supports (grid-template-columns: subgrid) {
@@ -1959,7 +1959,7 @@
   }
 }
 /* A lone tier lies across the width as a ticket: the name and the price as its stub, what it includes
-   beside them behind a dashed rule, the button at the far end (ADR 0055: one card in a row of three
+   beside them behind a dashed rule, the button at the far end (ADR 0056: one card in a row of three
    left the row empty). Under 900px it is the card again. */
 .oy-tiers[data-count="1"] {
   grid-template-columns: 1fr;
@@ -2013,7 +2013,7 @@
 /* ---- Modal shell: sponsor, performer, table. Dialog on desktop, bottom sheet on mobile. ----
    The panel never outgrows the screen: it sits in the middle of the scrim, its head stays put and its
    body scrolls, so a long form is read inside the panel (the prototype hung the panel from the top
-   and scrolled the scrim; ADR 0055). The scrim itself has nothing to scroll, so a wheel or a finger
+   and scrolled the scrim; ADR 0056). The scrim itself has nothing to scroll, so a wheel or a finger
    on it or on the head would pass to the page behind: the page is held while a dialog is open. */
 html:has(dialog.oy-modal-scrim[open]) {
   overflow: hidden;

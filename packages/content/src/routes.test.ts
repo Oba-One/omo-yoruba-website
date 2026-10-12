@@ -98,6 +98,9 @@ describe('TYPE_ROUTES and routesFor', () => {
       '/impact',
     ]);
     expect(routesFor('impactPage')).toEqual(['/impact', '/donate']);
+    // An event page leads with its own route; the homepage follows, for the card that introduces it.
+    expect(routesFor('festivalPage')).toEqual(['/odunde', '/']);
+    expect(routesFor('galaPage')).toEqual(['/gala', '/']);
     expect(routesFor('siteSettings')).toEqual(
       PUBLIC_ROUTES.filter((route) => !route.includes('[')),
     );
@@ -124,6 +127,9 @@ describe('tagsForRoute', () => {
     expect(tagsForRoute('/')).toEqual([
       'type:siteSettings',
       'type:homepage',
+      // The two events' cards read each event page's own header (ADR 0057).
+      'type:festivalPage',
+      'type:galaPage',
       'type:event',
       // The event band names tables only when the lead Gala edition has a table tier.
       'type:ticketTier',

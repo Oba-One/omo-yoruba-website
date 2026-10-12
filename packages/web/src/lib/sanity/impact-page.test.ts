@@ -351,23 +351,29 @@ describe('buildImpactPage', () => {
     });
   });
 
-  it('lists every partner, funders first, and hides the section by its option', () => {
+  it('lists every partner, funders first, with its kind and line, and hides the section by its option', () => {
     const partners = [
-      { _id: 'p-a', name: '[ A sponsor ]', url: null, kind: 'sponsor', logo: null },
+      { _id: 'p-a', name: '[ A sponsor ]', url: null, kind: 'sponsor', line: null, logo: null },
       {
         _id: 'p-b',
         name: '[ A partner ]',
         url: 'https://example.org',
         kind: 'partner',
+        line: '[ What they do with us ]',
         logo: null,
       },
-      { _id: 'p-c', name: '[ A funder ]', url: null, kind: 'funder', logo: null },
+      { _id: 'p-c', name: '[ A funder ]', url: null, kind: 'funder', line: null, logo: null },
     ];
     const view = buildImpactPage(withData({ partners }), options).partners;
     expect(view.items.map((partner) => partner.name)).toEqual([
       '[ A funder ]',
       '[ A partner ]',
       '[ A sponsor ]',
+    ]);
+    expect(view.items.map(({ kind, line, url }) => ({ kind, line, url }))).toEqual([
+      { kind: 'funder', line: undefined, url: undefined },
+      { kind: 'partner', line: '[ What they do with us ]', url: 'https://example.org' },
+      { kind: 'sponsor', line: undefined, url: undefined },
     ]);
     expect(view.intro).toBe('Everyone who has supported the work.');
     expect(

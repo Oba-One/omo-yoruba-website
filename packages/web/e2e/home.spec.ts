@@ -5,8 +5,9 @@ import { expectNoMockWhileOwed, PLACEHOLDER_PROJECT } from './helpers';
 
 // The homepage blocks in the prototype's order (ROUTES section 4), each present whether the
 // Studio holds its content or renders Pending (CI runs with a placeholder project, so every read
-// answers null): the hero with one h1, the stat strip, the event band, programs, member voices,
-// the year in the life, raise your hand, and the footer. The doors open the Enquiry Modal.
+// answers null): the hero with one h1, the stat strip, the event band, the two events' cards (added
+// after the handoff, ADR 0057), programs, member voices, the year in the life, raise your hand, and
+// the footer. The doors open the Enquiry Modal.
 test.describe('the homepage', () => {
   test('carries every block in order, one h1 and nothing open on load', async ({ page }) => {
     await page.goto('/');
@@ -17,7 +18,7 @@ test.describe('the homepage', () => {
         .map((el) => el.id || el.className.split(' ')[0])
         .join(' '),
     );
-    expect(order).toBe('top impact lead-event programs voices gallery get-involved');
+    expect(order).toBe('top impact lead-event events programs voices gallery get-involved');
     await expect(page.locator('header.v2-hero .v2-hero-scrim')).toHaveCount(1);
     await expect(page.locator('#lead-event.oy-event-band')).toHaveCount(1);
     await expect(page.locator('#programs [data-columns="3"]')).toHaveCount(1);
@@ -57,6 +58,36 @@ test.describe('the homepage', () => {
     expect(body).not.toMatch(/95-4612387|555-0148/);
     expectNoMockWhileOwed(body, [[/Leimert Boulevard/, pendingWhat('siteSettings', 'address')]]);
     if (PLACEHOLDER_PROJECT) expect(body).not.toMatch(/\$\d/);
+  });
+
+  test('introduces the two events under the band, each with a quiet link to its page', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const section = page.locator('#events');
+    await expect(section.locator('h2')).toHaveText('Our two celebrations');
+    const cards = section.locator('.oy-event-card');
+    await expect(cards).toHaveCount(2);
+    // The festival first, as the year runs, and each card opens its own page.
+    expect(
+      await cards.evaluateAll((all) => all.map((card) => card.getAttribute('data-event'))),
+    ).toEqual(['festival', 'gala']);
+    await expect(cards.nth(0).getByRole('link', { name: 'See Odunde' })).toHaveAttribute(
+      'href',
+      '/odunde',
+    );
+    await expect(cards.nth(1).getByRole('link', { name: 'See the Gala' })).toHaveAttribute(
+      'href',
+      '/gala',
+    );
+    // Each card is named whatever the Studio holds: the page's own heading, or the event's name.
+    for (const card of await cards.all()) await expect(card.locator('h3')).toHaveText(/\S/);
+    if (PLACEHOLDER_PROJECT) {
+      await expect(cards.locator('h3')).toHaveText(['Odunde Festival', 'End-of-Year Gala']);
+      await expect(cards.locator('.oy-event-card-placeholder')).toHaveCount(2);
+    }
+    // The band above keeps the view's gold; the cards carry none.
+    await expect(section.locator('.oy-btn--primary')).toHaveCount(0);
   });
 
   test('holds the prototype layout at this width', async ({ page }) => {

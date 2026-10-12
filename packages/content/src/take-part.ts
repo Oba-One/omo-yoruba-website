@@ -41,7 +41,7 @@ const SUPPORTING_WAYS: readonly WayIn[] = ['give', 'updates'];
 
 /**
  * Whether a way in may carry its band's one gold action. Give and updates never do: their button is an
- * outline like every other row's, wherever the row stands (ADR 0055: one button shape in a band, where
+ * outline like every other row's, wherever the row stands (ADR 0056: one button shape in a band, where
  * the prototypes drew those two as text links).
  */
 export const canCarryGold = (way: WayIn | undefined): boolean =>
