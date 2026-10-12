@@ -117,6 +117,9 @@ export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
   // Donate's trust block keeps its promise of a source line under every number only while Impact shows them.
   impactPage: ['/impact', '/donate'],
+  // The homepage introduces the two events from their own pages' headers (ADR 0057).
+  festivalPage: ['/odunde', '/'],
+  galaPage: ['/gala', '/'],
   // Every album page closes with the gallery's credit and permissions section and wears its kicker; the
   // gallery's state holds the photographs the event pages' past years reach through albums (ADR 0043).
   galleryPage: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],

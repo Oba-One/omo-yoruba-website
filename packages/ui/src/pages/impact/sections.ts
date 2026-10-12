@@ -9,9 +9,8 @@ import { IMPACT_VOICE_SLOTS } from '@oy/content/pending';
 import OutcomeCard from '../../cards/OutcomeCard/OutcomeCard.astro';
 import PullQuote from '../../cards/PullQuote/PullQuote.astro';
 import FactList from '../../content/FactList/FactList.astro';
-import PartnerRow from '../../content/PartnerRow/PartnerRow.astro';
+import PartnerCards from '../../content/PartnerCards/PartnerCards.astro';
 import Prose from '../../content/Prose/Prose.astro';
-import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import Button from '../../core/Button/Button.astro';
 import Pending from '../../core/Pending/Pending.astro';
 import {
@@ -35,6 +34,7 @@ import {
 } from '../../fixtures/trust-pages';
 import PhotoMosaic from '../../media/PhotoMosaic/PhotoMosaic.astro';
 import PhotoTile from '../../media/PhotoTile/PhotoTile.astro';
+import AskCard from '../../page/AskCard/AskCard.astro';
 import ButtonRow from '../../page/ButtonRow/ButtonRow.astro';
 import CardGrid from '../../page/CardGrid/CardGrid.astro';
 import GlanceStrip from '../../page/GlanceStrip/GlanceStrip.astro';
@@ -219,7 +219,7 @@ export const voices: SlotValue = {
         component: SectionHead,
         props: {
           title: 'In their words',
-          intro: 'A parent, an elder, and a vendor, in their own words.',
+          intro: 'What people say about the work, in their own words.',
           id: 'voices-heading',
         },
       },
@@ -298,7 +298,17 @@ export const governance: SlotValue = {
   },
 };
 
-/** Partners and funders: the Pending line while the Studio holds none. */
+/** The ask that closes the page: who answers, the gold button and the outline (ADR 0057). */
+const ASK = {
+  kicker: FUND.kicker,
+  title: FUND.title,
+  line: FUND.line,
+  linePending: FUND.linePending,
+  action: FUND.actions[0],
+  secondAction: FUND.actions[1],
+};
+
+/** Partners and funders: the Pending line while the Studio holds none, and the ask at the section's foot. */
 export const funders: SlotValue = {
   component: Section,
   props: { id: 'funders', ground: 'alt', labelledby: 'funders-heading' },
@@ -308,40 +318,17 @@ export const funders: SlotValue = {
         component: SectionHead,
         props: { title: 'Partners and funders', intro: FUNDERS_INTRO, id: 'funders-heading' },
       },
-      { component: PartnerRow, props: { partners: [], pending: 'partner and funder names' } },
+      { component: PartnerCards, props: { partners: [], pending: 'partner and funder names' } },
+      { component: AskCard, props: { id: 'fund', ...ASK } },
     ],
   },
 };
 
-/** Fund the next year: the dark band with the partnerships lead's sentence and the two actions. */
+/** Fund the next year with the partners hidden: the ask alone, its heading the section's own. */
 export const fund: SlotValue = {
   component: Section,
-  props: { id: 'fund', ground: 'dark', labelledby: 'fund-heading' },
+  props: { id: 'fund', ground: 'alt', labelledby: 'fund-heading' },
   slots: {
-    default: [
-      {
-        component: SectionHead,
-        props: {
-          kicker: FUND.kicker,
-          swatch: false,
-          title: FUND.title,
-          intro: FUND.line,
-          notePending: FUND.linePending,
-          id: 'fund-heading',
-        },
-      },
-      {
-        component: ButtonRow,
-        slots: {
-          default: [
-            { component: ActionButton, props: { action: FUND.actions[0], variant: 'primary' } },
-            {
-              component: ActionButton,
-              props: { action: FUND.actions[1], variant: 'secondary', arrow: false },
-            },
-          ],
-        },
-      },
-    ],
+    default: { component: AskCard, props: { headingId: 'fund-heading', level: 2, ...ASK } },
   },
 };

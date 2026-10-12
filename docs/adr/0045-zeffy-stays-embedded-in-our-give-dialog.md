@@ -4,7 +4,7 @@ Amended by ADR 0050: the dialog's shell, its listener and `zeffy.ts` are shared 
 Zeffy's membership form; the element is `oy-zeffy-dialog`, and each dialog hears the form its key names.
 Amended by ADR 0051: the policy also frames YouTube's no-cookie player, for an album's videos; what the Give
 Dialog may frame stays Zeffy's origin alone.
-Amended by ADR 0055: the panel never outgrows the screen, so its body holds the scroll where the dialog did, and
+Amended by ADR 0056: the panel never outgrows the screen, so its body holds the scroll where the dialog did, and
 the frame's floor is `clamp(320px, 100vh - 300px, 560px)`.
 
 Decided on 27 September 2026 by the owner, from `docs/research/online-giving-options.md` (pull request 16), which

@@ -154,8 +154,10 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
         .map((partner) => ({
           _id: partner._id,
           name: partner.name,
-          url: partner.url,
-          logo: resolveImage(imageSet, partner.logo, { width: 280 }),
+          url: cleanText(partner.url),
+          kind: cleanText(partner.kind),
+          line: partner.line ?? undefined,
+          logo: resolveImage(imageSet, partner.logo, { width: 320 }),
         })),
       pending: presenceWhat('partner')?.what ?? 'partner and funder names',
     },

@@ -3,7 +3,7 @@
  * (`10 Programs.dc.html`, spec Q2 of Phase 6). Pure, so a test drives it with a fixture: the layout
  * with the schema defaults, the slim header with the Studio's actions and the registry's chip for a
  * missing heading, every running program as a card in order (the first three under the `cards` option's
- * `three`; Cultural Exchange is not running and has none, ADR 0055), a program with its own page linking
+ * `three`; Cultural Exchange is not running and has none, ADR 0056), a program with its own page linking
  * there and an inline program linking to its section on this page, the two inline programs (Kids & STEM
  * with its sub-programs, Cultural Exchange with its facts) open or closed by `inline` and hidden with a
  * card the page leaves out, the year
@@ -39,7 +39,7 @@ const CULTURAL_EXCHANGE = 'Cultural Exchange';
 const EXCHANGE_SLUG = 'cultural-exchange';
 /**
  * Programs the Studio holds that are not running, by slug: off the page until they are (the owner said
- * so of Cultural Exchange on 11 October 2026, ADR 0055). Taking a slug out of this list brings its card
+ * so of Cultural Exchange on 11 October 2026, ADR 0056). Taking a slug out of this list brings its card
  * and its section back.
  */
 const NOT_RUNNING: readonly string[] = [EXCHANGE_SLUG];

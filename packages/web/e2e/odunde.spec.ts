@@ -131,7 +131,7 @@ test.describe('the Odunde Festival page', () => {
       expect(new Set(ways).size).toBe(ways.length);
       await expect(section.locator('.oy-btn--primary')).toHaveCount(1);
       // No option reorders the rows (ADR 0042): the first button in the markup that is neither the give
-      // row's nor the updates row's is the gold one, and no button in the section is a text link (ADR 0055).
+      // row's nor the updates row's is the gold one, and no button in the section is a text link (ADR 0056).
       await expect(
         section
           .locator(
@@ -212,14 +212,23 @@ test.describe('the Odunde Festival page', () => {
     );
   });
 
-  test('partners show their chips or the Pending line, then Donate in gold and Sponsor Odunde', async ({
+  test('partners show their cards or the Pending line, then Donate in gold and Sponsor Odunde', async ({
     page,
   }) => {
     await page.goto('/odunde');
     const partners = page.locator('#partners');
     await expect(partners.locator('h2')).toHaveText('Partners and sponsors of Odunde');
-    if ((await partners.locator('.oy-partner').count()) === 0) {
+    const cards = partners.locator('.oy-partner-card');
+    if ((await cards.count()) === 0) {
       await expect(partners.locator('.oy-pend-line')).toBeVisible();
+    }
+    // Each partner is a card by name; one with a site links out to it (ADR 0057).
+    for (const card of await cards.all()) {
+      await expect(card.locator('h3')).toHaveText(/\S/);
+      for (const link of await card.locator('a').all()) {
+        await expect(link).toHaveAttribute('href', /^https?:\/\//);
+        await expect(link).toHaveAttribute('rel', /noopener/);
+      }
     }
     await expect(partners.locator('.oy-btn--primary')).toHaveCount(1);
     await expect(partners.locator('.oy-handoff a.oy-btn--primary[data-give]')).toHaveCount(1);

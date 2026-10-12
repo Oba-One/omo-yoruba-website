@@ -1,5 +1,8 @@
 # The event pages follow their prototypes, except where a repo rule outranks them
 
+Amended by ADR 0057: Odunde's partners and sponsors are cards with a line and a link, where the prototype
+draws a row of name chips.
+
 Decided on 12 September 2026 (Phase 5, ticket 10), after comparing `/odunde` and `/gala` with `08
 Odunde Festival.dc.html` and `09 End-of-Year Gala.dc.html` side by side at 375 and 1440 (captures in
 `test-results/`, the prototypes served by the `design` entry of `.claude/launch.json`). Both pages keep
@@ -19,7 +22,7 @@ system readme, and no content is invented):
   "What Odunde is", "Take part in Odunde"); the kickers' Yoruba halves keep their marks (ADR 0009).
 - **Four zones.** The prototype draws five; the page draws the named zones and placeholders up to the
   confirmed four (spec Q3).
-  Amended by ADR 0055: the confirmed count is three.
+  Amended by ADR 0056: the confirmed count is three.
 - **Take-part rows** come from the singleton with the prototypes' invented facts taken out, the lead
   row moved in the markup rather than by CSS `order` (ADR 0025).
 - **The carousel** has 44px dot tabs, drawn chevrons and a count that is not uppercase (ADR 0027).

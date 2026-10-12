@@ -212,7 +212,7 @@ export const GOVERNANCE_FACTS = [
 
 export const FUNDERS_INTRO = 'Everyone who has supported the work.';
 
-/** The closing band while the partnerships lead is unnamed: the role and the chip for how soon. */
+/** The closing ask while the partnerships lead is unnamed: the role and the chip for how soon. */
 export const FUND = {
   kicker: { yo: 'Ọdún tí ń bọ̀', en: 'The year ahead' },
   title: 'Fund the next year',
