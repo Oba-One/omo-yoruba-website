@@ -19,7 +19,7 @@ describe('EventCard', () => {
     expect(links).toHaveLength(1);
     expect(links[0]?.getAttribute('href')).toBe('/odunde');
     expect(links[0]?.className).toContain('oy-btn--quiet');
-    expect(text(links[0])).toContain('See the festival');
+    expect(text(links[0])).toContain('See Odunde');
   });
 
   it('says when and where the next edition is only as far as the Studio holds them', async () => {

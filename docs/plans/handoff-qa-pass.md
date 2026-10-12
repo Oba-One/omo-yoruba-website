@@ -21,7 +21,7 @@ hero photographs' record took 0055 the same afternoon.)
 | Odunde's zones "should be three we are missing the Egbe-Ibile section" | done: code in the first pull request; the third zone published once it deployed, with a line and a photograph for each zone |
 | "We should high cultural exchange as a program it is not active" | done, first pull request |
 | "Volunteer is missing a photo we should add one on the get involved page" | done: published |
-| Quotes from the Odunde videos on the homepage and wherever quotes show | homepage done: published; Impact's three follow the second pull request's deploy, since its line promised "a parent, an elder, and a vendor" until then |
+| Quotes from the Odunde videos on the homepage and wherever quotes show | done: published, the homepage's three first and Impact's three once the second pull request was live, since Impact's line promised "a parent, an elder, and a vendor" until then |
 | "add myself, temitope, simi ogunleye, joyce and others as staff and volunteers" | the four named are published; the others the notes suggest wait for the owner's word |
 | "We need to add the detail for our story do deep research" | published: how it began, the first president, seven dated entries (the timeline itself stays hidden until the owner switches it on) |
 | "Odunde we need to fill the missing details" | part published: the 2027 date, free entry, the venue line, two visit facts, the hour-by-hour section hidden; the rest is not in the notes |
@@ -133,6 +133,32 @@ published with the draft's own revision. The owner's answers through the questio
   spec pinning the fourth give-now fact's sentence, which the organization reworded that day; the
   seeded check now asks only that the fact says something. Both pass on a rerun with the homepage spec.
 
+## After the second pull request
+
+Pull request 52 merged at 4:39pm on 11 October and was live within two minutes.
+
+- Published once it was live: `impactPage.voices`, three of the film's voices (the plaza, on display,
+  the third one), unnamed like the homepage's three. The live site then showed 82 Pending notes, where
+  it showed 117 that morning; the homepage shows none.
+- The two private pages the owner keeps (the showing's checklist and the list of what the site still
+  needs) were brought up to date from the live pages.
+- The third pull request, from the second one's review, which the merge did not wait for:
+  - `Section`'s comment and story and the trust query's comment no longer say Impact closes on a dark
+    band. `Handoff`'s stories draw the Odunde gift as the outline it has been since ADR 0056, say
+    "join them", and gained the quiet link in a box that the Gala uses.
+  - `PartnerCards` words a link only from an http or https address. `safeHref` also passes `mailto:`,
+    `tel:` and a path on this site, so a `mailto://` form with a host had drawn a link.
+  - The festival card's link reads "See Odunde": the glossary asks for the festival by its name.
+  - `SectionHead` lost `swatch`, which no page has used since Impact's dark band went.
+  - `AskCard` is a plain block, where it was an `aside`: alone in its section it had been a second
+    landmark with the section's own name.
+  - One list of partner kinds, `@oy/content/partners`: the Studio's choices, Impact's order and the
+    card's kicker read it, where the schema, the loader and the component each kept their own.
+  - Checked with `bun check` (1,252 tests in 172 files) and, against the real dataset, the homepage,
+    Impact, Odunde, Gala and navigation specs on desktop and phone sizes (82 tests).
+  - Left as it is: Impact's civic block links "The festival page" under a heading that names Odunde.
+    The words are the prototype's; the glossary's Avoid would have them name the festival.
+
 ## What the Drive notes hold, and what they contradict
 
 Read on 11 October for the open notes above: the planning document, the master sheet, every weekly sync
@@ -154,16 +180,12 @@ does not list stay out of this repository.
 
 ## Left
 
-- After the second pull request deploys: three of the film's voices on Impact, and a line for each
-  partner the notes describe.
+- A line, a link and a logo for each partner's card. Three lines the notes support were put to the
+  owner on 11 October and are saved at their word, so that no draft sat in the Studio before a showing:
+  STEMnetics, "Our partner for the STEM Hub at Odunde."; the Association of Moremi Women, "Keeps its own
+  tent and information booth at Odunde."; Red Carpet Films, "Films and photographs our events.", with
+  the YouTube channel its photographer credit already links to.
 - For the owner: names for the six voices; whether the other organizers the notes name join the list;
   whether the timeline shows; the founders and the earliest photograph; the festival's hours, parking,
   accessibility and vendor terms for 2027; ages for each program; how often the Collective meets.
 - The Studio's To do still asks for Cultural Exchange's facts (open-work E27).
-- From the second pull request's review, left for a follow-up so the merge did not wait: `Section`'s
-  story and comment and the trust query's comment still say Impact closes on a dark band; `Handoff`'s
-  story still says "join this row"; `PartnerCards` words a link from any address with a host, so
-  `mailto://` and `tel://` forms pass where only http and https should (the Studio's link field takes
-  neither); the event card's link reads "See the festival", which the glossary's Odunde entry asks to
-  avoid without the name; `SectionHead`'s `swatch` has no page left that uses it; and the ask is an
-  `aside`, a second landmark of the section's name when it stands alone.

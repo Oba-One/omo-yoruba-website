@@ -11,6 +11,7 @@
  * and the `data-sanity` attributes for click-to-edit in draft mode.
  */
 import { pageEdition, pastEdition } from '@oy/content/lead-event';
+import { partnerKindRank } from '@oy/content/partners';
 import {
   GOVERNANCE_NOTE_PENDING,
   IMPACT_OUTCOME_SLOTS,
@@ -48,9 +49,6 @@ const SOURCES_LEAD =
 
 /** The prototype's heading for the closing ask while the Studio holds none. */
 const FUND_TITLE = 'Fund the next year';
-
-/** The order partners list in: funders first, then partners, then sponsors, then any without a kind. */
-const PARTNER_ORDER: Readonly<Record<string, number>> = { funder: 0, partner: 1, sponsor: 2 };
 
 type Outcome = NonNullable<ImpactPageData['outcomes']>[number];
 type Program = ImpactPageData['programs'][number];
@@ -319,11 +317,8 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       intro: data?.fundersIntro ?? undefined,
       items: (data?.partners ?? [])
         .filter((partner) => cleanText(partner.name))
-        .sort(
-          (a, b) =>
-            (PARTNER_ORDER[cleanText(a.kind) ?? ''] ?? 3) -
-            (PARTNER_ORDER[cleanText(b.kind) ?? ''] ?? 3),
-        )
+        // In the kinds' own order (`@oy/content/partners`), a partner of no known kind last.
+        .sort((a, b) => partnerKindRank(cleanText(a.kind)) - partnerKindRank(cleanText(b.kind)))
         .map((partner) => ({
           _id: partner._id,
           name: partner.name,

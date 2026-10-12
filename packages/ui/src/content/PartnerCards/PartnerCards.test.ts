@@ -49,6 +49,8 @@ describe('PartnerCards', () => {
     const cards = [...(await renderToBody(Logos)).querySelectorAll('.oy-partner-card')];
     expect(cards[0]?.querySelector('img.oy-partner-card-logo')).not.toBeNull();
     expect(cards[1]?.querySelector('a')).toBeNull();
+    // An address with a host and another scheme has passed the action guard; a card still refuses it.
+    expect(cards[2]?.querySelector('a')).toBeNull();
   });
 
   it("shows the registry's Pending line with no partners", async () => {

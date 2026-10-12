@@ -63,7 +63,7 @@ export const Seven: Story = {
   },
 };
 
-/** A logo leads its card; a link with any scheme but http or https is left out. */
+/** A logo leads its card; a link that is not a web address (any scheme but http or https) is left out. */
 export const Logos: Story = {
   args: {
     partners: [
@@ -74,6 +74,7 @@ export const Logos: Story = {
         logo: { src: LOGO, width: 280, height: 64 },
       },
       { _id: 'p2', name: '[ Sponsor name ]', kind: 'sponsor', url: 'javascript:alert(1)' },
+      { _id: 'p3', name: '[ Funder name ]', kind: 'funder', url: 'mailto://example.org' },
     ],
   },
 };

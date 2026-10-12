@@ -7,9 +7,11 @@ const { Default, Whole, SectionHeading, Bare } = composeStories(stories);
 
 describe('AskCard', () => {
   it('draws the kicker, the heading and the line, with one gold button and the outline beside it', async () => {
-    const card = (await renderToBody(Default)).querySelector('aside.oy-ask-card');
+    const card = (await renderToBody(Default)).querySelector('.oy-ask-card');
     expect(card?.id).toBe('fund');
-    expect(card?.getAttribute('aria-labelledby')).toBe('fund-heading');
+    // A plain block: the section around it is the landmark, so the card is none and names none.
+    expect(card?.tagName).toBe('DIV');
+    expect(card?.hasAttribute('aria-labelledby')).toBe(false);
     expect(text(card?.querySelector('.oy-kicker'))).toContain('The year ahead');
     expect(text(card?.querySelector('h3#fund-heading'))).toBe('Fund the next year');
     const buttons = [...(card?.querySelectorAll('.oy-ask-card-actions a.oy-btn') ?? [])];
@@ -37,7 +39,6 @@ describe('AskCard', () => {
   it("takes the section's heading level and id where it stands alone", async () => {
     const card = (await renderToBody(SectionHeading)).querySelector('.oy-ask-card');
     expect(card?.hasAttribute('id')).toBe(false);
-    expect(card?.getAttribute('aria-labelledby')).toBe('fund-heading');
     expect(text(card?.querySelector('h2#fund-heading'))).toBe('Fund the next year');
     expect(card?.querySelector('h3')).toBeNull();
   });

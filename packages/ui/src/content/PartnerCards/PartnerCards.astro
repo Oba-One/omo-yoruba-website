@@ -2,12 +2,13 @@
 /**
  * The partners and sponsors of a page as cards (added after the handoff, whose `08 Odunde
  * Festival.dc.html` draws a row of name chips; ADR 0057). One card each on the card base: what the
- * partner is to us (partner, sponsor or funder) as the kicker, its name, one line on what it does with us
- * when the Studio holds one, and a quiet link to its own site, worded by the site's address. The logo
- * leads the card when the Studio holds one. Three across, two on a tablet and one on a phone, a short
- * last row in the middle. No partner renders the registry's Pending line. `PartnerRow` keeps the chips
- * for a list of names alone.
+ * partner is to us as the kicker (partner, sponsor or funder, the one list in `@oy/content/partners`),
+ * its name, one line on what it does with us when the Studio holds one, and a quiet link to its own
+ * site, worded by the site's address. The logo leads the card when the Studio holds one. Three across,
+ * two on a tablet and one on a phone, a short last row in the middle. No partner renders the registry's
+ * Pending line. `PartnerRow` keeps the chips for a list of names alone.
  */
+import { PARTNER_KIND_TITLES, partnerKind } from '@oy/content/partners';
 import Card from '../../cards/Card/Card.astro';
 import { safeHref } from '../../core/ActionButton/action';
 import Button from '../../core/Button/Button.astro';
@@ -32,17 +33,15 @@ interface Props {
   class?: string;
 }
 
-/** The kicker each kind wears; a kind the Studio does not know draws none. */
-const KIND_LABELS: Record<string, string> = {
-  partner: 'Partner',
-  sponsor: 'Sponsor',
-  funder: 'Funder',
-};
-
-/** A site's address as a reader says it: the host, without `www.`. */
+/**
+ * A site's address as a reader says it: the host, without `www.`. Only a web address has one here:
+ * `safeHref` also passes `mailto:`, `tel:` and a path on this site, none of which is a partner's site.
+ */
 function hostOf(href: string): string | undefined {
   try {
-    return new URL(href).hostname.replace(/^www\./, '') || undefined;
+    const { protocol, hostname } = new URL(href);
+    if (protocol !== 'http:' && protocol !== 'https:') return undefined;
+    return hostname.replace(/^www\./, '') || undefined;
   } catch {
     return undefined;
   }
@@ -66,14 +65,13 @@ const list = (partners ?? []).filter(
         // Checked again here: the Studio's URL rule does not run on API or seed writes.
         const url = safeHref(partner.url);
         const host = url ? hostOf(url) : undefined;
-        const kind = KIND_LABELS[partner.kind?.trim() ?? ''];
+        const kind = partnerKind(partner.kind);
         const line = partner.line?.trim();
         return (
           <Card
             class="oy-partner-card"
-            kicker={kind ? { en: kind } : undefined}
+            kicker={kind ? { en: PARTNER_KIND_TITLES[kind] } : undefined}
             title={partner.name}
-            data-kind={partner.kind?.trim() || undefined}
           >
             {logo && (
               <img
