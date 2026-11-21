@@ -13,7 +13,10 @@
 /packages/web/src/pages/api/                         @Oba-One
 /packages/web/src/components/FormBridge.astro        @Oba-One
 /packages/web/src/components/ZeffyEmbed.astro        @Oba-One
+/packages/web/src/components/ZeffyFrame.astro        @Oba-One
+/packages/web/src/layouts/SiteLayout.astro           @Oba-One
 /packages/web/src/lib/cache-policy.ts                @Oba-One
+/packages/web/src/lib/cache.ts                       @Oba-One
 /packages/web/src/lib/csp.ts                         @Oba-One
 /packages/web/astro.config.ts                        @Oba-One
 /packages/content/src/enquiry-*                      @Oba-One
@@ -21,6 +24,8 @@
 /packages/content/src/schema/documents/subscriber.ts @Oba-One
 /packages/content/src/studio/roles.ts                @Oba-One
 /packages/content/src/studio/config.ts               @Oba-One
+/packages/content/src/studio/document-options.ts     @Oba-One
+/packages/content/src/studio/structure.ts            @Oba-One
 /packages/content/scripts/                           @Oba-One
 /packages/content/functions/                         @Oba-One
 /sanity.blueprint.ts                                 @Oba-One
@@ -62,3 +67,5 @@ vercel.json                                          @Oba-One
 /biome.json                        @Oba-One
 /packages/web/playwright.config.ts @Oba-One
 /packages/web/lighthouserc.cjs     @Oba-One
+/.gitignore                        @Oba-One
+/.mcp.json                         @Oba-One
