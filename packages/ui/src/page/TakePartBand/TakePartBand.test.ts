@@ -3,8 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './TakePartBand.stories';
 
-const { Default, Gala, Programs, Lessons, Collective, NoLabels, Kicker, RowPending, Pending } =
-  composeStories(stories);
+const {
+  Default,
+  VendorTermsParked,
+  Gala,
+  Programs,
+  Lessons,
+  Collective,
+  NoLabels,
+  Kicker,
+  RowPending,
+  Pending,
+} = composeStories(stories);
 
 const rowsOf = (body: HTMLElement) => [...body.querySelectorAll('.oy-takepart > .oy-path')];
 
@@ -53,6 +63,14 @@ describe('TakePartBand', () => {
       'A booth is held once the fee is paid. Pending: fees, deadline and permit rules',
     );
     expect(sponsor?.querySelector('.oy-pend')).toBeNull();
+  });
+
+  it('draws no chip for the vendor terms when the page hands no wording (ADR 0058)', async () => {
+    const [vendor] = rowsOf(await renderToBody(VendorTermsParked));
+    expect(text(vendor?.querySelector('.oy-path-body p'))).toBe(
+      'A booth is held once the fee is paid.',
+    );
+    expect(vendor?.querySelector('.oy-pend')).toBeNull();
   });
 
   it('draws the Gala rows with the table form and the give row as an outline, and no vendor terms', async () => {
