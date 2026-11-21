@@ -1,0 +1,65 @@
+# Verdicts for .claude/hooks/block-dangerous-git.sh: "block" or "allow", a tab, then the command.
+# The R144 spellings come first (docs/tickets/review/issues/144-*.md); each was allowed before.
+block	git clean -df
+block	git clean -xdf
+block	git checkout -- .
+block	git restore -- .
+block	git reset HEAD~1 --hard
+block	git -C . reset --hard
+block	git branch --delete --force x
+block	git push origin --delete x
+block	git push origin :x
+block	git push -uf origin main
+# Spellings blocked before, kept blocked.
+block	git clean -fd
+block	git checkout .
+block	git restore .
+block	git reset --hard
+block	git branch -D x
+block	git push -f
+block	git push --force-with-lease
+block	git push origin +main
+# Other forms of the same operations.
+block	git clean --force
+block	git clean -f -x -d
+block	git reset --hard origin/main
+block	git -c core.pager=cat reset --hard
+block	/usr/bin/git reset --hard
+block	git branch -d x
+block	git branch -Dr origin/x
+block	git push --force origin main
+block	git push origin main --force
+block	git push --force-with-lease=main origin main
+block	git push -d origin x
+block	git push --mirror
+block	git checkout -f main
+block	git checkout HEAD -- :/
+block	git restore --worktree --staged .
+block	git restore --source=HEAD~1 .
+block	git status && git reset --hard
+block	git status; git clean -xdf
+block	echo hi | git checkout -- .
+block	bash -c "git reset --hard"
+block	(cd packages && git clean -xdf)
+block	FOO=1 git reset --hard
+# Everyday commands stay allowed.
+allow	git status
+allow	git push
+allow	git push -u origin kit
+allow	git push origin kit:kit
+allow	git reset --soft HEAD~1
+allow	git reset HEAD file.txt
+allow	git clean -n
+allow	git clean -nd
+allow	git branch --show-current
+allow	git branch -vv
+allow	git checkout -b feature
+allow	git checkout main
+allow	git checkout -- packages/web/src/file.ts
+allow	git restore packages/web/src/file.ts
+allow	git restore --staged .
+allow	git diff --stat
+allow	git log --oneline -5
+allow	git worktree list
+allow	ls -la
+allow	bun run check
