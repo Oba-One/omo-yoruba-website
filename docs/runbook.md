@@ -678,8 +678,9 @@ for the two new ones when the change merges, or no pull request can merge. `.age
 all nine, and `scripts/tests/merge-policy.test.sh` keeps that list equal to the CI jobs. The
 owner applies it with `dev merge-settings apply --execute omo-yoruba`, which adds a ruleset
 named `agents-merge-policy` beside this protection; retiring the classic protection is then his
-call. Until then nothing auto-merges (the policy turns auto-merge off), and a merge by hand
-checks the pull request's own run of every job. To inspect it:
+call. Until then GitHub still allows auto-merge and enforces only those five contexts, so agents
+never use `gh pr merge --auto` (AGENTS.md, Merging), and a merge by hand checks the pull request's
+own run of every job. To inspect it:
 
 ```bash
 gh api repos/Oba-One/omo-yoruba-website/branches/main/protection --jq '.required_status_checks.contexts'
