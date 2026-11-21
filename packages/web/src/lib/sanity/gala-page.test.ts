@@ -388,6 +388,16 @@ describe('buildGalaPage', () => {
     expect(draft.seats.tiers[0]?.edit).toContain('id=seat;type=ticketTier;path=name');
   });
 
+  it('promises a source line under each number, under the sponsor levels, only while Impact shows them', () => {
+    expect(buildGalaPage(seeded, options).sponsor.handoff).toBe(
+      'Want the numbers before you commit? The impact page has them, with a source line under each one.',
+    );
+    const hidden = { ...seeded, impactSources: 'hidden' } as unknown as GalaPageData;
+    expect(buildGalaPage(hidden, options).sponsor.handoff).toBe(
+      'Want the numbers before you commit? The impact page has them.',
+    );
+  });
+
   it('carries the sponsor levels with their wording and edit attributes', () => {
     const view = buildGalaPage(seeded, options);
     expect(view.sponsor).toMatchObject({
