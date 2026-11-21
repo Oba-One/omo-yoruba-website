@@ -104,10 +104,16 @@ const mustBeCritical = [
   'packages/content/src/schema/documents/enquiry.ts',
   'packages/ui/src/forms/EnquiryModal/EnquiryModal.astro',
   '.github/dependabot.yml',
+  'packages/web/src/layouts/SiteLayout.astro',
+  'packages/web/src/components/ZeffyFrame.astro',
+  'packages/web/src/lib/cache.ts',
+  'packages/content/src/studio/document-options.ts',
+  'packages/content/src/studio/structure.ts',
 ];
 for (const file of mustBeCritical) {
-  if (files.includes(file) && tierOf(file) !== 'critical')
-    problems.push(`${file} is ${tierOf(file)}, not critical`);
+  if (!files.includes(file))
+    problems.push(`${file} is pinned as critical but is not tracked; update the pin`);
+  else if (tierOf(file) !== 'critical') problems.push(`${file} is ${tierOf(file)}, not critical`);
 }
 
 for (const problem of problems) console.log(`FAIL ${problem}`);
