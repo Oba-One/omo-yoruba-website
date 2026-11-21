@@ -144,12 +144,15 @@ jobs:
         with:
           name: storybook-static
           path: packages/ui/storybook-static
+          if-no-files-found: error
           retention-days: 3
 
   # Its own job, so a green "Storybook build" never stands for a Chromatic run that did not
   # happen. With no token it fails: stage 6 of scripts/setup-wizard.sh stores
-  # CHROMATIC_PROJECT_TOKEN as a repository secret. Pull requests from forks and from Dependabot
-  # never see repository secrets, so this check is red on them; afo merges those by hand.
+  # CHROMATIC_PROJECT_TOKEN as a repository secret. Dependabot pull requests read Dependabot
+  # secrets only, so the token is stored there too (gh secret set CHROMATIC_PROJECT_TOKEN --app
+  # dependabot), or they stay red. A fork's pull request sees no secrets and stays red. A green
+  # Chromatic means the build was uploaded; visual changes are reviewed in Chromatic itself.
   chromatic:
     name: Chromatic
     needs: storybook
@@ -162,7 +165,7 @@ jobs:
         if: env.CHROMATIC_PROJECT_TOKEN == ''
         shell: bash
         run: |
-          echo "::error title=Chromatic did not run::CHROMATIC_PROJECT_TOKEN is not set. Run stage 6 of scripts/setup-wizard.sh to add the secret, or drop Chromatic from .agents/merge-policy.json requiredChecks."
+          echo "::error title=Chromatic did not run::CHROMATIC_PROJECT_TOKEN is not set. Run stage 6 of scripts/setup-wizard.sh to add the secret (and gh secret set CHROMATIC_PROJECT_TOKEN --app dependabot for Dependabot pull requests)."
           exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

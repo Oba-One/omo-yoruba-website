@@ -56,6 +56,23 @@ while IFS=$'\t' read -r want command; do
   done
 done <"$cases"
 
+# Raw JSON the no-jq reader must decode as jq does: \u escapes, and a "command" key elsewhere.
+while IFS=$'\t' read -r want payload; do
+  [[ -z "$want" ]] && continue
+  total=$((total + 1))
+  for how in claude no-jq; do
+    got=$(verdict "$how" "$payload")
+    if [[ "$got" != "$want" ]]; then
+      printf 'FAIL %s raw JSON: want %s, got %s: %s\n' "$how" "$want" "$got" "$payload"
+      failures=$((failures + 1))
+    fi
+  done
+done <<'JSON'
+block	{"tool_name":"Bash","tool_input":{"command":"git reset --hard"}}
+block	{"tool_name":"Bash","tool_input":{"command":"git reset --hard"}}
+allow	{"tool_name":"Bash","tool_input":{"command":"git status","description":"\"command\":\"git reset --hard\""}}
+JSON
+
 if ((failures)); then
   echo "$failures failure(s) in $total case(s)"
   exit 1

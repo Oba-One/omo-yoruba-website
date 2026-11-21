@@ -20,15 +20,21 @@ const ownerPattern = (glob) =>
       : `/${glob}`;
 const globRegex = (glob) =>
   new RegExp(
-    `^${glob.replace(/\*\*\/|\*\*|\*|[.+^${}()|[\]\\]/g, (token) => {
+    `^${glob.replace(/\*\*\/|\*\*|\*|\?|[.+^${}()|[\]\\]/g, (token) => {
       if (token === '**/') return '(.*/)?';
       if (token === '**') return '.*';
       if (token === '*') return '[^/]*';
+      if (token === '?') return '[^/]';
       return `\\${token}`;
     })}$`,
   );
 
-// CODEOWNERS mirrors the gated tiers.
+// CODEOWNERS mirrors the gated tiers. A leading **/ maps to a bare name, which GitHub matches at any
+// depth only when it holds no slash, so **/a/b would map wrongly; such globs are refused.
+for (const glob of ['critical', 'sensitive'].flatMap((tier) => policy.tiers[tier].paths)) {
+  if (/^\*\*\/.*\//.test(glob))
+    problems.push(`tier path ${glob}: a **/ glob may name only a file, not a path`);
+}
 const gated = ['critical', 'sensitive'].flatMap((tier) => policy.tiers[tier].paths);
 const owners = read('.github/CODEOWNERS')
   .split('\n')
@@ -90,6 +96,14 @@ const mustBeCritical = [
   '.claude/hooks/block-dangerous-git.sh',
   '.codex/hooks.json',
   '.github/workflows/ci.yml',
+  'packages/web/src/components/FormBridge.astro',
+  'packages/web/src/components/ZeffyEmbed.astro',
+  'packages/content/scripts/export.ts',
+  'packages/content/scripts/dataset.ts',
+  'packages/content/src/studio/roles.ts',
+  'packages/content/src/schema/documents/enquiry.ts',
+  'packages/ui/src/forms/EnquiryModal/EnquiryModal.astro',
+  '.github/dependabot.yml',
 ];
 for (const file of mustBeCritical) {
   if (files.includes(file) && tierOf(file) !== 'critical')

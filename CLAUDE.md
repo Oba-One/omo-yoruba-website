@@ -9,10 +9,10 @@ imported below so Claude reads it first. Repo rules belong there, not here.
 
 - `.claude/settings.json` installs a PreToolUse hook (`.claude/hooks/block-dangerous-git.sh`)
   that blocks forced pushes, hard resets, tree cleaning, branch deletion and whole-tree
-  checkouts or restores where they would run, reading quotes and here-documents as a shell does,
-  so a commit message that mentions one passes. It is a seatbelt, not a sandbox. Plain pushes
-  are allowed. `.codex/hooks.json`
-  registers the same script for Codex.
+  checkouts or restores wherever an unquoted `git` runs, and in quoted text passed to anything
+  but a text command, so a commit message or PR body that mentions one usually passes (pass long
+  text through a file to be sure). It is a seatbelt, not a sandbox. Plain pushes are allowed.
+  `.codex/hooks.json` registers the same script for Codex.
 - `.claude/skills/` is the one skill source: the repo's `oy-*` skills and the kit's `review`,
   `debug`, `plan`, `ship` and `research`. `.agents/skills` is its symlink for Codex and other
   tools; never create a second copy.
