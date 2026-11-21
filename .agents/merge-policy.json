@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "mergeMethod": "squash",
+  "autoMerge": true,
+  "deleteBranchOnMerge": true,
+  "requiredChecks": [
+    "Typecheck, lint, test",
+    "Build packages/web",
+    "TypeGen drift",
+    "Commit messages and PR title",
+    "Shell scripts",
+    "Storybook build and Chromatic",
+    "Playwright and axe",
+    "agents-doctor / Agents doctor"
+  ],
+  "release": {
+    "about": "A merge into main is a production deploy: Vercel builds and serves www.omoyorubasocal.org from every main commit, and there is no integration branch. So the owner's approval sits at the merge for the critical tier (decision of 21 November 2026), while routine and sensitive changes go live once their proof is in the pull request body. Each pull request records its tier and proof under Verification; no Merge Gate check enforces it. Merge by hand with the reviewed head as the expected head: gh pr merge <n> --squash --match-head-commit <sha>, and stop if the head has moved. Rollback is a Vercel promote of the previous deployment (docs/runbook.md, Rollback).",
+    "approvalAt": ["merges of the critical tier into main"]
+  },
+  "tiers": {
+    "critical": {
+      "about": "Enquiry and form handling (personal data), the dataset and its guard, CSP, the link and Zeffy guards, deploy config and CI. Proof: bun run check, bun run build and bun e2e (CI's full set, green on the head), plus an adversarial review by a fresh agent with its findings addressed, both recorded in the pull request body. Then afo merges; agents never merge this tier. Code-owner review cannot gate it, because GitHub refuses approval of one's own pull request and afo is the only collaborator.",
+      "paths": [
+        "packages/web/src/actions/**",
+        "packages/web/src/lib/forms/**",
+        "packages/web/src/lib/sanity/**",
+        "packages/web/src/middleware.ts",
+        "packages/web/src/pages/api/**",
+        "packages/web/src/lib/csp.ts",
+        "packages/web/astro.config.ts",
+        "packages/content/src/enquiry-*",
+        "packages/content/functions/**",
+        "sanity.blueprint.ts",
+        "packages/ui/src/core/ActionButton/action.ts",
+        "packages/ui/src/cards/TicketTierCard/tickets.ts",
+        "packages/ui/src/forms/ZeffyDialog/**",
+        "**/vercel.json",
+        "scripts/setup-wizard.sh",
+        "scripts/check-dataset-private.mjs",
+        "scripts/pinned-bun.sh",
+        ".github/workflows/**",
+        ".github/actions/**"
+      ],
+      "requireCodeOwnerReview": false,
+      "autoMerge": false
+    },
+    "sensitive": {
+      "about": "The content model, queries, routes, the Pending registry, stored-content migrations and agent config. Proof: bun run check green and an adversarial review by a fresh agent with its findings addressed, both recorded in the pull request body. Agents merge on that proof.",
+      "paths": [
+        "packages/content/src/schema/**",
+        "packages/content/src/queries/**",
+        "packages/content/src/routes.ts",
+        "packages/content/src/pending.ts",
+        "packages/content/schema.json",
+        "packages/content/scripts/migrations/**",
+        "packages/content/scripts/migrate.ts",
+        "AGENTS.md",
+        "CLAUDE.md",
+        ".agents/**",
+        ".claude/**",
+        ".codex/**",
+        ".github/CODEOWNERS",
+        ".github/pull_request_template.md",
+        "lefthook.yml",
+        "biome.json"
+      ],
+      "requireCodeOwnerReview": false,
+      "autoMerge": false
+    },
+    "routine": {
+      "about": "Everything else. Proof: the targeted check for the changed behavior (bunx vitest related --run <path>, or the narrowest command that exercises it) and CI green, recorded in the pull request body. Agents merge on that proof.",
+      "paths": ["**"],
+      "requireCodeOwnerReview": false,
+      "autoMerge": true
+    }
+  }
+}
