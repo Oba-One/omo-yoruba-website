@@ -18,6 +18,8 @@ Tier: <critical | sensitive | routine>, from the paths in `.agents/merge-policy.
 - sensitive: `bun run check` and an adversarial review by a fresh agent, findings addressed
 - critical: `bun run check`, `bun run build` and `bun e2e` (CI green on the head), and an adversarial review by a fresh agent, findings addressed; afo merges
 
+Tick what applies; CI runs the check and the build on every pull request, so a routine change need not run them locally.
+
 - [ ] `bun run check` passes: typecheck, Biome, em dash, Yoruba diacritics, colour literals, unit tests, toolchain pins
 - [ ] `bun run build` passes
 - [ ] New or changed UI lives in `packages/ui` with a story: Default, each variant, Pending, OnDark where it applies

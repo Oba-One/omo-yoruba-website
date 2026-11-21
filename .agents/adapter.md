@@ -37,7 +37,7 @@ none: pick the tier by hand from Tiers and the paths in `.agents/merge-policy.js
 `.agents/merge-policy.json` names the paths. Critical (enquiry and form handling, the dataset, CSP, the link and Zeffy guards, deploy config, CI): the full tier plus an adversarial review by a fresh agent, then afo merges. Sensitive (schema, queries, routes, the Pending registry, migrations, agent config): the push tier plus an adversarial review by a fresh agent. Routine: the targeted tier.
 
 ### CI
-GitHub Actions, `.github/workflows/ci.yml` and `agents-doctor.yml`. Every job there is a required check (`.agents/merge-policy.json` `requiredChecks`). CI owns Playwright with axe on a clean runner, the Storybook build, and TypeGen drift; the Vercel preview and Lighthouse run on GitHub's deployment events.
+GitHub Actions, `.github/workflows/ci.yml` and `agents-doctor.yml`. `.agents/merge-policy.json` `requiredChecks` lists every job there (a test keeps the two equal), but GitHub enforces only the five the classic branch protection names until afo applies the merge settings (`docs/runbook.md`, CI and merging), so read the pull request's own run of every job before merging. CI owns Playwright with axe on a clean runner, the Storybook build, and TypeGen drift; the Vercel preview and Lighthouse run on GitHub's deployment events.
 
 ### Rendered proof
 Captures at 375 and 1280 wide, labeled with the route and width, for any visible change. `/admin` needs a signed-in Sanity session; agents have none, so Studio claims rest on the Sanity package's labels and the Studio's own tests.
@@ -119,7 +119,7 @@ Sanity: `bun run --filter @oy/content query -- '<GROQ>' --dataset development` (
 "PUBLIC_SANITY_PROJECT_ID and PUBLIC_SANITY_DATASET are required" → the worktree has no `packages/web/.env` (Command rules).
 
 ### UI gotchas
-`docs/runbook.md` § Local; an edited `@oy/ui` scoped stylesheet can stay stale in `astro dev` until a restart.
+`docs/runbook.md`; an edited `@oy/ui` scoped stylesheet can stay stale in `astro dev` until a restart.
 
 ### Known symptoms
 | Symptom | Likely cause | Diagnostic |

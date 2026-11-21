@@ -144,7 +144,7 @@ it touches (the highest tier any path reaches wins) and names the proof each tie
 | Routine | everything else | the targeted check (`bunx vitest related --run <path>`, or the narrowest command that exercises the change) and CI green | the agent, on that proof |
 
 A fresh agent is one briefed with the diff and the tier's risks, not the author's conclusions.
-Merge with the reviewed head as the expected head, `gh pr merge <n> --squash --match-head-commit
+Nothing auto-merges. Merge with the reviewed head as the expected head, `gh pr merge <n> --squash --match-head-commit
 <sha>`, and stop if the head has moved. No Merge Gate check enforces this; the pull request body
 is the record.
 
@@ -158,14 +158,15 @@ is the record.
 | Conventional commit subjects | hook: commit-msg; CI: `scripts/check-commits.sh` |
 | `bun run test` and `bun run build`, never `bun test` or `bun build` | guard: `.agents/policy.json` (machine guards, local sessions only) |
 | `docs/design` is a read-only reference | guard: `.agents/policy.json` (local sessions only); review |
-| `sanity.types.ts` is generated, never edited | guard: `.agents/policy.json`; CI: TypeGen drift |
-| No destructive git (forced push, hard reset, clean, branch deletion, whole-tree checkout or restore) | hook: `.claude/hooks/block-dangerous-git.sh` for Claude Code and Codex; test: `scripts/tests/git-guard.test.sh` in CI |
+| `sanity.types.ts` is generated, never edited | guard: `.agents/policy.json` (local sessions only); CI: TypeGen drift |
+| No destructive git (forced push, hard reset, clean, branch deletion, whole-tree checkout or restore) | hook: `.claude/hooks/block-dangerous-git.sh` for Claude Code and Codex, a seatbelt that a script or variable can still get past; test: `scripts/tests/git-guard.test.sh` in CI |
 | Enquiries only ever in a private dataset | build: `scripts/check-dataset-private.mjs` in every Vercel build and wizard stage 3; test: `scripts/tests/dataset-guard.test.sh` in CI |
 | Every required-for-launch field is in the Pending registry | test: `packages/content/src/pending.test.ts` |
 | Every content type has a Presentation location | test: `packages/content/src/studio/presentation.test.ts` |
 | Node and Bun pins agree, and Vercel builds through the pinned Bun | `scripts/check-toolchain-pins.sh` in `bun run check` |
 | WCAG AA on every page | CI: Playwright and axe |
-| The agent kit's contract (this file, `.agents/`, skills, hooks, PR template, CODEOWNERS) | CI: Agents Doctor |
+| The agent kit's contract (this file, `.agents/`, skills, hooks, PR template, CODEOWNERS) | CI: Agents Doctor, which checks their shape only |
+| The merge policy agrees with CODEOWNERS, the CI jobs and the tree | test: `scripts/tests/merge-policy.test.sh` in CI |
 | Proof by tier before a merge | review: the pull request body (Merging, above) |
 | Never invent content; the design rules in "Rules that lint cannot catch" | review |
 

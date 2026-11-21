@@ -1,4 +1,5 @@
 # Verdicts for .claude/hooks/block-dangerous-git.sh: "block" or "allow", a tab, then the command.
+# A literal \n in a command stands for a newline (here-documents, line continuations).
 # The R144 spellings come first (docs/tickets/review/issues/144-*.md); each was allowed before.
 block	git clean -df
 block	git clean -xdf
@@ -42,6 +43,59 @@ block	echo hi | git checkout -- .
 block	bash -c "git reset --hard"
 block	(cd packages && git clean -xdf)
 block	FOO=1 git reset --hard
+# Abbreviations git accepts, newer verbs, digit clusters and config that changes a verb (review of PR 57).
+block	git reset --har
+block	git push --force-with origin main
+block	git push --del origin x
+block	git push --mirr
+block	git push --pru
+block	git branch --del y
+block	git clean --forc
+block	git checkout --forc main
+block	git switch -f main
+block	git switch --force main
+block	git switch --discard-changes main
+block	git push -4f origin main
+block	git --config-env core.x=HOME reset --hard
+block	git -c alias.nk='push --force' nk origin main
+block	git -c alias.nuke='branch -D' nuke z
+block	git -c clean.requireForce=false clean
+block	git -c remote.origin.push=+refs/heads/main:refs/heads/main push origin
+block	git reset \\n--hard
+block	git restore --staged --wor .
+block	git checkout ./.
+block	git checkout .//
+block	git checkout -- $PWD
+block	git checkout HEAD -- ':(top)'
+block	echo --hard | xargs git reset
+# Git that runs inside another command.
+block	sh -c 'git push -f'
+block	bash -lc "git clean -xdf"
+block	eval "git reset --hard"
+block	echo "$(git reset --hard)"
+block	echo `git clean -fdx`
+block	find . -name x -exec git checkout -- . \;
+block	bash <<'EOF'\ngit reset --hard\nEOF
+block	timeout 5 git push --force
+block	sudo -u x git reset --hard
+block	env -i git reset --hard
+block	{ git reset --hard; }
+block	if true; then git clean -fd; fi
+# Text that only mentions a destructive command is not run, so it is allowed.
+allow	git commit -m "fix: describe git reset --hard"
+allow	git commit -F - <<'EOF'\nfix: the guard blocks git branch -D x\nEOF
+allow	gh pr create --body "never git push -f"
+allow	grep -rn "git reset --hard" docs
+allow	rg 'git checkout \.'
+allow	echo "run git restore ."
+allow	cat <<EOF > notes.txt\ngit clean -xdf\nEOF
+allow	git log --grep="reset --hard"
+allow	git status # git reset --hard
+allow	git switch main
+allow	git switch -c new-branch
+allow	git push --follow-tags
+allow	git push --no-verify
+allow	git branch --list
 # Everyday commands stay allowed.
 allow	git status
 allow	git push
