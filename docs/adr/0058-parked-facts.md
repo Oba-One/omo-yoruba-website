@@ -36,6 +36,7 @@ At the owner's word, from the assessment of that day ("Agree with all besides Ou
 
 | Page | Parked | What a visitor sees while it is empty |
 | --- | --- | --- |
+| Odunde | the next edition's hours ("Hide them for now") | no hours in the header, and no Time cell at a glance |
 | Odunde | a practical fact without its value | Plan your visit lists only the facts it holds |
 | Odunde | the next edition's vendor fees, deadline and permit rules | the vendor row without a note |
 | Odunde, Impact | the past edition's attendance | no note under Odunde in past years; no Attendance cell on Impact |

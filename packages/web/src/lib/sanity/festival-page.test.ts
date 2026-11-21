@@ -152,14 +152,10 @@ describe('buildFestivalPage', () => {
 
   it('writes the header facts and the glance from the edition, with the registry chips for what is missing', () => {
     const view = buildFestivalPage(seeded, options);
-    expect(view.header.facts).toEqual([
-      { pending: 'the date' },
-      { pending: 'the hours' },
-      { pending: 'the cost' },
-    ]);
+    // The hours are parked (ADR 0058): neither the header nor the glance draws them while they are owed.
+    expect(view.header.facts).toEqual([{ pending: 'the date' }, { pending: 'the cost' }]);
     expect(view.glance).toEqual([
       { label: 'Date', value: undefined, pending: 'the date' },
-      { label: 'Time', value: undefined, pending: 'the hours' },
       {
         label: 'Where',
         value: 'Leimert Park',
@@ -200,14 +196,28 @@ describe('buildFestivalPage', () => {
     expect(filled.glance[2]?.note).toBe('Degnan Boulevard');
   });
 
-  it('names the row that owes the hours: the end when it is missing, the date when the start is', () => {
+  it('leaves the hours out while the end is missing, and names the date when the start is', () => {
     const startOnly = {
       ...seeded,
       editions: [edition('event-odunde-2027', 2027, { start: '2027-06-12T18:00:00.000Z' })],
     } as unknown as FestivalPageData;
     const view = buildFestivalPage(startOnly, options);
-    expect(view.header.facts[1]).toEqual({ pending: 'the hours' });
-    expect(view.glance[1]).toEqual({ label: 'Time', value: undefined, pending: 'the hours' });
+    // The hours are parked (ADR 0058): a start alone draws the date and no hours.
+    expect(view.header.facts).toHaveLength(2);
+    expect(view.header.facts[0]).toEqual({ text: 'Saturday 12 June 2027' });
+    expect(view.glance.map((fact) => fact.label)).not.toContain('Time');
+    const both = {
+      ...seeded,
+      editions: [
+        edition('event-odunde-2027', 2027, {
+          start: '2027-06-12T18:00:00.000Z',
+          end: '2027-06-13T02:00:00.000Z',
+        }),
+      ],
+    } as unknown as FestivalPageData;
+    const held = buildFestivalPage(both, options);
+    expect(held.header.facts[1]).toEqual({ text: '11am to 7pm' });
+    expect(held.glance[1]).toMatchObject({ label: 'Time', value: '11am to 7pm' });
     const endOnly = {
       ...seeded,
       editions: [edition('event-odunde-2027', 2027, { end: '2027-06-13T02:00:00.000Z' })],
@@ -247,7 +257,8 @@ describe('buildFestivalPage', () => {
     const empty = buildFestivalPage(null, options);
     expect(empty.title).toBe('Odunde Festival');
     expect(empty.whatItIs).toBeUndefined();
-    expect(empty.glance.map((fact) => fact.label)).toEqual(['Date', 'Time', 'Where', 'Cost']);
+    // The hours are parked (ADR 0058), so an empty dataset draws three cells.
+    expect(empty.glance.map((fact) => fact.label)).toEqual(['Date', 'Where', 'Cost']);
   });
 
   it('carries the zones, the schedule the option shows and the plan facts with their chips', () => {

@@ -182,6 +182,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     edition: 'next',
     where: 'Odunde, at a glance',
     what: 'the hours',
+    parked: true,
   },
   {
     type: 'event',

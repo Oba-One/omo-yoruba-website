@@ -145,6 +145,7 @@ describe('PENDING', () => {
 describe('PARKED', () => {
   it('holds the rows the launch does not wait for, each with its wording kept (ADR 0058)', () => {
     expect(PARKED.rows.map((row) => `${row.where}: ${row.what}`)).toEqual([
+      'Odunde, at a glance: the hours',
       'Odunde, vendor dialog: fees, deadline and permit rules',
       'Odunde, past years: the attendance figure',
       'Odunde, plan your visit: a practical fact',
@@ -286,7 +287,8 @@ describe('pendingWhat and pendingTitle', () => {
     expect(pendingWhat('siteSettings', 'nothing')).toBeUndefined();
     expect(pendingWhat('event', 'start', 'gala')).toBe('the date');
     expect(pendingWhat('event', 'start', 'festival')).toBe('the date');
-    expect(pendingWhat('event', 'end', 'festival')).toBe('the hours');
+    // The festival's hours are parked (ADR 0058).
+    expect(pendingWhat('event', 'end', 'festival')).toBeUndefined();
     expect(pendingWhat('event', 'start')).toBe('the date');
     expect(pendingWhat('event', 'venue.name', 'gala')).toBe('the venue');
     expect(pendingWhat('event', 'venue.name', 'festival')).toBe('the venue');
