@@ -139,12 +139,12 @@ it touches (the highest tier any path reaches wins) and names the proof each tie
 
 | Tier | What | Proof, recorded under Verification in the pull request body | Who merges |
 | --- | --- | --- | --- |
-| Critical | enquiry and form handling, the dataset and its guard, CSP, the link and Zeffy guards, deploy config, CI | `bun run check`, `bun run build` and `bun e2e` (CI green on the head), and an adversarial review by a fresh agent with its findings addressed | afo |
-| Sensitive | the content model, queries, routes, the Pending registry, migrations, agent config | `bun run check` and an adversarial review by a fresh agent with its findings addressed | the agent, on that proof |
+| Critical | enquiry and form handling (actions, the form bridge and components, the enquiry and subscriber schema, the Studio's enquiry inputs and roles), the dataset and every content script, Sanity and Vercel config, CSP and caching, the link and Zeffy guards, dependencies and toolchain, the git guard, `scripts/` and CI | `bun run check`, `bun run build` and `bun e2e` (CI green on the head), and an adversarial review by a fresh agent with its findings addressed | afo |
+| Sensitive | the content model, queries, routes, the Pending registry, agent config, test configs | `bun run check` and an adversarial review by a fresh agent with its findings addressed | the agent, on that proof |
 | Routine | everything else | the targeted check (`bunx vitest related --run <path>`, or the narrowest command that exercises the change) and CI green | the agent, on that proof |
 
 A fresh agent is one briefed with the diff and the tier's risks, not the author's conclusions.
-Nothing auto-merges. Merge with the reviewed head as the expected head, `gh pr merge <n> --squash --match-head-commit
+Nothing auto-merges, and agents never use `gh pr merge --auto`. Merge with the reviewed head as the expected head, `gh pr merge <n> --squash --match-head-commit
 <sha>`, and stop if the head has moved. No Merge Gate check enforces this; the pull request body
 is the record.
 

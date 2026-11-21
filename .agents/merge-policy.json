@@ -14,26 +14,34 @@
     "agents-doctor / Agents doctor"
   ],
   "release": {
-    "about": "A merge into main is a production deploy: Vercel builds and serves www.omoyorubasocal.org from every main commit, and there is no integration branch. So the owner's approval sits at the merge for the critical tier (decision of 21 November 2026), while routine and sensitive changes go live once their proof is in the pull request body. Each pull request records its tier and proof under Verification; no Merge Gate check enforces it. Nothing auto-merges (autoMerge is false at every level). Merge by hand with the reviewed head as the expected head: gh pr merge <n> --squash --match-head-commit <sha>, and stop if the head has moved. Rollback is a Vercel promote of the previous deployment (docs/runbook.md, Rollback).",
+    "about": "A merge into main is a production deploy: Vercel builds and serves www.omoyorubasocal.org from every main commit, and there is no integration branch. So the owner's approval sits at the merge for the critical tier (decision of 21 November 2026), while routine and sensitive changes go live once their proof is in the pull request body. Each pull request records its tier and proof under Verification; no Merge Gate check enforces it. Nothing auto-merges: autoMerge is false at every level, and until afo applies these settings agents still never use gh pr merge --auto. Merge by hand with the reviewed head as the expected head: gh pr merge <n> --squash --match-head-commit <sha>, and stop if the head has moved. Rollback is a Vercel promote of the previous deployment (docs/runbook.md, Rollback).",
     "approvalAt": ["merges of the critical tier into main"]
   },
   "tiers": {
     "critical": {
-      "about": "Enquiry and form handling (personal data, the Studio's enquiry inputs included), the dataset and its guard, Sanity and Vercel config, CSP, the link and Zeffy guards, dependencies and the toolchain (a merge deploys them), and CI with every script under scripts/. Proof: bun run check, bun run build and bun e2e (CI's full set, green on the head), plus an adversarial review by a fresh agent with its findings addressed, both recorded in the pull request body. Then afo merges; agents never merge this tier. Code-owner review cannot gate it, because GitHub refuses approval of one's own pull request and afo is the only collaborator.",
+      "about": "Enquiry and form handling (personal data: the actions, the form bridge, the form components, the enquiry and subscriber schema, the Studio's enquiry inputs and roles), the dataset and its guard (every content script, exports and migrations included), Sanity and Vercel config, CSP and the cache policy, the link and Zeffy guards, dependencies and the toolchain (a merge deploys them), the git guard, and CI with every script under scripts/. Proof: bun run check, bun run build and bun e2e (CI's full set, green on the head), plus an adversarial review by a fresh agent with its findings addressed, both recorded in the pull request body. Then afo merges; agents never merge this tier. Code-owner review cannot gate it, because GitHub refuses approval of one's own pull request and afo is the only collaborator.",
       "paths": [
         "packages/web/src/actions/**",
         "packages/web/src/lib/forms/**",
         "packages/web/src/lib/sanity/**",
         "packages/web/src/middleware.ts",
         "packages/web/src/pages/api/**",
+        "packages/web/src/components/FormBridge.astro",
+        "packages/web/src/components/ZeffyEmbed.astro",
+        "packages/web/src/lib/cache-policy.ts",
         "packages/web/src/lib/csp.ts",
         "packages/web/astro.config.ts",
         "packages/content/src/enquiry-*",
+        "packages/content/src/schema/documents/enquiry.ts",
+        "packages/content/src/schema/documents/subscriber.ts",
+        "packages/content/src/studio/roles.ts",
+        "packages/content/src/studio/config.ts",
+        "packages/content/scripts/**",
         "packages/content/functions/**",
         "sanity.blueprint.ts",
         "packages/ui/src/core/ActionButton/action.ts",
         "packages/ui/src/cards/TicketTierCard/tickets.ts",
-        "packages/ui/src/forms/ZeffyDialog/**",
+        "packages/ui/src/forms/**",
         "packages/content/src/studio/enquiry-*",
         "packages/content/sanity.config.ts",
         "packages/content/sanity.cli.ts",
@@ -43,6 +51,8 @@
         "bun.lock",
         ".mise.toml",
         ".node-version",
+        "bunfig.toml",
+        ".github/dependabot.yml",
         "**/vercel.json",
         "scripts/**",
         ".claude/hooks/**",
@@ -54,15 +64,13 @@
       "autoMerge": false
     },
     "sensitive": {
-      "about": "The content model, queries, routes, the Pending registry, stored-content migrations and agent config. Proof: bun run check green and an adversarial review by a fresh agent with its findings addressed, both recorded in the pull request body. Agents merge on that proof.",
+      "about": "The content model, queries, routes, the Pending registry, agent config and the test configs. Proof: bun run check green and an adversarial review by a fresh agent with its findings addressed, both recorded in the pull request body. Agents merge on that proof.",
       "paths": [
         "packages/content/src/schema/**",
         "packages/content/src/queries/**",
         "packages/content/src/routes.ts",
         "packages/content/src/pending.ts",
         "packages/content/schema.json",
-        "packages/content/scripts/migrations/**",
-        "packages/content/scripts/migrate.ts",
         "AGENTS.md",
         "CLAUDE.md",
         ".agents/**",
@@ -79,7 +87,7 @@
       "autoMerge": false
     },
     "routine": {
-      "about": "Everything else. Proof: the targeted check for the changed behavior (bunx vitest related --run <path>, or the narrowest command that exercises it) and CI green, recorded in the pull request body. Agents merge by hand on that proof (no auto-merge: GitHub enforces only the checks the classic protection names until afo applies these settings).",
+      "about": "Everything else. Proof: the targeted check for the changed behavior (bunx vitest related --run <path>, or the narrowest command that exercises it) and CI green, recorded in the pull request body. Agents merge by hand on that proof and never use gh pr merge --auto: GitHub still allows auto-merge, and enforces only the checks the classic protection names, until afo applies these settings.",
       "paths": ["**"],
       "requireCodeOwnerReview": false,
       "autoMerge": false

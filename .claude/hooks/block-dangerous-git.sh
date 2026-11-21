@@ -2,16 +2,25 @@
 # PreToolUse hook for Claude Code (.claude/settings.json) and Codex (.codex/hooks.json): blocks
 # destructive git commands before an agent runs them. It is a seatbelt, the floor for cloud
 # sessions, which never run the machine-wide guards; a determined script can still get past any
-# text matcher (variables, eval of decoded text, scripts on disk). Exit 2 blocks; the reason goes
-# to stderr. Plain pushes are allowed (owner's instruction, 5 September 2026).
+# text matcher. Exit 2 blocks; the reason goes to stderr. Plain pushes are allowed (owner's
+# instruction, 5 September 2026).
 #
-# The command is read the way a shell reads it: quotes, escapes, line continuations, command
-# substitutions and here-documents. A git call is judged only where it runs (the start of a
-# simple command, after assignments and wrappers such as env, sudo or xargs, or inside bash -c,
-# eval and command substitutions), so a commit message or a search that only mentions one is not
-# blocked. Flags are matched in any order and position, in clusters, and as the abbreviations git
-# accepts. It needs bash and cat; without jq it reads the JSON itself, and a payload it cannot read
-# is judged as raw text. scripts/tests/git-guard.test.sh holds the fixtures.
+# How it reads a command:
+# - Words are split as a shell splits them (quotes, escapes, line continuations, redirections,
+#   separators), and every unquoted word `git` is judged wherever it stands, so any wrapper
+#   (env, sudo, xcrun, mise exec, a pipe into bash) is covered.
+# - Quoted text is a mention only when the command it is passed to treats it as text (git's own
+#   messages, gh, grep, echo and the like). Passed to anything else (bash -c, eval, ssh, a
+#   here-string), quoted text that holds `git` is read again as a command.
+# - Command substitutions are read as commands. Here-document bodies are read as commands when
+#   their line feeds a shell, eval or xargs.
+# - Flags match in any order and position, in clusters, and as the abbreviations git accepts.
+#   An expansion or a brace list in a destructive verb's arguments blocks, since it can hide a
+#   flag, and so does inline config that renames or loosens a verb.
+# - A command longer than 16,000 characters is judged as plain text instead (quote marks
+#   dropped), which can only block more.
+# It needs bash (3.2 or later) and cat; without jq it reads the JSON itself.
+# scripts/tests/git-guard.test.sh holds the fixtures.
 # No set -u: bash 3.2 (macOS) treats an empty array expansion as unbound, which would fail open.
 set -o pipefail
 export LC_ALL=C
@@ -27,7 +36,7 @@ block() {
 }
 
 json_unescape() {
-  local s="$1" out="" i c n
+  local s="$1" out="" i c n hex
   for ((i = 0; i < ${#s}; i++)); do
     c="${s:i:1}"
     if [[ "$c" == "\\" ]]; then
@@ -37,6 +46,15 @@ json_unescape() {
         n) out+=$'\n' ;;
         t) out+=$'\t' ;;
         r) out+=$'\r' ;;
+        u)
+          hex="${s:i+1:4}"
+          if [[ "$hex" =~ ^00[0-7][0-9A-Fa-f]$ ]]; then
+            out+=$(printf "\\x${hex:2:2}")
+            i=$((i + 4))
+          else
+            out+="u"
+          fi
+          ;;
         *) out+="$n" ;;
       esac
     else
@@ -47,14 +65,12 @@ json_unescape() {
 }
 
 COMMAND=""
-PARSED=0
 if command -v jq >/dev/null 2>&1 && COMMAND=$(printf '%s' "$INPUT" | jq -er '.tool_input.command | strings' 2>/dev/null); then
-  PARSED=1
+  :
 else
   json_command='"command"[[:space:]]*:[[:space:]]*"(([^"\\]|\\.)*)"'
   if [[ "$INPUT" =~ $json_command ]]; then
     COMMAND=$(json_unescape "${BASH_REMATCH[1]}")
-    PARSED=1
   else
     COMMAND="$INPUT"
   fi
@@ -85,27 +101,37 @@ has_long() {
   return 1
 }
 
-# A pathspec that names the whole tree.
+# A pathspec that names the whole tree, everything but an exclusion, or paths read from a file.
 has_whole_tree() {
   local arg
   for arg in "$@"; do
     [[ "$arg" =~ ^(\.\.?/*)+$ ]] && return 0
-    [[ "$arg" =~ ^:(\(top\))?/?[.*]?$ ]] && return 0
+    [[ "$arg" =~ ^:(\(top\))?/?[.*]*$ ]] && return 0
     case "$arg" in
-      '*' | '$PWD' | '${PWD}' | '$(pwd)' | '`pwd`' | '~+') return 0 ;;
+      '*' | '**' | '**/*' | :!* | :^* | ':(exclude'* | --pathspec-from-file*) return 0 ;;
     esac
   done
   return 1
 }
 
+# Any argument built by the shell at run time: a variable, a substitution, a brace list.
+has_expansion() {
+  local arg
+  for arg in "$@"; do
+    [[ "$arg" == *'$'* || "$arg" == *'`'* ]] && return 0
+    [[ "$arg" =~ \{[^}]*,[^}]*\} ]] && return 0
+  done
+  return 1
+}
+
 judge_config() {
-  local value="$1"
   local lower
-  lower=$(printf '%s' "$value" | tr '[:upper:]' '[:lower:]')
+  lower=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
   case "$lower" in
     alias.*) block "an inline alias can hide any git command." ;;
-    clean.requireforce=*) block "turning off clean.requireForce lets git clean delete files." ;;
-    remote.*.push=*+* | remote.*.push=+*) block "a + push refspec in config forces the push." ;;
+    clean.requireforce*) block "loosening clean.requireForce lets git clean delete files." ;;
+    remote.*.push*+* | push.*+*) block "a + push refspec in config forces the push." ;;
+    remote.*.mirror*) block "a mirror remote deletes remote branches on push." ;;
   esac
 }
 
@@ -117,11 +143,14 @@ judge_git() {
   while ((i < ${#words[@]})); do
     case "${words[i]}" in
       -c | --config-env)
-        judge_config "${words[i + 1]:-}"
+        judge_config "${words[i + 1]}"
         i=$((i + 2))
         ;;
+      --config-env=*)
+        judge_config "${words[i]#--config-env=}"
+        i=$((i + 1))
+        ;;
       -C | --git-dir | --work-tree | --namespace | --super-prefix | --attr-source) i=$((i + 2)) ;;
-      --config-env=*) judge_config "${words[i]#--config-env=}" && i=$((i + 1)) ;;
       -*) i=$((i + 1)) ;;
       *) break ;;
     esac
@@ -131,13 +160,20 @@ judge_git() {
   local -a args=("${words[@]:i+1}")
   set -- "${args[@]}"
 
-  if ((via_xargs)); then
-    case "$sub" in
-      push | reset | clean | branch | checkout | switch | restore)
-        block "xargs can append flags to git $sub that this guard never sees."
-        ;;
-    esac
+  if [[ "$sub" == *'$'* || "$sub" == *'`'* || "$sub" == *'{'* ]]; then
+    block "a git verb built by the shell at run time can be any verb."
   fi
+
+  case "$sub" in
+    push | reset | clean | branch | checkout | switch | restore)
+      if ((via_xargs)); then
+        block "xargs can append flags to git $sub that this guard never sees."
+      fi
+      if has_expansion "$@"; then
+        block "an expansion or brace list in git $sub's arguments can hide a destructive flag; write them out."
+      fi
+      ;;
+  esac
 
   case "$sub" in
     push)
@@ -184,133 +220,76 @@ judge_git() {
         fi
       fi
       ;;
+    config)
+      for arg in "$@"; do judge_config "$arg"; done
+      ;;
   esac
   return 0
 }
 
-# --- Reading the command as a shell would ---------------------------------------------------
-
-DEPTH=0
-SEGMENT_FEEDS_SHELL=0
-
-# judge_segment WORD...: one simple command. Skips assignments, keywords and wrappers, then
-# judges git, or reads the command string of bash -c, eval and find -exec.
-judge_segment() {
-  local -a w=("$@")
-  local k=0 n=${#w[@]} via_xargs=0 word
-  SEGMENT_FEEDS_SHELL=0
-  while ((k < n)); do
-    word="${w[k]}"
-    if [[ "$word" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
-      k=$((k + 1))
-      continue
-    fi
-    case "$word" in
-      '{' | '}' | '!' | if | then | elif | else | do | while | until | time | command | builtin | exec | nohup)
-        k=$((k + 1))
-        while ((k < n)) && [[ "${w[k]}" == -* ]]; do k=$((k + 1)); done
-        ;;
-      env | */env)
-        k=$((k + 1))
-        while ((k < n)); do
-          case "${w[k]}" in
-            -S | --split-string)
-              scan "${w[k + 1]:-}" && return 0
-              ;;
-            -u | -C | --unset | --chdir) k=$((k + 2)) ;;
-            -*) k=$((k + 1)) ;;
-            *=*) k=$((k + 1)) ;;
-            *) break ;;
-          esac
-        done
-        ;;
-      sudo | doas | */sudo)
-        k=$((k + 1))
-        while ((k < n)); do
-          case "${w[k]}" in
-            -u | -g | -h | -p | -C | -U) k=$((k + 2)) ;;
-            -*) k=$((k + 1)) ;;
-            *) break ;;
-          esac
-        done
-        ;;
-      nice | ionice | stdbuf)
-        k=$((k + 1))
-        while ((k < n)); do
-          case "${w[k]}" in
-            -n | -c | -p) k=$((k + 2)) ;;
-            -*) k=$((k + 1)) ;;
-            *) break ;;
-          esac
-        done
-        ;;
-      timeout | */timeout)
-        k=$((k + 1))
-        while ((k < n)) && [[ "${w[k]}" == -* ]]; do
-          case "${w[k]}" in -s | -k | --signal | --kill-after) k=$((k + 2)) ;; *) k=$((k + 1)) ;; esac
-        done
-        k=$((k + 1))
-        ;;
-      xargs | */xargs)
-        via_xargs=1
-        k=$((k + 1))
-        while ((k < n)); do
-          case "${w[k]}" in
-            -I | -n | -P | -L | -d | -E | -s | -a) k=$((k + 2)) ;;
-            -*) k=$((k + 1)) ;;
-            *) break ;;
-          esac
-        done
-        ;;
-      *) break ;;
-    esac
-  done
-  ((k < n)) || return 0
-  word="${w[k]}"
-  case "$word" in
-    git | */git)
-      judge_git "$via_xargs" "${w[@]:k+1}"
-      ;;
-    bash | sh | zsh | dash | ksh | */bash | */sh | */zsh | */dash)
-      local j=$((k + 1)) found=0
-      while ((j < n)) && [[ "${w[j]}" == -* ]]; do
-        if [[ "${w[j]}" =~ ^-[A-Za-z]*c[A-Za-z]*$ ]]; then
-          found=1
-          scan "${w[j + 1]:-}"
-          break
-        fi
-        j=$((j + 1))
-      done
-      # No -c and no script file: the shell reads commands from stdin (a here-document).
-      ((found)) || ((j < n)) || SEGMENT_FEEDS_SHELL=1
-      ;;
-    eval | source | .)
-      if [[ "$word" == eval ]]; then
-        scan "${w[*]:k+1}"
-      else
-        ((k + 1 < n)) || SEGMENT_FEEDS_SHELL=1
-      fi
-      ;;
-    find | */find)
-      local j=$((k + 1)) start=-1
-      for ((; j < n; j++)); do
-        case "${w[j]}" in
-          -exec | -execdir | -ok | -okdir) start=$((j + 1)) ;;
-          ';' | '+')
-            if ((start >= 0)); then
-              judge_segment "${w[@]:start:j-start}"
-              start=-1
-            fi
-            ;;
-        esac
-      done
-      ((start >= 0)) && judge_segment "${w[@]:start}"
-      ;;
-    watch)
-      scan "${w[*]:k+1}"
+# Commands whose quoted arguments are text, not commands to run.
+is_text_command() {
+  case "${1##*/}" in
+    echo | printf | gh | grep | egrep | fgrep | rg | ag | ack | cat | less | head | tail | sed | awk | \
+      jq | yq | tee | test | '[' | '[[' | : | true | false | read | wc | sort | uniq | tr | cut | \
+      column | diff | cmp | node-notifier | say | open | curl | wget)
+      return 0
       ;;
   esac
+  return 1
+}
+
+DEPTH=0
+
+# judge_segment WORD...: one simple command.
+judge_segment() {
+  local -a w=("$@")
+  local n=${#w[@]} k word cmd="" via_xargs=0 text_args=0
+  for ((k = 0; k < n; k++)); do
+    word="${w[k]}"
+    if [[ "$word" =~ (^|[[:space:]])GIT_CONFIG_(PARAMETERS|COUNT|KEY_[0-9]+|VALUE_[0-9]+)= ]]; then
+      block "GIT_CONFIG_* variables can alias or loosen any git verb."
+    fi
+    # The command word: the first that is not an assignment or a shell keyword.
+    if [[ -z "$cmd" && ! "$word" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+      case "$word" in
+        '{' | '}' | '!' | if | then | elif | else | do | while | until | time) ;;
+        *) cmd="$word" ;;
+      esac
+    fi
+    [[ "${word##*/}" == xargs ]] && via_xargs=1
+    if [[ "$word" == git || "$word" == */git ]]; then
+      judge_git "$via_xargs" "${w[@]:k+1}"
+    fi
+  done
+  is_text_command "$cmd" && text_args=1
+  if [[ "${cmd##*/}" == git ]]; then
+    # git's quoted arguments are messages, except where a verb runs a command.
+    case " ${w[*]} " in
+      *" rebase "* | *" bisect "* | *" submodule "* | *" filter-branch "* | *" filter-repo "*) text_args=0 ;;
+      *) text_args=1 ;;
+    esac
+  fi
+  ((text_args)) && return 0
+  # Anywhere else, quoted text that holds git is read again as a command.
+  for ((k = 0; k < n; k++)); do
+    word="${w[k]}"
+    if [[ "$word" == *[[:space:]]* && "$word" =~ (^|[^[:alnum:]_.-])git([[:space:]]|$) ]]; then
+      scan "$word"
+    fi
+  done
   return 0
+}
+
+# raw_scan TEXT: judges TEXT as plain words, quote marks dropped. Used for very long commands.
+raw_scan() {
+  local segments segment
+  segments=$(printf '%s' "$1" | tr -d "\"'\\\\" | tr ';|&(){}`<>' '\n')
+  while IFS= read -r segment; do
+    local -a words=()
+    read -ra words <<<"$segment"
+    ((${#words[@]})) && judge_segment "${words[@]}"
+  done <<<"$segments"
 }
 
 # scan TEXT: splits TEXT into simple commands and judges each.
@@ -319,8 +298,7 @@ scan() {
   ((DEPTH > 8)) && block "the command nests too deeply to read."
   DEPTH=$((DEPTH + 1))
   local -a words=() delims=() strips=() feeds=()
-  local word="" have=0 q="" i=0 len=${#text} c n inner level j
-  local feed_pending
+  local word="" have=0 q="" i=0 len=${#text} c n inner j line_start=0
 
   flush() {
     if ((have)); then words+=("$word"); fi
@@ -329,23 +307,20 @@ scan() {
   }
   end_segment() {
     flush
-    if ((${#words[@]})); then
-      judge_segment "${words[@]}"
-      feed_pending=$SEGMENT_FEEDS_SHELL
-      local d
-      for ((d = 0; d < ${#feeds[@]}; d++)); do
-        [[ "${feeds[d]}" == "?" ]] && feeds[d]=$feed_pending
-      done
-    fi
+    ((${#words[@]})) && judge_segment "${words[@]}"
     words=()
   }
-  # capture_paren START: the text of $( ... ) from START (just after "$("), and the index after it.
+  # capture_paren START: the text of $( ... ) from START, quotes respected; j is the index after it.
   capture_paren() {
-    local p=$1 depth=1 ch
+    local p=$1 depth=1 ch quote=""
     inner=""
     while ((p < len)); do
       ch="${text:p:1}"
-      if [[ "$ch" == "(" ]]; then
+      if [[ -n "$quote" ]]; then
+        [[ "$ch" == "$quote" ]] && quote=""
+      elif [[ "$ch" == "'" || "$ch" == '"' ]]; then
+        quote="$ch"
+      elif [[ "$ch" == "(" ]]; then
         depth=$((depth + 1))
       elif [[ "$ch" == ")" ]]; then
         depth=$((depth - 1))
@@ -367,25 +342,55 @@ scan() {
     done
     j=$((p + 1))
   }
-  # Here-document bodies start after the newline that ends their command line.
+  # skip_redirect: from a < or > at i, past the operator and its target word.
+  skip_redirect() {
+    if [[ "$word" =~ ^[0-9]+$ ]]; then
+      word=""
+      have=0
+    fi
+    flush
+    while [[ "${text:i:1}" == [\<\>\&\|] ]]; do i=$((i + 1)); done
+    if [[ "${text:i-1:1}" == "&" && "${text:i:1}" =~ [0-9-] ]]; then
+      i=$((i + 1))
+      return
+    fi
+    while [[ "${text:i:1}" == " " || "${text:i:1}" == $'\t' ]]; do i=$((i + 1)); done
+    local quote=""
+    while ((i < len)); do
+      local ch="${text:i:1}"
+      if [[ -n "$quote" ]]; then
+        [[ "$ch" == "$quote" ]] && quote=""
+      elif [[ "$ch" == "'" || "$ch" == '"' ]]; then
+        quote="$ch"
+      elif [[ "$ch" == [[:space:]\;\&\|\(\)\<\>] ]]; then
+        break
+      fi
+      i=$((i + 1))
+    done
+  }
+  # Here-document bodies start after the newline that ends their command line. A body is read as
+  # commands when that line feeds a shell, eval, source or xargs.
   read_heredocs() {
-    local d line body
+    local d line body cmp feed=0 source_line
+    source_line="${text:line_start:i-line_start}"
+    if [[ "$source_line" =~ (^|[\|\;\&\(\`[:space:]])(bash|sh|zsh|dash|ksh|eval|source|xargs)([[:space:]\;\|\&\)\<]|$) ]]; then
+      feed=1
+    fi
     for ((d = 0; d < ${#delims[@]}; d++)); do
       body=""
       while ((i < len)); do
         line="${text:i}"
         line="${line%%$'\n'*}"
         i=$((i + ${#line} + 1))
-        local cmp="$line"
+        cmp="$line"
         [[ "${strips[d]}" == 1 ]] && cmp="${cmp#"${cmp%%[!$'\t']*}"}"
         [[ "$cmp" == "${delims[d]}" ]] && break
         body+="$line"$'\n'
       done
-      [[ "${feeds[d]}" == 1 ]] && scan "$body"
+      ((feed)) && scan "$body"
     done
     delims=()
     strips=()
-    feeds=()
   }
 
   while ((i < len)); do
@@ -448,9 +453,17 @@ scan() {
         end_segment
         i=$((i + 1))
         ((${#delims[@]})) && read_heredocs
+        line_start=$i
         continue
         ;;
-      ';' | '&' | '|' | '(' | ')') end_segment ;;
+      '&')
+        if [[ "${text:i+1:1}" == ">" ]]; then
+          skip_redirect
+          continue
+        fi
+        end_segment
+        ;;
+      ';' | '|' | '(' | ')') end_segment ;;
       '#')
         if ((have)); then
           word+="$c"
@@ -467,6 +480,9 @@ scan() {
           word+="\$($inner)"
           have=1
           i=$((j - 1))
+        elif [[ "$n" == "'" || "$n" == '"' ]]; then
+          # $'...' and $"..." are quoted text; the dollar sign is not part of the word.
+          have=1
         elif [[ "$n" == "{" ]]; then
           inner="${text:i}"
           inner="${inner%%\}*}"
@@ -488,8 +504,9 @@ scan() {
       '<')
         if [[ "${text:i:3}" == "<<<" ]]; then
           flush
-          i=$((i + 2))
-        elif [[ "${text:i:2}" == "<<" ]]; then
+          i=$((i + 3))
+          continue
+        elif [[ "${text:i:2}" == "<<" && ! "${text:i+2}" =~ ^[[:space:]]*[0-9] ]]; then
           flush
           i=$((i + 2))
           local strip=0
@@ -510,13 +527,23 @@ scan() {
           done
           delims+=("$delim")
           strips+=("$strip")
-          feeds+=("?")
           continue
+        elif [[ "${text:i+1:1}" == "(" ]]; then
+          # <( ... ) is a command substitution.
+          end_segment
         else
-          flush
+          skip_redirect
+          continue
         fi
         ;;
-      '>') flush ;;
+      '>')
+        if [[ "${text:i+1:1}" == "(" ]]; then
+          end_segment
+        else
+          skip_redirect
+          continue
+        fi
+        ;;
       *)
         word+="$c"
         have=1
@@ -530,5 +557,9 @@ scan() {
   return 0
 }
 
-scan "$COMMAND"
+if ((${#COMMAND} > 16000)); then
+  raw_scan "$COMMAND"
+else
+  scan "$COMMAND"
+fi
 exit 0
