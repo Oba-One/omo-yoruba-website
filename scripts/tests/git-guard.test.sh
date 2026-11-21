@@ -80,13 +80,11 @@ while IFS=$'\t' read -r want tail; do
   [[ -z "$want" ]] && continue
   total=$((total + 1))
   payload=$(jq -cn --arg command "$pad"$'\n'"$tail" '{tool_name: "Bash", tool_input: {command: $command}}')
-  for how in claude; do
-    got=$(verdict "$how" "$payload")
-    if [[ "$got" != "$want" ]]; then
-      printf 'FAIL %s long command: want %s, got %s: %s\n' "$how" "$want" "$got" "$tail"
-      failures=$((failures + 1))
-    fi
-  done
+  got=$(verdict claude "$payload")
+  if [[ "$got" != "$want" ]]; then
+    printf 'FAIL long command: want %s, got %s: %s\n' "$want" "$got" "$tail"
+    failures=$((failures + 1))
+  fi
 done <<'LONG'
 block	git 2>/dev/null reset --hard
 block	git reset --{hard,}
