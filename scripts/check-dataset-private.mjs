@@ -7,8 +7,6 @@
 // environment. Exits 0 when the dataset is private and 1 otherwise, failing closed when a value
 // is missing or the API cannot be read. It never prints the token.
 
-import { pathToFileURL } from 'node:url';
-
 const API_VERSION = 'v2021-06-07';
 
 /**
@@ -68,16 +66,15 @@ async function checkDatasetPrivate({ projectId, dataset, token, fetch: get = fet
   return datasetVerdict(body, dataset);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const verdict = await checkDatasetPrivate({
-    projectId: process.env.PUBLIC_SANITY_PROJECT_ID,
-    dataset: process.env.PUBLIC_SANITY_DATASET,
-    token: process.env.SANITY_API_READ_TOKEN,
-  });
-  if (verdict.ok) {
-    console.log(`Dataset check passed: ${verdict.reason}.`);
-  } else {
-    console.error(`Dataset check refused: ${verdict.reason}.`);
-    process.exitCode = 1;
-  }
+// Nothing imports this file: it always runs, so no launcher that rewrites argv can skip it.
+const verdict = await checkDatasetPrivate({
+  projectId: process.env.PUBLIC_SANITY_PROJECT_ID,
+  dataset: process.env.PUBLIC_SANITY_DATASET,
+  token: process.env.SANITY_API_READ_TOKEN,
+});
+if (verdict.ok) {
+  console.log(`Dataset check passed: ${verdict.reason}.`);
+} else {
+  console.error(`Dataset check refused: ${verdict.reason}.`);
+  process.exitCode = 1;
 }

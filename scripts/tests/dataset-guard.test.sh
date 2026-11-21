@@ -31,6 +31,20 @@ if grep -q "$token" "$work/guard.out"; then fail "guard printed the token"; else
 if guard '[{"name":"development","aclMode":"custom"}]'; then fail "guard passed a custom ACL"; else pass "guard refuses a custom ACL"; fi
 if guard "$private_dev" 200 staging; then fail "guard passed a missing dataset"; else pass "guard refuses a dataset the project lacks"; fi
 if guard '{"error":"Unauthorized"}' 401; then fail "guard passed on HTTP 401"; else pass "guard fails closed on an API error"; fi
+if FAKE_SANITY_DATASETS="$private_dev" NODE_OPTIONS="--import=$fake_fetch" PUBLIC_SANITY_PROJECT_ID=evil.example/x \
+  PUBLIC_SANITY_DATASET=development SANITY_API_READ_TOKEN="$token" node "$root/scripts/check-dataset-private.mjs" >/dev/null 2>&1; then
+  fail "guard sent the token to a project ID that is not one"
+else
+  pass "guard refuses a project ID that would send the token elsewhere"
+fi
+mkdir -p "$work/linked"
+ln -s "$root/scripts" "$work/linked/scripts"
+if FAKE_SANITY_DATASETS="$public_dev" NODE_OPTIONS="--import=$fake_fetch" PUBLIC_SANITY_PROJECT_ID=abc123 \
+  PUBLIC_SANITY_DATASET=development SANITY_API_READ_TOKEN="$token" node "$work/linked/scripts/check-dataset-private.mjs" >/dev/null 2>&1; then
+  fail "guard passed a public dataset when run through a symlink"
+else
+  pass "guard refuses through a symlinked path too"
+fi
 if FAKE_SANITY_DATASETS="$private_dev" NODE_OPTIONS="--import=$fake_fetch" PUBLIC_SANITY_PROJECT_ID=abc123 \
   PUBLIC_SANITY_DATASET=development SANITY_API_READ_TOKEN='' node "$root/scripts/check-dataset-private.mjs" >/dev/null 2>&1; then
   fail "guard passed without a token"

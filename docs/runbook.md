@@ -103,7 +103,13 @@ it is seeded, then redeploy. Every Vercel build runs `scripts/check-dataset-priv
 (`packages/web/vercel.json` calls `build:vercel`): it reads the dataset's ACL with the Viewer token
 and stops the build unless the dataset is private, because enquiries and subscribers are stored
 in the dataset the site reads. A missing variable or an unreadable API also stops it. The setup
-wizard's stage 3 runs the same check and pushes nothing to Vercel when it fails. Variables are scoped per environment in Vercel: a preview
+wizard's stage 3 runs the same check and pushes nothing to Vercel when it fails. The check runs at
+build time only. It does not cover a deployment promoted or rolled back from before 21 November
+2026, a `vercel deploy --prebuilt` of a plain build, a dataset made public after a deploy, or
+`bun dev`, which writes to whatever `packages/web/.env` names. Stage 3 pushes the one dataset to
+every scope, so after a move to `production` re-run it with `production` in `packages/web/.env`.
+The two Sanity Functions are pinned to `development` in `sanity.blueprint.ts`; a move of the
+site's dataset moves them too, or enquiry notices stop. Variables are scoped per environment in Vercel: a preview
 deployment of a pull request needs them in the Preview scope too, or its build stops at the
 astro:env check.
 
@@ -310,7 +316,7 @@ stay there now that the domain serves the site: both hosts are one deployment wi
 D3 moves the content to `production`, update the webhook's dataset in sanity.io/manage (the project,
 API, Webhooks). Never point it at a preview deployment or a generated `vercel.app` alias other than
 the public stand-in: Vercel Authentication answers there, not the site. Wizard stage 7 lists the
-settings for the domain and `production`, the setup after D2 and D3. The purge is soft: after a
+settings for the domain and the dataset chosen in stage 1. The purge is soft: after a
 publish the CDN serves the stale copy once more while it revalidates, so the second request within
 the minute carries the change.
 
@@ -588,7 +594,9 @@ server restarts.
 ## Rollback
 
 Vercel keeps every deployment: promote the previous production deployment from the
-dashboard (Deployments, then Promote to Production) or `vercel rollback`. Content
+dashboard (Deployments, then Promote to Production) or `vercel rollback`. A promoted or
+rolled-back deployment is not rebuilt, so the dataset check (Environments, above) does not run
+again: promote only a deployment built for a private dataset. Content
 rollback is a Sanity document history restore in the Studio.
 
 ## Content Security Policy
