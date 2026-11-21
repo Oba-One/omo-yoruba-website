@@ -557,8 +557,8 @@ secret also reaches every other origin the page requests, the Sanity CDN and Pos
 the reports embed it: they are never uploaded. Keeping the secret on Vercel alone would take a
 Puppeteer script that sets Vercel's bypass cookie before the audit, a new dependency for the owner
 to approve (`docs/research/phase-4-lighthouse-ci.md`). `.github/workflows/lighthouse.yml` runs
-both presets on every successful `Preview` deployment (`deployment_status`). It skips with a notice
-until the secret exists: in the Vercel project, Settings, Deployment Protection, Protection Bypass
+both presets on every successful `Preview` deployment (`deployment_status`). Since 21 November 2026
+it fails, rather than skipping with a notice, until the secret exists: in the Vercel project, Settings, Deployment Protection, Protection Bypass
 for Automation, create one named for CI (a team member or Project Administrator can), then store it
 as the repository secret `VERCEL_AUTOMATION_BYPASS_SECRET` (`gh secret set
 VERCEL_AUTOMATION_BYPASS_SECRET`). A fork's preview never runs the workflow (GitHub starts no run
@@ -636,13 +636,14 @@ GitHub: https://github.com/Oba-One/omo-yoruba-website (public). Workflows in `.g
 - `ci.yml` on every pull request and push to main: `check` (typecheck, Biome, voice and
   colour lints, unit tests, toolchain pins), `build` (writes the gzipped client JS sizes to
   the job summary), `messages` (conventional subjects and no dashes in every commit and the
-  PR title), `scripts` (bash syntax and shellcheck), and since Phase 1 `storybook` (builds
-  `packages/ui/storybook-static`, then publishes it to Chromatic when the
-  `CHROMATIC_PROJECT_TOKEN` secret exists; without the secret, or on a pull request from a
-  fork, it writes a "Chromatic skipped" notice and finishes green), and since Phase 2 `typegen`
+  PR title), `scripts` (bash syntax, shellcheck and `scripts/tests/*.test.sh`), since Phase 1
+  `storybook` (`Storybook build`: builds `packages/ui/storybook-static` and hands it on) and,
+  split from it on 21 November 2026, `chromatic` (`Chromatic`: publishes that build, and fails
+  when the `CHROMATIC_PROJECT_TOKEN` secret is missing, which it always is on pull requests from
+  forks and Dependabot), and since Phase 2 `typegen`
   (`TypeGen drift`: runs `bun typegen` offline and fails when `packages/content/schema.json` or
-  `packages/content/src/sanity.types.ts` differ from the commit). None is path filtered, so all
-  six can be required checks.
+  `packages/content/src/sanity.types.ts` differ from the commit), and `e2e` (`Playwright and axe`). None is path filtered, so each can
+  be a required check.
 - `audit.yml` Mondays 06:23 UTC and on demand: `bun run check:audit`, which is `bun audit
   --audit-level=high` less the advisories accepted in `scripts/check-audit.sh`, each with its
   reason and the condition for removing it.
@@ -671,8 +672,10 @@ pull request, the owner's included. Required contexts (the job `name` values), c
 5 September 2026: `Typecheck, lint, test`, `Build packages/web`, `Commit messages and PR
 title`, `Shell scripts`, `Storybook build and Chromatic`. `TypeGen drift`, `Playwright and axe`
 and `agents-doctor / Agents doctor` run on every pull request but were never added, so GitHub
-does not enforce them (read 21 November 2026). `.agents/merge-policy.json` `requiredChecks` lists
-all eight, and `scripts/tests/merge-policy.test.sh` keeps that list equal to the CI jobs. The
+does not enforce them (read 21 November 2026). On 21 November `Storybook build and Chromatic`
+became two jobs, `Storybook build` and `Chromatic`; the classic protection must swap that context
+for the two new ones when the change merges, or no pull request can merge. `.agents/merge-policy.json` `requiredChecks` lists
+all nine, and `scripts/tests/merge-policy.test.sh` keeps that list equal to the CI jobs. The
 owner applies it with `dev merge-settings apply --execute omo-yoruba`, which adds a ruleset
 named `agents-merge-policy` beside this protection; retiring the classic protection is then his
 call. Until then nothing auto-merges (the policy turns auto-merge off), and a merge by hand

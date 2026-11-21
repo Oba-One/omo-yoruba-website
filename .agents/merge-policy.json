@@ -9,7 +9,8 @@
     "TypeGen drift",
     "Commit messages and PR title",
     "Shell scripts",
-    "Storybook build and Chromatic",
+    "Storybook build",
+    "Chromatic",
     "Playwright and axe",
     "agents-doctor / Agents doctor"
   ],
