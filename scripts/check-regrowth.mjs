@@ -50,7 +50,9 @@ const resolves = (root, ref) =>
   runGit(root, ['rev-parse', '--verify', '--quiet', `${ref}^{commit}`], { allowFailure: true })
     .status === 0;
 
-const PACKAGE_SOURCE = /^packages\/[^/]+\/src\/.+\.(ts|tsx|js|jsx|mjs|cjs|mts|cts|sol)$/;
+// Package source, and the content package's scripts and Sanity Functions, which the purge also read.
+const PACKAGE_SOURCE =
+  /^packages\/([^/]+\/src|content\/(scripts|functions))\/.+\.(ts|tsx|js|jsx|mjs|cjs|mts|cts|sol)$/;
 const TEST_PATH = /(^|\/)(__tests__|__mocks__|test|tests)\/|\.(test|spec|stories)\.[cm]?[jt]sx?$/;
 const GENERATED =
   /\.d\.[cm]?ts$|(^|\/)(generated|vendor|dist)\/|\.generated\.|(^|\/)sanity\.types\.ts$/;
@@ -73,7 +75,11 @@ export function markdownProblem(file) {
   if (RETIRED.some((home) => file.startsWith(home))) {
     return "is under docs/plans, which is retired; a session's report goes in its pull request body";
   }
-  if (file.startsWith('docs/tickets/') && !TICKET_HOMES.some((home) => file.startsWith(home))) {
+  if (
+    file.startsWith('docs/tickets/') &&
+    !TICKET_HOMES.some((home) => file.startsWith(home)) &&
+    path.posix.basename(file) !== 'README.md'
+  ) {
     return 'is a new effort folder under docs/tickets, which is being retired (docs/agents/issue-tracker.md)';
   }
   if (REPORT_HOMES.some((home) => file.startsWith(home))) return null;
