@@ -1168,6 +1168,13 @@
 .oy-glance[data-cols="3"] {
   grid-template-columns: repeat(3, 1fr);
 }
+/* A strip that leaves out a parked fact (ADR 0058) can hold two cells, or one. */
+.oy-glance[data-cols="2"] {
+  grid-template-columns: repeat(2, 1fr);
+}
+.oy-glance[data-cols="1"] {
+  grid-template-columns: 1fr;
+}
 .oy-glance > div {
   padding: 22px 20px 24px;
   border-left: 1px solid var(--border-soft);

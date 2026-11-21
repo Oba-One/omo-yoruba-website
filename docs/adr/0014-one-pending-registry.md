@@ -1,5 +1,8 @@
 # One Pending registry drives the Studio Pending view and the site's chips
 
+Amended by ADR 0058: a row can be parked, and then neither the To do nor a chip asks for it, and the page
+leaves its block out while it is empty.
+
 Decided with the owner on 11 September 2026 (Phase 2 grill). `packages/content/src/pending.ts`
 is the one list of required-for-launch fields, each with the wording of what is missing and
 where it shows. The Studio structure builds the Pending group from it (one GROQ list per row,
