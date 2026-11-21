@@ -639,8 +639,11 @@ GitHub: https://github.com/Oba-One/omo-yoruba-website (public). Workflows in `.g
   PR title), `scripts` (bash syntax, shellcheck and `scripts/tests/*.test.sh`), since Phase 1
   `storybook` (`Storybook build`: builds `packages/ui/storybook-static` and hands it on) and,
   split from it on 21 November 2026, `chromatic` (`Chromatic`: publishes that build, and fails
-  when the `CHROMATIC_PROJECT_TOKEN` secret is missing, which it always is on pull requests from
-  forks and Dependabot), and since Phase 2 `typegen`
+  when the `CHROMATIC_PROJECT_TOKEN` secret is missing; Dependabot pull requests need it as a
+  Dependabot secret too, `gh secret set CHROMATIC_PROJECT_TOKEN --app dependabot`, and a fork's
+  pull request never sees it. Green means uploaded: `exitOnceUploaded` and `exitZeroOnChanges`
+  leave visual review to Chromatic. Re-run all jobs, not only failed ones, once the build artifact
+  is older than its three days), and since Phase 2 `typegen`
   (`TypeGen drift`: runs `bun typegen` offline and fails when `packages/content/schema.json` or
   `packages/content/src/sanity.types.ts` differ from the commit), and `e2e` (`Playwright and axe`). None is path filtered, so each can
   be a required check.
@@ -656,7 +659,8 @@ the first of three steps that fits. `bun audit fix` upgrades a vulnerable packag
 dependents' ranges and changes only `bun.lock`. When a dependency pins the vulnerable version, the
 root `package.json` overrides it for that parent alone, so no other package's copy moves: today
 `@module-federation/dts-plugin` (adm-zip, undici) and `@vercel/frameworks` (js-yaml, smol-toml),
-both under the Sanity CLI. Drop an entry once `bun why` shows its parent asking for the fixed
+both under the Sanity CLI, and `@vercel/cli-config` (zod 4.6.7, over its exact 4.1.11, under
+`@astrojs/vercel`; drop it once cli-config takes zod 4.6.6 or later). Drop an entry once `bun why` shows its parent asking for the fixed
 version itself; `sanity` 6.18.0 does that for the first. When no fix can be taken and the code is
 not in a path a visitor reaches, accept the advisory in `scripts/check-audit.sh` with its reason,
 with the owner's agreement. One entry there, path-to-regexp, could take an override and is

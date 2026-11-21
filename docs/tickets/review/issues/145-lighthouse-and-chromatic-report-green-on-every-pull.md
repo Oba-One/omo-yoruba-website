@@ -1,7 +1,7 @@
 # 145: Lighthouse and Chromatic report green on every pull request without auditing or publishing anything
 
 Labels: bug
-Status: open
+Status: resolved
 Blocked by: none
 
 **Finding** (R145 in `docs/plans/review-alignment-and-quality.md`; .github/workflows (lighthouse.yml, ci.yml storybook job); minor; correctness): A reviewer reading the checks sees two green Lighthouse runs and a green Chromatic job, while no budget has been measured and no snapshot taken since the workflows were added. The missing secrets are tracked; the misleading green is not. Verified from the checks on all six open pull requests and the secrets API.
@@ -16,3 +16,5 @@ Blocked by: none
 Already recorded as open-work D14 and D16 (the secrets), wayfinder T17 and T28; this ticket adds the review's evidence.
 
 ## Comments
+
+**21 November 2026:** Fixed by pull request 58: Storybook build and Chromatic are separate jobs, and Chromatic and Lighthouse fail when their secrets are missing.
