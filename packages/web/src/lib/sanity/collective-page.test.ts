@@ -125,19 +125,21 @@ describe('buildCollectivePage', () => {
     expect(buildCollectivePage(null, options).layout).toEqual(view.layout);
     expect(view.root).toEqual(view.layout);
     expect(view.header).toMatchObject({ variant: 'slim', title: 'Yoruba Cultural Collective' });
+    // "See what is on" opens the events section, which the page draws only with an event to list.
     expect(view.header.actions.map((action) => action.label)).toEqual([
       'Partner with the Collective',
-      'See what is on',
     ]);
     expect(view.title).toBe('Yoruba Cultural Collective');
     expect(buildCollectivePage(null, options).title).toBe('Yoruba Cultural Collective');
   });
 
-  it("sets the argument's chip beside the Collective program's photograph", () => {
+  it("leaves the argument's section out until it is written, the program's photograph ready beside it", () => {
     const why = buildCollectivePage(seeded, options).why;
+    // Parked (ADR 0058): no chip asks for the argument, so the section waits for it unseen.
     expect(why).toMatchObject({
+      shown: false,
       argument: undefined,
-      pending: 'why culture and sustainability sit together, in your words',
+      pending: undefined,
       photoWhat: 'a photo of Yoruba Cultural Collective',
     });
     expect(why.photo?.alt).toBe(
@@ -168,6 +170,7 @@ describe('buildCollectivePage', () => {
       options,
     );
     expect(written.why.argument).toHaveLength(1);
+    expect(written.why.shown).toBe(true);
   });
 
   it('sets each initiative in its own section in order, every owed fact under its own chip', () => {
@@ -280,26 +283,36 @@ describe('buildCollectivePage', () => {
         when: 'Saturday, 10am',
         venue: { name: '[ Venue ]' },
       });
+      // The events are parked (ADR 0058): no line asks for the next ones.
+      expect(view.pending).toBeUndefined();
       expect(view).toMatchObject({
-        pending: 'the next events',
         venuePending: 'the venue',
         action: { label: 'Ask to join', kind: 'enquiry', enquiryKind: 'contact' },
       });
+      expect(
+        buildCollectivePage(withEvents, at('2026-09-13T12:00:00Z')).header.actions.map(
+          (action) => action.label,
+        ),
+      ).toEqual(['Partner with the Collective', 'See what is on']);
     });
 
     it('keeps an event through its day and drops it after, never listing an undated one', () => {
       // The walk's own evening in Los Angeles: still listed, the workshop already over.
       const during = buildCollectivePage(withEvents, at('2026-10-18T05:00:00Z')).events;
       expect(during.items.map((event) => event._id)).toEqual(['event-walk']);
-      // The next day in Los Angeles: nothing to come, so the page shows the Pending line.
-      const after = buildCollectivePage(withEvents, at('2026-10-18T07:00:00Z')).events;
-      expect(after.items).toEqual([]);
+      // The next day in Los Angeles: nothing to come, so the section and the header's link to it go.
+      const after = buildCollectivePage(withEvents, at('2026-10-18T07:00:00Z'));
+      expect(after.events.items).toEqual([]);
+      expect(after.events.shown).toBe(false);
+      expect(after.header.actions.map((action) => action.label)).toEqual([
+        'Partner with the Collective',
+      ]);
     });
 
     it("hides the section and the header's See what is on under events hidden", () => {
       const hidden = buildCollectivePage(
         { ...withEvents, layout: { events: 'hidden' } } as CollectivePageData,
-        options,
+        at('2026-09-13T12:00:00Z'),
       );
       expect(hidden.events.shown).toBe(false);
       expect(hidden.header.actions.map((action) => action.label)).toEqual([
@@ -308,17 +321,21 @@ describe('buildCollectivePage', () => {
     });
   });
 
-  it('waits for the one voice in its slot, under the chip "the quote and who said it"', () => {
+  it('leaves the one voice out until a collective testimonial is linked', () => {
+    // Parked (ADR 0058): no chip asks for the quote, so its section waits for it unseen.
     expect(buildCollectivePage(seeded, options).voice).toEqual({
+      shown: false,
+      ground: 'white',
       testimonial: undefined,
       placeholder: COLLECTIVE_VOICE_SLOT,
-      pending: 'the quote and who said it',
+      pending: undefined,
       edit: undefined,
     });
   });
 
   it('draws a linked voice as it stands, the quote leaving the naming to permission', () => {
     const view = buildCollectivePage({ ...seeded, voice } as CollectivePageData, options).voice;
+    expect(view.shown).toBe(true);
     expect(view.testimonial).toEqual({
       quote: '[ Two or three sentences ]',
       name: 'Adé Bákàrè',
@@ -340,6 +357,53 @@ describe('buildCollectivePage', () => {
       options,
     );
     expect(one.takePart.intro).toBe('The projects above are led by members. One way to join them.');
+    // With no project on the page the lead does not speak of one.
+    const none = buildCollectivePage({ ...seeded, initiatives: [] } as CollectivePageData, options);
+    expect(none.takePart.intro).toBe('Three ways to take part.');
+  });
+
+  it('gives the sections it draws turns on the two grounds, from white', () => {
+    const grounds = (data: CollectivePageData, at = options) => {
+      const view = buildCollectivePage(data, at);
+      return [
+        view.why.shown && 'white',
+        view.events.shown && view.events.ground,
+        ...view.initiatives.items.map((item) => item.ground),
+        view.voice.shown && view.voice.ground,
+        view.takePart.ground,
+      ].filter(Boolean);
+    };
+    // The two initiatives, then take part: nothing else is held.
+    expect(grounds(seeded)).toEqual(['white', 'alt', 'white']);
+    // One initiative, then none at all under the header.
+    const one = { ...seeded, initiatives: seeded.initiatives?.slice(0, 1) } as CollectivePageData;
+    expect(grounds(one)).toEqual(['white', 'alt']);
+    expect(grounds({ ...seeded, initiatives: [] } as CollectivePageData)).toEqual(['white']);
+    // Every section held: the prototype's order of grounds.
+    const argument = [
+      {
+        _type: 'block',
+        _key: 'b1',
+        style: 'normal',
+        markDefs: [],
+        children: [{ _type: 'span', _key: 's1', text: '[ In your words ]', marks: [] }],
+      },
+    ];
+    const event = {
+      _id: 'event-walk',
+      kind: 'collective',
+      title: '[ A site walk ]',
+      start: '2026-10-17T17:00:00Z',
+      end: null,
+      summary: null,
+      venue: null,
+    };
+    const full = { ...seeded, argument, voice, events: [event] } as unknown as CollectivePageData;
+    const before = { ...options, now: new Date('2026-09-13T12:00:00Z') };
+    expect(grounds(full, before)).toEqual(['white', 'alt', 'white', 'alt', 'white', 'alt']);
+    // The events over: the sections after them move up a turn, and no two neighbours match.
+    const after = { ...options, now: new Date('2026-11-01T12:00:00Z') };
+    expect(grounds(full, after)).toEqual(['white', 'alt', 'white', 'alt', 'white']);
     expect(buildCollectivePage(null, options).takePart.intro).toBeUndefined();
   });
 

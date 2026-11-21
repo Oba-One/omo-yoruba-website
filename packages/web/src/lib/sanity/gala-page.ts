@@ -23,7 +23,13 @@ import { sentence } from '@oy/ui/content/sentence.ts';
 import type { ClientReturn } from '@sanity/client';
 import { framableSrc } from '../csp';
 import { albumsHeld } from './gallery-page';
-import { GLANCE_MAX, type GlanceFactView, pageSkeleton, pastYears } from './page-skeleton';
+import {
+  GLANCE_MAX,
+  type GlanceFactView,
+  impactHandoff,
+  pageSkeleton,
+  pastYears,
+} from './page-skeleton';
 import { type BuildOptions, cleanText, resolveImage } from './view';
 
 export type GalaPageData = NonNullable<ClientReturn<typeof galaPageQuery, unknown>>;
@@ -43,6 +49,10 @@ const PAGE_TITLE = EVENT_PAGE_NAMES.gala;
 const KIND = 'gala';
 
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';
+
+/** The box under the sponsor levels, which leads to Impact: its lead, and its promise in its own words (`impactHandoff`). */
+const IMPACT_HANDOFF = 'Want the numbers before you commit? The impact page has them';
+const IMPACT_PROMISE = 'with a source line under each one';
 
 /**
  * Whether an edition offers a table: one of its tiers is bought by enquiry. The seats heading here and the
@@ -215,6 +225,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
         .map((level) => ({ ...level, edit: edit('name', level._id, 'sponsorLevel') })),
       pending: presenceWhat('sponsorLevel')?.what ?? 'level names and amounts',
       amountPending: pendingWhat('sponsorLevel', 'amount') ?? 'the amount',
+      handoff: impactHandoff(IMPACT_HANDOFF, data?.impactSources, IMPACT_PROMISE),
       recognitionPending:
         pendingWhat('sponsorLevel', 'recognition[]') ?? 'what the level recognizes',
     },

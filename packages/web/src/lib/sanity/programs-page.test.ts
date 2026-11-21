@@ -173,6 +173,7 @@ const seeded = {
     },
   ],
   layout: { cards: 'four', inline: 'expanded', yearstrip: 'shown' },
+  impactSources: null,
   seo: null,
 } as unknown as ProgramsPageData;
 
@@ -348,6 +349,19 @@ describe('buildProgramsPage', () => {
     ]);
     expect(buildProgramsPage(withLayout({ yearstrip: 'hidden' }), options).year.shown).toBe(false);
     expect(buildProgramsPage(null, options).year.rows).toEqual([]);
+  });
+
+  it('promises a source line under every number, under the year strip, only while Impact shows them', () => {
+    expect(buildProgramsPage(seeded, options).year.handoff).toBe(
+      'What these programs have produced, with a source line under every number.',
+    );
+    const hidden = { ...seeded, impactSources: 'hidden' } as unknown as ProgramsPageData;
+    expect(buildProgramsPage(hidden, options).year.handoff).toBe(
+      'What these programs have produced.',
+    );
+    expect(buildProgramsPage(null, options).year.handoff).toBe(
+      'What these programs have produced, with a source line under every number.',
+    );
   });
 
   it('writes edit attributes only in draft mode', () => {

@@ -16,7 +16,7 @@ import type { programsPageQuery } from '@oy/content/queries';
 import { EVENT_PAGE_NAMES, INLINE_PROGRAM_SECTIONS } from '@oy/content/routes';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
-import { pageSkeleton } from './page-skeleton';
+import { impactHandoff, pageSkeleton } from './page-skeleton';
 import { type BuildOptions, cleanText, resolveImage } from './view';
 
 export type ProgramsPageData = NonNullable<ClientReturn<typeof programsPageQuery, unknown>>;
@@ -43,6 +43,9 @@ const EXCHANGE_SLUG = 'cultural-exchange';
  * and its section back.
  */
 const NOT_RUNNING: readonly string[] = [EXCHANGE_SLUG];
+
+/** The lead of the box under the year strip, which leads to Impact (`impactHandoff`). */
+const IMPACT_HANDOFF = 'What these programs have produced';
 
 /** The take-part intro, counting the rows the band draws. */
 function takePartIntro(count: number): string | undefined {
@@ -168,6 +171,7 @@ export function buildProgramsPage(data: ProgramsPageData | null, options: BuildO
       whenPending: pending('yearStrip'),
       pending: pending('yearStrip[]'),
       edit: edit('yearStrip'),
+      handoff: impactHandoff(IMPACT_HANDOFF, data?.impactSources),
     },
     takePart: {
       ...page.takePart,
