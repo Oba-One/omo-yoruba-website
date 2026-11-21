@@ -128,6 +128,23 @@ jobs:
       - name: Script tests
         run: for test in scripts/tests/*.test.sh; do bash "$test"; done
 
+  regrowth:
+    name: Regrowth ratchet
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The check compares the change with its merge base, so it needs the base's history.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-js
+      - name: No purged comment or report markdown grows back (scripts/check-regrowth.mjs)
+        if: github.event_name == 'pull_request'
+        env:
+          REGROWTH_BASE_REF: origin/${{ github.base_ref }}
+        run: node scripts/check-regrowth.mjs
+
   storybook:
     name: Storybook build
     runs-on: ubuntu-latest
