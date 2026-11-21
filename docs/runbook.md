@@ -625,7 +625,7 @@ no YouTube or Google origin is in `script-src`, `img-src` or `connect-src`. `fra
 origin rather than reading `frame-src`, so neither the Give Dialog nor the Join Dialog frames the player.
 
 To allow a new origin: add it to the directive in `csp.ts`, update this list, and note it
-in the phase's handoff. Expect `style-src` reports from Astro's inlined small stylesheets
+in the pull request body. Expect `style-src` reports from Astro's inlined small stylesheets
 and any `style=""` attribute; Phase 9 decides between `build.inlineStylesheets: 'never'`
 plus hashes, `'unsafe-inline'` for styles, and Astro's built-in meta CSP (wayfinder ticket 13).
 

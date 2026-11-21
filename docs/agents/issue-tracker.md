@@ -7,13 +7,12 @@ Single owner, no remote tracker. Chosen on 4 September 2026 (Phase 0).
 a team, then deletes `docs/tickets/` and `docs/plans/`. Closed tickets, finished plans, handoffs
 and session prompts were deleted on 21 November (git history keeps them). What is left: the open
 review tickets, the open wayfinder tickets with their map, the phase specs that ADRs cite, and
-`docs/plans/open-work.md`. Until the move, add no new effort folder, plan or handoff; a session's
+`docs/plans/open-work.md` with the 10 October content pass its open rows cite. Until the move, add no new effort folder, plan or handoff; a session's
 report goes in its pull request body. The `## Agent skills` block that points here lives in `AGENTS.md`.
 
 ## Conventions
 
-- One effort per directory: `docs/tickets/<effort-slug>/`
-- The spec, when there is one, is `docs/tickets/<effort-slug>/spec.md`
+- Until the move: the existing folders only (`review/`, `wayfinder/`); no new effort folder or spec
 - Tickets are one file each at `docs/tickets/<effort-slug>/issues/<NN>-<slug>.md`,
   numbered from `01`, never a single combined file
 - Near the top of each ticket: `Labels:`, `Status:` (`open`, `claimed`, `resolved`,
