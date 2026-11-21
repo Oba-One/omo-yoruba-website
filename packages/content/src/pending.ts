@@ -309,6 +309,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     edition: 'next',
     where: 'Gala, at a glance',
     what: 'the dress code',
+    parked: true,
   },
   // The event pages' headers: the photo band needs its photograph (the Gala always draws it, Odunde by
   // default), and every page its one heading.
