@@ -7,18 +7,20 @@
 #
 # How it reads a command:
 # - Words are split as a shell splits them (quotes, escapes, line continuations, redirections,
-#   separators), and every unquoted word `git` is judged wherever it stands, so any wrapper
-#   (env, sudo, xcrun, mise exec, a pipe into bash) is covered.
+#   separators, $'...' escapes), and every unquoted word `git` is judged wherever it stands, so
+#   any wrapper (env, sudo, xcrun, mise exec) is covered. A command that pipes into a shell or
+#   xargs is also judged with its quotes dropped.
 # - Quoted text is a mention only when the command it is passed to treats it as text (git's own
 #   messages, gh, grep, echo and the like). Passed to anything else (bash -c, eval, ssh, a
 #   here-string), quoted text that holds `git` is read again as a command.
 # - Command substitutions are read as commands. Here-document bodies are read as commands when
 #   their line feeds a shell, eval or xargs.
 # - Flags match in any order and position, in clusters, and as the abbreviations git accepts.
-#   An expansion or a brace list in a destructive verb's arguments blocks, since it can hide a
-#   flag, and so does inline config that renames or loosens a verb.
-# - A command longer than 16,000 characters is judged as plain text instead (quote marks
-#   dropped), which can only block more.
+#   An expansion or a brace list in reset's or clean's arguments blocks, since it can hide the
+#   destructive flag, and so does inline config that renames or loosens a verb.
+# - A command over 32,000 characters is refused, so the hook always answers within a few seconds
+#   (bash 3.2 reads long strings slowly); long text goes through a file. Known limits: a variable or substitution as the git word, git verbs outside this list
+#   (read-tree, checkout-index, stash clear, update-ref), and zsh's =git.
 # It needs bash (3.2 or later) and cat; without jq it reads the JSON itself.
 # scripts/tests/git-guard.test.sh holds the fixtures.
 # No set -u: bash 3.2 (macOS) treats an empty array expansion as unbound, which would fail open.
@@ -36,32 +38,23 @@ block() {
 }
 
 json_unescape() {
-  local s="$1" out="" i c n hex
-  for ((i = 0; i < ${#s}; i++)); do
-    c="${s:i:1}"
-    if [[ "$c" == "\\" ]]; then
-      i=$((i + 1))
-      n="${s:i:1}"
-      case "$n" in
-        n) out+=$'\n' ;;
-        t) out+=$'\t' ;;
-        r) out+=$'\r' ;;
-        u)
-          hex="${s:i+1:4}"
-          if [[ "$hex" =~ ^00[0-7][0-9A-Fa-f]$ ]]; then
-            out+=$(printf "\\x${hex:2:2}")
-            i=$((i + 4))
-          else
-            out+="u"
-          fi
-          ;;
-        *) out+="$n" ;;
-      esac
-    else
-      out+="$c"
-    fi
+  # Patterns live in variables: bash 3.2 does not honour quotes inside ${var//pattern/...}.
+  local s="$1" mark=$'\001' nl=$'\n' tab=$'\t' cr=$'\r' quote='"' slash='/' bs='\'
+  local p_bs='\\\\' p_quote='\\"' p_slash='\\/' p_n='\\n' p_t='\\t' p_r='\\r' re hex ch p_u
+  s="${s//$p_bs/$mark}"
+  s="${s//$p_quote/$quote}"
+  s="${s//$p_slash/$slash}"
+  s="${s//$p_n/$nl}"
+  s="${s//$p_t/$tab}"
+  s="${s//$p_r/$cr}"
+  re='\\u00([0-7][0-9A-Fa-f])'
+  while [[ "$s" =~ $re ]]; do
+    hex="${BASH_REMATCH[1]}"
+    ch=$(printf "\\x$hex")
+    p_u="\\\\u00$hex"
+    s="${s//$p_u/$ch}"
   done
-  printf '%s' "$out"
+  printf '%s' "${s//$mark/$bs}"
 }
 
 COMMAND=""
@@ -70,6 +63,10 @@ if command -v jq >/dev/null 2>&1 && COMMAND=$(printf '%s' "$INPUT" | jq -er '.to
 else
   json_command='"command"[[:space:]]*:[[:space:]]*"(([^"\\]|\\.)*)"'
   if [[ "$INPUT" =~ $json_command ]]; then
+    # Bash 3.2 decodes slowly, so without jq only short commands are read; longer ones fail closed.
+    if ((${#BASH_REMATCH[1]} > 4000)); then
+      block "jq is not installed, and without it this hook reads only commands up to 4,000 characters; install jq or shorten the command."
+    fi
     COMMAND=$(json_unescape "${BASH_REMATCH[1]}")
   else
     COMMAND="$INPUT"
@@ -107,8 +104,9 @@ has_whole_tree() {
   for arg in "$@"; do
     [[ "$arg" =~ ^(\.\.?/*)+$ ]] && return 0
     [[ "$arg" =~ ^:(\(top\))?/?[.*]*$ ]] && return 0
+    [[ "$arg" =~ (^|/)\.\.?/*$ ]] && return 0
     case "$arg" in
-      '*' | '**' | '**/*' | :!* | :^* | ':(exclude'* | --pathspec-from-file*) return 0 ;;
+      *'*'* | *'?'* | :!* | :^* | ':('* | --pathspec-from-file* | '~+'* | '$PWD'* | '${PWD'* | '$(pwd'* | '`pwd'* | *'--show-toplevel'*) return 0 ;;
     esac
   done
   return 1
@@ -155,7 +153,10 @@ judge_git() {
       *) break ;;
     esac
   done
-  ((i < ${#words[@]})) || return 0
+  if ((i >= ${#words[@]})); then
+    ((via_xargs)) && block "xargs supplies git's verb and flags, which this guard never sees."
+    return 0
+  fi
   local sub="${words[i]}"
   local -a args=("${words[@]:i+1}")
   set -- "${args[@]}"
@@ -169,6 +170,10 @@ judge_git() {
       if ((via_xargs)); then
         block "xargs can append flags to git $sub that this guard never sees."
       fi
+      ;;
+  esac
+  case "$sub" in
+    reset | clean)
       if has_expansion "$@"; then
         block "an expansion or brace list in git $sub's arguments can hide a destructive flag; write them out."
       fi
@@ -221,6 +226,10 @@ judge_git() {
       fi
       ;;
     config)
+      # Reading config changes nothing; setting an alias or loosening a guard does.
+      for arg in "$@"; do
+        [[ "$arg" == --get* || "$arg" == --list || "$arg" == -l || "$arg" == --show* ]] && return 0
+      done
       for arg in "$@"; do judge_config "$arg"; done
       ;;
   esac
@@ -230,7 +239,7 @@ judge_git() {
 # Commands whose quoted arguments are text, not commands to run.
 is_text_command() {
   case "${1##*/}" in
-    echo | printf | gh | grep | egrep | fgrep | rg | ag | ack | cat | less | head | tail | sed | awk | \
+    echo | printf | gh | grep | egrep | fgrep | rg | ag | ack | cat | less | head | tail | \
       jq | yq | tee | test | '[' | '[[' | : | true | false | read | wc | sort | uniq | tr | cut | \
       column | diff | cmp | node-notifier | say | open | curl | wget)
       return 0
@@ -241,55 +250,116 @@ is_text_command() {
 
 DEPTH=0
 
+# git_verb WORD...: git's verb after its global options, or nothing.
+git_verb() {
+  local i=0
+  local -a w=("$@")
+  while ((i < ${#w[@]})); do
+    case "${w[i]}" in
+      -c | --config-env | -C | --git-dir | --work-tree | --namespace | --super-prefix | --attr-source) i=$((i + 2)) ;;
+      -*) i=$((i + 1)) ;;
+      *)
+        printf '%s' "${w[i]}"
+        return
+        ;;
+    esac
+  done
+}
+
+RAW=0
+LINE_FEEDS=0
+
 # judge_segment WORD...: one simple command.
 judge_segment() {
   local -a w=("$@")
-  local n=${#w[@]} k word cmd="" via_xargs=0 text_args=0
+  local n=${#w[@]} k word cmd="" cmd_at=-1 via_xargs=0 text_args=0 bare
+  SEGMENT_FEEDS=0
   for ((k = 0; k < n; k++)); do
     word="${w[k]}"
     if [[ "$word" =~ (^|[[:space:]])GIT_CONFIG_(PARAMETERS|COUNT|KEY_[0-9]+|VALUE_[0-9]+)= ]]; then
       block "GIT_CONFIG_* variables can alias or loosen any git verb."
-    fi
-    # The command word: the first that is not an assignment or a shell keyword.
-    if [[ -z "$cmd" && ! "$word" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
-      case "$word" in
-        '{' | '}' | '!' | if | then | elif | else | do | while | until | time) ;;
-        *) cmd="$word" ;;
-      esac
     fi
     [[ "${word##*/}" == xargs ]] && via_xargs=1
     if [[ "$word" == git || "$word" == */git ]]; then
       judge_git "$via_xargs" "${w[@]:k+1}"
     fi
   done
+  # The command word: past assignments, keywords and wrappers with their options.
+  k=0
+  while ((k < n)); do
+    word="${w[k]}"
+    if [[ "$word" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+      k=$((k + 1))
+      continue
+    fi
+    case "${word##*/}" in
+      '{' | '}' | '!' | if | then | elif | else | do | while | until | time | command | builtin | exec | nohup | env | sudo | doas | nice | stdbuf | xargs)
+        k=$((k + 1))
+        while ((k < n)) && [[ "${w[k]}" == -* || "${w[k]}" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; do k=$((k + 1)); done
+        ;;
+      timeout)
+        k=$((k + 1))
+        while ((k < n)) && [[ "${w[k]}" == -* ]]; do k=$((k + 1)); done
+        k=$((k + 1))
+        ;;
+      *) break ;;
+    esac
+  done
+  ((k < n)) && cmd="${w[k]}" && cmd_at=$k
+  case "${cmd##*/}" in
+    bash | sh | zsh | dash | ksh | eval | source | . | xargs) SEGMENT_FEEDS=1 ;;
+  esac
   is_text_command "$cmd" && text_args=1
   if [[ "${cmd##*/}" == git ]]; then
-    # git's quoted arguments are messages, except where a verb runs a command.
-    case " ${w[*]} " in
-      *" rebase "* | *" bisect "* | *" submodule "* | *" filter-branch "* | *" filter-repo "*) text_args=0 ;;
+    # git's quoted arguments are messages, except where the verb runs a command.
+    case "$(git_verb "${w[@]:cmd_at+1}")" in
+      rebase | bisect | submodule | filter-branch | filter-repo) text_args=0 ;;
       *) text_args=1 ;;
     esac
   fi
-  ((text_args)) && return 0
-  # Anywhere else, quoted text that holds git is read again as a command.
+  ((text_args || RAW)) && return 0
+  # Anywhere else, quoted text that holds git is read again as a command. Substitutions were read
+  # already, so they are left out, and an --option= prefix is dropped.
   for ((k = 0; k < n; k++)); do
     word="${w[k]}"
-    if [[ "$word" == *[[:space:]]* && "$word" =~ (^|[^[:alnum:]_.-])git([[:space:]]|$) ]]; then
-      scan "$word"
+    bare="${word//\$(*)/}"
+    bare="${bare//\`*\`/}"
+    [[ "$bare" == --*=* ]] && bare="${bare#*=}"
+    if [[ "$bare" == *[[:space:]]* && "$bare" =~ (^|[^[:alnum:]_.-])git([[:space:]]|$) ]]; then
+      scan "$bare"
     fi
   done
   return 0
 }
 
-# raw_scan TEXT: judges TEXT as plain words, quote marks dropped. Used for very long commands.
+# raw_scan TEXT: judges TEXT as plain words, with quotes dropped, \n and \t read as breaks,
+# redirections removed and each brace list read twice (alternatives glued to their prefix, and
+# alternatives as separate words). Used for commands that pipe into a shell.
 raw_scan() {
-  local segments segment
-  segments=$(printf '%s' "$1" | tr -d "\"'\\\\" | tr ';|&(){}`<>' '\n')
-  while IFS= read -r segment; do
-    local -a words=()
-    read -ra words <<<"$segment"
-    ((${#words[@]})) && judge_segment "${words[@]}"
-  done <<<"$segments"
+  # Plain bash only (no sed): with a missing tool this would judge nothing and fail open.
+  local text="$1" glued variant segments segment nl=$'\n' p_n='\\n' p_t='\\t' p_ansi="\$'" sq="'"
+  # A duplication such as 2>&1 goes on its own; any other redirection takes its target word along.
+  local re_dup='^(.*[^0-9])?[0-9]*[<>]+&[-0-9]+(.*)$'
+  local re_file='^(.*[^0-9])?[0-9]*[<>]+[[:space:]]*[^[:space:]<>]*(.*)$'
+  local re_brace='^(.*)\{([^{},]*),[^{}]*\}(.*)$'
+  text="${text//$p_n/$nl}"
+  text="${text//$p_t/ }"
+  text="${text//$p_ansi/$sq}"
+  while [[ "$text" =~ $re_dup ]]; do text="${BASH_REMATCH[1]} ${BASH_REMATCH[2]}"; done
+  while [[ "$text" =~ $re_file ]]; do text="${BASH_REMATCH[1]} ${BASH_REMATCH[2]}"; done
+  glued="$text"
+  while [[ "$glued" =~ $re_brace ]]; do glued="${BASH_REMATCH[1]}${BASH_REMATCH[2]}${BASH_REMATCH[3]}"; done
+  local saved=$RAW
+  RAW=1
+  for variant in "$glued" "$(printf '%s' "$text" | tr '{},' '   ')"; do
+    segments=$(printf '%s' "$variant" | tr -d "\"'\\\\" | tr ';|&()`' '\n')
+    while IFS= read -r segment; do
+      local -a words=()
+      read -ra words <<<"$segment"
+      ((${#words[@]})) && judge_segment "${words[@]}"
+    done <<<"$segments"
+  done
+  RAW=$saved
 }
 
 # scan TEXT: splits TEXT into simple commands and judges each.
@@ -307,7 +377,10 @@ scan() {
   }
   end_segment() {
     flush
-    ((${#words[@]})) && judge_segment "${words[@]}"
+    if ((${#words[@]})); then
+      judge_segment "${words[@]}"
+      ((SEGMENT_FEEDS)) && LINE_FEEDS=1
+    fi
     words=()
   }
   # capture_paren START: the text of $( ... ) from START, quotes respected; j is the index after it.
@@ -371,11 +444,7 @@ scan() {
   # Here-document bodies start after the newline that ends their command line. A body is read as
   # commands when that line feeds a shell, eval, source or xargs.
   read_heredocs() {
-    local d line body cmp feed=0 source_line
-    source_line="${text:line_start:i-line_start}"
-    if [[ "$source_line" =~ (^|[\|\;\&\(\`[:space:]])(bash|sh|zsh|dash|ksh|eval|source|xargs)([[:space:]\;\|\&\)\<]|$) ]]; then
-      feed=1
-    fi
+    local d line body cmp feed=$LINE_FEEDS
     for ((d = 0; d < ${#delims[@]}; d++)); do
       body=""
       while ((i < len)); do
@@ -454,6 +523,7 @@ scan() {
         i=$((i + 1))
         ((${#delims[@]})) && read_heredocs
         line_start=$i
+        LINE_FEEDS=0
         continue
         ;;
       '&')
@@ -480,8 +550,23 @@ scan() {
           word+="\$($inner)"
           have=1
           i=$((j - 1))
-        elif [[ "$n" == "'" || "$n" == '"' ]]; then
-          # $'...' and $"..." are quoted text; the dollar sign is not part of the word.
+        elif [[ "$n" == "'" ]]; then
+          # $'...' is quoted text with backslash escapes, decoded as the shell does.
+          local p=$((i + 2)) raw=""
+          while ((p < len)) && [[ "${text:p:1}" != "'" ]]; do
+            if [[ "${text:p:1}" == "\\" ]]; then
+              raw+="${text:p:2}"
+              p=$((p + 2))
+            else
+              raw+="${text:p:1}"
+              p=$((p + 1))
+            fi
+          done
+          word+=$(printf '%b' "$raw")
+          have=1
+          i=$p
+        elif [[ "$n" == '"' ]]; then
+          # $"..." is double-quoted text; the dollar sign is not part of the word.
           have=1
         elif [[ "$n" == "{" ]]; then
           inner="${text:i}"
@@ -506,7 +591,7 @@ scan() {
           flush
           i=$((i + 3))
           continue
-        elif [[ "${text:i:2}" == "<<" && ! "${text:i+2}" =~ ^[[:space:]]*[0-9] ]]; then
+        elif [[ "${text:i:2}" == "<<" && ! "${text:i+2}" =~ ^[[:space:]]*[0-9] && "${text:line_start:i-line_start}" != *'(('* ]]; then
           flush
           i=$((i + 2))
           local strip=0
@@ -557,9 +642,11 @@ scan() {
   return 0
 }
 
-if ((${#COMMAND} > 16000)); then
-  raw_scan "$COMMAND"
-else
-  scan "$COMMAND"
+if ((${#COMMAND} > 32000)); then
+  block "the command is too long to read in time (over 32,000 characters); write long text to a file first and pass the file."
 fi
+scan "$COMMAND"
+# Quoted text piped into a shell or xargs runs as commands, so judge it too.
+pipe_into='\|[[:space:]]*([^[:space:]|;&]*/)?(bash|sh|zsh|dash|ksh|xargs)([[:space:]]|$)'
+[[ "$COMMAND" =~ $pipe_into ]] && raw_scan "$COMMAND"
 exit 0

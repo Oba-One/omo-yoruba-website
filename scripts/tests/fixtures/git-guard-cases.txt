@@ -123,7 +123,6 @@ block	git reset ${x:---hard}
 block	git {reset,--hard}
 block	git reset --{hard,}
 block	git push origin $'+main'
-block	git push -u origin "$(git branch --show-current)"
 # Config that renames or loosens a verb, by variable or by git config.
 block	GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=alias.nk GIT_CONFIG_VALUE_0='reset --hard' git nk
 block	GIT_CONFIG_PARAMETERS="'alias.nk=reset --hard'" git nk
@@ -137,7 +136,37 @@ block	git checkout -- "$PWD/"
 block	git checkout -- "$(git rev-parse --show-toplevel)"
 block	git restore '**'
 block	git restore --pathspec-from-file=list.txt
+# Round three of the PR 57 review: pipes into shells, xargs verbs, $'...' escapes, glued options.
+block	printf 'git reset --hard\\n' | bash
+block	echo "git reset --hard" | sh
+block	echo reset --hard | xargs git
+block	cat <<'EOF' | xargs git\nreset --hard\nEOF
+block	$'\x67it' reset --hard
+block	git reset $'\x2d-hard'
+block	git rebase --exec='git clean -fdx' --root
+block	awk 'BEGIN{system("git reset --hard")}'
+block	(( x = 1 << n ))\ngit reset --hard
+block	git checkout -- ~+
+block	git checkout -- sub/..
+block	git checkout -- ':(glob)**'
+block	git restore -- '*.*'
 # Text that only mentions a destructive command is not run, so it is allowed.
+allow	cd "$(git rev-parse --show-toplevel)"
+allow	SHA=$(git rev-parse HEAD)
+allow	export SHA="$(git rev-parse HEAD)"
+allow	bunx vitest related --run $(git diff --name-only main)
+allow	for f in $(git diff --name-only); do echo "$f"; done
+allow	node x.mjs "$(git rev-parse HEAD)"
+allow	git rebase "$(git merge-base HEAD main)"
+allow	git push -u origin "$(git branch --show-current)"
+allow	git push origin "$BRANCH"
+allow	git checkout -b "feat/${name}"
+allow	git restore "$file"
+allow	git commit -m "docs: explain why rebase never runs git reset --hard"
+allow	timeout 10 grep "git reset --hard" docs
+allow	env LC_ALL=C grep "git push -f" docs
+allow	git config --get alias.co
+allow	gh pr create --title "Fix the sh hook" --body-file - <<'EOF'\nnever git push -f\nEOF
 allow	git commit -m "$(cat <<'EOF'\nfix: the guard blocks git branch -D x\nEOF\n)"
 allow	gh pr create --body "$(cat <<'EOF'\n1) never run git push -f\nEOF\n)"
 allow	bash scripts/tests/git-guard.test.sh
