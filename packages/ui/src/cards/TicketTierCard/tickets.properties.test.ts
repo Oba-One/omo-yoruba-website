@@ -7,7 +7,7 @@ import {
   staysOnSite,
   studioValue,
 } from '../../core/ActionButton/hrefs.test-support';
-import { ZEFFY_ORIGIN } from '../../forms/ZeffyDialog/zeffy';
+import { ZEFFY_ORIGIN, zeffyPageHref } from '../../forms/ZeffyDialog/zeffy';
 import { ticketsTrigger } from './tickets';
 
 // Properties of the Get tickets trigger (ADR 0024, ADR 0052): whatever an edition's ticket link holds, the
@@ -20,12 +20,13 @@ const zeffyEmbed = fc
 const ticketLink = fc.oneof(studioValue, zeffyEmbed);
 
 describe('ticketsTrigger, as properties', () => {
-  it("opens the dialog only on Zeffy's own page, and then in this tab", () => {
+  it("opens the dialog only on Zeffy's own page for the form, and then in this tab", () => {
     fc.assert(
       fc.property(ticketLink, (value) => {
         const trigger = ticketsTrigger(value);
         if (!trigger?.dialog) return true;
         return (
+          trigger.attributes.href === zeffyPageHref(value.trim()) &&
           new URL(trigger.attributes.href).origin === ZEFFY_ORIGIN &&
           trigger.attributes['data-tickets'] === '' &&
           trigger.attributes.target === undefined

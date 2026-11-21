@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { safeHref } from './action';
-import { followsAKnownScheme, staysOnSite, studioValue } from './hrefs.test-support';
+import { followsAKnownScheme, onSitePlace, staysOnSite, studioValue } from './hrefs.test-support';
 
 describe('safeHref, as properties', () => {
   it('answers the value as written, trimmed, or nothing', () => {
@@ -30,6 +30,14 @@ describe('safeHref, as properties', () => {
         return href === undefined || staysOnSite(href);
       }),
       { numRuns: 2000 },
+    );
+  });
+
+  it('lets every path, fragment and query on this site through as written', () => {
+    fc.assert(
+      fc.property(onSitePlace, (place) => {
+        expect(safeHref(place)).toBe(place);
+      }),
     );
   });
 
