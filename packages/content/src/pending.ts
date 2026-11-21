@@ -157,7 +157,6 @@ export const PENDING: readonly PendingEntry[] = [
   { type: 'siteSettings', fields: ['socials[]'], where: 'Footer', what: 'social links' },
   { type: 'siteSettings', fields: ['zeffyEmbedUrl'], where: 'Donate', what: 'the Zeffy link' },
 
-  // Odunde Festival
   {
     type: 'event',
     fields: ['start'],
@@ -265,7 +264,6 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'a practical fact',
   },
 
-  // End-of-Year Gala
   {
     type: 'event',
     fields: ['start'],
@@ -411,7 +409,6 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'what the level recognizes',
   },
 
-  // Programs and lessons
   { type: 'program', fields: ['blurb'], where: 'Programs, cards', what: 'what the program is' },
   { type: 'program', fields: ['cadence'], where: 'Programs, cards', what: 'the cadence' },
   { type: 'program', fields: ['ages'], where: 'Programs, cards', what: 'the ages' },
@@ -517,7 +514,6 @@ export const PENDING: readonly PendingEntry[] = [
   },
   ...takePartRows('lessonsPage', 'Lessons, take part'),
 
-  // Cultural Collective
   {
     type: 'collectivePage',
     fields: ['argument'],
@@ -810,7 +806,6 @@ export const PENDING: readonly PendingEntry[] = [
     what: 'your photo consent and removal policy',
   },
 
-  // Homepage
   { type: 'homepage', fields: ['hero.title'], where: 'Homepage, hero', what: 'the hero heading' },
   {
     type: 'homepage',
