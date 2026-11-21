@@ -43,8 +43,6 @@ const blocks = (...paragraphs: string[]): Block[] =>
     children: [{ _type: 'span', _key: `span-${index + 1}`, text, marks: [] }],
   }));
 
-// Get Involved
-
 export const GET_INVOLVED_HEADER = {
   kicker: { yo: 'Ẹ dara pọ̀ mọ́ wa', en: 'Join us' },
   title: 'Raise your hand',
@@ -114,8 +112,6 @@ export const TALK = {
   namePending: GENERAL_CONTACT_PENDING,
   respondsPending: GENERAL_RESPONDS_PENDING,
 };
-
-// Impact
 
 export const IMPACT_HEADER = {
   kicker: { yo: 'Iṣẹ́ wa', en: 'Our work' },
@@ -224,8 +220,6 @@ export const FUND = {
   ],
 };
 
-// Our Story
-
 export const STORY_HEADER = {
   kicker: { yo: 'Àwọn ènìyàn wa', en: 'Our people' },
   title: 'People and history',
@@ -303,8 +297,6 @@ export const STORY_TAKE_PART = [
     label: 'Volunteer',
   },
 ];
-
-// Donate
 
 export const DONATE_HEADER = {
   kicker: { yo: 'Ẹ ṣe àánú', en: 'Give' },
