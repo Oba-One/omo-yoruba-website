@@ -15,6 +15,13 @@ describe('ReadingGuide', () => {
       const heading = body.querySelector(link.getAttribute('href') as string);
       expect(heading?.textContent).toBe(link.textContent);
     }
-    expect(body.querySelector('main article h1')?.textContent).toBe('Your guide to Studio');
+    expect(body.querySelector('main article h1')?.textContent).toBe('How to update our website');
+  });
+
+  it('ends with a way back to the list of tasks', async () => {
+    const body = await renderToBody(Default);
+    const back = body.querySelector('main article a[href="#top"]');
+    expect(back?.textContent).toBe('Back to the top');
+    expect(body.querySelector('main')?.id).toBe('top');
   });
 });

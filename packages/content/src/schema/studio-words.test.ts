@@ -104,6 +104,17 @@ function liveField(type: string, path: string): boolean {
 }
 
 describe("the Studio in the site's words", () => {
+  /** What a member reads on an input: its help text, its label and the titles of its choices. */
+  const words = (field: Field) => [
+    field.description,
+    field.title,
+    ...(field.options?.list ?? []).map((item) => (item as { title?: unknown }).title),
+  ];
+  const saying = (pattern: RegExp) =>
+    matching((field) =>
+      words(field).some((text) => typeof text === 'string' && pattern.test(text)),
+    );
+
   it('gives every choice a title, never a raw stored value', () => {
     expect(
       matching((field) => field.options?.list?.some((item) => typeof item === 'string') ?? false),
@@ -113,16 +124,13 @@ describe("the Studio in the site's words", () => {
   it('keeps ADR and ticket numbers and developer words out of the help text and the labels', () => {
     const codebase =
       /\bADR\b|docs\/adr|wayfinder|\bticket \d|PostHog|data-theme|\bPhase \d|GROQ|stega|Lightbox|Give Dialog|trust block|the register/;
-    const words = (field: Field) => [
-      field.description,
-      field.title,
-      ...(field.options?.list ?? []).map((item) => (item as { title?: unknown }).title),
-    ];
-    expect(
-      matching((field) =>
-        words(field).some((text) => typeof text === 'string' && codebase.test(text)),
-      ),
-    ).toEqual([]);
+    expect(saying(codebase)).toEqual([]);
+  });
+
+  // The teacher is the person the Lessons page picks, in no group (CONTEXT.md, Teacher). An example
+  // that names a head teacher invites a member to give her a group, and Our Story never lists her.
+  it('never suggests a head teacher', () => {
+    expect(saying(/head teacher/i)).toEqual([]);
   });
 
   it('reads every date and time the US way', () => {

@@ -1,5 +1,141 @@
 # Member guide
 
+## The rewrite for older readers (11 October 2026)
+
+The owner asked for the guide to be checked against the Studio as it stands and
+made plain enough that an older member can follow it without help. The source is
+still `docs/content-ops.md`, shown at `/member-guide` and in the Studio's
+**Member guide** tab.
+
+### What changed
+
+- The guide is now "How to update our website": thirteen sections in the order a
+  member works. Every task is numbered steps with one action each. Bold marks
+  only the words on the Studio's screen, and the guide says so. Notes that are
+  not steps sit in an `aside`. What only administrators do (the Inbox, the three
+  held-back switches, Organization details) has its own section at the end.
+- New for members: where to find each kind of content, what to do when something
+  looks wrong, when to ask an administrator, and the Studio's words explained.
+  New facts: the price on a ticket tier is only what the website shows, and
+  Zeffy charges its own (the 11 October walkthrough); an album shows once it has
+  a web address and a photograph (`queries/gallery.ts`). The note about the
+  Vision tab is gone: members never saw it.
+- `ReadingGuide` in `@oy/ui`: from 960px the list of tasks stays in view beside
+  the steps; the steps read at 18px, the top of the site's body range, in a 68ch
+  column; `figure`, `figcaption` and
+  `aside` have their styles; a link inside a sentence wraps with its line;
+  printed, the page drops the list of tasks and keeps each step whole. The
+  component is documented here because `docs/design/` is a read-only reference.
+- The guide links itself in a new tab, so a member can keep it beside the Studio
+  or print it.
+
+### How the steps were checked
+
+Against the code that draws the Studio: `studio/structure.ts`, the templates,
+the schema's titles, groups and descriptions, the Missing content pane, the
+enquiry actions and the layout options. The Studio's own labels (Publish,
+Discard changes, Generate, Add item, Upload, "Used on" and the create button)
+were read from the English strings of the installed `sanity` 6.12.0, and from
+the walkthrough screenshots of 11 October.
+
+No signed-in Studio was within reach while the guide was written: the built-in
+browser was signed out and no browser had the Claude in Chrome extension
+connected. Later the same day the owner connected their Chrome and the pictures
+were taken there. That look confirmed the phone button above a preview and the
+yellow warning beside a tab. **Upload** in a photograph's menu and the red mark
+beside a box were not on screen, and still rest on the package's strings.
+
+### Screenshots
+
+The guide has twelve pictures, all in the Studio's light appearance.
+
+Four are from 30 September and still show the Studio as it is: `pages.jpg`,
+`event-form.jpg`, `photo-details.jpg` and `people.jpg`. Five from that day are
+removed: `events.jpg` (the sidebar still said To do), `album-controls.jpg`
+(credit now comes before the photographs), `todo.jpg`, which nothing used, and
+the first `missing-content.jpg` and `preview-and-publish.jpg`, which are retaken.
+
+Eight were taken on 11 October in the owner's Chrome, in a window 1,460 wide,
+then cropped: `studio-screen.jpg`, `page-form.jpg`, `edition.jpg`,
+`album-form.jpg`, `photo-order.jpg`, `missing-content.jpg`,
+`preview-and-publish.jpg` and `inbox.jpg`. The owner's account is an
+administrator's, so before each capture a style rule hid the two rows only
+administrators have (Organization details and Inbox) and every profile picture.
+What is left is what a member sees. `inbox.jpg` keeps the two rows on purpose:
+it is in the administrators' part. Nothing was typed, saved or published.
+
+To retake one, sign in, set the appearance to light, and add this before the
+capture:
+
+```css
+li:has(> a[data-testid="pane-item-Inbox"]),
+li:has(> a[data-testid="pane-item-Organization details"]),
+li:has(+ li > a[data-testid="pane-item-Organization details"]) {
+  display: none !important;
+}
+#user-menu,
+[data-ui="Avatar"],
+[data-ui="AvatarStack"] {
+  visibility: hidden !important;
+}
+```
+
+One picture was not taken: the three dots beside Publish, open on Discard
+changes. No document had unpublished changes, and with none the menu lists only
+Duplicate and Delete. Making a draft for a picture would have changed content.
+
+Each picture is a `figure` with a `figcaption` in `docs/content-ops.md`, and
+`packages/web/e2e/member-guide.spec.ts` counts them.
+
+### Proof
+
+The guide's browser tests pass on desktop and mobile: keyboard navigation, every
+screenshot loading with its caption, axe with no violations, no sideways scroll
+at 375px, the list of tasks in view beside the last section at 1440px, and the
+print view without the list. The component's two tests pass. Typecheck and the
+voice lints pass.
+
+### Reviews
+
+One pass on each axis before the commit, both read-only.
+
+- Standards. The steps were set at 19px, outside the documented body range: now
+  18px. The list of tasks clipped its links' focus ring once it scrolled: it has
+  room now. Link colour, hover and focus repeated the tokens' base rules and are
+  gone. A printed guide lost the Studio's address: it is written out. The guide
+  never said who an administrator is: it does now.
+- Spec, each step read against the Studio's code. Four statements were wrong and
+  are corrected: the guide implied an event page shows several of an album's
+  videos when it showed one (two since pull request 51, and the guide now says
+  two), the three switches are locked for members and not hidden, the
+  homepage's buttons can be changed in Studio, and an edition's form has an All
+  fields tab. Steps that carried several actions are split, terms are explained
+  where they first appear, and Add to another list is new because Missing
+  content sends members to lists the guide gave no steps for.
+- The browser tests caught one more: an address beginning `www.` inside its own
+  link is linked a second time by the Markdown renderer, which leaves the outer
+  link empty. The visible address has no `www.`; the bare name redirects.
+
+### Still open
+
+- A picture of Discard changes under the three dots beside Publish, the next
+  time a document has unpublished changes.
+- A walkthrough by a member with an Editor account: add an event, an album and a
+  person, and clear one Missing content item, keeping the work as drafts.
+- Chromatic's new baseline for the ReadingGuide story is the owner's to accept.
+- The Role box on a person suggested "Head teacher", which `CONTEXT.md` asks us
+  to avoid. Pull request 50 replaces the example and holds the Studio's words to
+  the rule; it merges on its own.
+
+Suggested skills: `oy-voice` and `humanize-writing` for the words,
+`oy-component` for the layout.
+
+## The first guide (30 September 2026)
+
+Kept as the record of the first version. The section above replaces what this
+one says about the title, the eight screenshots, the larger preview image and To
+do.
+
 The owner's member guide now has eight task screenshots and an embedded Studio
 **Member guide** tab. The source is `docs/content-ops.md`, written in a concise,
 friendly tone for members using the current Studio labels.
@@ -39,12 +175,12 @@ including axe, keyboard navigation, all eight screenshots, trailing-slash links
 and unknown-image 404 responses. Storybook's accessibility panel reported zero
 violations, 16 passes and zero inconclusive checks.
 
-## Standards review
+### Standards review
 
 One P3 finding: task headings used the smaller H3 scale. Changed them to the H2
 token and the title to the hero token. No other standards or smell findings.
 
-## Spec review
+### Spec review
 
 No actionable findings or scope expansion. The pending Editor-account walkthrough
 is a usability evidence limitation, recorded below.
@@ -65,7 +201,7 @@ Implementation sources: [Sanity custom tools](https://www.sanity.io/docs/studio/
 Suggested skills: humanize-writing and oy-voice for copy changes, oy-content-ops
 for the member walkthrough, and oy-component for future display changes.
 
-## Merge and production verification
+### Merge and production verification
 
 The owner authorized merging PR 22 after the checks were green. All ten PR
 checks and the Vercel preview status passed for `df831ba4d0d6ee91f4ea569236903a714e2139e8`.
