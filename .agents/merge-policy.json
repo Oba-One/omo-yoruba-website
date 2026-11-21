@@ -12,6 +12,7 @@
     "Storybook build",
     "Chromatic",
     "Playwright and axe",
+    "Playwright with fixture data",
     "agents-doctor / Agents doctor",
     "Regrowth ratchet"
   ],

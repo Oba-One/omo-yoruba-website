@@ -203,8 +203,9 @@ Single-context: `CONTEXT.md` at the root and `docs/adr/`. See `docs/agents/domai
 ## Pointers
 
 - `.claude/skills/` (`.agents/skills` links to it): this repo's skills `oy-design-system`,
-  `oy-component`, `oy-page`, `oy-content-model`, `oy-content-ops`, `oy-voice` (model-invoked)
-  and `oy-release` (user-invoked), plus the kit's `review`, `debug`, `plan`, `ship` and
+  `oy-component`, `oy-page`, `oy-content-model`, `oy-content-ops`, `oy-voice`,
+  `verify-omo-yoruba` (with its feature map of the eight flows; model-invoked) and `oy-release`
+  (user-invoked), plus the kit's `review`, `debug`, `plan`, `ship` and
   `research`, copied from dev-surfaces `agents/kit/skills`, which read `.agents/adapter.md`.
 - `.agents/merge-policy.json`: tiers, required checks, merge method. `.agents/policy.json`:
   command and path rules for the shared guards.

@@ -8,6 +8,9 @@ import { defineConfig, devices } from '@playwright/test';
 // docs/research/phase-3-playwright-and-axe.md.
 const deployed = process.env.PLAYWRIGHT_TEST_BASE_URL;
 const baseURL = deployed ?? 'http://localhost:4322';
+// With SANITY_API_HOST set (CI's fixture job, the verify-omo-yoruba skill), the dev server reads the fixture
+// dataset from packages/content/scripts/fixture-api.ts, which the runner starts first on that address.
+const fixtureApi = process.env.SANITY_API_HOST;
 
 export default defineConfig({
   testDir: './e2e',
@@ -46,17 +49,32 @@ export default defineConfig({
   ],
   webServer: deployed
     ? undefined
-    : {
-        // Node runs Astro directly so the runner's shutdown reaches the server itself. Astro 7
-        // backgrounds the dev server when it detects a coding agent (the process then "exits
-        // early" and the daemon keeps the port); ASTRO_DEV_BACKGROUND set to anything turns that
-        // detection off, so the server stays in the foreground under the runner.
-        command: 'node ./node_modules/astro/bin/astro.mjs dev --port 4322',
-        env: { ...process.env, PLAYWRIGHT: '1', ASTRO_DEV_BACKGROUND: '0' },
-        stdout: 'ignore',
-        stderr: 'pipe',
-        url: baseURL,
-        reuseExistingServer: false,
-        timeout: 120_000,
-      },
+    : [
+        ...(fixtureApi
+          ? [
+              {
+                command: 'bun ../content/scripts/fixture-api.ts',
+                env: { ...process.env, FIXTURE_API_PORT: new URL(fixtureApi).port || '80' },
+                url: `${fixtureApi}/health`,
+                stdout: 'ignore' as const,
+                stderr: 'pipe' as const,
+                reuseExistingServer: false,
+                timeout: 60_000,
+              },
+            ]
+          : []),
+        {
+          // Node runs Astro directly so the runner's shutdown reaches the server itself. Astro 7
+          // backgrounds the dev server when it detects a coding agent (the process then "exits
+          // early" and the daemon keeps the port); ASTRO_DEV_BACKGROUND set to anything turns that
+          // detection off, so the server stays in the foreground under the runner.
+          command: 'node ./node_modules/astro/bin/astro.mjs dev --port 4322',
+          env: { ...process.env, PLAYWRIGHT: '1', ASTRO_DEV_BACKGROUND: '0' },
+          stdout: 'ignore',
+          stderr: 'pipe',
+          url: baseURL,
+          reuseExistingServer: false,
+          timeout: 120_000,
+        },
+      ],
 });

@@ -495,6 +495,16 @@ uploads `playwright-report/` when a run fails. Add the context `Playwright and a
 protection once the Phase 3 pull request merges. Vitest keeps to `src/**/*.test.ts`; Playwright
 keeps to `e2e/**`.
 
+Since 21 November 2026 a second job, `Playwright with fixture data`, runs the same suite against the
+fixture dataset instead of the placeholder project, so the specs that need content (photographs,
+the carousel, the video, album pages) run in CI too. `SANITY_API_HOST=http://127.0.0.1:4400` points
+the site's reads at `packages/content/scripts/fixture-api.ts`, which Playwright starts first: groq-js
+over the seed's documents (`buildSeed`, with asset ids made from the photographs on disk) plus one
+fixture video. It answers queries only, and `astro.config.ts` takes the setting for a loopback
+address only and never on Vercel. Locally, set the same three variables
+(`PUBLIC_SANITY_PROJECT_ID=fixture`, `PUBLIC_SANITY_DATASET=development`, `SANITY_API_HOST`) and run
+`bun e2e`; the `verify-omo-yoruba` skill adds labeled captures at 375 and 1280 wide.
+
 Since Phase 5 `odunde.spec.ts` and `gala.spec.ts` check each event page's blocks in order against the
 options on the body, the Studio facts or their chips (never an invented fact), one gold action per
 band, every take-part and tier button opening its form with focus returning, and axe (both Gala
