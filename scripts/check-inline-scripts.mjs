@@ -3,8 +3,9 @@
 // (ADR 0018). Three kinds of finding, counted per file against a shrink-only baseline
 // (scripts/data/inline-scripts-baseline.json, read by scripts/baseline.mjs, the agent kit's tool):
 //
-// - inline-script-line: one per line of each <script is:inline> body, so a block may shrink but
-//   never grow;
+// - inline-script-line: one per line of each script Astro leaves inline (is:inline, define:vars,
+//   any attribute but type="module"), so a block may shrink but never grow, and a shrink must be
+//   locked into the baseline in the same change;
 // - zero-delay-timer: setTimeout or setInterval with a delay of 0, or with none, in any package
 //   source file, so no new one is copied in;
 // - ts:<code>: an error TypeScript reports when it checks each inline body as JavaScript
@@ -22,14 +23,46 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BASELINE = 'scripts/data/inline-scripts-baseline.json';
 
-/** The bodies of <script is:inline> blocks in an .astro source, with the line each starts on. */
+/**
+ * The bodies of the <script> blocks Astro leaves unprocessed in an .astro source, with the line each
+ * starts on. Astro bundles and type-checks a script with no attributes or only type="module"; any
+ * other attribute (is:inline, define:vars, data-*) leaves it inline. External (src) and non-JavaScript
+ * (JSON-LD and the like) scripts have no body to budget.
+ */
 export function inlineBlocks(source) {
   const blocks = [];
-  const pattern = /<script\b[^>]*\bis:inline\b[^>]*>([\s\S]*?)<\/script>/g;
-  for (const match of source.matchAll(pattern)) {
-    const openEnd = match.index + match[0].indexOf('>') + 1;
-    const startLine = source.slice(0, openEnd).split('\n').length;
-    const body = match[1].replace(/^\n/, '').replace(/\n[ \t]*$/, '');
+  let from = 0;
+  for (;;) {
+    const open = source.indexOf('<script', from);
+    if (open < 0) break;
+    // The opening tag ends at the first > outside quotes and braces (define:vars={{ a: 2 > 1 }}).
+    let i = open + '<script'.length;
+    let quote = '';
+    let depth = 0;
+    for (; i < source.length; i += 1) {
+      const ch = source[i];
+      if (quote) {
+        if (ch === quote) quote = '';
+      } else if (ch === '"' || ch === "'" || ch === '`') quote = ch;
+      else if (ch === '{') depth += 1;
+      else if (ch === '}') depth -= 1;
+      else if (ch === '>' && depth <= 0) break;
+    }
+    const attributes = source.slice(open + '<script'.length, i).trim();
+    const close = source.indexOf('</script>', i);
+    if (close < 0) break;
+    from = close + '</script>'.length;
+    const processed = attributes === '' || /^type=["']module["']$/.test(attributes);
+    const external = /(^|\s)src=/.test(attributes);
+    const typed = attributes.match(/(?:^|\s)type=["']([^"']+)["']/);
+    const javascript =
+      !typed || /^(module|text\/javascript|application\/javascript)$/.test(typed[1]);
+    if (processed || external || !javascript) continue;
+    const startLine = source.slice(0, i + 1).split('\n').length;
+    const body = source
+      .slice(i + 1, close)
+      .replace(/^\n/, '')
+      .replace(/\n[ \t]*$/, '');
     blocks.push({ startLine, body, lines: body ? body.split('\n').length : 0 });
   }
   return blocks;
@@ -145,11 +178,18 @@ function main(argv) {
     const result = spawnSync(
       process.execPath,
       [path.join(root, 'scripts/baseline.mjs'), mode, BASELINE, file],
-      {
-        cwd: root,
-        stdio: 'inherit',
-      },
+      { cwd: root, encoding: 'utf8' },
     );
+    process.stdout.write(result.stdout ?? '');
+    process.stderr.write(result.stderr ?? '');
+    // Shrink-only means a count that went down is locked in by the same change, so the lines it
+    // freed cannot be spent again unreviewed.
+    if (mode === 'check' && result.status === 0 && /went down/.test(result.stdout ?? '')) {
+      console.error(
+        'check-inline-scripts: a count went down; run node scripts/check-inline-scripts.mjs --shrink and commit the baseline.',
+      );
+      return 1;
+    }
     return result.status ?? 1;
   } finally {
     rmSync(work, { recursive: true, force: true });

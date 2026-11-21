@@ -38,6 +38,26 @@ describe('package boundaries', () => {
     expect(output).toContain('@oy/content');
   });
 
+  it('subpaths of the client and the sanity:client module are refused outside the loaders', () => {
+    const stega =
+      "import { createClient } from '@sanity/client/stega';\nexport const c = createClient({});\n";
+    const virtual =
+      "import { sanityClient } from 'sanity:client';\nexport const c = sanityClient;\n";
+    const typeOnly =
+      "import type { ClientReturn } from '@sanity/client';\nexport type R = ClientReturn<string>;\n";
+    for (const [file, source] of [
+      ['packages/web/src/pages/stega.ts', stega],
+      ['packages/web/src/pages/virtual.ts', virtual],
+      ['packages/ui/src/core/types.ts', typeOnly],
+    ] as const) {
+      const { failed, output } = lint(file, source);
+      expect(failed, file).toBe(true);
+      expect(output).toContain('noRestrictedImports');
+    }
+    expect(lint('packages/web/src/lib/sanity/view.ts', stega).failed).toBe(false);
+    expect(lint('packages/web/src/pages/api/preview/enable.ts', clientImport).failed).toBe(false);
+  });
+
   it('the Sanity client is refused in a page but allowed in the web loaders and @oy/content', () => {
     expect(lint('packages/web/src/pages/probe.ts', clientImport).failed).toBe(true);
     expect(lint('packages/web/src/lib/sanity/probe.ts', clientImport).failed).toBe(false);

@@ -49,8 +49,15 @@
           "options": {
             "paths": {
               "groq": "GROQ belongs to @oy/content: add the query to packages/content/src/queries and import it from @oy/content.",
-              "@sanity/client": "The Sanity client belongs to @oy/content and the web loaders (packages/web/src/lib/sanity, lib/forms/site-deps.ts, pages/api/preview): load data through them."
-            }
+              "@sanity/client": "The Sanity client belongs to @oy/content and the web loaders (packages/web/src/lib/sanity, lib/forms/site-deps.ts, pages/api/preview): load data through them.",
+              "sanity:client": "The Sanity client belongs to the web loaders (packages/web/src/lib/sanity): load data through them."
+            },
+            "patterns": [
+              {
+                "group": ["@sanity/client/*"],
+                "message": "The Sanity client belongs to @oy/content and the web loaders (packages/web/src/lib/sanity, lib/forms/site-deps.ts, pages/api/preview): load data through them."
+              }
+            ]
           }
         }
       }
