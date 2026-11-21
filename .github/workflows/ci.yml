@@ -115,11 +115,17 @@ jobs:
         with:
           persist-credentials: false
       - name: Syntax
-        run: bash -n scripts/*.sh .claude/hooks/*.sh
+        run: bash -n scripts/*.sh scripts/tests/*.sh .claude/hooks/*.sh
       # SC2034 is excluded because the wizard library defines colour variables it leaves to
       # the stages; the library is copied verbatim from the wizard skill template.
       - name: shellcheck (preinstalled on the runner image)
-        run: shellcheck --severity=warning --exclude=SC2034 scripts/*.sh .claude/hooks/*.sh
+        run: shellcheck --severity=warning --exclude=SC2034 scripts/*.sh scripts/tests/*.sh .claude/hooks/*.sh
+      - name: Node for the script tests (the dataset guard is a Node script)
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+      - name: Script tests
+        run: for test in scripts/tests/*.test.sh; do bash "$test"; done
 
   storybook:
     name: Storybook build and Chromatic
