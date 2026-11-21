@@ -30,8 +30,9 @@ if (!projectId || !dataset) {
 
 // CI's fixture Playwright job and the verify-omo-yoruba skill point the site's reads at the fixture API
 // (packages/content/scripts/fixture-api.ts) instead of Sanity. Only a loopback address is taken, and never
-// on Vercel, so no deployment's settings can send the site's reads, or its token, anywhere else.
-const fixtureApi = process.env.SANITY_API_HOST || dotEnv.SANITY_API_HOST;
+// on Vercel, so no deployment's settings can send the site's reads, or its token, anywhere else. It is read
+// from the process only, never packages/web/.env, since Playwright starts the fixture API from the same variable.
+const fixtureApi = process.env.SANITY_API_HOST;
 if (
   fixtureApi &&
   (process.env.VERCEL || !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(fixtureApi))

@@ -1,7 +1,8 @@
 import { photographCount } from '@oy/content/albums';
 import { pendingWhat } from '@oy/content/pending';
 import { PUBLIC_ROUTES } from '@oy/content/routes';
-import { expect, type Page, type Request, test } from '@playwright/test';
+import type { Page, Request } from '@playwright/test';
+import { expect, test } from './fixtures';
 import {
   albumToOpen,
   axeViolations,

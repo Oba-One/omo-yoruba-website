@@ -9,8 +9,11 @@ description: Prove a change to the Omo Yorùbá site works in a browser, from a 
 can never be proven headless. Find the flows your diff touches there first.
 
 The proof runs against the fixture dataset: the seed's documents and photographs plus one video,
-served by `packages/content/scripts/fixture-api.ts`. It needs no `.env`, no token and no network to
-Sanity, and it writes nothing anywhere. Never point verification at the live dataset: it holds
+served by `packages/content/scripts/fixture-api.ts`. It needs no `.env` and no token: in fixture mode
+the dev server runs with both Sanity tokens empty, even where `packages/web/.env` holds them, and no
+query or write reaches Sanity. The photographs' addresses still name Sanity's image CDN, and every spec
+takes `test` from `e2e/fixtures.ts`, which answers those requests from the fixture API, so pages and
+captures show the photographs. Never point verification at the live dataset: it holds
 enquiries from real people.
 
 ## Steps

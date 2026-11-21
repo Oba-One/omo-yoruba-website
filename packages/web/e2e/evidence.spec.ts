@@ -1,18 +1,18 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { expect, type Page, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, FIXTURE_API, test } from './fixtures';
 
 // Labeled captures for a pull request, at 375 and 1280 wide, kept outside the checkout so they survive its
-// cleanup (the verify-omo-yoruba skill). Skipped unless OY_EVIDENCE_DIR names where to keep them, so the suite
-// and CI never run it. With SANITY_API_HOST set, the photographs load from the fixture API (Sanity's image CDN
-// is answered from it), so a capture shows the page as a visitor would see it.
+// cleanup (the verify-omo-yoruba skill). Skipped unless OY_EVIDENCE_DIR names where to keep them, so a plain
+// `bun e2e` skips it. With SANITY_API_HOST set, the photographs load from the fixture API (`fixtures.ts`
+// answers Sanity's image CDN from it), so a capture shows the page as a visitor would see it.
 //
 //   OY_EVIDENCE_DIR=~/omo-yoruba-evidence/<branch> bun e2e -- e2e/evidence.spec.ts --project desktop
 //
 // CI's fixture job sets it too and uploads the folder as the `evidence` artifact.
 
 const DIR = process.env.OY_EVIDENCE_DIR;
-const FIXTURE_API = process.env.SANITY_API_HOST;
 const WIDTHS = [
   { label: '375', width: 375, height: 812 },
   { label: '1280', width: 1280, height: 900 },
@@ -44,11 +44,11 @@ async function capture(page: Page, flow: string, step: string): Promise<void> {
 
 test.describe('evidence', () => {
   test.skip(!DIR, 'captures run only when OY_EVIDENCE_DIR names where to keep them');
-  // Each capture sets its own width, so one project is enough.
-  test.skip(({ isMobile }) => isMobile, 'the desktop project takes both widths');
 
   test.beforeAll(() => mkdirSync(DIR as string, { recursive: true }));
+  // Only a run that took captures writes the manifest, so the skipped mobile project cannot empty it.
   test.afterAll(() => {
+    if (captures.length === 0) return;
     const manifest = {
       takenAt: new Date().toISOString(),
       data: FIXTURE_API ? `fixture API at ${FIXTURE_API}` : 'the dataset packages/web/.env names',
@@ -58,33 +58,24 @@ test.describe('evidence', () => {
     writeFileSync(join(DIR as string, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
   });
 
-  test.beforeEach(async ({ page }) => {
-    if (FIXTURE_API) {
-      await page.route('https://cdn.sanity.io/images/**', async (route) => {
-        const url = new URL(route.request().url());
-        const answer = await fetch(`${FIXTURE_API}${url.pathname}`);
-        await route.fulfill({
-          status: answer.status,
-          contentType: answer.headers.get('content-type') ?? 'image/jpeg',
-          body: Buffer.from(await answer.arrayBuffer()),
-        });
-      });
-    }
-  });
-
   // The gallery flow (feature map, Gallery): the album mosaic, an album page with its video, then the
   // Lightbox on a photograph.
-  test('gallery', async ({ page }) => {
+  test('gallery', async ({ page, isMobile }) => {
+    // Each capture sets its own width, so the desktop project takes both.
+    test.skip(isMobile, 'the desktop project takes both widths');
     await page.goto('/gallery');
     await expect(page.locator('#albums a.oy-album').first()).toBeVisible();
     await capture(page, 'gallery', '1-mosaic');
 
-    // The fixture's video sits on Odunde 2026; any other dataset opens its first album.
+    // The fixture's video sits on Odunde 2026; any other dataset opens its first album. A tile may carry a
+    // photo address (the gallery's open: viewer), which opens the Lightbox on load, so the album is opened at
+    // its own address for the album and video captures.
     const odunde = page.locator('#albums a.oy-album[href^="/gallery/odunde-2026"]');
-    await ((await odunde.count()) > 0 ? odunde : page.locator('#albums a.oy-album'))
-      .first()
-      .click();
+    const tile = ((await odunde.count()) > 0 ? odunde : page.locator('#albums a.oy-album')).first();
+    const album = new URL((await tile.getAttribute('href')) as string, page.url()).pathname;
+    await page.goto(album);
     await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
     await capture(page, 'gallery', '2-album');
 
     const video = page.locator('oy-video').first();

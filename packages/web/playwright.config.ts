@@ -69,7 +69,14 @@ export default defineConfig({
           // early" and the daemon keeps the port); ASTRO_DEV_BACKGROUND set to anything turns that
           // detection off, so the server stays in the foreground under the runner.
           command: 'node ./node_modules/astro/bin/astro.mjs dev --port 4322',
-          env: { ...process.env, PLAYWRIGHT: '1', ASTRO_DEV_BACKGROUND: '0' },
+          // Against the fixture, the dev server holds no Sanity token, even where packages/web/.env has one:
+          // the fixture needs none, and no request then carries one.
+          env: {
+            ...process.env,
+            PLAYWRIGHT: '1',
+            ASTRO_DEV_BACKGROUND: '0',
+            ...(fixtureApi ? { SANITY_API_READ_TOKEN: '', SANITY_API_WRITE_TOKEN: '' } : {}),
+          },
           stdout: 'ignore',
           stderr: 'pipe',
           url: baseURL,

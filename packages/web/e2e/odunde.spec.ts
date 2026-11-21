@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { expectNoMockWhileOwed, galleryHeld, settle } from './helpers';
 
 // The Odunde Festival page in the prototype's order (ROUTES section 4), each block present whether

@@ -1,6 +1,7 @@
-import { expect, type Page, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { draftSessionValue } from '../src/lib/sanity/draft-session';
 import { DRAFT_SESSION_COOKIE, PERSPECTIVE_COOKIE } from '../src/lib/sanity/preview';
+import { expect, test } from './fixtures';
 import { PLACEHOLDER_PROJECT, READ_TOKEN, settle } from './helpers';
 
 // A page reached through the nav (the ClientRouter's swap) must behave as a fresh load (ADR 0041):

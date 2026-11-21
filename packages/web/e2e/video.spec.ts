@@ -1,4 +1,5 @@
-import { expect, type Page, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { PLACEHOLDER_PROJECT } from './helpers';
 
 // An album's video plays from YouTube only when a visitor presses play (ADR 0051): the page asks nothing of YouTube

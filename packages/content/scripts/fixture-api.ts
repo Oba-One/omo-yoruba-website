@@ -9,8 +9,9 @@
  * Routes: the query endpoint as @sanity/client calls it with `useProjectHostname: false`
  * (GET or POST /v<version>/data/query/<dataset>), answered with groq-js over the published documents;
  * /images/<project>/<dataset>/<hash>-<w>x<h>.<ext>, the photograph behind a fixture asset id, for a
- * browser that routes Sanity's image CDN here; /health for the runner. Anything else answers 404, so a
- * read the fixture cannot answer fails loudly instead of rendering Pending.
+ * browser that routes Sanity's image CDN here; /health for the runner. Anything else answers 404. The site's loader turns a failed read into null,
+ * so a query the fixture cannot answer renders Pending: `fixture-api.test.ts` runs every query the site
+ * exports against it to catch that here.
  */
 import { readFileSync } from 'node:fs';
 import { createServer } from 'node:http';

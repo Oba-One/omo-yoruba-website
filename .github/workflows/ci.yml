@@ -232,7 +232,8 @@ jobs:
 
   # The same suite against the fixture dataset (packages/content/scripts/fixture-api.ts, the seed with its
   # photographs and one video) instead of the placeholder project, so the flows that need content run here
-  # too: the photo, video and carousel specs, among others. Nothing reads or writes Sanity.
+  # too: the photo, video and carousel specs, among others. No query, write or token reaches Sanity: the
+  # browser's requests to Sanity's image CDN are answered from the fixture API (packages/web/e2e/fixtures.ts).
   e2e-fixture:
     name: Playwright with fixture data
     runs-on: ubuntu-latest

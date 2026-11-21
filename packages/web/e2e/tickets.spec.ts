@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 // The Tickets Dialog (ADR 0052) is on the Gala page only while the next edition's ticket link is a Zeffy
 // ticket form. Without one (CI's placeholder content, an Eventbrite link, or no link) `#tickets` opens

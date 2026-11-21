@@ -5,7 +5,7 @@ import {
   pendingWhat,
   presenceWhat,
 } from '@oy/content/pending';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import {
   axeViolations,
   bodyOption as body,
