@@ -32,3 +32,5 @@ report-only CSP's issues (ADR 0011). Open-work D14 holds this ticket's two decis
 27 September 2026. Rewritten (open-work H2): ticket 33 is resolved, so the failures to expect are ticket
 35's and ticket 32's. The repository still has no Actions secrets (`gh secret list`, 27 September), so
 the workflow skips.
+
+**21 November 2026:** Since pull request 58 the workflow fails instead of skipping while the secret is missing, so a green Lighthouse always means an audit ran.
