@@ -68,10 +68,39 @@ while IFS=$'\t' read -r want payload; do
     fi
   done
 done <<'JSON'
-block	{"tool_name":"Bash","tool_input":{"command":"git reset --hard"}}
-block	{"tool_name":"Bash","tool_input":{"command":"git reset --hard"}}
+block	{"tool_name":"Bash","tool_input":{"command":"\u0067it reset --hard"}}
+block	{"tool_name":"Bash","tool_input":{"command":"git reset \u002d-hard"}}
+allow	{"tool_name":"Bash","tool_input":{"command":"git commit -F - <<'EOF'\nnever git reset --hard\nEOF"}}
 allow	{"tool_name":"Bash","tool_input":{"command":"git status","description":"\"command\":\"git reset --hard\""}}
 JSON
+
+# Long commands: read in full up to 32,000 characters, refused beyond (and beyond 4,000 without jq).
+pad="# $(printf '%17000s' '' | tr ' ' a)"
+while IFS=$'\t' read -r want tail; do
+  [[ -z "$want" ]] && continue
+  total=$((total + 1))
+  payload=$(jq -cn --arg command "$pad"$'\n'"$tail" '{tool_name: "Bash", tool_input: {command: $command}}')
+  for how in claude; do
+    got=$(verdict "$how" "$payload")
+    if [[ "$got" != "$want" ]]; then
+      printf 'FAIL %s long command: want %s, got %s: %s\n' "$how" "$want" "$got" "$tail"
+      failures=$((failures + 1))
+    fi
+  done
+done <<'LONG'
+block	git 2>/dev/null reset --hard
+block	git reset --{hard,}
+block	$'git' reset --hard
+block	git {reset,--hard}
+block	git push --force
+allow	git status
+LONG
+total=$((total + 1))
+huge=$(jq -cn --arg command "$(printf '%120000s' '' | tr ' ' a)" '{tool_name: "Bash", tool_input: {command: $command}}')
+if [[ "$(verdict claude "$huge")" != block || "$(verdict no-jq "$payload")" != block ]]; then
+  echo "FAIL an over-long command was not refused"
+  failures=$((failures + 1))
+fi
 
 if ((failures)); then
   echo "$failures failure(s) in $total case(s)"
