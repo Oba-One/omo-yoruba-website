@@ -164,6 +164,8 @@ is the record.
 | Every content type has a Presentation location | test: `packages/content/src/studio/presentation.test.ts` |
 | Node and Bun pins agree, and Vercel builds through the pinned Bun | `scripts/check-toolchain-pins.sh` in `bun run check` |
 | WCAG AA on every page | CI: Playwright and axe |
+| Inline component scripts never grow, gain a zero-delay timer or a new type error (ADR 0018 asks to keep them small) | check: `scripts/check-inline-scripts.mjs` against the shrink-only `scripts/data/inline-scripts-baseline.json`, in `bun run check` |
+| GROQ and the Sanity client stay in `@oy/content` and the web loaders | lint: Biome `noRestrictedImports`; test: `packages/lint/src/import-boundaries.test.ts` |
 | The agent kit's contract (this file, `.agents/`, skills, hooks, PR template, CODEOWNERS) | CI: Agents Doctor, which checks their shape only |
 | The merge policy agrees with CODEOWNERS, the CI jobs and the tree | test: `scripts/tests/merge-policy.test.sh` in CI |
 | Proof by tier before a merge | review: the pull request body (Merging, above) |

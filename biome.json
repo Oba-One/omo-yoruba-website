@@ -14,7 +14,8 @@
       "!**/.vercel",
       "!docs/design",
       "!**/sanity.types.ts",
-      "!packages/tokens/src/patterns"
+      "!packages/tokens/src/patterns",
+      "!scripts/baseline.mjs"
     ]
   },
   "formatter": {
