@@ -25,6 +25,7 @@
     "@storybook/addon-docs": "10.6.0",
     "@storybook/builder-vite": "10.6.0",
     "astro": "7.3.1",
+    "fast-check": "4.10.2",
     "happy-dom": "20.14.0",
     "storybook": "10.6.0",
     "storybook-addon-pseudo-states": "10.6.0",
