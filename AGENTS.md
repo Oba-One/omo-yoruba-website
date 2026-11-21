@@ -126,9 +126,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
 - Conflicts: `oy-components.css` beats `_ds/`; the Build Brief's polish passes beat the
   wireframes; the handoff beats the design system readme. Say which you followed.
 - Sessions: review the diff with the `review` skill (`.agents/skills/review`, which reads
-  `.agents/adapter.md`) before every commit; conventional commit messages; write a handoff
-  before ending and save it to `docs/plans/handoff-<phase>.md` (`/handoff` from the Matt Pocock
-  plugin in Claude Code).
+  `.agents/adapter.md`) before every commit; conventional commit messages. A session's report
+  goes in its pull request body, not in a committed handoff or report file.
 - No em dashes anywhere in this repo: prose, comments, UI copy, commit messages.
 
 ## Merging
@@ -190,8 +189,10 @@ changed behavior and actual proof without inventing a new gate for routine edits
 
 ### Issue tracker
 
-Local Markdown files under `docs/tickets/`, labels bug, content, design, infra, later.
-See `docs/agents/issue-tracker.md`.
+Being retired (21 November 2026): the open items move to Linear once afo names a team, and
+`docs/tickets/` and `docs/plans/` go. Until then the open review and wayfinder tickets stay under
+`docs/tickets/`, labels bug, content, design, infra, later; add no new effort folders, plans or
+handoffs. See `docs/agents/issue-tracker.md`.
 
 ### Domain docs
 

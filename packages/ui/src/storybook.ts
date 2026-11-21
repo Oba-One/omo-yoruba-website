@@ -37,7 +37,7 @@ export const wrap = (className: string) => (story: StoryRenderer) =>
 /**
  * The dark scope for OnDark stories: locking the indigo background makes the preview's global
  * decorator wrap the story in `.oy-dark`. Verified in the static build, where story globals reach
- * the decorator at prerender time (docs/plans/handoff-phase-1.md).
+ * the decorator at prerender time.
  */
 export const onDark = {
   globals: { backgrounds: { value: 'indigo' } },

@@ -1,7 +1,14 @@
 # Issue tracker: local Markdown under docs/tickets/
 
 Issues, specs and plans for this repo live as Markdown files in `docs/tickets/`.
-Single owner, no remote tracker. Chosen on 4 September 2026 (Phase 0). The `## Agent skills` block that points here lives in `AGENTS.md`.
+Single owner, no remote tracker. Chosen on 4 September 2026 (Phase 0).
+
+**Being retired (21 November 2026).** The trust plan moves the open items to Linear once afo names
+a team, then deletes `docs/tickets/` and `docs/plans/`. Closed tickets, finished plans, handoffs
+and session prompts were deleted on 21 November (git history keeps them). What is left: the open
+review tickets, the open wayfinder tickets with their map, the phase specs that ADRs cite, and
+`docs/plans/open-work.md`. Until the move, add no new effort folder, plan or handoff; a session's
+report goes in its pull request body. The `## Agent skills` block that points here lives in `AGENTS.md`.
 
 ## Conventions
 
@@ -28,9 +35,8 @@ role labels.
 
 ## When a skill says "publish to the issue tracker"
 
-Create a new file under `docs/tickets/<effort-slug>/issues/` (creating the
-directory if needed). Phase tickets from `/to-tickets` go under
-`docs/tickets/phase-<N>/`.
+Until the move to Linear, add a file under `docs/tickets/review/issues/` (the next free number)
+or `docs/tickets/wayfinder/issues/` for a decision. No new effort folders.
 
 ## When a skill says "fetch the relevant ticket"
 
