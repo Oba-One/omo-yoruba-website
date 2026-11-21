@@ -219,7 +219,7 @@ describe('buildGalaPage', () => {
       },
       { label: 'Doors', value: undefined, pending: 'the doors time' },
       { label: 'Venue', value: undefined, pending: 'the venue', note: undefined },
-      { label: 'Dress', value: undefined, pending: 'the dress code' },
+      // The dress code is parked (ADR 0058): no cell stands where it would.
       {
         label: 'Seats from',
         value: undefined,
@@ -266,14 +266,42 @@ describe('buildGalaPage', () => {
     expect(view.glance[4]?.note).toBe('Tables of ten from [ table price ]');
   });
 
-  it('fills the five glance facts from the edition', () => {
-    expect(buildGalaPage(seeded, options).glance.map((fact) => fact.label)).toEqual([
+  it('fills the glance from the edition, the dress code only once it is held (ADR 0058)', () => {
+    const without = buildGalaPage(seeded, options);
+    expect(without.glance.map((fact) => fact.label)).toEqual([
+      'Date',
+      'Doors',
+      'Venue',
+      'Seats from',
+    ]);
+    expect(without.glanceCaption).toBe('Everything you need to say yes: the date and the price.');
+    // A dress code of spaces alone is not one.
+    const blank = buildGalaPage(
+      {
+        ...seeded,
+        editions: [edition('event-gala-2026', 2026, { dress: '  ' })],
+      } as unknown as GalaPageData,
+      options,
+    );
+    expect(blank.glance.map((fact) => fact.label)).not.toContain('Dress');
+    const dressed = buildGalaPage(
+      {
+        ...seeded,
+        editions: [edition('event-gala-2026', 2026, { dress: '[ dress ]' })],
+      } as unknown as GalaPageData,
+      options,
+    );
+    expect(dressed.glance.map((fact) => fact.label)).toEqual([
       'Date',
       'Doors',
       'Venue',
       'Dress',
       'Seats from',
     ]);
+    expect(dressed.glance[3]).toEqual({ label: 'Dress', value: '[ dress ]', pending: undefined });
+    expect(dressed.glanceCaption).toBe(
+      'Everything you need to say yes: the date, the dress, and the price.',
+    );
   });
 
   it('carries the evening intro, the running order the option shows and the take-part rows', () => {

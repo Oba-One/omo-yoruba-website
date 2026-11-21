@@ -45,6 +45,7 @@ At the owner's word, from the assessment of that day ("Agree with all besides Ou
 | Collective | the argument | no Why culture and sustainability sit together section |
 | Collective | the one voice | no quote section |
 | Collective | the events still to come | no Collective events section, and no "See what is on" in the header |
+| Gala | the next edition's dress code ("Hide it for now") | no Dress cell at a glance, and the line under the strip names the date and the price |
 
 Our Story is not touched: the owner will supply its details, so its rows stay asked.
 

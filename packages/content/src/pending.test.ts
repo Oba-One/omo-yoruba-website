@@ -148,6 +148,7 @@ describe('PARKED', () => {
       'Odunde, vendor dialog: fees, deadline and permit rules',
       'Odunde, past years: the attendance figure',
       'Odunde, plan your visit: a practical fact',
+      'Gala, at a glance: the dress code',
       'Lessons, levels: what each level covers',
       'Lessons, levels: what the level covers',
       'Lessons, questions: the questions parents ask',
