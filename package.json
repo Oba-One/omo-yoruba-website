@@ -41,6 +41,7 @@
     "lefthook": "2.1.12",
     "sanity": "6.12.0",
     "typescript": "5.9.3",
+    "vite": "8.2.4",
     "vitest": "4.1.11"
   },
   "overrides": {
