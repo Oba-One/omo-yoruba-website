@@ -16,3 +16,9 @@ Blocked by: none
 Already recorded as open-work C10 (the sources themselves); this ticket adds the review's evidence.
 
 ## Comments
+
+**The other two boxes follow Impact's option, 21 November 2026 (branch `fix/programs-impact-handoff`):** Impact's
+source lines were hidden that day, which left the Gala's box under the sponsor levels and the Programs page's box
+under the year strip promising them from sentences written into each page. Both now read Impact's `sources` option
+as Donate's does, through `impactHandoff` in `packages/web/src/lib/sanity/page-skeleton.ts`. Still open: what this
+ticket asks for, that the lead and the clause show only when every figure Impact shows carries its source.

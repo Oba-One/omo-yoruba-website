@@ -297,10 +297,22 @@ describe('buildFestivalPage', () => {
       pending: 'the rows, times and content',
     });
     expect(view.schedule.items).toHaveLength(1);
-    expect(view.plan.facts).toEqual([
-      { _key: 'fact-1', label: 'Parking', value: null, pending: 'a practical fact' },
-    ]);
+    // A row without its value is parked (ADR 0058): the page leaves it out, and keeps the ones it holds.
+    expect(view.plan.facts).toEqual([]);
     expect(view.plan.pending).toBe('the eight practical facts');
+    const planned = buildFestivalPage(
+      {
+        ...withDay,
+        planYourVisit: [
+          ...(withDay.planYourVisit ?? []),
+          { _key: 'fact-2', label: '[ Label ]', value: '[ A practical fact ]' },
+        ],
+      } as unknown as FestivalPageData,
+      options,
+    );
+    expect(planned.plan.facts).toEqual([
+      { _key: 'fact-2', label: '[ Label ]', value: '[ A practical fact ]', pending: undefined },
+    ]);
     const collapsed = buildFestivalPage(
       { ...withDay, layout: { schedule: 'collapsed' } } as FestivalPageData,
       options,
@@ -328,7 +340,8 @@ describe('buildFestivalPage', () => {
       intro: 'Two ways in. Each one says what it asks of you, then opens a short form.',
       labels: 'column',
       vendorTerms: null,
-      vendorTermsPending: 'fees, deadline and permit rules',
+      // Parked (ADR 0058): the vendor row shows the terms it holds and no chip for the rest.
+      vendorTermsPending: undefined,
       pending: 'the ways in',
       rowPending: 'which way to take part',
     });
@@ -375,8 +388,9 @@ describe('buildFestivalPage', () => {
       confirmed: false,
       pending: 'photographer credit to confirm',
     });
+    // The attendance is parked (ADR 0058): no chip stands where the figure would.
     expect(view.past.attendance).toBeUndefined();
-    expect(view.past.attendancePending).toBe('the attendance figure');
+    expect(view.past.attendancePending).toBeUndefined();
     expect(view.past.pending).toBe('the photo albums');
 
     const counted = {
@@ -436,8 +450,21 @@ describe('buildFestivalPage', () => {
     expect(view.past.held).toBe(true);
     expect(view.past.slides).toEqual([]);
     expect(view.past.album).toBeUndefined();
-    // The attendance is no photograph: the edition the photographs come from still gives it.
-    expect(view.past.attendancePending).toBe('the attendance figure');
+    // The attendance is no photograph: the edition the photographs come from still gives it once held.
+    const counted = buildFestivalPage(
+      {
+        ...seeded,
+        galleryLayout: { state: 'soon' },
+        editions: (seeded.editions ?? []).map((edition) =>
+          edition?.album
+            ? { ...edition, attendance: { value: '[ Figure ]', label: '[ what it counts ]' } }
+            : edition,
+        ),
+      } as unknown as FestivalPageData,
+      options,
+    );
+    expect(counted.past.attendance).toBeDefined();
+    expect(view.past.attendancePending).toBeUndefined();
     expect(buildFestivalPage(seeded, options).past.held).toBe(false);
   });
 

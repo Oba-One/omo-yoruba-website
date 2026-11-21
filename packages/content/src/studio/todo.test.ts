@@ -1,7 +1,7 @@
 import { evaluate, parse } from 'groq-js';
 import { describe, expect, it } from 'vitest';
 import { buildSeed, type SeedAssets } from '../../scripts/seed-data';
-import { PENDING, PRESENCE, pendingFilter, rowDocumentType } from '../pending';
+import { PARKED, PENDING, PRESENCE, pendingFilter, rowDocumentType } from '../pending';
 import { ADMIN_ONLY_TYPES } from './roles';
 import { SITE_PAGES } from './site-pages';
 import {
@@ -27,6 +27,12 @@ import {
 
 const MEMBERS = todoPlan(ADMIN_ONLY_TYPES);
 const ADMINISTRATORS = todoPlan();
+// The parked rows asked again (ADR 0058): the only rows that ask a past edition are among them, so the
+// tests of that rule read this plan.
+const UNPARKED = todoPlan(ADMIN_ONLY_TYPES, {
+  rows: [...PENDING, ...PARKED.rows],
+  presence: [...PRESENCE, ...PARKED.presence],
+});
 const rowOf = (plan: TodoPlan, where: string, what: string) => {
   const row = plan.rows.find(({ entry }) => entry.where === where && entry.what === what);
   if (!row) throw new Error(`no row ${where}: ${what}`);
@@ -77,10 +83,12 @@ describe('the rows of the To do', () => {
         rowOf(
           ADMINISTRATORS,
           'Impact, Odunde as civic infrastructure',
-          'the number of vendors hosted',
+          'what the festival gives the neighborhood, in your words',
         ).entry,
       ),
-    ).toBe('Odunde as civic infrastructure: the number of vendors hosted');
+    ).toBe(
+      'Odunde as civic infrastructure: what the festival gives the neighborhood, in your words',
+    );
     expect(todoRowTitle(rowOf(ADMINISTRATORS, 'Sponsorship', 'the amount').entry)).toBe(
       'Sponsorship: the amount',
     );
@@ -101,6 +109,16 @@ describe('the rows of the To do', () => {
     expect(wordingFilter(ADMINISTRATORS)).toContain('!(documentType in [])');
   });
 
+  it('leaves a parked row out, and counts it again once a plan is handed it (ADR 0058)', () => {
+    expect(PARKED.rows.length).toBeGreaterThan(0);
+    const asked = new Set(ADMINISTRATORS.rows.map(({ entry }) => entry));
+    for (const row of PARKED.rows) expect(asked.has(row), row.what).toBe(false);
+    const counted = new Set(ADMINISTRATORS.stillToAdd.map(({ presence }) => presence));
+    for (const row of PARKED.presence) expect(counted.has(row), row.what).toBe(false);
+    expect(UNPARKED.rows).toHaveLength(MEMBERS.rows.length + PARKED.rows.length);
+    expect(UNPARKED.stillToAdd).toHaveLength(MEMBERS.stillToAdd.length + PARKED.presence.length);
+  });
+
   it('asks for the next festival and Gala editions, and every presence row', () => {
     expect(ADMINISTRATORS.stillToAdd.map(({ id }) => id).slice(0, 2)).toEqual([
       'next-festival',
@@ -109,7 +127,8 @@ describe('the rows of the To do', () => {
     expect(ADMINISTRATORS.stillToAdd.filter(({ presence }) => presence)).toHaveLength(
       PRESENCE.length,
     );
-    const collective = ADMINISTRATORS.stillToAdd.find(({ presence }) => presence?.type === 'event');
+    // The Collective's events are parked, so the plan that asks for them again carries their template.
+    const collective = UNPARKED.stillToAdd.find(({ presence }) => presence?.type === 'event');
     expect(collective?.template).toBe('event-collective');
     expect(ADMINISTRATORS.stillToAdd.find(({ id }) => id === 'next-gala')?.template).toBe(
       'event-gala',
@@ -142,7 +161,7 @@ describe('what the To do counts', () => {
   const editions = (...ids: string[]) => ids.map((_id) => ({ _id, edition: _id }));
   const documents = (...ids: string[]) => ids.map((_id) => ({ _id }));
   const date = rowOf(MEMBERS, 'Odunde, at a glance', 'the date');
-  const attendance = rowOf(MEMBERS, 'Odunde, past years', 'the attendance figure');
+  const attendance = rowOf(UNPARKED, 'Odunde, past years', 'the attendance figure');
   const whatItIs = rowOf(MEMBERS, 'Odunde, what the day is', 'what Odunde is, in your words');
   const bio = rowOf(MEMBERS, 'Our Story, board', 'a short bio');
 
@@ -158,7 +177,7 @@ describe('what the To do counts', () => {
     wording: 2,
   };
   const now = new Date('2026-09-26T12:00:00Z');
-  const state = todoState(MEMBERS, result, now);
+  const state = todoState(UNPARKED, result, now);
   const owed = (id: string, from = state) =>
     from.groups.flatMap((group) => group.rows).find((row) => row.row.id === id);
 
@@ -323,7 +342,7 @@ describe('the To do on the seed', () => {
     state.groups.find(({ id }) => id === group)?.rows.find(({ row }) => row.title === title)?.ids;
 
   it("asks each event's next edition for its facts and its past edition for its past years", async () => {
-    const state = await run(MEMBERS);
+    const state = await run(UNPARKED);
     // Both kinds' editions are undated in the seed, so the season calendar decides: on 26 September
     // 2026 the festival's June has passed and the Gala's November is still to come.
     expect(owedIn(state, 'festivalPage', 'At a glance: the date')).toEqual(['event-odunde-2027']);
