@@ -40,6 +40,7 @@ test('a handoff under docs/plans fails, and an ADR or a research note passes (pl
     'packages/ui/README.md',
     'docs/tickets/review/issues/166-a-new-finding.md',
     'docs/tickets/wayfinder/issues/25-a-decision.md',
+    'docs/tickets/review/README.md',
     '.claude/skills/review/SKILL.md',
     '.claude/skills/review/report-template.md',
     'scripts/check.mjs',
@@ -61,12 +62,14 @@ test('a handoff under docs/plans fails, and an ADR or a research note passes (pl
 test('package source excludes tests, stories, mocks, declarations and generated files', () => {
   assert.ok(isPackageSource('packages/web/src/lib/forms/handlers.ts'));
   assert.ok(isPackageSource('packages/content/src/pending.ts'));
+  assert.ok(isPackageSource('packages/content/scripts/seed.ts'));
+  assert.ok(isPackageSource('packages/content/functions/enquiry-notify/index.ts'));
   for (const file of [
     'packages/ui/src/core/ActionButton/action.test.ts',
     'packages/ui/src/core/ActionButton/ActionButton.stories.ts',
     'packages/content/src/sanity.types.ts',
     'packages/web/src/env.d.ts',
-    'packages/content/scripts/seed.ts',
+    'packages/content/scripts/seed.test.ts',
     'scripts/check-regrowth.mjs',
   ]) {
     assert.ok(!isPackageSource(file), file);
