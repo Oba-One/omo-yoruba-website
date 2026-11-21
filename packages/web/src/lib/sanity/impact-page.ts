@@ -28,7 +28,15 @@ import { EVENT_PAGE_NAMES, editionRoute, programHref } from '@oy/content/routes'
 import type { ActionLike } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton, TAX_STATUS_CELL } from './page-skeleton';
-import { type BuildOptions, cleanText, oneLine, present, resolveImage, textOr } from './view';
+import {
+  type BuildOptions,
+  cleanText,
+  heldOrAsked,
+  oneLine,
+  present,
+  resolveImage,
+  textOr,
+} from './view';
 
 export type ImpactPageData = NonNullable<ClientReturn<typeof impactPageQuery, unknown>>;
 
@@ -226,19 +234,20 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
     civic: {
       prose: data?.civicInfra && data.civicInfra.length > 0 ? data.civicInfra : undefined,
       pending: pending('civicInfra'),
+      // The past edition's two figures are parked (ADR 0058): a cell with neither its figure nor a row
+      // that asks for it is left out.
       cells: [
         {
           label: 'Attendance',
           value: past?.attendance?.value ?? undefined,
           note: past?.attendance?.label ?? undefined,
-          pending: pendingWhat('event', 'attendance', 'festival') ?? 'the attendance figure',
+          pending: pendingWhat('event', 'attendance', 'festival'),
         },
         {
           label: 'Vendors hosted',
           value: past?.vendorsHosted?.value ?? undefined,
           note: past?.vendorsHosted?.label ?? undefined,
-          pending:
-            pendingWhat('event', 'vendorsHosted', 'festival') ?? 'the number of vendors hosted',
+          pending: pendingWhat('event', 'vendorsHosted', 'festival'),
         },
         {
           label: 'Partners',
@@ -250,7 +259,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
           value: next?.cost ?? undefined,
           pending: pendingWhat('event', 'cost', 'festival') ?? 'the cost',
         },
-      ],
+      ].filter((cell) => heldOrAsked(cell.value, cell.pending)),
       edit: past ? edit('attendance', past._id, 'event') : undefined,
     },
     voices: {

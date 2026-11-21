@@ -64,6 +64,31 @@ export function oneLine(value: string | null | undefined): string | undefined {
   return lines.length > 0 ? lines.join(', ') : undefined;
 }
 
+/**
+ * Whether a slot is drawn: the Studio holds its value, or the registry asks for it and hands the wording
+ * of its Pending note. With neither, the fact is parked and the slot is left out (ADR 0058).
+ */
+export const heldOrAsked = (value: unknown, pending: string | undefined): boolean =>
+  Boolean(value || pending);
+
+/** The ground a section stands on: white, or the theme's alternate. */
+export type Ground = 'white' | 'alt';
+
+/**
+ * The grounds of a run of sections, taking turns from `first` and counting only the ones drawn, so a
+ * section left out never leaves two neighbours on one ground. A section not drawn keeps the ground it
+ * would have had, which nothing reads.
+ */
+export function alternate(drawn: readonly boolean[], first: Ground): Ground[] {
+  const other = (ground: Ground): Ground => (ground === 'white' ? 'alt' : 'white');
+  let next = first;
+  return drawn.map((shown) => {
+    const ground = next;
+    if (shown) next = other(next);
+    return ground;
+  });
+}
+
 /** Whether a list item is there: the filter every builder runs over a list the query may answer with nulls. */
 export const present = <T>(value: T | null | undefined): value is T =>
   value !== null && value !== undefined;

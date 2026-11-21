@@ -29,7 +29,8 @@ test.describe('the Yoruba Language Lessons page', () => {
     expect(order.slice(0, 4)).toEqual(['top', 'glance', 'teacher', 'learn']);
     const lesson = await page.locator('body').getAttribute('data-lesson');
     expect(order.includes('lesson')).toBe(lesson !== 'hidden');
-    expect(order.slice(-2)).toEqual(['faq', 'take-part']);
+    // The questions are parked (ADR 0058): their section is drawn only with one answered.
+    if (order.includes('faq')) expect(order.at(-2)).toBe('faq');
     expect(order.at(-1)).toBe('take-part');
     await expect(page.locator('header#top.oy-phead--slim')).toHaveCount(1);
     expect(await page.locator('body').getAttribute('data-portraits')).toMatch(/^(shown|hidden)$/);
@@ -91,15 +92,12 @@ test.describe('the Yoruba Language Lessons page', () => {
     await page.goto('/programs/yoruba-lessons');
     const learn = page.locator('#learn');
     await expect(learn.locator('h2')).toHaveText('What you learn');
-    const levels = learn.locator('.oy-list .oy-lrow');
-    if ((await levels.count()) === 0) {
-      await expect(learn.locator('.oy-pend-line')).toContainText(
-        pendingWhat('lessonsPage', 'levels[]') ?? '',
-      );
-    }
+    // The levels are parked (ADR 0058): the list is drawn once a level says what it covers, and no
+    // line or chip stands in for it before.
+    await expect(learn.locator('.oy-pend-line')).toHaveCount(0);
+    await expect(learn.locator('.oy-list .oy-pend')).toHaveCount(0);
     const text = await learn.innerText();
     expectNoMockWhileOwed(text, [
-      [/first words|reading and tone|conversation/i, pendingWhat('lessonsPage', 'levels[]')],
       [/from the first lesson|three tones/i, pendingWhat('lessonsPage', 'learn')],
     ]);
     const lesson = page.locator('#lesson');
@@ -120,19 +118,19 @@ test.describe('the Yoruba Language Lessons page', () => {
     }
   });
 
-  test('asks its questions one open at a time with Enter and Space, or names them owed', async ({
+  test('asks its answered questions one open at a time with Enter and Space, and none before', async ({
     page,
     isMobile,
   }) => {
     await page.goto('/programs/yoruba-lessons');
     const section = page.locator('#faq');
+    // Parked (ADR 0058): a question without its answer is left out, and so is a section with none.
+    if ((await section.count()) === 0) return;
     await expect(section.locator('h2')).toHaveText('Questions parents ask');
     const items = section.locator('details.oy-faq-item');
     const count = await items.count();
-    if (count === 0) {
-      await expect(section.locator('.oy-pend-line')).toBeVisible();
-      return;
-    }
+    expect(count).toBeGreaterThan(0);
+    await expect(section.locator('.oy-pend, .oy-pend-line')).toHaveCount(0);
     const option = await page.locator('body').getAttribute('data-faq');
     await expect(items.first()).toHaveJSProperty('open', option === 'open');
     for (const item of (await items.all()).slice(1))
@@ -157,13 +155,6 @@ test.describe('the Yoruba Language Lessons page', () => {
     // Enter closes the open question again, leaving none open.
     await page.keyboard.press('Enter');
     await expect(second).toHaveJSProperty('open', false);
-    // An unanswered question opens onto its chip, never an invented answer.
-    expectNoMockWhileOwed(await section.innerText(), [
-      [
-        /settled after the first lesson|no family is turned away|notebook, a pencil|ten minutes with them/i,
-        pendingWhat('lessonsPage', 'faq'),
-      ],
-    ]);
   });
 
   test('opens the enrol form from the header and from the card, focus returning each time', async ({
