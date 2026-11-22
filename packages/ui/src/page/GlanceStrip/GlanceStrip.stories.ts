@@ -66,6 +66,27 @@ export const InColumn: Story = {
   parameters: { layout: 'padded' },
 };
 
+/**
+ * Two facts sharing the strip's width: Impact's civic figures while the past edition's attendance and
+ * vendors hosted are parked (ADR 0058).
+ */
+export const TwoInColumn: Story = {
+  args: {
+    band: false,
+    facts: [
+      { label: 'Partners', value: '3' },
+      { label: 'Cost to attend', value: 'Free entry' },
+    ],
+  },
+  parameters: { layout: 'padded' },
+};
+
+/** One fact alone takes the strip's whole width. */
+export const OneInColumn: Story = {
+  args: { band: false, facts: [{ label: 'Cost to attend', value: 'Free entry' }] },
+  parameters: { layout: 'padded' },
+};
+
 /** A note that links, as Impact's board cell points to Our Story. */
 export const NoteLink: Story = {
   args: {

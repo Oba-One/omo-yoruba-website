@@ -28,15 +28,31 @@ export type ActionResolution =
   | { ok: true; label: string; attributes: ActionAttributes }
   | { ok: false; pending: string };
 
+/** Whether a string holds an ASCII control character: NUL to US, which take in the tab and the newlines, or DEL. */
+function hasControlCharacter(text: string): boolean {
+  for (let index = 0; index < text.length; index += 1) {
+    const code = text.charCodeAt(index);
+    if (code < 0x20 || code === 0x7f) return true;
+  }
+  return false;
+}
+
 /**
  * A Studio link fit for an href: http, https, mailto or tel, or a path, fragment or query on this site.
- * The schema's `rule.uri` runs only in the Studio, so a value written through the API, the seed or the
+ * A rule in the schema runs only in the Studio, so a value written through the API, the seed or the
  * MCP is checked again wherever it becomes a link; anything else (a `javascript:` URL) answers
  * undefined and the caller shows no link.
+ *
+ * A path stays on this site. Two slashes open another one, and so does a slash and a backslash, which
+ * a browser reads as a slash. A browser also drops a tab or a newline wherever it sits, so "/", a tab
+ * and "/evil.example" is two slashes by the time it is followed: a value that still holds an ASCII
+ * control character after the trim is refused whole, since no real address holds one. A web address may still name another
+ * site; that is what a link out is.
  */
 export function safeHref(value: string | null | undefined): string | undefined {
   const raw = value?.trim() ?? '';
-  return /^(https?:|mailto:|tel:)/i.test(raw) || /^(\/(?!\/)|#|\?)/.test(raw) ? raw : undefined;
+  if (hasControlCharacter(raw)) return undefined;
+  return /^(https?:|mailto:|tel:)/i.test(raw) || /^(\/(?![/\\])|#|\?)/.test(raw) ? raw : undefined;
 }
 
 /** The first of the actions that renders a button, so a half-filled one never replaces a whole one. */

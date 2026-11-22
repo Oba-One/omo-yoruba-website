@@ -97,7 +97,7 @@ describe('TYPE_ROUTES and routesFor', () => {
       '/gala',
       '/impact',
     ]);
-    expect(routesFor('impactPage')).toEqual(['/impact', '/donate']);
+    expect(routesFor('impactPage')).toEqual(['/impact', '/donate', '/programs', '/gala']);
     // An event page leads with its own route; the homepage follows, for the card that introduces it.
     expect(routesFor('festivalPage')).toEqual(['/odunde', '/']);
     expect(routesFor('galaPage')).toEqual(['/gala', '/']);

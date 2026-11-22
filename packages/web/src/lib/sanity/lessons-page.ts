@@ -15,7 +15,7 @@ import type { lessonsPageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
 import { glanceFacts, pageSkeleton } from './page-skeleton';
-import { type BuildOptions, cleanText, resolveImage } from './view';
+import { alternate, type BuildOptions, cleanText, heldOrAsked, resolveImage } from './view';
 
 export type LessonsPageData = NonNullable<ClientReturn<typeof lessonsPageQuery, unknown>>;
 
@@ -47,6 +47,34 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
     ? resolveImage(options.imageSet, teacher?.portrait, { width: 640 })
     : undefined;
 
+  // The levels and the questions are parked (ADR 0058): while the registry asks for neither a list nor
+  // an item's line, a level without its line and a question without its answer are left out, and so is
+  // the block that would hold none.
+  const levelsPending = pendingWhat('lessonsPage', 'levels[]');
+  const levelPending = pendingWhat('lessonsPage', 'levels');
+  const levels = (data?.levels ?? [])
+    .filter((level) => level !== null)
+    .filter((level) => heldOrAsked(cleanText(level.blurb), levelPending))
+    .map((level) => ({ _key: level._key, title: level.name, line: level.blurb }));
+  const questionsPending = pendingWhat('lessonsPage', 'faq[]');
+  const answerPending = pendingWhat('lessonsPage', 'faq');
+  const questions = (data?.faq ?? [])
+    .filter((item) => item !== null)
+    .map((item) => ({
+      _key: item._key,
+      question: item.question,
+      answer: item.answer && item.answer.length > 0 ? item.answer : undefined,
+    }))
+    .filter((item) => heldOrAsked(item.answer, answerPending));
+  const lessonShown = layout.lesson !== 'hidden';
+  const faqShown = heldOrAsked(questions.length > 0, questionsPending);
+  // What you learn stands on the alternate ground; the sections under it take turns from white,
+  // counting only the ones the page draws, so no two neighbours share a ground.
+  const [lessonGround, faqGround, takePartGround] = alternate(
+    [lessonShown, faqShown, true],
+    'white',
+  );
+
   return {
     title: page.title,
     description: page.description,
@@ -77,14 +105,14 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
     learn: {
       prose: data?.learn && data.learn.length > 0 ? data.learn : undefined,
       pending: pending('learn'),
-      levels: (data?.levels ?? [])
-        .filter((level) => level !== null)
-        .map((level) => ({ _key: level._key, title: level.name, line: level.blurb })),
-      levelsPending: pending('levels[]'),
-      linePending: pending('levels'),
+      levels,
+      levelsShown: heldOrAsked(levels.length > 0, levelsPending),
+      levelsPending,
+      linePending: levelPending,
     },
     lesson: {
-      shown: layout.lesson !== 'hidden',
+      shown: lessonShown,
+      ground: lessonGround,
       // Day-led schedule rows: the step's place in the lesson where a festival row shows its time.
       steps: (data?.oneLesson ?? [])
         .filter((step) => step !== null)
@@ -98,19 +126,15 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
       stepPending: pending('oneLesson'),
     },
     faq: {
-      items: (data?.faq ?? [])
-        .filter((item) => item !== null)
-        .map((item) => ({
-          _key: item._key,
-          question: item.question,
-          answer: item.answer && item.answer.length > 0 ? item.answer : undefined,
-        })),
+      shown: faqShown,
+      ground: faqGround,
+      items: questions,
       defaultOpen: layout.faq === 'open',
-      lead: faqLead((data?.faq ?? []).filter((item) => item?.question?.trim()).length),
-      pending: pending('faq[]'),
-      answerPending: pending('faq'),
+      lead: faqLead(questions.filter((item) => cleanText(item.question)).length),
+      pending: questionsPending,
+      answerPending,
     },
-    takePart: { ...page.takePart, labels: 'column' as const },
+    takePart: { ...page.takePart, labels: 'column' as const, ground: takePartGround },
     edit: page.layoutEdit,
   };
 }
