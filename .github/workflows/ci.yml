@@ -1,7 +1,8 @@
 # CI on every pull request and on pushes to main. Spec: docs/design/QUALITY.md section 5.
 # Phase 0 wired: the check (typecheck, Biome, voice and colour lints, unit tests, toolchain
 # pins), the web build with a JS size summary, the commit message rules on pull requests,
-# and shellcheck on the repo scripts. Phase 1 added the Storybook build with Chromatic.
+# and shellcheck on the repo scripts. Phase 1 added the Storybook build with Chromatic; the
+# owner dropped Chromatic on 21 November 2026 (ADR 0059), so the job only builds the Storybook.
 # Phase 2 added the TypeGen drift check. Phase 3 added Playwright with axe against the dev
 # server (preview deployments sit behind Vercel Authentication, so the suite runs locally on the
 # runner with the placeholder variables and intercepts the actions). Phase 4 added Lighthouse CI
@@ -128,44 +129,16 @@ jobs:
         run: for test in scripts/tests/*.test.sh; do bash "$test"; done
 
   storybook:
-    name: Storybook build and Chromatic
+    name: Storybook build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      # Stage 6 of scripts/setup-wizard.sh stores the token as a repository secret. Secrets are
-      # empty on pull requests from forks and before the wizard has run; the Chromatic steps
-      # then skip with a notice instead of failing, so this job can be a required check.
-      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # Chromatic reads the git history to find the baseline build for this branch.
-          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup-js
       - name: Build the Storybook (packages/ui/storybook-static)
         run: bun run --filter @oy/ui build-storybook
-      - name: Chromatic skipped
-        if: env.CHROMATIC_PROJECT_TOKEN == ''
-        shell: bash
-        run: |
-          message='CHROMATIC_PROJECT_TOKEN is not set, so the Storybook was built but not published to Chromatic. Run stage 6 of scripts/setup-wizard.sh to add the secret (pull requests from forks never see it).'
-          echo "::notice title=Chromatic skipped::$message"
-          {
-            echo '### Chromatic skipped'
-            echo
-            echo "$message"
-          } >> "$GITHUB_STEP_SUMMARY"
-      - name: Publish to Chromatic (snapshots at 375 and 1440 from parameters.chromatic.modes)
-        if: env.CHROMATIC_PROJECT_TOKEN != ''
-        uses: chromaui/action@38afd264ef2241136f12d039093c2724748bec08 # v18.11.0
-        with:
-          projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
-          workingDir: packages/ui
-          storybookBuildDir: storybook-static
-          # Visual changes are the owner's to accept in Chromatic; they do not fail CI.
-          exitZeroOnChanges: true
-          exitOnceUploaded: true
 
   e2e:
     name: Playwright and axe

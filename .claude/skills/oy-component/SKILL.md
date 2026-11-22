@@ -1,6 +1,6 @@
 ---
 name: oy-component
-description: How to add or change a component in @oy/ui. Use for new UI, a new variant or state, a Pending treatment, a story, a component test, or a Chromatic baseline.
+description: How to add or change a component in @oy/ui. Use for new UI, a new variant or state, a Pending treatment, a story, a component test, or a visual check at 375 and 1440.
 ---
 
 # Adding or changing a component
@@ -50,7 +50,8 @@ plus the behaviour the play function exercises. Run `bun run test`.
 ## Done means
 
 - Renders in Storybook with the theme; `addon-a11y` clean.
-- Chromatic snapshot at 375 and 1440 accepted by the owner.
+- The stories looked at in Storybook at 375 and 1440 (no Chromatic since ADR 0059), and captures
+  at 375 and 1280 in the pull request when a page shows the change.
 - `docs/design/COMPONENT-MAP.md` updated if props, variants or usage changed.
 - If Storybook cannot render the component after a reasonable attempt, stop and ask the
   owner (ADR 0002). No silent pivot.

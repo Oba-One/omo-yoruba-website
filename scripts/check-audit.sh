@@ -21,6 +21,10 @@ accepted=(
   # a browser. No fixed release exists; until one does.
   GHSA-jmr9-qjv8-65gv
   GHSA-7pqw-9j4j-h8q3
+  # zod 3.25.76, under lighthouse's puppeteer (chromium-bidi requires ^3.24.1): Lighthouse CI only,
+  # where it validates messages from the local browser. The site's own zod is 4.6.7 (accepted
+  # 21 November 2026). Until chromium-bidi takes zod 4 or zod 3 gets a fixed release.
+  GHSA-mrhx-c7xc-m3w5
   # braces 3.0.3, under @sanity/codegen: TypeGen's file globbing. No fixed release exists; until
   # one does.
   GHSA-vfj7-8cjw-p6xm
