@@ -11,7 +11,8 @@
     "Shell scripts",
     "Storybook build",
     "Playwright and axe",
-    "agents-doctor / Agents doctor"
+    "agents-doctor / Agents doctor",
+    "Regrowth ratchet"
   ],
   "release": {
     "about": "A merge into main is a production deploy: Vercel builds and serves www.omoyorubasocal.org from every main commit, and there is no integration branch. So the owner's approval sits at the merge for the critical tier (decision of 21 November 2026), while routine and sensitive changes go live once their proof is in the pull request body. Each pull request records its tier and proof under Verification; no Merge Gate check enforces it. Nothing auto-merges: autoMerge is false at every level, and until afo applies these settings agents still never use gh pr merge --auto. Merge by hand with the reviewed head as the expected head: gh pr merge <n> --squash --match-head-commit <sha>, and stop if the head has moved. Rollback is a Vercel promote of the previous deployment (docs/runbook.md, Rollback).",

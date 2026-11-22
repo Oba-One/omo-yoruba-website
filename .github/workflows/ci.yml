@@ -121,12 +121,27 @@ jobs:
       # the stages; the library is copied verbatim from the wizard skill template.
       - name: shellcheck (preinstalled on the runner image)
         run: shellcheck --severity=warning --exclude=SC2034 scripts/*.sh scripts/tests/*.sh .claude/hooks/*.sh
-      - name: Node for the script tests (the dataset guard is a Node script)
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version-file: .node-version
+      # Node, Bun and the frozen install: the comment codemod's tests need vite from node_modules.
+      - uses: ./.github/actions/setup-js
       - name: Script tests
         run: for test in scripts/tests/*.test.sh; do bash "$test"; done
+
+  regrowth:
+    name: Regrowth ratchet
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The check compares the change with its merge base, so it needs the base's history.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-js
+      - name: No purged comment or report markdown grows back (scripts/check-regrowth.mjs)
+        if: github.event_name == 'pull_request'
+        env:
+          REGROWTH_BASE_REF: origin/${{ github.base_ref }}
+        run: node scripts/check-regrowth.mjs
 
   storybook:
     name: Storybook build
