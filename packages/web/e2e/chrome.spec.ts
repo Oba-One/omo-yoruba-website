@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { PLACEHOLDER_PROJECT } from './helpers';
 
 test.describe('site chrome', () => {

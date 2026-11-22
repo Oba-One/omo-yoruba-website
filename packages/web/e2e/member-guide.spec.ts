@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('the guide supports keyboard navigation and loads every screenshot', async ({ page }) => {
   // The trailing slash must resolve the same relative screenshot links as the Studio iframe.

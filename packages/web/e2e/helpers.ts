@@ -83,8 +83,10 @@ export async function albumToOpen(page: Page, atLeast = 1): Promise<OpenableAlbu
  * else the one variable from `packages/web/.env`, parsed without loading the rest into the test
  * process. CI has neither, so it is undefined there.
  */
-export const READ_TOKEN =
-  (process.env.SANITY_API_READ_TOKEN ?? envFileValue('SANITY_API_READ_TOKEN')) || undefined;
+export const READ_TOKEN = process.env.SANITY_API_HOST
+  ? // The fixture API answers published documents only, and the dev server holds no token there.
+    undefined
+  : (process.env.SANITY_API_READ_TOKEN ?? envFileValue('SANITY_API_READ_TOKEN')) || undefined;
 
 function envFileValue(name: string): string | undefined {
   try {

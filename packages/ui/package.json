@@ -3,7 +3,14 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./src/*"
+    "./bands/*": "./src/bands/*",
+    "./cards/*": "./src/cards/*",
+    "./content/*": "./src/content/*",
+    "./core/*": "./src/core/*",
+    "./forms/*": "./src/forms/*",
+    "./media/*": "./src/media/*",
+    "./navigation/*": "./src/navigation/*",
+    "./page/*": "./src/page/*"
   },
   "files": [
     "src"

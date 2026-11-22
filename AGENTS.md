@@ -166,6 +166,8 @@ is the record.
 | Every content type has a Presentation location | test: `packages/content/src/studio/presentation.test.ts` |
 | Node and Bun pins agree, and Vercel builds through the pinned Bun | `scripts/check-toolchain-pins.sh` in `bun run check` |
 | WCAG AA on every page | CI: Playwright and axe |
+| Scripts Astro leaves inline (`is:inline`, `define:vars`, any attribute but `type="module"`) never grow or gain a type error, a shrink is locked into the baseline in the same change, and no package source under `src` gains a zero-delay timer (ADR 0018 asks to keep inline scripts small) | check: `scripts/check-inline-scripts.mjs` against `scripts/data/inline-scripts-baseline.json`, in `bun run check` |
+| GROQ, `@sanity/client` (its subpaths included) and `sanity:client` stay in `@oy/content` and the web loaders (`lib/sanity`, `lib/forms/site-deps.ts`, `pages/api/preview`), in `.ts` and `.astro` frontmatter; a bundled `<script>` in an `.astro` file is not linted | lint: Biome `noRestrictedImports`; test: `packages/lint/src/import-boundaries.test.ts` |
 | The agent kit's contract (this file, `.agents/`, skills, hooks, PR template, CODEOWNERS) | CI: Agents Doctor, which checks their shape only |
 | The merge policy agrees with CODEOWNERS, the CI jobs and the tree | test: `scripts/tests/merge-policy.test.sh` in CI |
 | Proof by tier before a merge | review: the pull request body (Merging, above) |
@@ -203,8 +205,9 @@ Single-context: `CONTEXT.md` at the root and `docs/adr/`. See `docs/agents/domai
 ## Pointers
 
 - `.claude/skills/` (`.agents/skills` links to it): this repo's skills `oy-design-system`,
-  `oy-component`, `oy-page`, `oy-content-model`, `oy-content-ops`, `oy-voice` (model-invoked)
-  and `oy-release` (user-invoked), plus the kit's `review`, `debug`, `plan`, `ship` and
+  `oy-component`, `oy-page`, `oy-content-model`, `oy-content-ops`, `oy-voice`,
+  `verify-omo-yoruba` (with its feature map of the eight flows; model-invoked) and `oy-release`
+  (user-invoked), plus the kit's `review`, `debug`, `plan`, `ship` and
   `research`, copied from dev-surfaces `agents/kit/skills`, which read `.agents/adapter.md`.
 - `.agents/merge-policy.json`: tiers, required checks, merge method. `.agents/policy.json`:
   command and path rules for the shared guards.

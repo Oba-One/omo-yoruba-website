@@ -28,8 +28,9 @@
     "export": "bun run --filter @oy/content export",
     "migrate": "bun run --filter @oy/content migrate",
     "import-album": "bun run --filter @oy/content import-album",
-    "check": "bun run typecheck && bun run lint && bun run test && bun run check:toolchain",
+    "check": "bun run typecheck && bun run lint && bun run test && bun run check:toolchain && bun run check:inline",
     "check:toolchain": "bash scripts/check-toolchain-pins.sh",
+    "check:inline": "node scripts/check-inline-scripts.mjs",
     "check:commits": "bash scripts/check-commits.sh",
     "check:audit": "bash scripts/check-audit.sh",
     "prepare": "lefthook install || echo 'lefthook could not install the git hooks; see docs/runbook.md, Local'"
