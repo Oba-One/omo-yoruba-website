@@ -3,6 +3,7 @@ import { EDITION_FIELDS, type EditionField, editionFieldShown } from './edition-
 import {
   ALBUM_CREDIT_PENDING,
   ALBUM_YEAR_PENDING,
+  askedFor,
   COLLECTIVE_VOICE_SLOT,
   GENERAL_CONTACT_PENDING,
   GENERAL_RESPONDS_PENDING,
@@ -145,15 +146,18 @@ describe('PENDING', () => {
 describe('PARKED', () => {
   it('holds the rows the launch does not wait for, each with its wording kept (ADR 0058)', () => {
     expect(PARKED.rows.map((row) => `${row.where}: ${row.what}`)).toEqual([
+      'Odunde, at a glance: the hours',
       'Odunde, vendor dialog: fees, deadline and permit rules',
       'Odunde, past years: the attendance figure',
       'Odunde, plan your visit: a practical fact',
+      'Gala, at a glance: the dress code',
       'Lessons, levels: what each level covers',
       'Lessons, levels: what the level covers',
       'Lessons, questions: the questions parents ask',
       'Lessons, questions: an answer',
       'Collective, the argument: why culture and sustainability sit together, in your words',
       'Collective, one voice: the quote and who said it',
+      'Get Involved and Our Story, talk to someone: who answers the general inbox',
       'Impact, Odunde as civic infrastructure: the number of vendors hosted',
     ]);
     expect(PARKED.presence.map((row) => `${row.where}: ${row.what}`)).toEqual([
@@ -285,7 +289,8 @@ describe('pendingWhat and pendingTitle', () => {
     expect(pendingWhat('siteSettings', 'nothing')).toBeUndefined();
     expect(pendingWhat('event', 'start', 'gala')).toBe('the date');
     expect(pendingWhat('event', 'start', 'festival')).toBe('the date');
-    expect(pendingWhat('event', 'end', 'festival')).toBe('the hours');
+    // The festival's hours are parked (ADR 0058).
+    expect(pendingWhat('event', 'end', 'festival')).toBeUndefined();
     expect(pendingWhat('event', 'start')).toBe('the date');
     expect(pendingWhat('event', 'venue.name', 'gala')).toBe('the venue');
     expect(pendingWhat('event', 'venue.name', 'festival')).toBe('the venue');
@@ -475,10 +480,10 @@ describe('Get Involved', () => {
     const general = PENDING.filter(
       (row) => row.type === 'siteSettings' && row.condition?.includes('role == "general"'),
     );
-    expect(general.map((row) => row.what)).toEqual([
-      GENERAL_CONTACT_PENDING,
-      GENERAL_RESPONDS_PENDING,
-    ]);
+    // Who answers is parked (ADR 0058): the organization answers, so only the reply time is asked.
+    expect(general.map((row) => row.what)).toEqual([GENERAL_RESPONDS_PENDING]);
+    expect(askedFor(GENERAL_RESPONDS_PENDING)).toBe(true);
+    expect(askedFor(GENERAL_CONTACT_PENDING)).toBe(false);
   });
 });
 

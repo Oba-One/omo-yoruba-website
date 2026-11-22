@@ -18,12 +18,8 @@ docs/design/design/
 # The album import's test feeds its manifest check one bare form, to see it refused.
 [yoruba] packages/content/scripts/album-import.test.ts
 
-# Third-party skill, copied as published.
-.claude/skills/git-guardrails-claude-code/
-
 # Generated files.
 bun.lock
-skills-lock.json
 **/sanity.types.ts
 
 # The Storybook manager runs outside the preview iframe and cannot read @oy/tokens: its theme

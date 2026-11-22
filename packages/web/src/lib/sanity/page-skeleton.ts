@@ -78,8 +78,8 @@ export interface GlanceFactView {
   label: string;
   value?: string;
   note?: string;
-  /** The registry's wording when the value is missing. */
-  pending: string;
+  /** The registry's wording when the value is missing; none for a parked fact (ADR 0058). */
+  pending?: string;
   /** The registry's wording when the note is a missing fact. */
   notePending?: string;
 }

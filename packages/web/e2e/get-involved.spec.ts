@@ -1,10 +1,6 @@
 import { DOOR_CHIPS } from '@oy/content/doors';
-import {
-  GENERAL_CONTACT_PENDING,
-  GENERAL_RESPONDS_PENDING,
-  pendingWhat,
-} from '@oy/content/pending';
-import { expect, test } from '@playwright/test';
+import { GENERAL_RESPONDS_PENDING, pendingWhat } from '@oy/content/pending';
+import { expect, test } from './fixtures';
 import {
   axeViolations,
   expectEnquiryRoundTrip,
@@ -146,12 +142,15 @@ test.describe('the Get Involved page', () => {
     const section = page.locator('#talk');
     await expect(section.locator('h2')).toHaveText('Or just talk to someone');
     const facts = section.locator('.oy-split-aside .oy-fact');
+    // Who answers is parked (ADR 0058): the row is drawn once the settings name a person.
+    const named = (await facts.locator('dt', { hasText: /^Who answers$/ }).count()) === 1;
     await expect(facts.locator('dt')).toHaveText([
       'Email',
       'Phone',
-      'Who answers',
+      ...(named ? ['Who answers'] : []),
       'Response time',
     ]);
+    const respondsAt = named ? 3 : 2;
     const call = section.locator('a[href^="tel:"].oy-btn');
     const phoneLink = facts.nth(1).locator('a[href^="tel:"]');
     await expect(call).toHaveCount(await phoneLink.count());
@@ -161,16 +160,15 @@ test.describe('the Get Involved page', () => {
     await expect(phoneLink).toHaveCount(
       (await facts.nth(1).locator('.oy-pend').count()) === 1 ? 0 : 1,
     );
-    if ((await facts.nth(2).locator('.oy-pend').count()) === 1) {
-      await expect(facts.nth(2)).toContainText(GENERAL_CONTACT_PENDING, { ignoreCase: true });
-    }
-    if ((await facts.nth(3).locator('.oy-pend').count()) === 1) {
-      await expect(facts.nth(3)).toContainText(GENERAL_RESPONDS_PENDING, { ignoreCase: true });
+    if (named) await expect(facts.nth(2).locator('.oy-pend')).toHaveCount(0);
+    if ((await facts.nth(respondsAt).locator('.oy-pend').count()) === 1) {
+      await expect(facts.nth(respondsAt)).toContainText(GENERAL_RESPONDS_PENDING, {
+        ignoreCase: true,
+      });
     }
     expectNoMockWhileOwed(await section.innerText(), [
       [/555-0148/, pendingWhat('siteSettings', 'phone')],
       [/info@omoyoruba/i, pendingWhat('siteSettings', 'generalEmail')],
-      [/Folasade Adeyemi/, GENERAL_CONTACT_PENDING],
       [/Three working days/i, GENERAL_RESPONDS_PENDING],
     ]);
     await expectEnquiryRoundTrip(page, section.locator('a[data-enquiry="contact"]'));

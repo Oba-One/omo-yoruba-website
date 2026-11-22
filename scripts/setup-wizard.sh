@@ -187,7 +187,7 @@ finish() {
 # Replace the example below. Set TOTAL_STAGES to match the stages you write.
 # ──────────────────────────────────────────────────────────────────────────
 
-TOTAL_STAGES=7
+TOTAL_STAGES=6
 
 # Run from anywhere: every path below is relative to the repo root.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
@@ -249,12 +249,14 @@ stage "Sanity: project and datasets"
 say "Create the content project. The Studio is embedded in the site at /admin."
 open_url "https://www.sanity.io/manage"
 step "Create a project named 'Omo Yorùbá of Southern California' in your organisation."
-step "Add a dataset named 'production' (public) and a second one named 'development'."
+step "Add a dataset named 'development' with Visibility: Private. The site stores enquiries and"
+step "subscribers in the dataset it reads, so that dataset must never be public. A 'production'"
+step "dataset added for launch is Private too; stage 3 and every Vercel build refuse a public one."
 step "Under API, add CORS origins: $LOCAL_URL (allow credentials) and $SITE_URL_DEFAULT."
 step "Copy the Project ID shown on the project page."
 ask PUBLIC_SANITY_PROJECT_ID "Paste the Sanity project ID:"
-ask PUBLIC_SANITY_DATASET "Dataset for local work [production]:"
-PUBLIC_SANITY_DATASET="${PUBLIC_SANITY_DATASET:-production}"
+ask PUBLIC_SANITY_DATASET "Dataset the site reads [development]:"
+PUBLIC_SANITY_DATASET="${PUBLIC_SANITY_DATASET:-development}"
 write_env PUBLIC_SANITY_PROJECT_ID "$PUBLIC_SANITY_PROJECT_ID"
 write_env PUBLIC_SANITY_DATASET "$PUBLIC_SANITY_DATASET"
 write_env PUBLIC_SITE_URL "$LOCAL_URL"
@@ -294,14 +296,21 @@ step "Root Directory: packages/web, with 'Include files outside the root directo
 step "Framework Preset: Astro. Node.js Version: 22.x (packages/web/package.json also pins it)."
 step "Under Domains, add omoyorubasocal.org (and www) when you are ready to point DNS."
 if (( VERCEL_READY )) && confirm "Push the values from $ENV_FILE to Vercel now? Existing values are replaced."; then
-  vercel_env PUBLIC_SANITY_PROJECT_ID "$PUBLIC_SANITY_PROJECT_ID"
-  vercel_env PUBLIC_SANITY_DATASET "production" production preview
-  vercel_env PUBLIC_SANITY_DATASET "$PUBLIC_SANITY_DATASET" development
-  vercel_env PUBLIC_SITE_URL "$SITE_URL_DEFAULT" production preview
-  vercel_env PUBLIC_SITE_URL "$LOCAL_URL" development
-  vercel_env SANITY_API_READ_TOKEN "$SANITY_API_READ_TOKEN"
-  vercel_env SANITY_API_WRITE_TOKEN "$SANITY_API_WRITE_TOKEN"
-  vercel_env SANITY_WEBHOOK_SECRET "$SANITY_WEBHOOK_SECRET"
+  # Every scope gets the dataset checked here, and only once the check passes: the write token
+  # pushed below lets the enquiry actions store personal data in it.
+  if ! PUBLIC_SANITY_PROJECT_ID="$PUBLIC_SANITY_PROJECT_ID" PUBLIC_SANITY_DATASET="$PUBLIC_SANITY_DATASET" \
+    SANITY_API_READ_TOKEN="$SANITY_API_READ_TOKEN" node scripts/check-dataset-private.mjs; then
+    SKIPPED+=("Vercel environment variables: dataset $PUBLIC_SANITY_DATASET is not private; make it private, then re-run stage 3")
+    warn "nothing pushed to Vercel: the dataset must be private first"
+  else
+    vercel_env PUBLIC_SANITY_PROJECT_ID "$PUBLIC_SANITY_PROJECT_ID"
+    vercel_env PUBLIC_SANITY_DATASET "$PUBLIC_SANITY_DATASET"
+    vercel_env PUBLIC_SITE_URL "$SITE_URL_DEFAULT" production preview
+    vercel_env PUBLIC_SITE_URL "$LOCAL_URL" development
+    vercel_env SANITY_API_READ_TOKEN "$SANITY_API_READ_TOKEN"
+    vercel_env SANITY_API_WRITE_TOKEN "$SANITY_API_WRITE_TOKEN"
+    vercel_env SANITY_WEBHOOK_SECRET "$SANITY_WEBHOOK_SECRET"
+  fi
 else
   SKIPPED+=("Vercel environment variables: push them later by re-running stage 3, or add them in the dashboard")
 fi
@@ -341,28 +350,18 @@ fi
 pause
 
 # Stage 6
-stage "Chromatic: project token for CI"
-say "Chromatic snapshots every pull request's Storybook (Phase 1). CI needs the token as a GitHub secret."
-open_url "https://www.chromatic.com/start"
-step "Sign in with GitHub, choose 'Add project', pick this repository."
-step "Copy the project token it shows (starts with chpt_)."
-ask_secret CHROMATIC_PROJECT_TOKEN "Paste the Chromatic project token:"
-set_secret CHROMATIC_PROJECT_TOKEN "$CHROMATIC_PROJECT_TOKEN"
-pause
-
-# Stage 7
 stage "Sanity: publish webhook (after Phase 4)"
 say "The webhook purges the site's cache on publish. It needs /api/revalidate deployed first (Phase 4)."
 if confirm "Is /api/revalidate deployed to production yet?"; then
   open_url "https://www.sanity.io/manage"
   step "Open the project, then API, then Webhooks, then Create webhook."
-  step "Name: purge site cache. URL: $SITE_URL_DEFAULT/api/revalidate. Dataset: production."
+  step "Name: purge site cache. URL: $SITE_URL_DEFAULT/api/revalidate. Dataset: $PUBLIC_SANITY_DATASET."
   step "Trigger on create, update and delete. HTTP method POST."
   step "Secret: the value of SANITY_WEBHOOK_SECRET in $ENV_FILE."
   step "Projection: {_type, \"slug\": slug.current}. Save."
   pause "Saved? Press Enter to finish."
 else
-  SKIPPED+=("Sanity webhook: re-run this wizard after Phase 4 and answer yes at stage 7")
+  SKIPPED+=("Sanity webhook: re-run this wizard after Phase 4 and answer yes at stage 6")
   note "Skipping the webhook for now."
 fi
 

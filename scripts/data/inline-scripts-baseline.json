@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "note": "Shrink-only: counts may go down, never up. Lower them with baseline.mjs shrink.",
+  "counts": {
+    "inline-script-line": {
+      "packages/ui/src/forms/EnquiryModal/EnquiryModal.astro": 297,
+      "packages/ui/src/forms/NewsletterForm/NewsletterForm.astro": 106,
+      "packages/ui/src/forms/ZeffyDialog/ZeffyDialog.astro": 275,
+      "packages/ui/src/media/Lightbox/Lightbox.astro": 353,
+      "packages/ui/src/media/PhotoCarousel/PhotoCarousel.astro": 161,
+      "packages/ui/src/media/VideoGrid/VideoGrid.astro": 40,
+      "packages/ui/src/navigation/SiteNav/SiteNav.astro": 67,
+      "packages/web/src/layouts/SiteLayout.astro": 11
+    },
+    "ts:TS2339": {
+      "packages/ui/src/forms/EnquiryModal/EnquiryModal.astro": 4,
+      "packages/ui/src/forms/NewsletterForm/NewsletterForm.astro": 9,
+      "packages/ui/src/forms/ZeffyDialog/ZeffyDialog.astro": 11,
+      "packages/ui/src/media/Lightbox/Lightbox.astro": 4,
+      "packages/ui/src/navigation/SiteNav/SiteNav.astro": 13,
+      "packages/web/src/layouts/SiteLayout.astro": 4
+    },
+    "ts:TS2551": {
+      "packages/ui/src/forms/EnquiryModal/EnquiryModal.astro": 1,
+      "packages/ui/src/forms/NewsletterForm/NewsletterForm.astro": 1,
+      "packages/ui/src/navigation/SiteNav/SiteNav.astro": 4
+    },
+    "zero-delay-timer": {
+      "packages/ui/src/forms/ZeffyDialog/ZeffyDialog.astro": 1,
+      "packages/ui/src/navigation/SiteNav/SiteNav.astro": 2,
+      "packages/web/src/components/Analytics.astro": 2
+    }
+  }
+}

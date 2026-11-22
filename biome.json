@@ -14,8 +14,8 @@
       "!**/.vercel",
       "!docs/design",
       "!**/sanity.types.ts",
-      "!skills-lock.json",
-      "!packages/tokens/src/patterns"
+      "!packages/tokens/src/patterns",
+      "!scripts/baseline.mjs"
     ]
   },
   "formatter": {
@@ -42,7 +42,25 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "groq": "GROQ belongs to @oy/content: add the query to packages/content/src/queries and import it from @oy/content.",
+              "@sanity/client": "The Sanity client belongs to @oy/content and the web loaders (packages/web/src/lib/sanity, lib/forms/site-deps.ts, pages/api/preview): load data through them.",
+              "sanity:client": "The Sanity client belongs to the web loaders (packages/web/src/lib/sanity): load data through them."
+            },
+            "patterns": [
+              {
+                "group": ["@sanity/client/*"],
+                "message": "The Sanity client belongs to @oy/content and the web loaders (packages/web/src/lib/sanity, lib/forms/site-deps.ts, pages/api/preview): load data through them."
+              }
+            ]
+          }
+        }
+      }
     }
   },
   "assist": {
@@ -77,6 +95,21 @@
           },
           "complexity": {
             "noImportantStyles": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "packages/content/**",
+        "packages/web/src/lib/sanity/**",
+        "packages/web/src/lib/forms/site-deps.ts",
+        "packages/web/src/pages/api/preview/**"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": "off"
           }
         }
       }

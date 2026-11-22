@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { expectNoMockWhileOwed, galleryHeld, settle } from './helpers';
 
 // The Odunde Festival page in the prototype's order (ROUTES section 4), each block present whether
@@ -43,18 +43,25 @@ test.describe('the Odunde Festival page', () => {
     await page.goto('/odunde');
     const glance = page.locator('#glance .oy-glance > div');
     const cells = await glance.count();
-    expect(cells).toBeGreaterThanOrEqual(4);
-    expect(cells).toBeLessThanOrEqual(5);
-    for (const label of ['Date', 'Time', 'Where', 'Cost']) {
+    for (const label of ['Date', 'Where', 'Cost']) {
       await expect(page.locator('#glance b', { hasText: label })).toHaveCount(1);
     }
+    // The hours are parked (ADR 0058): the Time cell is drawn once the edition holds its end, and no
+    // chip stands in for it before.
+    const time = page.locator('#glance .oy-glance > div', {
+      has: page.locator('b', { hasText: /^Time$/ }),
+    });
+    const timed = await time.count();
+    expect(timed).toBeLessThanOrEqual(1);
+    await expect(time.locator('.oy-pend')).toHaveCount(0);
+    expect(cells).toBeGreaterThanOrEqual(3 + timed);
+    expect(cells).toBeLessThanOrEqual(5);
     const header = await page.locator('header#top').innerText();
     const seeded = header.includes('Odunde Festival');
     expect(seeded || /pending: the page heading/i.test(header)).toBe(true);
     // The prototype's mock facts (docs/design/design/19 Mock Content Register) never fill a gap.
     expectNoMockWhileOwed(await page.locator('main').innerText(), [
       [/12 June 2027/i, pendingWhat('event', 'start', 'festival')],
-      [/11am to 7pm/i, pendingWhat('event', 'end', 'festival')],
       [/Free entry/i, pendingWhat('event', 'cost', 'festival')],
       [/43rd Place/i, pendingWhat('event', 'venue.line', 'festival')],
       [/since 2003/i, pendingWhat('festivalPage', 'whatItIs')],

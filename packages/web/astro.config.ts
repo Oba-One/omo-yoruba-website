@@ -28,6 +28,20 @@ if (!projectId || !dataset) {
   );
 }
 
+// CI's fixture Playwright job and the verify-omo-yoruba skill point the site's reads at the fixture API
+// (packages/content/scripts/fixture-api.ts) instead of Sanity. Only a loopback address is taken, and never
+// on Vercel, so no deployment's settings can send the site's reads, or its token, anywhere else. It is read
+// from the process only, never packages/web/.env, since Playwright starts the fixture API from the same variable.
+const fixtureApi = process.env.SANITY_API_HOST;
+if (
+  fixtureApi &&
+  (process.env.VERCEL || !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(fixtureApi))
+) {
+  throw new Error(
+    `SANITY_API_HOST is for the local fixture API only (http://127.0.0.1:<port>, never on Vercel); it is set to ${fixtureApi}.`,
+  );
+}
+
 // Stack decisions: docs/design/README.md section 4, docs/adr/0001. Env schema: README section 7.
 export default defineConfig({
   // Canonical origin. Vercel injects PUBLIC_SITE_URL per environment at build time, so
@@ -52,6 +66,7 @@ export default defineConfig({
       dataset,
       apiVersion: '2026-09-11',
       useCdn: false,
+      ...(fixtureApi ? { apiHost: fixtureApi, useProjectHostname: false } : {}),
       studioBasePath: STUDIO_BASE_PATH,
       stega: { studioUrl: STUDIO_BASE_PATH },
     }),

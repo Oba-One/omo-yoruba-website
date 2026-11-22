@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { ENQUIRY_SPECS, type EnquiryKind } from '@oy/content/enquiry-kinds';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { expectNoMockWhileOwed, galleryHeld, settle } from './helpers';
 
 // The End-of-Year Gala page in the prototype's order (ROUTES section 4), each block present whether
@@ -45,15 +45,22 @@ test.describe('the End-of-Year Gala page', () => {
 
   test('shows the Studio facts or the registry chips, never an invented one', async ({ page }) => {
     await page.goto('/gala');
-    for (const label of ['Date', 'Doors', 'Venue', 'Dress', 'Seats from']) {
+    for (const label of ['Date', 'Doors', 'Venue', 'Seats from']) {
       await expect(page.locator('#glance b', { hasText: new RegExp(`^${label}$`) })).toHaveCount(1);
     }
-    await expect(page.locator('#glance .oy-glance > div')).toHaveCount(5);
+    // The dress code is parked (ADR 0058): its cell is drawn once the edition holds it, and no chip
+    // stands in for it before.
+    const dress = page.locator('#glance .oy-glance > div', {
+      has: page.locator('b', { hasText: /^Dress$/ }),
+    });
+    const dressed = await dress.count();
+    expect(dressed).toBeLessThanOrEqual(1);
+    await expect(dress.locator('.oy-pend')).toHaveCount(0);
+    await expect(page.locator('#glance .oy-glance > div')).toHaveCount(4 + dressed);
     // The prototype's mock facts (docs/design/design/19 Mock Content Register) never fill a gap.
     expectNoMockWhileOwed(await page.locator('main').innerText(), [
       [/5 Dec(ember)? 2026/i, pendingWhat('event', 'start', 'gala')],
       [/The Ebell|4400 Wilshire/i, pendingWhat('event', 'venue.name', 'gala')],
-      [/black tie|encouraged/i, pendingWhat('event', 'dress', 'gala')],
       [/Dinner served/i, pendingWhat('event', 'schedule[]', 'gala')],
       [/\$125|\$1,100/, presenceWhat('ticketTier')?.what],
       [/within a working day/i, pendingWhat('galaPage', 'takePart[]')],

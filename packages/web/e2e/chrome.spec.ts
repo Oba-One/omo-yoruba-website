@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test.describe('site chrome', () => {
   test('nothing is open on load, the footer carries the trust line, and the router is on', async ({

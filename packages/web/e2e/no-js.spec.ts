@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { PLACEHOLDER_PROJECT } from './helpers';
 
 // Forms work without JavaScript first (ADR 0019): the query opens the modal, a POST with errors

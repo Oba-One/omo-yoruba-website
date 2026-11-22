@@ -3,7 +3,14 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./src/*"
+    "./bands/*": "./src/bands/*",
+    "./cards/*": "./src/cards/*",
+    "./content/*": "./src/content/*",
+    "./core/*": "./src/core/*",
+    "./forms/*": "./src/forms/*",
+    "./media/*": "./src/media/*",
+    "./navigation/*": "./src/navigation/*",
+    "./page/*": "./src/page/*"
   },
   "files": [
     "src"
@@ -21,14 +28,14 @@
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@storybook-astro/framework": "1.11.0",
-    "@storybook/addon-a11y": "10.6.0",
-    "@storybook/addon-docs": "10.6.0",
-    "@storybook/builder-vite": "10.6.0",
+    "@storybook/addon-a11y": "10.6.2",
+    "@storybook/addon-docs": "10.6.2",
+    "@storybook/builder-vite": "10.6.2",
     "astro": "7.3.1",
     "fast-check": "4.10.2",
-    "happy-dom": "20.14.0",
-    "storybook": "10.6.0",
-    "storybook-addon-pseudo-states": "10.6.0",
+    "happy-dom": "21.0.4",
+    "storybook": "10.6.2",
+    "storybook-addon-pseudo-states": "10.6.2",
     "typescript": "5.9.3"
   }
 }
