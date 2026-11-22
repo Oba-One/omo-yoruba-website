@@ -1,10 +1,32 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
 import { cacheVercel } from '@astrojs/vercel/cache';
 import sanity from '@sanity/astro';
+import type { AstroIntegration } from 'astro';
 import { defineConfig, envField } from 'astro/config';
 import { STUDIO_BASE_PATH } from './src/lib/paths';
+import { withOldSiteRoutes } from './src/lib/redirects';
+
+// The old site's addresses as routes in Vercel's Build Output, ahead of the adapter's 404 catch-all, whose
+// status would otherwise replace the middleware's 301 (ADR 0061). Astro runs the adapter's hooks first, so
+// its config.json exists by the time this one runs. scripts/check-old-site-routes.ts checks the result.
+let projectRoot: URL | undefined;
+const oldSiteAddresses: AstroIntegration = {
+  name: 'oy:old-site-addresses',
+  hooks: {
+    'astro:config:done': ({ config }) => {
+      projectRoot = config.root;
+    },
+    'astro:build:done': ({ logger }) => {
+      const file = new URL('./.vercel/output/config.json', projectRoot);
+      const config = JSON.parse(readFileSync(file, 'utf8'));
+      config.routes = withOldSiteRoutes(config.routes ?? []);
+      writeFileSync(file, `${JSON.stringify(config, null, 2)}\n`);
+      logger.info("the old site's addresses are routes ahead of the 404 catch-all");
+    },
+  },
+};
 
 // The integration needs the project id before astro:env exists, so the config reads
 // packages/web/.env itself (the file the wizard writes) under the process environment, which
@@ -70,6 +92,7 @@ export default defineConfig({
       studioBasePath: STUDIO_BASE_PATH,
       stega: { studioUrl: STUDIO_BASE_PATH },
     }),
+    oldSiteAddresses,
   ],
 
   // Playwright starts the dev server with PLAYWRIGHT=1 (playwright.config.ts): the dev toolbar's

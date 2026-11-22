@@ -1,9 +1,10 @@
 /**
  * The old site's addresses and where each lands on this one (docs/redirects.md, confirmed by the owner on
  * 21 November 2026; ADR 0061). Read from the old site's own sitemaps, so every path is exact: no wildcard
- * reaches an address the old site never had. The middleware answers them, not Astro's `redirects`: the old
- * paths end in a slash, and Astro drops it from a redirect's path while the Vercel adapter then matches the
- * path exactly, so `/about-us/` would never meet its rule. What docs/redirects.md leaves to the 404 page
+ * reaches an address the old site never had. Vercel routes the build writes answer them in production, and
+ * the middleware under `astro dev` and Playwright; not Astro's `redirects`: the old paths end in a slash, and
+ * Astro drops it from a redirect's path while the Vercel adapter then matches the path exactly, so
+ * `/about-us/` would never meet its rule. What docs/redirects.md leaves to the 404 page
  * (plugin pages, the forum, the theme's demos, author archives, the media library) has no rule, and
  * `/donate/` needs none, since it is this site's own `/donate`.
  */
@@ -92,10 +93,51 @@ export const OLD_SITE_REDIRECTS: Readonly<Record<string, string>> = Object.fromE
 
 /**
  * Where an old address lands, matched with or without its trailing slash and in any case, as WordPress
- * matched them; undefined for any other path.
+ * matched them; undefined for any other path. The middleware answers with it under `astro dev` and the
+ * Playwright server; on Vercel the routes below answer first.
  */
 export function oldSiteRedirect(pathname: string): string | undefined {
   const lower = pathname.toLowerCase();
   const path = lower.length > 1 ? lower.replace(/\/+$/, '') : lower;
   return Object.hasOwn(OLD_SITE_REDIRECTS, path) ? OLD_SITE_REDIRECTS[path] : undefined;
+}
+
+/** A route of Vercel's Build Output config (`.vercel/output/config.json`), as far as this file reads one. */
+export interface VercelRoute {
+  src?: string;
+  handle?: string;
+  [field: string]: unknown;
+}
+
+const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * The old addresses as Vercel routes. On Vercel the middleware cannot answer them: the adapter sends every
+ * path without a page to the function through a catch-all route that sets status 404, and Vercel applies that
+ * status over the function's own, so the middleware's 301 left as an empty 404. These routes answer at
+ * Vercel's edge before that one, with or without the trailing slash and in any case, as `oldSiteRedirect`
+ * matches.
+ */
+export function oldSiteRoutes(): VercelRoute[] {
+  return Object.entries(OLD_SITE_REDIRECTS).map(([path, target]) => ({
+    src: `^${escapeRegex(path)}/*$`,
+    methods: ['GET', 'HEAD'],
+    caseSensitive: false,
+    headers: { Location: target },
+    status: 301,
+  }));
+}
+
+/**
+ * The adapter's routes with the old addresses in front of them. Throws when the routes lack the adapter's
+ * catch-all, so a change in how the adapter routes fails the build instead of dropping the redirects quietly.
+ */
+export function withOldSiteRoutes(routes: readonly VercelRoute[]): VercelRoute[] {
+  if (!routes.some((route) => route.src === '^/.*$' && route.status === 404)) {
+    throw new Error(
+      "The Vercel adapter's routes have no 404 catch-all; check the old site's routes still answer (ADR 0061).",
+    );
+  }
+  const old = new Set(oldSiteRoutes().map((route) => route.src));
+  return [...oldSiteRoutes(), ...routes.filter((route) => !old.has(route.src))];
 }

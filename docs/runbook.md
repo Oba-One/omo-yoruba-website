@@ -621,9 +621,15 @@ cut from the homepage's hero photograph.
 
 ## The old site's addresses
 
-ADR 0061. `packages/web/src/lib/redirects.ts` maps 56 of the old site's addresses to their successors, and
-the middleware answers each with 301, with or without the trailing slash. To add one, add its path (no
-trailing slash) to the map; the unit test checks that every target is a page this site serves. The rules
+ADR 0061. `packages/web/src/lib/redirects.ts` maps 56 of the old site's addresses to their successors. On
+Vercel each answers 301 from a route the build writes into `.vercel/output/config.json` ahead of the
+adapter's (`oy:old-site-addresses` in `astro.config.ts`); under `astro dev` and Playwright the middleware
+answers from the same map. Both match with or without the trailing slash. To add one, add its path (no
+trailing slash) to the map; the unit test checks that every target is a page this site serves. To check a
+deploy, open `/about-us/` on the public host: it lands on `/our-story`. An empty page with status 404
+means the routes are missing from the build output; `scripts/check-old-site-routes.ts` runs after every
+build to stop that reaching a deploy. `/executives/?x=1` should land on `/our-story#board` with the section
+in view. The rules
 reach old links only once `omoyorubaofsocal.org` points at the Vercel project (add it under Domains), and its
 MX records must stay as they are, since `info@omoyorubaofsocal.org` is the general inbox.
 

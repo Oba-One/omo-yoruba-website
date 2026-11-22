@@ -7,8 +7,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
-    "build:vercel": "node ../../scripts/check-dataset-private.mjs && astro build",
+    "build": "astro build && bun ../../scripts/check-old-site-routes.ts",
+    "build:vercel": "node ../../scripts/check-dataset-private.mjs && astro build && bun ../../scripts/check-old-site-routes.ts",
     "preview": "astro preview",
     "typecheck": "astro check",
     "e2e": "playwright test",

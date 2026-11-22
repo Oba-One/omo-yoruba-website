@@ -43,8 +43,9 @@ function setHeaders(
  * `cache.set()` can switch it back on.
  */
 export const onRequest = defineMiddleware(async (context, next) => {
-  // The old site's addresses go to their successors before anything renders (ADR 0061), with the same
-  // `noindex` a preview or `vercel.app` host gives every answer.
+  // The old site's addresses go to their successors before anything renders (ADR 0061). This serves
+  // `astro dev` and the Playwright server only: on Vercel the build's routes answer them first
+  // (src/lib/redirects.ts, oldSiteRoutes), without the `noindex` this adds on an unlisted host.
   const successor = ['GET', 'HEAD'].includes(context.request.method)
     ? oldSiteRedirect(context.url.pathname)
     : undefined;
