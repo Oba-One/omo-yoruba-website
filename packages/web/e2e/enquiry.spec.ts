@@ -1,5 +1,5 @@
 import { ENQUIRY_KINDS, ENQUIRY_SPECS, successCopy } from '@oy/content/enquiry-kinds';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { interceptActions, openEnquiry, settle } from './helpers';
 
 // Every kind: open from a real trigger where the home page has one (the member and partner

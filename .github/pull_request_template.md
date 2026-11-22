@@ -23,6 +23,7 @@ Tick what applies; CI runs the check and the build on every pull request, so a r
 - [ ] `bun run check` passes: typecheck, Biome, em dash, Yoruba diacritics, colour literals, unit tests, toolchain pins
 - [ ] `bun run build` passes
 - [ ] New or changed UI lives in `packages/ui` with a story: Default, each variant, Pending, OnDark where it applies
+- [ ] A change to what a page renders shows captures at 375 and 1280 wide, labeled with the engine and the data they ran against (the `verify-omo-yoruba` skill), or says under Not verified why there are none
 - [ ] No invented content: empty fields render Pending; every fact is on the confirmed list
 - [ ] Copy follows the `oy-voice` skill: sentence case, marks on Yoruba words, no em dashes, glyphs limited to • → ✓ ×
 - [ ] `CLAUDE.md`, `CONTEXT.md`, the ADRs and `docs/runbook.md` still describe the system as built

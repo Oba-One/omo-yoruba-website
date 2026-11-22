@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, type Page, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { swipe } from './helpers';
 
 // The past years carousel (docs/research/phase-5-photo-carousel-custom-element.md, ADR 0027): an

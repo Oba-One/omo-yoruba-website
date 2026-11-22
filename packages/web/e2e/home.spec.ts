@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { pendingWhat } from '@oy/content/pending';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { expectNoMockWhileOwed, PLACEHOLDER_PROJECT } from './helpers';
 
 // The homepage blocks in the prototype's order (ROUTES section 4), each present whether the

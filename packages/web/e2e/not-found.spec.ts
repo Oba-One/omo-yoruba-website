@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { axeViolations, PLACEHOLDER_PROJECT } from './helpers';
 
 // The 404 page (ROUTES section 1, open-work E4): an indigo band in the site chrome, three doors home.

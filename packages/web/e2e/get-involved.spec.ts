@@ -1,6 +1,6 @@
 import { DOOR_CHIPS } from '@oy/content/doors';
 import { GENERAL_RESPONDS_PENDING, pendingWhat } from '@oy/content/pending';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import {
   axeViolations,
   expectEnquiryRoundTrip,

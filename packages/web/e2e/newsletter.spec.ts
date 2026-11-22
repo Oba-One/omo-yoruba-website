@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { interceptActions } from './helpers';
 
 test('the newsletter form names the problem, keeps the address, then thanks in place', async ({
