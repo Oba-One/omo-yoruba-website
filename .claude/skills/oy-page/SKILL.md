@@ -37,8 +37,8 @@ Copy comes from the prototype and the Studio, never from memory.
 9. Handoffs: link to Impact when the page makes a claim, to Our Story when it shows a face;
    close with the take-part band or the program trio where the block list says so.
 10. Check: `bun check`; Playwright smoke (renders, one `h1`, nav current state, footer,
-    no dialog open on load); axe at 375 and 1440; Lighthouse against the preview against the
-    budgets in `docs/design/QUALITY.md` section 3.
+    no dialog open on load); axe at 375 and 1440; Lighthouse (locally while branch previews are off, runbook
+    Lighthouse) against the budgets in `docs/design/QUALITY.md` section 3.
 
 ## Never
 

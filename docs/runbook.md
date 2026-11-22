@@ -56,7 +56,9 @@ Vercel project `omo-yoruba` in the Greenpill Dev Guild team (created 11 Septembe
 root directory" enabled (the lockfile and the workspace packages live above it), framework
 Astro, Node 22 (`engines` in `packages/web/package.json` pins `22.x` and overrides the project's
 own Node setting). The adapter writes `.vercel/output`; `bun run build` from the repo root builds
-it. Every push to a branch gets a preview URL, and `main` deploys to production. Since 12 September
+it. `main` deploys to production. Since 21 November 2026 branch pushes build nothing: the owner
+turned off preview deployments for branches in the project's Git settings, since each one spent
+build credits, so a pull request's proof is CI alone. Since 12 September
 2026 Deployment Protection is "all except custom domains": the previews and the generated aliases,
 `omo-yoruba-greenpilldevguild.vercel.app` among them, sit behind Vercel Authentication, while a name
 added under the project's Domains is left public. One such name, `omo-yoruba-khaki.vercel.app`, is
@@ -109,8 +111,9 @@ build time only. It does not cover a deployment promoted or rolled back from bef
 every scope, so after a move to `production` re-run it with `production` in `packages/web/.env`.
 The two Sanity Functions are pinned to `development` in `sanity.blueprint.ts`; a move of the
 site's dataset moves them too, or enquiry notices stop. Variables are scoped per environment in Vercel: a preview
-deployment of a pull request needs them in the Preview scope too, or its build stops at the
-astro:env check.
+deployment needs them in the Preview scope too, or its build stops at the dataset check or the
+astro:env check. With branch previews off (see Deploy) only a production build runs the check,
+so the first build of `main` after a change to these variables is the one that proves them.
 
 Storybook: a second Vercel project with Root Directory `packages/ui` and "Include files outside
 the root directory" enabled; `packages/ui/vercel.json` pins the install and build commands and
@@ -557,8 +560,9 @@ secret also reaches every other origin the page requests, the Sanity CDN and Pos
 the reports embed it: they are never uploaded. Keeping the secret on Vercel alone would take a
 Puppeteer script that sets Vercel's bypass cookie before the audit, a new dependency for the owner
 to approve (`docs/research/phase-4-lighthouse-ci.md`). `.github/workflows/lighthouse.yml` runs
-both presets on every successful `Preview` deployment (`deployment_status`). Since 21 November 2026
-it fails, rather than skipping with a notice, until the secret exists: in the Vercel project, Settings, Deployment Protection, Protection Bypass
+both presets on every successful `Preview` deployment (`deployment_status`). Branch previews are
+off since 21 November 2026 (see Deploy), so the workflow does not run until they come back; until
+then audit locally as below. While previews run, it fails, rather than skipping with a notice, until the secret exists: in the Vercel project, Settings, Deployment Protection, Protection Bypass
 for Automation, create one named for CI (a team member or Project Administrator can), then store it
 as the repository secret `VERCEL_AUTOMATION_BYPASS_SECRET` (`gh secret set
 VERCEL_AUTOMATION_BYPASS_SECRET`). A fork's preview never runs the workflow (GitHub starts no run
