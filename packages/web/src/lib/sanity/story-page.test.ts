@@ -185,6 +185,8 @@ describe('buildStoryPage', () => {
       intro: 'For anything not covered on Get Involved. Write, call, or send a message.',
       settings: { generalEmail: undefined, phone: undefined, address: undefined },
       contact: { name: undefined },
+      // Who receives this is parked (ADR 0058): no row asks for a name the settings do not hold.
+      rows: ['email', 'phone', 'address'],
       namePending: GENERAL_CONTACT_PENDING,
       urgent: false,
     });
