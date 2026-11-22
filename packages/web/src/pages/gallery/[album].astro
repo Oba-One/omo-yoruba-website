@@ -53,7 +53,12 @@ if (error) Astro.response.status = 503;
 cachePage(Astro, '/gallery/[album]', { draft: preview, failed: Boolean(error) });
 ---
 
-<SiteLayout title={page.title} description={page.description} root={page.root}>
+<SiteLayout
+  title={page.title}
+  description={page.description}
+  share={page.share}
+  root={page.root}
+>
   <main id="main">
     <PageHeader
       variant={page.header.variant}

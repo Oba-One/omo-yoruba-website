@@ -1,5 +1,7 @@
 # A photo address opens the Lightbox, and Back closes it
 
+Amended by ADR 0060: a photo address names its album page as its canonical link and shares the album's picture.
+
 Decided with the owner on 13 September 2026 (Phase 8 grill, `docs/tickets/phase-8/spec.md`, Q1, Q2 and Q16).
 The documents disagreed: AGENTS.md and ROUTES section 3 allow one URL-driven open, `#give`, while ROUTES
 section 1 and QUALITY section 2 say `?photo=<key>` opens the Lightbox and is shareable. The rule against

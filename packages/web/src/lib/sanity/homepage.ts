@@ -16,6 +16,7 @@ import { editionPage } from '@oy/content/routes';
 import { longDate } from '@oy/ui/content/edition-dates.ts';
 import { usableAction } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
+import { SITE_NAME } from '../seo';
 import { offersTable } from './gala-page';
 import {
   BAND_PHOTOGRAPH,
@@ -23,6 +24,7 @@ import {
   cleanText,
   editAttributes,
   resolveImage,
+  shareImage,
 } from './view';
 
 export type { BuildOptions };
@@ -38,8 +40,6 @@ export interface HomepageLayout extends Record<string, string> {
   pattern: 'rich' | 'subtle';
   motion: 'on' | 'off';
 }
-
-const ORG_NAME = 'Omo Yorùbá of Southern California';
 
 /**
  * What the event band reads of the lead edition: its own facts, and whether it offers a table in
@@ -87,8 +87,10 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
   const clean = cleanText;
 
   return {
-    title: clean(data?.seo?.title) || clean(hero?.title) || ORG_NAME,
+    title: clean(data?.seo?.title) || clean(hero?.title) || SITE_NAME,
     description: clean(data?.seo?.description) || clean(hero?.sub),
+    // The link preview shows the hero photograph (ADR 0060).
+    share: shareImage(imageSet, hero?.image),
     layout,
     root: {
       highlight: layout.highlight,

@@ -11,7 +11,7 @@ Names and roles: `docs/design/README.md` section 7. Schema: `packages/web/astro.
 | Variable | Where it lives | Notes |
 | --- | --- | --- |
 | `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET` | `packages/web/.env`, Vercel (all environments) | Required since Phase 2: the build stops without them (CI uses placeholders) |
-| `PUBLIC_SITE_URL` | Vercel per environment | Production `https://omoyorubasocal.org` |
+| `PUBLIC_SITE_URL` | Vercel per environment | Production `https://omoyorubasocal.org`. Feeds Astro's `site` only: canonical links, link previews and the sitemap name `SITE_ORIGIN` (`@oy/content/routes`), the `www` host that serves the site (ADR 0060) |
 | `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST` | `packages/web/.env`, Vercel | Empty key disables analytics |
 | `PUBLIC_PREVIEW_ORIGIN` | `packages/web/.env`, Vercel | Optional since Phase 4: the uncached second hostname the Presentation tool previews on (ADR 0021); empty previews on the Studio's own origin |
 | `VERCEL_AUTOMATION_BYPASS_SECRET` | GitHub Actions secret | Phase 4: the project's Protection Bypass for Automation, for Lighthouse and Playwright against a protected deployment |
@@ -604,6 +604,20 @@ interpolated string in `span.sc-interp`, so a port rule on a container's spans r
 not its parent. A page whose option hides a block (Our Story's
 timeline) is compared through its page-section story, with the prototype's section forced visible. An edited `@oy/ui` component's scoped stylesheet can stay stale in `astro dev` until the
 server restarts.
+
+## Search and sharing
+
+ADR 0060. Every page names its address on `https://www.omoyorubasocal.org` (`SITE_ORIGIN`) in a canonical link
+and carries Open Graph tags for a link preview; the 404 page and a form's error re-render name no address.
+`/sitemap.xml` reads the albums from Sanity on each request and is never cached; `public/robots.txt` keeps
+search off `/admin` and `/api/` and names the sitemap. Every `*.vercel.app` host answers `X-Robots-Tag:
+noindex, nofollow` and is never cached, like the preview host.
+
+To check a deploy: `/robots.txt` and `/sitemap.xml` answer 200 on the public host, a page's head carries
+`link rel="canonical"` and `og:image`, and `omo-yoruba-khaki.vercel.app` answers with the `X-Robots-Tag`
+header. A link preview is cached by each app: Facebook's Sharing Debugger and similar tools ask it to read a
+page again after its picture changes. The default picture is `packages/web/public/share.jpg`, 1200 by 630,
+cut from the homepage's hero photograph.
 
 ## Rollback
 

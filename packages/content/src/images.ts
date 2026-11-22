@@ -21,6 +21,11 @@ export interface ImageSetOptions {
   /** Locks the aspect ratio (width divided by height) and crops around the hotspot. */
   aspect?: number;
   quality?: number;
+  /**
+   * A fixed format in place of the CDN's choice by the browser's `Accept`: a link preview's image is
+   * fetched by an app's crawler, which may not read WebP or AVIF (ADR 0060).
+   */
+  format?: 'jpg';
 }
 
 export interface ImageSet {
@@ -76,7 +81,7 @@ export type ImageSetBuilder = (
 
 export function createImageSet({ projectId, dataset }: ImageSetConfig): ImageSetBuilder {
   const builder = createImageUrlBuilder({ projectId, dataset });
-  return (image, { width, aspect, quality = 80 }) => {
+  return (image, { width, aspect, quality = 80, format }) => {
     const ref = image?.asset?._ref;
     const natural = assetDimensions(ref);
     if (!ref || !natural || !image) return undefined;
@@ -99,8 +104,8 @@ export function createImageSet({ projectId, dataset }: ImageSetConfig): ImageSet
       let url = builder
         .image(image as SanityImageSource)
         .width(w)
-        .auto('format')
         .quality(quality);
+      url = format ? url.format(format) : url.auto('format');
       if (aspect) url = url.height(Math.round(w / ratio)).fit('crop');
       return url.url();
     };

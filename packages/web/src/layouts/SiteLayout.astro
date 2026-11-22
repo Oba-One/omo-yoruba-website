@@ -46,10 +46,13 @@ import {
   newsletterStateFrom,
 } from '../lib/forms/modal-state';
 import { loadQuery } from '../lib/sanity/load-query';
+import { canonicalUrl, DEFAULT_SHARE_IMAGE, type ShareImage, SITE_NAME } from '../lib/seo';
 
 interface Props {
   title: string;
   description?: string;
+  /** The page's own photograph as its link preview's picture; the site's default without one (ADR 0060). */
+  share?: ShareImage;
   /** Data attributes on the body from the page's layout options (the prototype's page root). */
   root?: Record<string, string | undefined>;
   /** Where the newsletter form sits: in the footer, or as a band before it. */
@@ -61,6 +64,7 @@ interface Props {
 const {
   title,
   description,
+  share = DEFAULT_SHARE_IMAGE,
   root = {},
   newsletter: placement = 'footer',
   newsletterEdit,
@@ -105,6 +109,10 @@ if (modal.state === 'error' || newsletter.state === 'error') {
   Astro.cache?.set(false);
 }
 
+// Every page names its own address on the public host, without a query: a photo address names its album
+// page (ADR 0060). A page answering an error names none, since it is not the page at that address.
+const canonical = (Astro.response.status ?? 200) < 400 ? canonicalUrl(path) : undefined;
+
 // The same check as the island's, so the dialog never waits for a frame the island refuses. Zeffy's
 // own page for the same form is the dialog's link to Apple Pay and Google Pay (ADR 0045).
 const giveForm = framableSrc(settings?.zeffyEmbedUrl);
@@ -125,6 +133,18 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {/* The link preview a shared address draws (ADR 0060). */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={share.url} />
+    <meta property="og:image:width" content={String(share.width)} />
+    <meta property="og:image:height" content={String(share.height)} />
+    {share.alt && <meta property="og:image:alt" content={share.alt} />}
+    <meta name="twitter:card" content="summary_large_image" />
     {/* The files in `public/`: the tab icon, which search results read from this link, and the icon a
         phone's home screen shows (wayfinder ticket 32 holds how they were made). */}
     <link rel="icon" href="/favicon.ico" />

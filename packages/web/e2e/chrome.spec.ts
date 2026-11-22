@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures';
+import { PLACEHOLDER_PROJECT } from './helpers';
 
 test.describe('site chrome', () => {
   test('nothing is open on load, the footer carries the trust line, and the router is on', async ({
@@ -38,6 +39,65 @@ test.describe('site chrome', () => {
       const response = await request.get(address);
       expect(response.status(), address).toBe(200);
       expect(response.headers()['content-type'], address).toMatch(/^image\//);
+    }
+  });
+
+  test('a page names its address on the public host and carries a link preview; an error page names none', async ({
+    page,
+  }) => {
+    // Asked with a query, the page still names its own address alone (ADR 0060).
+    await page.goto('/odunde?enquiry=vendor');
+    const head = page.locator('head');
+    await expect(head.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://www.omoyorubasocal.org/odunde',
+    );
+    await expect(head.locator('meta[property="og:url"]')).toHaveAttribute(
+      'content',
+      'https://www.omoyorubasocal.org/odunde',
+    );
+    await expect(head.locator('meta[property="og:title"]')).toHaveAttribute('content', /\S/);
+    await expect(head.locator('meta[property="og:image"]')).toHaveAttribute(
+      'content',
+      /^https:\/\//,
+    );
+    await expect(head.locator('meta[property="og:image:width"]')).toHaveAttribute(
+      'content',
+      /^\d+$/,
+    );
+    await expect(head.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      'content',
+      'summary_large_image',
+    );
+    await page.goto('/no-such-page');
+    await expect(page.locator('head link[rel="canonical"]')).toHaveCount(0);
+  });
+
+  test('robots.txt keeps search off the Studio and the API and names the sitemap, which lists the pages', async ({
+    request,
+  }) => {
+    const robots = await request.get('/robots.txt');
+    expect(robots.status()).toBe(200);
+    const rules = await robots.text();
+    expect(rules).toContain('Disallow: /admin');
+    expect(rules).toContain('Disallow: /api/');
+    expect(rules).toContain('Sitemap: https://www.omoyorubasocal.org/sitemap.xml');
+    const sitemap = await request.get('/sitemap.xml');
+    // The placeholder project reads nothing, so the sitemap asks a crawler to come back.
+    if (PLACEHOLDER_PROJECT) {
+      expect(sitemap.status()).toBe(503);
+      return;
+    }
+    expect(sitemap.status()).toBe(200);
+    expect(sitemap.headers()['content-type']).toMatch(/^application\/xml/);
+    const locations = [...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+      (match) => match[1] ?? '',
+    );
+    expect(locations).toContain('https://www.omoyorubasocal.org/');
+    expect(locations).toContain('https://www.omoyorubasocal.org/gallery');
+    for (const location of locations) {
+      expect(location).toMatch(/^https:\/\/www\.omoyorubasocal\.org\//);
+      expect(location).not.toMatch(/\?|\/404$|\/admin|\/api\//);
     }
   });
 
