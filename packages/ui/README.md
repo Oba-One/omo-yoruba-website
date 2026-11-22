@@ -33,7 +33,7 @@ From the repo root:
 | Command | Does |
 | --- | --- |
 | `bun storybook` | Storybook on port 6006 |
-| `bun run --filter @oy/ui build-storybook` | the static build in `storybook-static`, which CI builds and sends to Chromatic when its token is set; where it is hosted is wayfinder ticket 11 |
+| `bun run --filter @oy/ui build-storybook` | the static build in `storybook-static`, which CI builds on every pull request; where it is hosted is wayfinder ticket 11 |
 | `bun run test` | the component tests, with every other package's |
 | `bun run --filter @oy/ui typecheck` | `astro check` |
 

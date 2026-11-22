@@ -119,6 +119,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   library parts and own no component styling. Colours come from `@oy/tokens` only.
 - Content: never invent content (no dates, prices, figures, names, quotes). Empty renders
   Pending, and every required-for-launch field is registered in `packages/content/src/pending.ts`.
+  A row marked `parked` there is asked for by nobody: the page leaves its block out while it is empty
+  (ADR 0058).
   Use the Sanity MCP for content and the schema for shape; an album's photographs in bulk go through
   `bun run import-album`, which saves a draft for the owner to publish.
 - Storybook: `.astro` components only. If the framework blocks a component, stop and ask

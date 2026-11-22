@@ -11,6 +11,7 @@
  */
 import { isDoorKey } from '@oy/content/doors';
 import {
+  askedFor,
   GENERAL_CONTACT_PENDING,
   GENERAL_RESPONDS_PENDING,
   pendingWhat,
@@ -114,6 +115,11 @@ export function buildGetInvolvedPage(data: GetInvolvedPageData | null, options: 
         phone: cleanText(settings?.phone),
       },
       contact: { name: general?.name ?? undefined, responds: general?.responds ?? undefined },
+      // Who answers is parked (ADR 0058): the organization answers, so the row waits for a name.
+      rows:
+        cleanText(general?.name) || askedFor(GENERAL_CONTACT_PENDING)
+          ? (['email', 'phone', 'name', 'responds'] as const)
+          : (['email', 'phone', 'responds'] as const),
       namePending: GENERAL_CONTACT_PENDING,
       respondsPending: GENERAL_RESPONDS_PENDING,
     },
