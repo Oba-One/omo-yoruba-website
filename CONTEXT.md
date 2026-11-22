@@ -281,6 +281,12 @@ The one list of required-for-launch fields with the wording of what is missing. 
 To do and the site's chips both read it.
 _Avoid_: placeholder list, TODO list, missing-content map
 
+**Parked**:
+A registry row the launch does not wait for (ADR 0058). The To do leaves it out, no chip names it, and
+the page leaves its block out while the Studio holds nothing there. The block shows once it is filled,
+and the row is asked again by losing its `parked` mark.
+_Avoid_: hidden field, optional field, disabled row, archived
+
 **Presence pending**:
 A Pending row for a document type with no documents yet (people, partners, testimonials) or
 fewer than expected (zones). A field query cannot find what does not exist.

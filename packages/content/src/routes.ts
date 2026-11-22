@@ -115,8 +115,9 @@ export function programHref(
 export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   siteSettings: PUBLIC_ROUTES,
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
-  // Donate's trust block keeps its promise of a source line under every number only while Impact shows them.
-  impactPage: ['/impact', '/donate'],
+  // The boxes that lead to Impact (Donate's trust block, the Programs year strip, the Gala's sponsor
+  // levels) keep their promise of a source line under every number only while Impact shows them.
+  impactPage: ['/impact', '/donate', '/programs', '/gala'],
   // The homepage introduces the two events from their own pages' headers (ADR 0057).
   festivalPage: ['/odunde', '/'],
   galaPage: ['/gala', '/'],

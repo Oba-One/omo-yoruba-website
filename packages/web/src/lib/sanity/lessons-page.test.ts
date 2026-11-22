@@ -174,14 +174,16 @@ describe('buildLessonsPage', () => {
     expect(hidden.teacher.person.image).toBeUndefined();
   });
 
-  it('carries what you learn: the prose or its chip, and the levels or their Pending line', () => {
+  it('carries what you learn: the prose or its chip, and the levels once each says what it covers', () => {
     const empty = buildLessonsPage(seeded, options).learn;
+    // The levels are parked (ADR 0058): the list is left out until a level holds its line.
     expect(empty).toEqual({
       prose: undefined,
       pending: 'what the lessons teach, in her words',
       levels: [],
-      levelsPending: 'what each level covers',
-      linePending: 'what the level covers',
+      levelsShown: false,
+      levelsPending: undefined,
+      linePending: undefined,
     });
     const written = buildLessonsPage(
       {
@@ -203,9 +205,10 @@ describe('buildLessonsPage', () => {
       options,
     ).learn;
     expect(written.prose).toHaveLength(1);
+    // A level without its line waits unseen beside the one that has it.
+    expect(written.levelsShown).toBe(true);
     expect(written.levels).toEqual([
       { _key: 'level-1', title: '[ Level one ]', line: '[ What it covers ]' },
-      { _key: 'level-2', title: '[ Level two ]', line: null },
     ]);
   });
 
@@ -213,6 +216,7 @@ describe('buildLessonsPage', () => {
     const view = buildLessonsPage(seeded, options).lesson;
     expect(view).toEqual({
       shown: true,
+      ground: 'white',
       steps: [],
       pending: 'the shape of a lesson',
       stepPending: 'the step',
@@ -234,20 +238,70 @@ describe('buildLessonsPage', () => {
     expect(hidden.lesson.shown).toBe(false);
   });
 
-  it('keeps questions closed initially and supplies the lead that counts them', () => {
-    const faq = buildLessonsPage(seeded, options).faq;
+  it('lists the answered questions closed, with the lead that counts them, and none until one is answered', () => {
+    // The questions are parked (ADR 0058): one without its answer is left out, and so is a section
+    // that would hold none.
+    const unanswered = buildLessonsPage(seeded, options).faq;
+    expect(unanswered).toMatchObject({
+      shown: false,
+      items: [],
+      defaultOpen: false,
+      lead: undefined,
+      pending: undefined,
+      answerPending: undefined,
+    });
+    const answer = [
+      {
+        _type: 'block',
+        _key: 'a1',
+        style: 'normal',
+        markDefs: [],
+        children: [{ _type: 'span', _key: 's1', text: '[ An answer ]', marks: [] }],
+      },
+    ];
+    const answered = {
+      ...seeded,
+      faq: (seeded.faq ?? []).map((item) => ({ ...item, answer })),
+    } as unknown as LessonsPageData;
+    const faq = buildLessonsPage(answered, options).faq;
     expect(faq).toMatchObject({
+      shown: true,
       defaultOpen: false,
       lead: 'The five we hear most often.',
-      pending: 'the questions parents ask',
-      answerPending: 'an answer',
     });
-    expect(faq.items.map((item) => [item.question, item.answer])).toEqual([
-      ['How much does it cost?', undefined],
-      ['When are the lessons?', undefined],
-      ['Can a parent sit in?', undefined],
-      ['What does a child need?', undefined],
-      ['What if my child already understands some Yoruba?', undefined],
+    expect(faq.items.map((item) => item.question)).toEqual([
+      'How much does it cost?',
+      'When are the lessons?',
+      'Can a parent sit in?',
+      'What does a child need?',
+      'What if my child already understands some Yoruba?',
+    ]);
+    const two = buildLessonsPage(
+      {
+        ...seeded,
+        faq: (seeded.faq ?? []).map((item, at) => (at < 2 ? { ...item, answer } : item)),
+      } as unknown as LessonsPageData,
+      options,
+    ).faq;
+    expect(two.items).toHaveLength(2);
+    expect(two.lead).toBe('The two we hear most often.');
+    // The sections under What you learn take turns from white, counting only the ones drawn.
+    const grounds = (data: LessonsPageData) => {
+      const view = buildLessonsPage(data, options);
+      return [
+        view.lesson.shown && view.lesson.ground,
+        view.faq.shown && view.faq.ground,
+        view.takePart.ground,
+      ].filter(Boolean);
+    };
+    expect(grounds(answered)).toEqual(['white', 'alt', 'white']);
+    expect(grounds(seeded)).toEqual(['white', 'alt']);
+    expect(grounds({ ...answered, layout: { lesson: 'hidden' } } as LessonsPageData)).toEqual([
+      'white',
+      'alt',
+    ]);
+    expect(grounds({ ...seeded, layout: { lesson: 'hidden' } } as LessonsPageData)).toEqual([
+      'white',
     ]);
     const open = buildLessonsPage(
       { ...seeded, layout: { faq: 'open' } } as LessonsPageData,
@@ -256,7 +310,7 @@ describe('buildLessonsPage', () => {
     expect(open.faq.defaultOpen).toBe(false);
     expect(buildLessonsPage(null, options).faq).toMatchObject({ items: [], lead: undefined });
     const one = buildLessonsPage(
-      { ...seeded, faq: seeded.faq?.slice(0, 1) } as LessonsPageData,
+      { ...answered, faq: answered.faq?.slice(0, 1) } as LessonsPageData,
       options,
     );
     expect(one.faq.lead).toBe('The one we hear most often.');

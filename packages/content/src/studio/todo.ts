@@ -173,7 +173,16 @@ export const todoRowId = (entry: PendingEntry) => `${entry.type}-${hash(pendingF
 /** The kind a filter names (`kind == "collective" && ...`): new documents start as that kind. */
 const kindOf = (filter: string | undefined) => /\bkind == "([^"]+)"/.exec(filter ?? '')?.[1];
 
-export function todoPlan(hidden: Iterable<string> = []): TodoPlan {
+/** The rows a plan is built from: the ones the registry asks for, unless a test hands others. */
+export interface TodoRegistry {
+  rows: readonly PendingEntry[];
+  presence: readonly PresenceEntry[];
+}
+
+export function todoPlan(
+  hidden: Iterable<string> = [],
+  registry: TodoRegistry = { rows: PENDING, presence: PRESENCE },
+): TodoPlan {
   const left = new Set(hidden);
   const nextEditions = NEXT_EDITION_KINDS.map(
     (kind): StillToAdd => ({
@@ -186,25 +195,29 @@ export function todoPlan(hidden: Iterable<string> = []): TodoPlan {
       nextEdition: kind,
     }),
   );
-  const presence = PRESENCE.filter((entry) => !left.has(entry.type)).map((entry): StillToAdd => {
-    const kind = entry.type === 'event' ? kindOf(entry.filter) : undefined;
-    return {
-      id: `add-${entry.type}-${hash(presenceFilter(entry))}`,
-      title: pendingTitle(entry),
-      type: entry.type,
-      filter: entry.filter,
-      template: kind ? `event-${kind}` : undefined,
-      minimum: entry.minimum,
-      presence: entry,
-    };
-  });
+  const presence = registry.presence
+    .filter((entry) => !left.has(entry.type))
+    .map((entry): StillToAdd => {
+      const kind = entry.type === 'event' ? kindOf(entry.filter) : undefined;
+      return {
+        id: `add-${entry.type}-${hash(presenceFilter(entry))}`,
+        title: pendingTitle(entry),
+        type: entry.type,
+        filter: entry.filter,
+        template: kind ? `event-${kind}` : undefined,
+        minimum: entry.minimum,
+        presence: entry,
+      };
+    });
   return {
-    rows: PENDING.filter((entry) => !left.has(rowDocumentType(entry))).map((entry) => ({
-      id: todoRowId(entry),
-      entry,
-      group: todoGroup(entry),
-      title: todoRowTitle(entry),
-    })),
+    rows: registry.rows
+      .filter((entry) => !left.has(rowDocumentType(entry)))
+      .map((entry) => ({
+        id: todoRowId(entry),
+        entry,
+        group: todoGroup(entry),
+        title: todoRowTitle(entry),
+      })),
     stillToAdd: [...nextEditions, ...presence],
     hidden: [...left],
   };

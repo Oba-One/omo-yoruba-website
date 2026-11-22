@@ -37,6 +37,13 @@ export interface PendingEntry {
   where: string;
   /** The register's What column, in chip wording: "2027 date and hours". */
   what: string;
+  /**
+   * Parked: a row the launch does not wait for (ADR 0058). The To do leaves it out, `pendingWhat` and
+   * `presenceWhat` answer undefined for it, and the page leaves its block out while the Studio holds
+   * nothing there, so no visitor meets a Pending note for it. The block shows by itself once it is
+   * filled. Delete the property to ask for the fact again.
+   */
+  parked?: true;
 }
 
 /** Which edition an edition-bound row asks about (`PendingEntry.edition`). */
@@ -54,6 +61,8 @@ export interface PresenceEntry {
   everyEdition?: boolean;
   where: string;
   what: string;
+  /** Parked, as `PendingEntry.parked`. */
+  parked?: true;
 }
 
 /** The trust pages as the registry's Where column names them. */
@@ -136,7 +145,7 @@ const takePartRows = (type: string, where: string): PendingEntry[] => [
   },
 ];
 
-export const PENDING: readonly PendingEntry[] = [
+const REGISTER_ROWS: readonly PendingEntry[] = [
   // Across the whole site
   { type: 'siteSettings', fields: ['ein'], where: 'Everywhere', what: 'EIN' },
   { type: 'siteSettings', fields: ['address'], where: 'Everywhere', what: 'mailing address' },
@@ -173,6 +182,7 @@ export const PENDING: readonly PendingEntry[] = [
     edition: 'next',
     where: 'Odunde, at a glance',
     what: 'the hours',
+    parked: true,
   },
   {
     type: 'event',
@@ -222,6 +232,7 @@ export const PENDING: readonly PendingEntry[] = [
     edition: 'next',
     where: 'Odunde, vendor dialog',
     what: 'fees, deadline and permit rules',
+    parked: true,
   },
   {
     type: 'event',
@@ -230,6 +241,7 @@ export const PENDING: readonly PendingEntry[] = [
     edition: 'past',
     where: 'Odunde, past years',
     what: 'the attendance figure',
+    parked: true,
   },
   { type: 'zone', fields: ['line'], where: 'Odunde, zones', what: 'the zone description' },
   // The glance holds five facts and the edition fills four, so only the first extra row can show.
@@ -263,6 +275,7 @@ export const PENDING: readonly PendingEntry[] = [
     condition: 'count(planYourVisit[!defined(value)]) > 0',
     where: 'Odunde, plan your visit',
     what: 'a practical fact',
+    parked: true,
   },
 
   // End-of-Year Gala
@@ -297,6 +310,7 @@ export const PENDING: readonly PendingEntry[] = [
     edition: 'next',
     where: 'Gala, at a glance',
     what: 'the dress code',
+    parked: true,
   },
   // The event pages' headers: the photo band needs its photograph (the Gala always draws it, Odunde by
   // default), and every page its one heading.
@@ -483,12 +497,14 @@ export const PENDING: readonly PendingEntry[] = [
     fields: ['levels[]'],
     where: 'Lessons, levels',
     what: 'what each level covers',
+    parked: true,
   },
   {
     type: 'lessonsPage',
     condition: 'count(levels[!defined(blurb)]) > 0',
     where: 'Lessons, levels',
     what: 'what the level covers',
+    parked: true,
   },
   {
     type: 'lessonsPage',
@@ -508,12 +524,14 @@ export const PENDING: readonly PendingEntry[] = [
     fields: ['faq[]'],
     where: 'Lessons, questions',
     what: 'the questions parents ask',
+    parked: true,
   },
   {
     type: 'lessonsPage',
     condition: 'count(faq[!defined(answer)]) > 0',
     where: 'Lessons, questions',
     what: 'an answer',
+    parked: true,
   },
   ...takePartRows('lessonsPage', 'Lessons, take part'),
 
@@ -523,12 +541,14 @@ export const PENDING: readonly PendingEntry[] = [
     fields: ['argument'],
     where: 'Collective, the argument',
     what: 'why culture and sustainability sit together, in your words',
+    parked: true,
   },
   {
     type: 'collectivePage',
     fields: ['voice'],
     where: 'Collective, one voice',
     what: 'the quote and who said it',
+    parked: true,
   },
   ...takePartRows('collectivePage', 'Collective, take part'),
   {
@@ -712,6 +732,7 @@ export const PENDING: readonly PendingEntry[] = [
     edition: 'past',
     where: 'Impact, Odunde as civic infrastructure',
     what: 'the number of vendors hosted',
+    parked: true,
   },
   {
     type: 'impactPage',
@@ -833,7 +854,7 @@ export const PENDING: readonly PendingEntry[] = [
   },
 ];
 
-export const PRESENCE: readonly PresenceEntry[] = [
+const REGISTER_PRESENCE: readonly PresenceEntry[] = [
   // The page shows active zones only (festivalPageQuery), so the count skips the inactive ones.
   {
     type: 'zone',
@@ -929,8 +950,25 @@ export const PRESENCE: readonly PresenceEntry[] = [
     filter: `${COLLECTIVE} && defined(start) && ((defined(end) && dateTime(end) > dateTime(now())) || (!defined(end) && dateTime(start) > dateTime(now()) - 60 * 60 * 24))`,
     where: COLLECTIVE_NAME,
     what: 'the next events',
+    parked: true,
   },
 ];
+
+/**
+ * The register holds every row, asked for or parked (`REGISTER_ROWS`, `REGISTER_PRESENCE`). These two are
+ * the rows the site and the To do ask for.
+ */
+export const PENDING: readonly PendingEntry[] = REGISTER_ROWS.filter((row) => !row.parked);
+export const PRESENCE: readonly PresenceEntry[] = REGISTER_PRESENCE.filter((row) => !row.parked);
+
+/** The rows set aside for now, kept beside their neighbours so each returns by losing one property. */
+export const PARKED: {
+  readonly rows: readonly PendingEntry[];
+  readonly presence: readonly PresenceEntry[];
+} = {
+  rows: REGISTER_ROWS.filter((row) => row.parked),
+  presence: REGISTER_PRESENCE.filter((row) => row.parked),
+};
 
 function fieldCondition(field: string): string {
   if (field.endsWith('[]')) {
@@ -1042,11 +1080,29 @@ export const COLLECTIVE_VOICE_SLOT: VoiceSlot = {
  * `[]` answers the row for one of its items missing a value.
  */
 export function pendingWhat(type: string, field: string, kind?: string): string | undefined {
-  const rows = PENDING.filter((entry) => entry.type === type && entry.fields?.includes(field));
+  return whatIn(PENDING, type, field, kind);
+}
+
+/**
+ * The wording a field's row carries whether the row is asked for or parked. A story reads it to show
+ * the note a part draws once a parked row is asked again; a page reads `pendingWhat`, which answers
+ * for the asked rows only.
+ */
+export function registerWhat(type: string, field: string, kind?: string): string | undefined {
+  return whatIn(REGISTER_ROWS, type, field, kind);
+}
+
+function whatIn(
+  entries: readonly PendingEntry[],
+  type: string,
+  field: string,
+  kind?: string,
+): string | undefined {
+  const rows = entries.filter((entry) => entry.type === type && entry.fields?.includes(field));
   const found = rowForKind(rows, kind)?.what;
   if (found) return found;
   // One item of an array missing its value ("a practical fact") is a condition row on the array.
-  const conditions = PENDING.filter(
+  const conditions = entries.filter(
     (entry) => entry.type === type && entry.condition?.includes(`${field}[`),
   );
   return rowForKind(conditions, kind)?.what;
@@ -1088,8 +1144,20 @@ export function presenceWhat(
   type: string,
   kind?: string,
 ): { what: string; minimum: number } | undefined {
+  return presenceIn(PRESENCE, type, kind);
+}
+
+/** The presence row's wording and count whether the row is asked for or parked, as `registerWhat` answers. */
+export function registerPresenceWhat(
+  type: string,
+  kind?: string,
+): { what: string; minimum: number } | undefined {
+  return presenceIn(REGISTER_PRESENCE, type, kind);
+}
+
+function presenceIn(entries: readonly PresenceEntry[], type: string, kind?: string) {
   const entry = rowForKind(
-    PRESENCE.filter((row) => row.type === type),
+    entries.filter((row) => row.type === type),
     kind,
   );
   return entry ? { what: entry.what, minimum: entry.minimum } : undefined;

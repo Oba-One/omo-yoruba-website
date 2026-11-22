@@ -233,17 +233,11 @@ describe('buildImpactPage', () => {
     ]);
   });
 
-  it('reads the civic cells from the festival editions, each owed one as its chip', () => {
+  it('reads the civic cells from the festival editions, leaving out a parked figure it does not hold', () => {
     const owed = buildImpactPage(seeded, options).civic;
     expect(owed.prose).toHaveLength(1);
+    // The past edition's attendance and vendors hosted are parked (ADR 0058), so neither cell is drawn.
     expect(owed.cells).toEqual([
-      { label: 'Attendance', value: undefined, note: undefined, pending: 'the attendance figure' },
-      {
-        label: 'Vendors hosted',
-        value: undefined,
-        note: undefined,
-        pending: 'the number of vendors hosted',
-      },
       { label: 'Partners', value: undefined, pending: 'partner and funder names' },
       { label: 'Cost to attend', value: undefined, pending: 'the cost' },
     ]);

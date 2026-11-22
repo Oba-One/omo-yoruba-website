@@ -7,7 +7,8 @@
  * edition's vendor terms and the intro that counts them (ADR 0025), every photograph resolved to a CDN set
  * with its alt and framing, the head's title and description cleaned of stega, and the
  * `data-sanity` attributes for click-to-edit in draft mode. The parts every page singleton shares come
- * from `pageSkeleton`.
+ * from `pageSkeleton`. A practical fact without its value, the vendor terms and the past edition's
+ * attendance are parked (ADR 0058): each is left out until the Studio holds it.
  */
 import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat, presenceTotal, presenceWhat } from '@oy/content/pending';
@@ -25,7 +26,7 @@ import {
   pageSkeleton,
   pastYears,
 } from './page-skeleton';
-import { type BuildOptions, cleanText, resolveImage } from './view';
+import { type BuildOptions, cleanText, heldOrAsked, resolveImage } from './view';
 
 export type FestivalPageData = NonNullable<ClientReturn<typeof festivalPageQuery, unknown>>;
 
@@ -60,14 +61,18 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
 
   const date = longDate(edition?.start);
   // The hours need both ends of the day: a missing end is the registry's "the hours" (its row checks
-  // `end`), a missing start its "the date", so the chip always names the row that lists it.
+  // `end`), a missing start its "the date", so the chip always names the row that lists it. The hours
+  // are parked (ADR 0058): with no end the header and the glance leave them out.
   const hours = edition?.end ? editionHours(edition.start, edition.end) : undefined;
-  const hoursPending = edition?.end ? pending('start') : pending('end');
+  const hoursPending = edition?.end ? pending('start') : pendingWhat('event', 'end', KIND);
+  const hoursFact = hours ? { text: hours } : hoursPending ? { pending: hoursPending } : undefined;
   const cost = cleanText(edition?.cost) ? edition?.cost : undefined;
+  // Undefined while the registry does not ask for a row's value, and then a row without one is left out.
+  const planFactPending = pendingWhat('festivalPage', 'planYourVisit');
 
   const glance: GlanceFactView[] = [
     { label: 'Date', value: shortDate(edition?.start), pending: pending('start') },
-    { label: 'Time', value: hours, pending: hoursPending },
+    ...(hoursFact ? [{ label: 'Time', value: hours, pending: hoursPending }] : []),
     {
       label: 'Where',
       value: edition?.venue?.name || undefined,
@@ -103,7 +108,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       ...page.header,
       facts: [
         date ? { text: date } : { pending: pending('start') },
-        hours ? { text: hours } : { pending: hoursPending },
+        ...(hoursFact ? [hoursFact] : []),
         cost ? { text: cost } : { pending: pending('cost') },
       ],
     },
@@ -122,11 +127,12 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     plan: {
       facts: (data?.planYourVisit ?? [])
         .filter((fact) => fact !== null)
+        .filter((fact) => heldOrAsked(cleanText(fact.value), planFactPending))
         .map((fact) => ({
           _key: fact._key,
           label: fact.label,
           value: fact.value,
-          pending: pendingWhat('festivalPage', 'planYourVisit') ?? 'a practical fact',
+          pending: planFactPending,
         })),
       pending: pendingWhat('festivalPage', 'planYourVisit[]') ?? 'the practical facts',
     },
@@ -134,9 +140,10 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       ...page.takePart,
       intro: takePartIntro(page.takePart.rows.length),
       labels: layout.labels,
-      // Null while the next edition holds no terms, so the vendor row shows the registry's chip.
+      // Null while the next edition holds no terms, so the vendor row shows the registry's chip when
+      // the registry asks for them.
       vendorTerms: edition?.vendorTerms ?? null,
-      vendorTermsPending: pending('vendorTerms.fees'),
+      vendorTermsPending: pendingWhat('event', 'vendorTerms.fees', KIND),
     },
     past: {
       // While the gallery holds the albums the section keeps its words and the attendance, and the
@@ -144,7 +151,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       intro: data?.pastYearsIntro ?? undefined,
       // The attendance of the edition the photographs come from, or its chip while it is owed.
       attendance: figureSentence(past.edition?.attendance),
-      attendancePending: past.edition ? pending('attendance') : undefined,
+      attendancePending: past.edition ? pendingWhat('event', 'attendance', KIND) : undefined,
       ...past.view,
     },
     partners: {
