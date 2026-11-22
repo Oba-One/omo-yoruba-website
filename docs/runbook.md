@@ -669,15 +669,22 @@ checks, the branch must be up to date before merging, the rule applies to admini
 too, and force pushes and deletions are refused. So every change reaches `main` through a
 pull request, the owner's included. Required contexts (the job `name` values), checked
 5 September 2026: `Typecheck, lint, test`, `Build packages/web`, `Commit messages and PR
-title`, `Shell scripts`, `Storybook build and Chromatic`. Phase 2 adds the job `TypeGen drift`;
-add that context when the Phase 2 pull request merges. Phase 3 adds `Playwright and axe`. To inspect or change it:
+title`, `Shell scripts`, `Storybook build and Chromatic`. `TypeGen drift`, `Playwright and axe`
+and `agents-doctor / Agents doctor` run on every pull request but were never added, so GitHub
+does not enforce them (read 21 November 2026). `.agents/merge-policy.json` `requiredChecks` lists
+all eight, and `scripts/tests/merge-policy.test.sh` keeps that list equal to the CI jobs. The
+owner applies it with `dev merge-settings apply --execute omo-yoruba`, which adds a ruleset
+named `agents-merge-policy` beside this protection; retiring the classic protection is then his
+call. Until then GitHub still allows auto-merge and enforces only those five contexts, so agents
+never use `gh pr merge --auto` (AGENTS.md, Merging), and a merge by hand checks the pull request's
+own run of every job. To inspect it:
 
 ```bash
 gh api repos/Oba-One/omo-yoruba-website/branches/main/protection --jq '.required_status_checks.contexts'
 ```
 
-Adding a required check later means adding its job name to the `contexts` list with the same
-`PUT` call, body as in this file's history.
+Adding a required check later means adding its job to CI and its name to `requiredChecks`, then
+applying the merge settings again.
 
 ## Security headers
 

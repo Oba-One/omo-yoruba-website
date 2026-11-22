@@ -1,0 +1,212 @@
+# Verdicts for .claude/hooks/block-dangerous-git.sh: "block" or "allow", a tab, then the command.
+# A literal \n in a command stands for a newline (here-documents, line continuations).
+# The R144 spellings come first (docs/tickets/review/issues/144-*.md); each was allowed before.
+block	git clean -df
+block	git clean -xdf
+block	git checkout -- .
+block	git restore -- .
+block	git reset HEAD~1 --hard
+block	git -C . reset --hard
+block	git branch --delete --force x
+block	git push origin --delete x
+block	git push origin :x
+block	git push -uf origin main
+# Spellings blocked before, kept blocked.
+block	git clean -fd
+block	git checkout .
+block	git restore .
+block	git reset --hard
+block	git branch -D x
+block	git push -f
+block	git push --force-with-lease
+block	git push origin +main
+# Other forms of the same operations.
+block	git clean --force
+block	git clean -f -x -d
+block	git reset --hard origin/main
+block	git -c core.pager=cat reset --hard
+block	/usr/bin/git reset --hard
+block	git branch -d x
+block	git branch -Dr origin/x
+block	git push --force origin main
+block	git push origin main --force
+block	git push --force-with-lease=main origin main
+block	git push -d origin x
+block	git push --mirror
+block	git checkout -f main
+block	git checkout HEAD -- :/
+block	git restore --worktree --staged .
+block	git restore --source=HEAD~1 .
+block	git status && git reset --hard
+block	git status; git clean -xdf
+block	echo hi | git checkout -- .
+block	bash -c "git reset --hard"
+block	(cd packages && git clean -xdf)
+block	FOO=1 git reset --hard
+# Abbreviations git accepts, newer verbs, digit clusters and config that changes a verb (review of PR 57).
+block	git reset --har
+block	git push --force-with origin main
+block	git push --del origin x
+block	git push --mirr
+block	git push --pru
+block	git branch --del y
+block	git clean --forc
+block	git checkout --forc main
+block	git switch -f main
+block	git switch --force main
+block	git switch --discard-changes main
+block	git push -4f origin main
+block	git --config-env core.x=HOME reset --hard
+block	git -c alias.nk='push --force' nk origin main
+block	git -c alias.nuke='branch -D' nuke z
+block	git -c clean.requireForce=false clean
+block	git -c remote.origin.push=+refs/heads/main:refs/heads/main push origin
+block	git reset \\n--hard
+block	git restore --staged --wor .
+block	git checkout ./.
+block	git checkout .//
+block	git checkout -- $PWD
+block	git checkout HEAD -- ':(top)'
+block	echo --hard | xargs git reset
+# Git that runs inside another command.
+block	sh -c 'git push -f'
+block	bash -lc "git clean -xdf"
+block	eval "git reset --hard"
+block	echo "$(git reset --hard)"
+block	echo `git clean -fdx`
+block	find . -name x -exec git checkout -- . \;
+block	bash <<'EOF'\ngit reset --hard\nEOF
+block	timeout 5 git push --force
+block	sudo -u x git reset --hard
+block	env -i git reset --hard
+block	{ git reset --hard; }
+block	if true; then git clean -fd; fi
+# Shells fed by options, stdin, pipes, here-strings and process substitution (verification of PR 57).
+block	bash -o pipefail -c 'git reset --hard'
+block	bash -euo pipefail <<'EOF'\ngit reset --hard\nEOF
+block	bash -c -- 'git reset --hard'
+block	bash -s -- x <<'EOF'\ngit reset --hard\nEOF
+block	echo git reset --hard | bash
+block	cat <<'EOF' | bash\ngit reset --hard\nEOF
+block	bash <<< 'git reset --hard'
+block	bash <(echo git reset --hard)
+block	ssh host 'git reset --hard'
+block	node -e "require('child_process').execSync('git reset --hard')"
+block	git submodule foreach 'git reset --hard'
+# Wrappers the guard does not need to know by name.
+block	xcrun git reset --hard
+block	arch -arm64 git reset --hard
+block	mise exec -- git reset --hard
+block	script -q /dev/null git reset --hard
+block	exec -a foo git reset --hard
+block	env -P /usr/bin git reset --hard
+block	sudo -D /tmp git reset --hard
+block	eval -- 'git reset --hard'
+block	function f { git reset --hard; }; f
+block	coproc git reset --hard
+block	watch -n 5 git reset --hard
+block	nohup git reset --hard
+block	command git reset --hard
+block	env -S 'git reset --hard'
+block	find . -execdir git reset --hard \;
+block	git push --force-if-includes origin main
+# Redirections, ANSI-C quoting, expansions and brace lists.
+block	git 2>&1 reset --hard
+block	git 2>/dev/null reset --hard
+block	git </dev/null reset --hard
+block	git &>/dev/null reset --hard
+block	git 2>&1 push origin +main
+block	$'git' reset --hard
+block	git reset $'--hard'
+block	git reset $"--hard"
+block	git reset ${x:---hard}
+block	git {reset,--hard}
+block	git reset --{hard,}
+block	git push origin $'+main'
+# Config that renames or loosens a verb, by variable or by git config.
+block	GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=alias.nk GIT_CONFIG_VALUE_0='reset --hard' git nk
+block	GIT_CONFIG_PARAMETERS="'alias.nk=reset --hard'" git nk
+block	git -c remote.origin.mirror=true push origin
+block	git config alias.nk 'reset --hard' && git nk
+block	git config clean.requireForce false && git clean -xd
+# Whole-tree pathspecs by exclusion, expansion, glob or file.
+block	git checkout -- ':!nothing'
+block	git checkout -- ':(exclude)x'
+block	git checkout -- "$PWD/"
+block	git checkout -- "$(git rev-parse --show-toplevel)"
+block	git restore '**'
+block	git restore --pathspec-from-file=list.txt
+# Round three of the PR 57 review: pipes into shells, xargs verbs, $'...' escapes, glued options.
+block	printf 'git reset --hard\\n' | bash
+block	echo "git reset --hard" | sh
+block	echo reset --hard | xargs git
+block	cat <<'EOF' | xargs git\nreset --hard\nEOF
+block	$'\x67it' reset --hard
+block	git reset $'\x2d-hard'
+block	git rebase --exec='git clean -fdx' --root
+block	awk 'BEGIN{system("git reset --hard")}'
+block	(( x = 1 << n ))\ngit reset --hard
+block	git checkout -- ~+
+block	git checkout -- sub/..
+block	git checkout -- ':(glob)**'
+block	git restore -- '*.*'
+# Text that only mentions a destructive command is not run, so it is allowed.
+allow	cd "$(git rev-parse --show-toplevel)"
+allow	SHA=$(git rev-parse HEAD)
+allow	export SHA="$(git rev-parse HEAD)"
+allow	bunx vitest related --run $(git diff --name-only main)
+allow	for f in $(git diff --name-only); do echo "$f"; done
+allow	node x.mjs "$(git rev-parse HEAD)"
+allow	git rebase "$(git merge-base HEAD main)"
+allow	git push -u origin "$(git branch --show-current)"
+allow	git push origin "$BRANCH"
+allow	git checkout -b "feat/${name}"
+allow	git restore "$file"
+allow	git commit -m "docs: explain why rebase never runs git reset --hard"
+allow	timeout 10 grep "git reset --hard" docs
+allow	env LC_ALL=C grep "git push -f" docs
+allow	git config --get alias.co
+allow	gh pr create --title "Fix the sh hook" --body-file - <<'EOF'\nnever git push -f\nEOF
+allow	git commit -m "$(cat <<'EOF'\nfix: the guard blocks git branch -D x\nEOF\n)"
+allow	gh pr create --body "$(cat <<'EOF'\n1) never run git push -f\nEOF\n)"
+allow	bash scripts/tests/git-guard.test.sh
+allow	bash -c "bun run check"
+allow	ssh host 'git status'
+allow	git push -u origin HEAD
+allow	git config user.name
+allow	(( x = 1 << 2 ))\ngit status
+allow	git commit -m "fix: describe git reset --hard"
+allow	git commit -F - <<'EOF'\nfix: the guard blocks git branch -D x\nEOF
+allow	gh pr create --body "never git push -f"
+allow	grep -rn "git reset --hard" docs
+allow	rg 'git checkout \.'
+allow	echo "run git restore ."
+allow	cat <<EOF > notes.txt\ngit clean -xdf\nEOF
+allow	git log --grep="reset --hard"
+allow	git status # git reset --hard
+allow	git switch main
+allow	git switch -c new-branch
+allow	git push --follow-tags
+allow	git push --no-verify
+allow	git branch --list
+# Everyday commands stay allowed.
+allow	git status
+allow	git push
+allow	git push -u origin kit
+allow	git push origin kit:kit
+allow	git reset --soft HEAD~1
+allow	git reset HEAD file.txt
+allow	git clean -n
+allow	git clean -nd
+allow	git branch --show-current
+allow	git branch -vv
+allow	git checkout -b feature
+allow	git checkout main
+allow	git checkout -- packages/web/src/file.ts
+allow	git restore packages/web/src/file.ts
+allow	git restore --staged .
+allow	git diff --stat
+allow	git log --oneline -5
+allow	git worktree list
+allow	ls -la
+allow	bun run check

@@ -127,12 +127,50 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   the owner before any pivot. Same for anything in `docs/design/AGENT-DOCS.md` section 8.
 - Conflicts: `oy-components.css` beats `_ds/`; the Build Brief's polish passes beat the
   wireframes; the handoff beats the design system readme. Say which you followed.
-- Sessions: review the diff with the code-review skill before every commit; conventional
-  commit messages; write a handoff before ending and save it to
-  `docs/plans/handoff-<phase>.md`. In Claude Code these are `/code-review` and `/handoff`
-  from the Matt Pocock plugin; other tools get the same skills with
-  `npx skills add mattpocock/skills`.
+- Sessions: review the diff with the `review` skill (`.agents/skills/review`, which reads
+  `.agents/adapter.md`) before every commit; conventional commit messages; write a handoff
+  before ending and save it to `docs/plans/handoff-<phase>.md` (`/handoff` from the Matt Pocock
+  plugin in Claude Code).
 - No em dashes anywhere in this repo: prose, comments, UI copy, commit messages.
+
+## Merging
+
+Every merge into `main` is a production deploy: Vercel serves www.omoyorubasocal.org from it, and
+there is no integration branch. `.agents/merge-policy.json` sorts a change into a tier by the paths
+it touches (the highest tier any path reaches wins) and names the proof each tier needs:
+
+| Tier | What | Proof, recorded under Verification in the pull request body | Who merges |
+| --- | --- | --- | --- |
+| Critical | enquiry and form handling (actions, the form bridge and components, the enquiry and subscriber schema, the Studio's enquiry inputs and roles), the dataset and every content script, Sanity and Vercel config, CSP and caching, the link and Zeffy guards, dependencies and toolchain, the git guard, `scripts/` and CI | `bun run check`, `bun run build` and `bun e2e` (CI green on the head), and an adversarial review by a fresh agent with its findings addressed | afo |
+| Sensitive | the content model, queries, routes, the Pending registry, agent config, test configs | `bun run check` and an adversarial review by a fresh agent with its findings addressed | the agent, on that proof |
+| Routine | everything else | the targeted check (`bunx vitest related --run <path>`, or the narrowest command that exercises the change) and CI green | the agent, on that proof |
+
+A fresh agent is one briefed with the diff and the tier's risks, not the author's conclusions.
+Nothing auto-merges, and agents never use `gh pr merge --auto`. Merge with the reviewed head as the expected head, `gh pr merge <n> --squash --match-head-commit
+<sha>`, and stop if the head has moved. No Merge Gate check enforces this; the pull request body
+is the record.
+
+## Rules and their enforcers
+
+| Rule | Enforcer |
+| --- | --- |
+| No em dashes in prose, code, copy or commits | lint: `packages/lint` em dash check (pre-commit, `bun run lint`, CI); commit-msg hook and CI's Commit messages job |
+| Full diacritics on every Yoruba word | lint: the Yoruba diacritics check; Studio validation and the content-lint Function for editors |
+| Colours come from `@oy/tokens` only | lint: the colour literal check |
+| Conventional commit subjects | hook: commit-msg; CI: `scripts/check-commits.sh` |
+| `bun run test` and `bun run build`, never `bun test` or `bun build` | guard: `.agents/policy.json` (machine guards, local sessions only) |
+| `docs/design` is a read-only reference | guard: `.agents/policy.json` (local sessions only); review |
+| `sanity.types.ts` is generated, never edited | guard: `.agents/policy.json` (local sessions only); CI: TypeGen drift |
+| No destructive git (forced push, hard reset, clean, branch deletion, whole-tree checkout or restore) | hook: `.claude/hooks/block-dangerous-git.sh` for Claude Code and Codex, a seatbelt that a script or variable can still get past; test: `scripts/tests/git-guard.test.sh` in CI |
+| Enquiries only ever in a private dataset | build: `scripts/check-dataset-private.mjs` in every Vercel build and wizard stage 3; test: `scripts/tests/dataset-guard.test.sh` in CI |
+| Every required-for-launch field is in the Pending registry | test: `packages/content/src/pending.test.ts` |
+| Every content type has a Presentation location | test: `packages/content/src/studio/presentation.test.ts` |
+| Node and Bun pins agree, and Vercel builds through the pinned Bun | `scripts/check-toolchain-pins.sh` in `bun run check` |
+| WCAG AA on every page | CI: Playwright and axe |
+| The agent kit's contract (this file, `.agents/`, skills, hooks, PR template, CODEOWNERS) | CI: Agents Doctor, which checks their shape only |
+| The merge policy agrees with CODEOWNERS, the CI jobs and the tree | test: `scripts/tests/merge-policy.test.sh` in CI |
+| Proof by tier before a merge | review: the pull request body (Merging, above) |
+| Never invent content; the design rules in "Rules that lint cannot catch" | review |
 
 ## Agent skills
 
@@ -163,9 +201,12 @@ Single-context: `CONTEXT.md` at the root and `docs/adr/`. See `docs/agents/domai
 
 ## Pointers
 
-- `.claude/skills/`: this repo's skills `oy-design-system`, `oy-component`, `oy-page`,
-  `oy-content-model`, `oy-content-ops`, `oy-voice` (model-invoked) and `oy-release`
-  (user-invoked), plus the third-party `git-guardrails-claude-code` (Claude Code only).
+- `.claude/skills/` (`.agents/skills` links to it): this repo's skills `oy-design-system`,
+  `oy-component`, `oy-page`, `oy-content-model`, `oy-content-ops`, `oy-voice` (model-invoked)
+  and `oy-release` (user-invoked), plus the kit's `review`, `debug`, `plan`, `ship` and
+  `research`, copied from dev-surfaces `agents/kit/skills`, which read `.agents/adapter.md`.
+- `.agents/merge-policy.json`: tiers, required checks, merge method. `.agents/policy.json`:
+  command and path rules for the shared guards.
 
 - `CONTEXT.md`: vocabulary. `docs/adr/`: decisions. `docs/plans/wayfinder.md`: the map
   and the owner's open decisions. `docs/research/`: verified library facts.

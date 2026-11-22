@@ -1,0 +1,71 @@
+# Code owners by merge tier, mirroring .agents/merge-policy.json; scripts/tests/merge-policy.test.sh
+# fails when the two differ. This records ownership; it does not gate merges, because GitHub
+# refuses approval of one's own pull request and the owner is the only collaborator. The tier rule
+# in AGENTS.md (Merging) does the gating.
+
+# Critical: enquiry and form handling, the dataset and content scripts, Sanity and Vercel config,
+# CSP and caching, the link and Zeffy guards, dependencies and toolchain, the git guard, scripts
+# and CI
+/packages/web/src/actions/                           @Oba-One
+/packages/web/src/lib/forms/                         @Oba-One
+/packages/web/src/lib/sanity/                        @Oba-One
+/packages/web/src/middleware.ts                      @Oba-One
+/packages/web/src/pages/api/                         @Oba-One
+/packages/web/src/components/FormBridge.astro        @Oba-One
+/packages/web/src/components/ZeffyEmbed.astro        @Oba-One
+/packages/web/src/components/ZeffyFrame.astro        @Oba-One
+/packages/web/src/layouts/SiteLayout.astro           @Oba-One
+/packages/web/src/lib/cache-policy.ts                @Oba-One
+/packages/web/src/lib/cache.ts                       @Oba-One
+/packages/web/src/lib/csp.ts                         @Oba-One
+/packages/web/astro.config.ts                        @Oba-One
+/packages/content/src/enquiry-*                      @Oba-One
+/packages/content/src/schema/documents/enquiry.ts    @Oba-One
+/packages/content/src/schema/documents/subscriber.ts @Oba-One
+/packages/content/src/studio/roles.ts                @Oba-One
+/packages/content/src/studio/config.ts               @Oba-One
+/packages/content/src/studio/document-options.ts     @Oba-One
+/packages/content/src/studio/structure.ts            @Oba-One
+/packages/content/scripts/                           @Oba-One
+/packages/content/functions/                         @Oba-One
+/sanity.blueprint.ts                                 @Oba-One
+/packages/ui/src/core/ActionButton/action.ts         @Oba-One
+/packages/ui/src/cards/TicketTierCard/tickets.ts     @Oba-One
+/packages/ui/src/forms/                              @Oba-One
+/packages/content/src/studio/enquiry-*               @Oba-One
+/packages/content/sanity.config.ts                   @Oba-One
+/packages/content/sanity.cli.ts                      @Oba-One
+/packages/web/sanity.config.ts                       @Oba-One
+/.sanity/                                            @Oba-One
+package.json                                         @Oba-One
+/bun.lock                                            @Oba-One
+/.mise.toml                                          @Oba-One
+/.node-version                                       @Oba-One
+/bunfig.toml                                         @Oba-One
+/.github/dependabot.yml                              @Oba-One
+vercel.json                                          @Oba-One
+/scripts/                                            @Oba-One
+/.claude/hooks/                                      @Oba-One
+/.codex/hooks.json                                   @Oba-One
+/.github/workflows/                                  @Oba-One
+/.github/actions/                                    @Oba-One
+
+# Sensitive: the content model, queries, routes, the Pending registry, agent config, test configs
+/packages/content/src/schema/      @Oba-One
+/packages/content/src/queries/     @Oba-One
+/packages/content/src/routes.ts    @Oba-One
+/packages/content/src/pending.ts   @Oba-One
+/packages/content/schema.json      @Oba-One
+/AGENTS.md                         @Oba-One
+/CLAUDE.md                         @Oba-One
+/.agents/                          @Oba-One
+/.claude/                          @Oba-One
+/.codex/                           @Oba-One
+/.github/CODEOWNERS                @Oba-One
+/.github/pull_request_template.md  @Oba-One
+/lefthook.yml                      @Oba-One
+/biome.json                        @Oba-One
+/packages/web/playwright.config.ts @Oba-One
+/packages/web/lighthouserc.cjs     @Oba-One
+/.gitignore                        @Oba-One
+/.mcp.json                         @Oba-One

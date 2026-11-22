@@ -35,7 +35,6 @@ describe('isExcluded with the repo .lintignore', () => {
       expect(isExcluded('node_modules/astro/index.js', check)).toBe(true);
       expect(isExcluded('packages/web/dist/index.html', check)).toBe(true);
       expect(isExcluded('packages/web/.astro/types.d.ts', check)).toBe(true);
-      expect(isExcluded('.claude/skills/git-guardrails-claude-code/SKILL.md', check)).toBe(true);
       expect(isExcluded('packages/content/sanity.types.ts', check)).toBe(true);
     }
   });

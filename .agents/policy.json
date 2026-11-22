@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "commands": [
+    {
+      "id": "bun-test",
+      "pattern": "^(\\S*/)?bun test( |$)",
+      "action": "block",
+      "message": "Use `bun run test`: `bun test` is Bun's own runner, and this repository's tests run under Vitest."
+    },
+    {
+      "id": "bun-build",
+      "pattern": "^(\\S*/)?bun build( |$)",
+      "action": "block",
+      "message": "Use `bun run build`: `bun build` is Bun's bundler, not the site build."
+    }
+  ],
+  "paths": [
+    {
+      "id": "design-handoff",
+      "glob": "docs/design/**",
+      "action": "block",
+      "message": "docs/design is the design handoff, a read-only reference. Record a decision in docs/adr or AGENTS.md instead."
+    },
+    {
+      "id": "sanity-types",
+      "glob": "**/sanity.types.ts",
+      "action": "block",
+      "message": "sanity.types.ts is generated. Change the schema, then run `bun typegen`."
+    }
+  ],
+  "proof": { "commands": [] }
+}
