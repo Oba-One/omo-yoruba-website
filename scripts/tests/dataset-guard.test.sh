@@ -59,14 +59,18 @@ if [[ "$build_command" == *"run build:vercel" ]]; then pass "vercel.json builds 
 
 mkdir -p "$work/bin"
 printf '#!/usr/bin/env bash\ntouch "%s/astro-ran"\n' "$work" >"$work/bin/astro"
-chmod +x "$work/bin/astro"
+# After astro, the build checks its output for the old site's routes (ADR 0061); with no real build there
+# is no output, so a stand-in records that the check ran, and only after astro.
+printf '#!/usr/bin/env bash\n[[ "$*" == *check-old-site-routes.ts ]] && [[ -f "%s/astro-ran" ]] && touch "%s/routes-checked"\n' "$work" "$work" >"$work/bin/bun"
+chmod +x "$work/bin/astro" "$work/bin/bun"
 vercel_build() {
-  rm -f "$work/astro-ran"
+  rm -f "$work/astro-ran" "$work/routes-checked"
   (cd "$root/packages/web" && PATH="$work/bin:$PATH" FAKE_SANITY_DATASETS="$1" NODE_OPTIONS="--import=$fake_fetch" \
     PUBLIC_SANITY_PROJECT_ID=abc123 PUBLIC_SANITY_DATASET=development SANITY_API_READ_TOKEN="$token" \
     bash -c "$build_script" >/dev/null 2>&1)
 }
 if vercel_build "$private_dev" && [[ -f "$work/astro-ran" ]]; then pass "Vercel build runs astro on a private dataset"; else fail "Vercel build did not reach astro on a private dataset"; fi
+if [[ -f "$work/routes-checked" ]]; then pass "Vercel build checks the old site's routes after astro"; else fail "Vercel build did not check the old site's routes after astro"; fi
 if ! vercel_build "$public_dev" && [[ ! -f "$work/astro-ran" ]]; then pass "Vercel build refuses a public dataset before astro"; else fail "Vercel build went ahead on a public dataset"; fi
 
 # The wizard, run end to end in a copy of the tree with fake vercel, gh and browser openers.
