@@ -119,6 +119,8 @@ From `docs/design/README.md` section 3; that file is the source when in doubt.
   library parts and own no component styling. Colours come from `@oy/tokens` only.
 - Content: never invent content (no dates, prices, figures, names, quotes). Empty renders
   Pending, and every required-for-launch field is registered in `packages/content/src/pending.ts`.
+  A row marked `parked` there is asked for by nobody: the page leaves its block out while it is empty
+  (ADR 0058).
   Use the Sanity MCP for content and the schema for shape; an album's photographs in bulk go through
   `bun run import-album`, which saves a draft for the owner to publish.
 - Storybook: `.astro` components only. If the framework blocks a component, stop and ask
@@ -191,10 +193,10 @@ changed behavior and actual proof without inventing a new gate for routine edits
 
 ### Issue tracker
 
-Being retired (21 November 2026): the open items move to Linear once afo names a team, and
-`docs/tickets/` and `docs/plans/` go. Until then the open review and wayfinder tickets stay under
-`docs/tickets/`, labels bug, content, design, infra, later; add no new effort folders, plans or
-handoffs. See `docs/agents/issue-tracker.md`.
+The repository is the tracker: the open review and wayfinder tickets live under `docs/tickets/`,
+labels bug, content, design, infra, later. Nothing for this site goes to Linear (afo, 21 November
+2026). Add no new effort folders, plans or handoffs; a session's report goes in its pull request
+body. See `docs/agents/issue-tracker.md`.
 
 ### Domain docs
 

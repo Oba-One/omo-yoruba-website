@@ -12,7 +12,7 @@ import { otherWaySetting } from '@oy/content/giving';
 import { pendingWhat } from '@oy/content/pending';
 import type { donatePageQuery } from '@oy/content/queries';
 import type { ClientReturn } from '@sanity/client';
-import { glanceFacts, pageSkeleton, TAX_STATUS_CELL } from './page-skeleton';
+import { glanceFacts, impactHandoff, pageSkeleton, TAX_STATUS_CELL } from './page-skeleton';
 import { type BuildOptions, cleanText, oneLine, present, resolveImage, textOr } from './view';
 
 export type DonatePageData = NonNullable<ClientReturn<typeof donatePageQuery, unknown>>;
@@ -29,7 +29,7 @@ const pending = (field: string) => pendingWhat('donatePage', field) ?? 'this par
 const GIVE_NOW_TITLE = 'Give now';
 const LARGER_SCALE_TITLE = 'Giving at a larger scale';
 
-/** The box under the trust block: its promise of a source line holds only while Impact shows them. */
+/** The lead of the box under the trust block, which leads to Impact (`impactHandoff`). */
 const IMPACT_HANDOFF = 'What your gift has built so far';
 
 const EIN_PENDING = pendingWhat('siteSettings', 'ein') ?? 'EIN';
@@ -128,11 +128,7 @@ export function buildDonatePage(data: DonatePageData | null, options: BuildOptio
         // The receipt is the give-now fact of that name; a page without one leaves the cell out.
         ...(receipt ? [{ label: 'Receipt', value: receipt.value, pending: receipt.pending }] : []),
       ],
-      // Impact's `sources` option decides whether its numbers carry source lines (spec Q5).
-      handoff:
-        cleanText(data?.impactSources) === 'hidden'
-          ? `${IMPACT_HANDOFF}.`
-          : `${IMPACT_HANDOFF}, with a source line under every number.`,
+      handoff: impactHandoff(IMPACT_HANDOFF, data?.impactSources),
     },
     edit: page.layoutEdit,
   };

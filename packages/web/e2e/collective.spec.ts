@@ -1,4 +1,4 @@
-import { pendingWhat, presenceWhat } from '@oy/content/pending';
+import { pendingWhat } from '@oy/content/pending';
 import { expect, type Page, test } from '@playwright/test';
 import {
   axeViolations,
@@ -11,7 +11,8 @@ import {
 
 // The Yoruba Cultural Collective in the prototype's order (ROUTES section 4), each block present whether
 // the Studio holds its content or renders Pending: CI runs with a placeholder project, where every read
-// answers null. Green stays inside the page's main (spec Q12), and none of the register's inventions
+// answers null. The argument, the events and the voice are parked (ADR 0058): each of those sections is
+// drawn only once the Studio holds something for it. Green stays inside the page's main (spec Q12), and none of the register's inventions
 // (the argument, the voice, the volunteer skills) stands in for an owed fact.
 
 /** Every colour a green token resolves to, as the browser writes computed colours. */
@@ -57,11 +58,18 @@ test.describe('the Yoruba Cultural Collective page', () => {
     const order = await page.evaluate(() =>
       Array.from(document.querySelectorAll('main > *')).map((el) => el.id),
     );
-    expect(order.slice(0, 2)).toEqual(['top', 'why']);
-    const events = await page.locator('body').getAttribute('data-events');
-    expect(order.includes('events')).toBe(events !== 'hidden');
-    if (events !== 'hidden') expect(order[2]).toBe('events');
-    expect(order.slice(-2)).toEqual(['voice', 'take-part']);
+    expect(order[0]).toBe('top');
+    expect(order.at(-1)).toBe('take-part');
+    // The parked sections keep the prototype's places when they are drawn.
+    const parked = ['why', 'events', 'voice'];
+    expect(order.filter((id) => parked.includes(id))).toEqual(
+      parked.filter((id) => order.includes(id)),
+    );
+    if (order.includes('why')) expect(order[1]).toBe('why');
+    if (order.includes('voice')) expect(order.at(-2)).toBe('voice');
+    if ((await page.locator('body').getAttribute('data-events')) === 'hidden') {
+      expect(order).not.toContain('events');
+    }
     await expect(page.locator('header#top.oy-phead--slim')).toHaveCount(1);
     expect(await page.locator('body').getAttribute('data-green')).toMatch(/^(signal|strong)$/);
     // The nav marks Programs as the current section for a program's own page.
@@ -103,62 +111,49 @@ test.describe('the Yoruba Cultural Collective page', () => {
     await expect(partner).toHaveAccessibleName('Partner with the Collective');
     await expect(partner).toHaveAttribute('data-enquiry', 'sponsor');
     await expectEnquiryRoundTrip(page, partner);
-    const events = (await page.locator('body').getAttribute('data-events')) !== 'hidden';
+    // "See what is on" opens the events section, so it is there only while the section is.
+    const events = (await page.locator('#events').count()) === 1;
     await expect(actions).toHaveCount(events ? 2 : 1);
     await expect(header.locator('a[href="#events"]')).toHaveCount(events ? 1 : 0);
   });
 
-  test('sets why culture and sustainability sit together beside the photograph, or their chips', async ({
+  test('sets why culture and sustainability sit together beside the photograph, once it is written', async ({
     page,
   }) => {
     await page.goto('/programs/cultural-collective');
     const why = page.locator('#why');
+    // Parked (ADR 0058): no chip stands in for the argument, so the section waits for it unseen.
+    if ((await why.count()) === 0) return;
     await expect(why.locator('h2')).toHaveText('Why culture and sustainability sit together');
-    const prose = why.locator('.oy-split-main .oy-prose');
-    if ((await prose.count()) === 0) {
-      await expect(why.locator('.oy-split-main .oy-pend')).toContainText(
-        pendingWhat('collectivePage', 'argument') ?? '',
-      );
-    }
+    await expect(why.locator('.oy-split-main .oy-prose')).toHaveCount(1);
+    await expect(why.locator('.oy-split-main .oy-pend')).toHaveCount(0);
     await expect(why.locator('.oy-split-aside figure')).toHaveCount(1);
-    expectNoMockWhileOwed(await why.innerText(), [
-      [
-        /about thirty members|farm from the market|without asking permission/i,
-        pendingWhat('collectivePage', 'argument'),
-      ],
-    ]);
   });
 
-  test('lists the Collective events still to come, or names what is owed, each row asking to join', async ({
+  test('lists the Collective events still to come, each row asking to join, and no section without one', async ({
     page,
   }) => {
     await page.goto('/programs/cultural-collective');
     const section = page.locator('#events');
     if ((await page.locator('body').getAttribute('data-events')) === 'hidden') {
       await expect(section).toHaveCount(0);
+    }
+    // Parked (ADR 0058): with no event to list the section and the header's link to it are left out.
+    if ((await section.count()) === 0) {
       await expect(page.locator('header#top a[href="#events"]')).toHaveCount(0);
       return;
     }
     await expect(section.locator('h2')).toHaveText('Collective events');
     const rows = section.locator('li.oy-lrow--event');
-    if ((await rows.count()) === 0) {
-      await expect(section.locator('.oy-pend-line')).toContainText(
-        presenceWhat('event', 'collective')?.what ?? '',
-      );
-    }
+    expect(await rows.count()).toBeGreaterThan(0);
+    await expect(section.locator('.oy-pend-line')).toHaveCount(0);
     // No collective event is dated in either dataset yet, so this loop runs once one is.
     for (const trigger of await rows.locator('a[data-enquiry="contact"]').all()) {
       await expectEnquiryRoundTrip(page, trigger);
     }
     const text = await section.innerText();
-    // The prototype's lead and rows are invented (spec Q15, the register).
+    // The prototype's lead is invented (spec Q15, the register).
     expect(text).not.toMatch(/Everyone is welcome/);
-    expectNoMockWhileOwed(text, [
-      [
-        /solar site walk|Black soap and shea|planning 2027|Vision Theatre annex|Twelve places/i,
-        presenceWhat('event', 'collective')?.what,
-      ],
-    ]);
   });
 
   test('sets each initiative in its own section, each fact its value or its own chip, none invented', async ({
@@ -210,25 +205,17 @@ test.describe('the Yoruba Cultural Collective page', () => {
     ]);
   });
 
-  test('gives the one voice as the large quote, or waits for it under its chip', async ({
+  test('gives the one voice as the large quote, once a collective testimonial is linked', async ({
     page,
   }) => {
     await page.goto('/programs/cultural-collective');
     const figure = page.locator('#voice figure.oy-quote');
+    // Parked (ADR 0058): no slot stands in for the quote, so the section waits for it unseen.
+    if ((await figure.count()) === 0) return;
     await expect(figure).toHaveCount(1);
     await expect(figure.locator('blockquote')).not.toBeEmpty();
-    if ((await figure.getAttribute('data-pending')) === 'true') {
-      await expect(figure.locator('.oy-pend').first()).toContainText(
-        pendingWhat('collectivePage', 'voice') ?? '',
-      );
-      await expect(figure.locator('figcaption')).toHaveText(/^Name pending/);
-    }
-    expectNoMockWhileOwed(await figure.innerText(), [
-      [
-        /Olumide Ayanwale|did not separate the farm|keeping ourselves/i,
-        pendingWhat('collectivePage', 'voice'),
-      ],
-    ]);
+    await expect(figure).not.toHaveAttribute('data-pending', 'true');
+    await expect(figure.locator('.oy-pend')).toHaveCount(0);
   });
 
   test('keeps one gold action per screen view', async ({ page }) => {

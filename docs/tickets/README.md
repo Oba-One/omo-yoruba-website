@@ -8,4 +8,4 @@ Local Markdown issue tracker. Conventions and labels: `docs/agents/issue-tracker
 - `phase-<N>/spec.md` and `studio-simplification/spec.md`: the specs the ADRs cite. The phase
   tickets themselves were closed and deleted on 21 November 2026 (git history keeps them).
 
-Being retired: the open items move to Linear once a team is named (`docs/agents/issue-tracker.md`).
+The repository is the tracker for this site; nothing goes to Linear (`docs/agents/issue-tracker.md`).

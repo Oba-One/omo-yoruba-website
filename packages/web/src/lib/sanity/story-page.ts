@@ -9,7 +9,7 @@
  * Pending line, Reach us (the contact facts and who receives a message, the urgent line only with a phone),
  * the take-part rows with the lead that counts them, and the `data-sanity` attributes in draft mode.
  */
-import { GENERAL_CONTACT_PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
+import { askedFor, GENERAL_CONTACT_PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { storyPageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
@@ -117,6 +117,11 @@ export function buildStoryPage(data: StoryPageData | null, options: BuildOptions
         address: settings?.address ?? undefined,
       },
       contact: { name: settings?.general?.name ?? undefined },
+      // Who receives this is parked (ADR 0058): the organization answers, so the row waits for a name.
+      rows:
+        cleanText(settings?.general?.name) || askedFor(GENERAL_CONTACT_PENDING)
+          ? (['email', 'phone', 'address', 'name'] as const)
+          : (['email', 'phone', 'address'] as const),
       namePending: GENERAL_CONTACT_PENDING,
       // The prototype's urgent line needs a number to call.
       urgent: Boolean(phone),

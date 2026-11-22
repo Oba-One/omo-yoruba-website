@@ -5,12 +5,16 @@
  * Pending states in the registry's own wording. No cadence, age, fee, level, lesson step, teacher,
  * quote, status or date the register marks as invented.
  */
-import { pendingWhat, presenceWhat, TEACHER_EMAIL_PENDING } from '@oy/content/pending';
+import { registerPresenceWhat, registerWhat, TEACHER_EMAIL_PENDING } from '@oy/content/pending';
 import { PROGRAMS } from './homepage';
 import { PHOTOS } from './photos';
 
-/** The registry's own wording for a field, so a story never drifts from the chip the site shows. */
-const owed = (type: string, field: string, kind?: string) => pendingWhat(type, field, kind) ?? '';
+/**
+ * The registry's own wording for a field, so a story never drifts from the chip the site shows. A parked
+ * row keeps its wording (ADR 0058), so a story still shows the note a part draws once the row is asked
+ * again; the pages themselves leave a parked block out.
+ */
+const owed = (type: string, field: string, kind?: string) => registerWhat(type, field, kind) ?? '';
 
 /**
  * The four programs as the Programs hub shows them: the seeded cadence of the Lessons and no ages yet
@@ -291,7 +295,7 @@ export const ASK_TO_JOIN = {
 } as const;
 
 /** The registry's wordings for the Collective's events. */
-export const COLLECTIVE_EVENTS_PENDING = presenceWhat('event', 'collective')?.what ?? '';
+export const COLLECTIVE_EVENTS_PENDING = registerPresenceWhat('event', 'collective')?.what ?? '';
 export const EVENT_VENUE_PENDING = owed('event', 'venue.name', 'collective');
 
 /**

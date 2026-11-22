@@ -188,6 +188,8 @@ describe('buildGetInvolvedPage', () => {
       intro: 'A phone call or an email works just as well as any form on this page.',
       settings: { generalEmail: undefined, phone: undefined },
       contact: { name: undefined, responds: undefined },
+      // Who answers is parked (ADR 0058): no row asks for a name the settings do not hold.
+      rows: ['email', 'phone', 'responds'],
       namePending: GENERAL_CONTACT_PENDING,
       respondsPending: GENERAL_RESPONDS_PENDING,
     });
@@ -204,6 +206,7 @@ describe('buildGetInvolvedPage', () => {
     ).talk;
     expect(filled.settings).toEqual({ generalEmail: 'hello@example.org', phone: '[ Phone ]' });
     expect(filled.contact).toEqual({ name: '[ Name ]', responds: 'within [ days ]' });
+    expect(filled.rows).toEqual(['email', 'phone', 'name', 'responds']);
   });
 
   it('puts the edit attributes on the options and the photographs in draft mode only', () => {

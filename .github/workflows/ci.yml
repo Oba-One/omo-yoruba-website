@@ -1,8 +1,8 @@
 # CI on every pull request and on pushes to main. Spec: docs/design/QUALITY.md section 5.
 # Phase 0 wired: the check (typecheck, Biome, voice and colour lints, unit tests, toolchain
 # pins), the web build with a JS size summary, the commit message rules on pull requests,
-# and shellcheck on the repo scripts. Phase 1 added the Storybook build with Chromatic, split
-# into two jobs on 21 November 2026 so neither reports green without running.
+# and shellcheck on the repo scripts. Phase 1 added the Storybook build with Chromatic; the
+# owner dropped Chromatic on 21 November 2026 (ADR 0059), so the job only builds the Storybook.
 # Phase 2 added the TypeGen drift check. Phase 3 added Playwright with axe against the dev
 # server (preview deployments sit behind Vercel Authentication, so the suite runs locally on the
 # runner with the placeholder variables and intercepts the actions). Phase 4 added Lighthouse CI
@@ -155,53 +155,6 @@ jobs:
       - uses: ./.github/actions/setup-js
       - name: Build the Storybook (packages/ui/storybook-static)
         run: bun run --filter @oy/ui build-storybook
-      - name: Hand the build to the Chromatic job
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: storybook-static
-          path: packages/ui/storybook-static
-          if-no-files-found: error
-          retention-days: 3
-
-  # Its own job, so a green "Storybook build" never stands for a Chromatic run that did not
-  # happen. With no token it fails: stage 6 of scripts/setup-wizard.sh stores
-  # CHROMATIC_PROJECT_TOKEN as a repository secret. Dependabot pull requests read Dependabot
-  # secrets only, so the token is stored there too (gh secret set CHROMATIC_PROJECT_TOKEN --app
-  # dependabot), or they stay red. A fork's pull request sees no secrets and stays red. A green
-  # Chromatic means the build was uploaded; visual changes are reviewed in Chromatic itself.
-  chromatic:
-    name: Chromatic
-    needs: storybook
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-    steps:
-      - name: The token must be set
-        if: env.CHROMATIC_PROJECT_TOKEN == ''
-        shell: bash
-        run: |
-          echo "::error title=Chromatic did not run::CHROMATIC_PROJECT_TOKEN is not set. Run stage 6 of scripts/setup-wizard.sh to add the secret (and gh secret set CHROMATIC_PROJECT_TOKEN --app dependabot for Dependabot pull requests)."
-          exit 1
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # Chromatic reads the git history to find the baseline build for this branch.
-          fetch-depth: 0
-          persist-credentials: false
-      - name: The Storybook the build job made
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: storybook-static
-          path: packages/ui/storybook-static
-      - name: Publish to Chromatic (snapshots at 375 and 1440 from parameters.chromatic.modes)
-        uses: chromaui/action@f305ef908327aee3b80b0e6b3bbb60a742eaa049 # v18.13.6
-        with:
-          projectToken: ${{ env.CHROMATIC_PROJECT_TOKEN }}
-          workingDir: packages/ui
-          storybookBuildDir: storybook-static
-          # Visual changes are the owner's to accept in Chromatic; they do not fail CI.
-          exitZeroOnChanges: true
-          exitOnceUploaded: true
 
   e2e:
     name: Playwright and axe
