@@ -12,7 +12,7 @@ interface WebhookBody {
 }
 
 /**
- * The Sanity webhook target (wizard stage 7): projection `{_type, "slug": slug.current}`. Verifies
+ * The Sanity webhook target (wizard stage 6): projection `{_type, "slug": slug.current}`. Verifies
  * the signature, turns the document into the tags it affects (`cacheTagsFor`) and purges them
  * through the cache provider (ADR 0021): the type tag reaches every page that carries it, and
  * each route tag is purged as a path, which the Vercel provider maps to the path tag it attached

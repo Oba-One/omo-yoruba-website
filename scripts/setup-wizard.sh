@@ -187,7 +187,7 @@ finish() {
 # Replace the example below. Set TOTAL_STAGES to match the stages you write.
 # ──────────────────────────────────────────────────────────────────────────
 
-TOTAL_STAGES=7
+TOTAL_STAGES=6
 
 # Run from anywhere: every path below is relative to the repo root.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
@@ -350,16 +350,6 @@ fi
 pause
 
 # Stage 6
-stage "Chromatic: project token for CI"
-say "Chromatic snapshots every pull request's Storybook (Phase 1). CI needs the token as a GitHub secret."
-open_url "https://www.chromatic.com/start"
-step "Sign in with GitHub, choose 'Add project', pick this repository."
-step "Copy the project token it shows (starts with chpt_)."
-ask_secret CHROMATIC_PROJECT_TOKEN "Paste the Chromatic project token:"
-set_secret CHROMATIC_PROJECT_TOKEN "$CHROMATIC_PROJECT_TOKEN"
-pause
-
-# Stage 7
 stage "Sanity: publish webhook (after Phase 4)"
 say "The webhook purges the site's cache on publish. It needs /api/revalidate deployed first (Phase 4)."
 if confirm "Is /api/revalidate deployed to production yet?"; then
@@ -371,7 +361,7 @@ if confirm "Is /api/revalidate deployed to production yet?"; then
   step "Projection: {_type, \"slug\": slug.current}. Save."
   pause "Saved? Press Enter to finish."
 else
-  SKIPPED+=("Sanity webhook: re-run this wizard after Phase 4 and answer yes at stage 7")
+  SKIPPED+=("Sanity webhook: re-run this wizard after Phase 4 and answer yes at stage 6")
   note "Skipping the webhook for now."
 fi
 
