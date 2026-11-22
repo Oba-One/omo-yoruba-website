@@ -191,10 +191,10 @@ changed behavior and actual proof without inventing a new gate for routine edits
 
 ### Issue tracker
 
-Being retired (21 November 2026): the open items move to Linear once afo names a team, and
-`docs/tickets/` and `docs/plans/` go. Until then the open review and wayfinder tickets stay under
-`docs/tickets/`, labels bug, content, design, infra, later; add no new effort folders, plans or
-handoffs. See `docs/agents/issue-tracker.md`.
+The repository is the tracker: the open review and wayfinder tickets live under `docs/tickets/`,
+labels bug, content, design, infra, later. Nothing for this site goes to Linear (afo, 21 November
+2026). Add no new effort folders, plans or handoffs; a session's report goes in its pull request
+body. See `docs/agents/issue-tracker.md`.
 
 ### Domain docs
 
