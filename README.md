@@ -18,7 +18,7 @@ the site embeds at `/admin`. The stack is Astro 7 on Vercel, Sanity, Storybook a
 2. Run `bun install`. It installs every workspace and the git hooks.
 3. Put the environment in `packages/web/.env`. The owner's setup wizard,
    `bash scripts/setup-wizard.sh`, walks through the steps only a person can do (Sanity, Vercel,
-   Resend, PostHog, Chromatic) and writes the file. Otherwise copy `packages/web/.env.example` and
+   Resend, PostHog) and writes the file. Otherwise copy `packages/web/.env.example` and
    fill it in. The site needs `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET`. The content
    lives in the private `development` dataset: give the wizard `development` when it asks (its
    default, `production`, is empty until decision D3), and without the Viewer token

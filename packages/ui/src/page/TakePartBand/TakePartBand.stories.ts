@@ -31,7 +31,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The closing take-part band's rows from the page singleton: the accent and what the button opens follow each way in (vendor, sponsor, performer, volunteer, table and enrol open their form, give opens the Give Dialog, member the Join Dialog, updates goes to the newsletter form on the page); the chip is the way in's unless the row names its own; the title, the line and the button label are the row's own. The first working row carries the one gold action, never the give or the updates row; every other button is the outline, so a band shows one shape of button. The rows show in the Studio's order, and the label style is the page's `labels` option. On Odunde the vendor row adds the edition's vendor terms, Pending until the Studio holds them.",
+          "The closing take-part band's rows from the page singleton: the accent and what the button opens follow each way in (vendor, sponsor, performer, volunteer, table and enrol open their form, give opens the Give Dialog, member the Join Dialog, updates goes to the newsletter form on the page); the chip is the way in's unless the row names its own; the title, the line and the button label are the row's own. The first working row carries the one gold action, never the give or the updates row; every other button is the outline, so a band shows one shape of button. The rows show in the Studio's order, and the label style is the page's `labels` option. On Odunde the vendor row adds the edition's vendor terms, Pending until the Studio holds them when the page hands the registry's wording, and nothing in their place when it does not.",
       },
     },
   },
@@ -42,6 +42,12 @@ type Story = StoryObj<Args>;
 
 /** Odunde's four rows as the seed writes them, the vendor row first and its terms Pending. */
 export const Default: Story = {};
+
+/**
+ * Odunde's rows while the vendor terms are parked (ADR 0058): the page hands no wording, so the vendor
+ * row shows its line alone.
+ */
+export const VendorTermsParked: Story = { args: { vendorTermsPending: undefined } };
 
 /** The Gala's four rows: sponsor, table, volunteer, and the give row with its Donate, an outline like the rest. */
 export const Gala: Story = { args: { rows: GALA_TAKE_PART, vendorTerms: undefined } };

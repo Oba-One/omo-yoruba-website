@@ -8,9 +8,9 @@
  * for which way in leads (ADR 0042), and the label style is the page's `labels` option. The first row
  * with a working button carries the band's one gold action, never the give or the updates row; every
  * other button is the outline, so a band shows one shape of button (ADR 0056).
- * With `vendorTerms` the vendor row's line goes on with the edition's terms (`vendorTermsText`) and
- * the registry's chip while the fees or either date is missing, since the vendor form says they are
- * on the festival page. No rows renders the registry's Pending line.
+ * With `vendorTerms` the vendor row's line goes on with the edition's terms (`vendorTermsText`) and,
+ * when the page hands its wording, the registry's chip while the fees or either date is missing, since
+ * the vendor form says they are on the festival page. No rows renders the registry's Pending line.
  */
 import { canCarryGold, isWayIn, WAY_CHIPS, wayAction } from '@oy/content/take-part';
 import PathRow from '../../cards/PathRow/PathRow.astro';
@@ -40,7 +40,7 @@ interface Props {
    * while the edition holds none (the row then shows the chip); a page without it adds no terms.
    */
   vendorTerms?: VendorTermsLike | null;
-  /** The registry's wording while the fees or either date is missing. */
+  /** The registry's wording while the fees or either date is missing; without it no chip is drawn. */
   vendorTermsPending?: string;
   /** The registry's wording for no rows. */
   pending?: string;
@@ -53,7 +53,7 @@ const {
   rows,
   labels = 'column',
   vendorTerms,
-  vendorTermsPending = 'the vendor terms',
+  vendorTermsPending,
   pending = 'the ways in',
   rowPending = 'the way in',
   class: className,
@@ -91,8 +91,8 @@ const { text: terms, missing: termsMissing } = vendorTermsText(vendorTerms);
         return way === 'vendor' && vendorTerms !== undefined ? (
           <PathRow {...props}>
             {terms}
-            {terms && termsMissing && ' '}
-            {termsMissing && <Pending what={vendorTermsPending} />}
+            {terms && termsMissing && vendorTermsPending && ' '}
+            {termsMissing && vendorTermsPending && <Pending what={vendorTermsPending} />}
           </PathRow>
         ) : (
           <PathRow {...props} />
