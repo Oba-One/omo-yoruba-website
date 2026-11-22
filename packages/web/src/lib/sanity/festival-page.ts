@@ -61,16 +61,18 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
 
   const date = longDate(edition?.start);
   // The hours need both ends of the day: a missing end is the registry's "the hours" (its row checks
-  // `end`), a missing start its "the date", so the chip always names the row that lists it.
+  // `end`), a missing start its "the date", so the chip always names the row that lists it. The hours
+  // are parked (ADR 0058): with no end the header and the glance leave them out.
   const hours = edition?.end ? editionHours(edition.start, edition.end) : undefined;
-  const hoursPending = edition?.end ? pending('start') : pending('end');
+  const hoursPending = edition?.end ? pending('start') : pendingWhat('event', 'end', KIND);
+  const hoursFact = hours ? { text: hours } : hoursPending ? { pending: hoursPending } : undefined;
   const cost = cleanText(edition?.cost) ? edition?.cost : undefined;
   // Undefined while the registry does not ask for a row's value, and then a row without one is left out.
   const planFactPending = pendingWhat('festivalPage', 'planYourVisit');
 
   const glance: GlanceFactView[] = [
     { label: 'Date', value: shortDate(edition?.start), pending: pending('start') },
-    { label: 'Time', value: hours, pending: hoursPending },
+    ...(hoursFact ? [{ label: 'Time', value: hours, pending: hoursPending }] : []),
     {
       label: 'Where',
       value: edition?.venue?.name || undefined,
@@ -106,7 +108,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       ...page.header,
       facts: [
         date ? { text: date } : { pending: pending('start') },
-        hours ? { text: hours } : { pending: hoursPending },
+        ...(hoursFact ? [hoursFact] : []),
         cost ? { text: cost } : { pending: pending('cost') },
       ],
     },
