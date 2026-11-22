@@ -161,7 +161,7 @@ cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
           part="facts"
           settings={page.reach.settings}
           contact={page.reach.contact}
-          rows={['email', 'phone', 'address', 'name']}
+          rows={page.reach.rows}
           nameLabel="Who receives this"
           namePending={page.reach.namePending}
         />

@@ -115,7 +115,9 @@ describe('the rows of the To do', () => {
     for (const row of PARKED.rows) expect(asked.has(row), row.what).toBe(false);
     const counted = new Set(ADMINISTRATORS.stillToAdd.map(({ presence }) => presence));
     for (const row of PARKED.presence) expect(counted.has(row), row.what).toBe(false);
-    expect(UNPARKED.rows).toHaveLength(MEMBERS.rows.length + PARKED.rows.length);
+    // A parked row of an administrator's document (the general contact) stays out of a member's plan.
+    const forMembers = PARKED.rows.filter((row) => !ADMIN_ONLY_TYPES.has(rowDocumentType(row)));
+    expect(UNPARKED.rows).toHaveLength(MEMBERS.rows.length + forMembers.length);
     expect(UNPARKED.stillToAdd).toHaveLength(MEMBERS.stillToAdd.length + PARKED.presence.length);
   });
 

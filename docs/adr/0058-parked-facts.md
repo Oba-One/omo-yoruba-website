@@ -46,9 +46,10 @@ At the owner's word, from the assessment of that day ("Agree with all besides Ou
 | Collective | the argument | no Why culture and sustainability sit together section |
 | Collective | the one voice | no quote section |
 | Collective | the events still to come | no Collective events section, and no "See what is on" in the header |
+| Get Involved, Our Story | who answers the general inbox ("The organization will respond within a week to messages shared.") | no "Who answers" or "Who receives this" row; the reply time, "within a week", is published |
 | Gala | the next edition's dress code ("Hide it for now") | no Dress cell at a glance, and the line under the strip names the date and the price |
 
-Our Story is not touched: the owner will supply its details, so its rows stay asked.
+Our Story's own rows stay asked: the owner will supply its details. Its Reach us box loses only the general contact's name, which Get Involved shares.
 
 ## Consequences
 
@@ -68,3 +69,9 @@ Our Story is not touched: the owner will supply its details, so its rows stay as
 - The page-section stories still show each parked block's Pending state, in the registry's wording, so
   their Chromatic baselines do not move.
 - Cultural Exchange's rows (open work E27) can be parked the same way; they are not yet.
+- The general contact's name is a row on an administrator's document. Parking it leaves the pages, but the
+  administrators' row "named contacts, their emails and response times" still asks Organization details
+  for every role's name, the general one included. That row covers eight roles, none named yet, so it is
+  left as it is.
+- `askedFor` answers whether the registry asks for a row a page names by its constant wording
+  (`GENERAL_CONTACT_PENDING`) rather than through `pendingWhat`.
