@@ -11,6 +11,7 @@ import {
   IMPACT_SIX_PENDING,
   IMPACT_VOICE_SLOTS,
   OUTCOME_PENDING,
+  PARKED,
   PARTNERSHIPS_RESPONDS_PENDING,
   PENDING,
   type PendingEntry,
@@ -22,6 +23,8 @@ import {
   presenceFilter,
   presenceTotal,
   presenceWhat,
+  registerPresenceWhat,
+  registerWhat,
   rowDocumentType,
   TEACHER_EMAIL_PENDING,
 } from './pending';
@@ -126,7 +129,6 @@ describe('PENDING', () => {
     expect(covered('event', 'schedule[]')).toBe(true);
     expect(covered('zone', 'line')).toBe(true);
     expect(covered('stat', 'source')).toBe(true);
-    expect(covered('collectivePage', 'argument')).toBe(true);
     expect(covered('storyPage', 'founding')).toBe(true);
     expect(covered('galleryPage', 'creditsAndConsent')).toBe(true);
     expect(
@@ -137,6 +139,50 @@ describe('PENDING', () => {
           e.condition?.includes('creditConfirmed'),
       ),
     ).toBe(true);
+  });
+});
+
+describe('PARKED', () => {
+  it('holds the rows the launch does not wait for, each with its wording kept (ADR 0058)', () => {
+    expect(PARKED.rows.map((row) => `${row.where}: ${row.what}`)).toEqual([
+      'Odunde, at a glance: the hours',
+      'Odunde, vendor dialog: fees, deadline and permit rules',
+      'Odunde, past years: the attendance figure',
+      'Odunde, plan your visit: a practical fact',
+      'Gala, at a glance: the dress code',
+      'Lessons, levels: what each level covers',
+      'Lessons, levels: what the level covers',
+      'Lessons, questions: the questions parents ask',
+      'Lessons, questions: an answer',
+      'Collective, the argument: why culture and sustainability sit together, in your words',
+      'Collective, one voice: the quote and who said it',
+      'Impact, Odunde as civic infrastructure: the number of vendors hosted',
+    ]);
+    expect(PARKED.presence.map((row) => `${row.where}: ${row.what}`)).toEqual([
+      'Yoruba Cultural Collective: the next events',
+    ]);
+  });
+
+  it('is asked for by neither list, so no chip and no To do row names a parked fact', () => {
+    for (const row of PARKED.rows) expect(PENDING, row.what).not.toContain(row);
+    for (const row of PARKED.presence) expect(PRESENCE, row.what).not.toContain(row);
+    expect(pendingWhat('collectivePage', 'argument')).toBeUndefined();
+    expect(pendingWhat('event', 'vendorTerms.fees', 'festival')).toBeUndefined();
+    // What a page still owes beside a parked row keeps its chip.
+    expect(pendingWhat('festivalPage', 'planYourVisit[]')).toBe('the eight practical facts');
+    expect(pendingWhat('lessonsPage', 'learn')).toBe('what the lessons teach, in her words');
+  });
+
+  it('keeps a wording a story can read, asked or parked', () => {
+    expect(registerWhat('lessonsPage', 'faq')).toBe('an answer');
+    expect(registerWhat('event', 'attendance', 'festival')).toBe('the attendance figure');
+    expect(registerWhat('event', 'attendance', 'gala')).toBeUndefined();
+    expect(registerWhat('lessonsPage', 'learn')).toBe(pendingWhat('lessonsPage', 'learn'));
+    expect(registerPresenceWhat('event', 'collective')).toEqual({
+      what: 'the next events',
+      minimum: 1,
+    });
+    expect(registerPresenceWhat('zone')).toEqual(presenceWhat('zone'));
   });
 });
 
@@ -212,15 +258,20 @@ describe('presenceWhat', () => {
   });
 
   it("finds a row by kind as pendingWhat does, never answering one kind with another kind's row", () => {
-    expect(presenceWhat('event', 'collective')).toEqual({ what: 'the next events', minimum: 1 });
+    // The Collective's events are parked (ADR 0058), so no kind of event is counted.
+    expect(presenceWhat('event', 'collective')).toBeUndefined();
     expect(presenceWhat('event', 'gala')).toBeUndefined();
+    expect(presenceWhat('person', 'board')?.what).toBe("the board's names, roles and bios");
+    expect(presenceWhat('person', 'staff')?.what).toBe('the staff and volunteers to list');
   });
 });
 
 describe('the Collective events', () => {
   it("asks for a collective event's venue on its own row, and counts the events still to come", () => {
     expect(pendingWhat('event', 'venue.name', 'collective')).toBe('the venue');
-    const row = PRESENCE.find((entry) => entry.filter?.includes('kind == "collective"'));
+    // Parked (ADR 0058): the count keeps its filter for the day the events are asked for again.
+    expect(PRESENCE.some((entry) => entry.filter?.includes('kind == "collective"'))).toBe(false);
+    const row = PARKED.presence.find((entry) => entry.filter?.includes('kind == "collective"'));
     expect(row?.where).toBe('Yoruba Cultural Collective');
     // Still to come as the Studio can read it (ADR 0030): an end ahead, or no end and a start within a day.
     // An event without a start never lists, so it never counts.
@@ -236,7 +287,8 @@ describe('pendingWhat and pendingTitle', () => {
     expect(pendingWhat('siteSettings', 'nothing')).toBeUndefined();
     expect(pendingWhat('event', 'start', 'gala')).toBe('the date');
     expect(pendingWhat('event', 'start', 'festival')).toBe('the date');
-    expect(pendingWhat('event', 'end', 'festival')).toBe('the hours');
+    // The festival's hours are parked (ADR 0058).
+    expect(pendingWhat('event', 'end', 'festival')).toBeUndefined();
     expect(pendingWhat('event', 'start')).toBe('the date');
     expect(pendingWhat('event', 'venue.name', 'gala')).toBe('the venue');
     expect(pendingWhat('event', 'venue.name', 'festival')).toBe('the venue');
@@ -245,7 +297,8 @@ describe('pendingWhat and pendingTitle', () => {
       expect(pendingWhat(type, 'header.title'), type).toBe('the page heading');
     }
     expect(pendingWhat('festivalPage', 'planYourVisit[]')).toBe('the eight practical facts');
-    expect(pendingWhat('festivalPage', 'planYourVisit')).toBe('a practical fact');
+    // A row without its value is parked (ADR 0058), so no chip asks for it.
+    expect(pendingWhat('festivalPage', 'planYourVisit')).toBeUndefined();
     expect(pendingWhat('festivalPage', 'extraFacts')).toBe('a glance fact');
     // The Gala's glance is full with the edition's five facts, so no extra row can show a chip.
     expect(pendingWhat('galaPage', 'extraFacts')).toBeUndefined();
@@ -294,10 +347,12 @@ describe('the Lessons page', () => {
 describe("the Lessons page's teaching sections", () => {
   it('names the prose, the levels, the lesson and a step without its place', () => {
     expect(pendingWhat('lessonsPage', 'learn')).toBe('what the lessons teach, in her words');
-    expect(pendingWhat('lessonsPage', 'levels[]')).toBe('what each level covers');
     expect(pendingWhat('lessonsPage', 'oneLesson[]')).toBe('the shape of a lesson');
     expect(pendingWhat('lessonsPage', 'oneLesson')).toBe('the step');
-    expect(pendingWhat('lessonsPage', 'levels')).toBe('what the level covers');
+    // The levels and the questions are parked (ADR 0058).
+    for (const field of ['levels[]', 'levels', 'faq[]', 'faq']) {
+      expect(pendingWhat('lessonsPage', field), field).toBeUndefined();
+    }
   });
 });
 
@@ -306,7 +361,8 @@ describe("the Collective's one voice", () => {
     expect(COLLECTIVE_VOICE_SLOT.context).toBe('collective');
     expect(COLLECTIVE_VOICE_SLOT.role).toBe('Member, Yoruba Cultural Collective');
     expect(COLLECTIVE_VOICE_SLOT.quote).toMatch(/^Quote from a member of the Collective/);
-    expect(pendingWhat('collectivePage', 'voice')).toBe('the quote and who said it');
+    // Parked (ADR 0058): the slot's words stay for the day the voice is asked for again.
+    expect(pendingWhat('collectivePage', 'voice')).toBeUndefined();
   });
 });
 
@@ -456,8 +512,9 @@ describe('Impact', () => {
   });
 
   it('reads the civic cells from the festival edition, each with the wording the Odunde page uses', () => {
-    expect(pendingWhat('event', 'attendance', 'festival')).toBe('the attendance figure');
-    expect(pendingWhat('event', 'vendorsHosted', 'festival')).toBe('the number of vendors hosted');
+    // The past edition's two figures are parked (ADR 0058).
+    expect(pendingWhat('event', 'attendance', 'festival')).toBeUndefined();
+    expect(pendingWhat('event', 'vendorsHosted', 'festival')).toBeUndefined();
     expect(pendingWhat('event', 'vendorsHosted', 'gala')).toBeUndefined();
     expect(pendingWhat('event', 'cost', 'festival')).toBe('the cost');
   });

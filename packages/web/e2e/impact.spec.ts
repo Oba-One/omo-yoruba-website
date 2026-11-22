@@ -110,7 +110,7 @@ test.describe('the Impact page', () => {
     }
   });
 
-  test('reads the civic cells from the festival, each value or its chip, under an unmarked heading', async ({
+  test('reads the civic cells from the festival, each value or its chip, under an unmarked heading, the parked two only once held', async ({
     page,
   }) => {
     await page.goto('/impact');
@@ -119,10 +119,12 @@ test.describe('the Impact page', () => {
     const labels = (await section.locator('.oy-glance > div > b').allTextContents()).map((label) =>
       label.trim(),
     );
-    expect(labels).toEqual(['Attendance', 'Vendors hosted', 'Partners', 'Cost to attend']);
+    // The past edition's attendance and vendors hosted are parked (ADR 0058): each cell is drawn once
+    // the Studio holds its figure, in its place before the two the page always draws.
+    const all = ['Attendance', 'Vendors hosted', 'Partners', 'Cost to attend'];
+    expect(labels).toEqual(all.filter((label) => labels.includes(label)));
+    expect(labels.slice(-2)).toEqual(['Partners', 'Cost to attend']);
     expectNoMockWhileOwed(await section.innerText(), [
-      [/4,200/, pendingWhat('event', 'attendance', 'festival')],
-      [/\b38\b|Black-owned/, pendingWhat('event', 'vendorsHosted', 'festival')],
       [/Civic, health, and business/, presenceWhat('partner')?.what],
       [/Every year since 2003/, pendingWhat('event', 'cost', 'festival')],
     ]);

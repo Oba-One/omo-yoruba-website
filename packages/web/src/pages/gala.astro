@@ -65,10 +65,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
       dots
       edit={page.edit.treatment}
     />
-    <GlanceStrip
-      facts={page.glance}
-      caption="Everything you need to say yes: the date, the dress, and the price."
-    />
+    <GlanceStrip facts={page.glance} caption={page.glanceCaption} />
 
     <Section id="evening" labelledby="evening-heading">
       <Split>
@@ -144,7 +141,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
       <Handoff
         shape="box"
         variant="quiet"
-        text="Want the numbers before you commit? The impact page has them, with a source line under each one."
+        text={page.sponsor.handoff}
         action={{ label: 'See our impact', kind: 'url', href: '/impact' }}
       />
     </Section>

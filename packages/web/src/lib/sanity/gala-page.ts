@@ -23,8 +23,14 @@ import { sentence } from '@oy/ui/content/sentence.ts';
 import type { ClientReturn } from '@sanity/client';
 import { framableSrc } from '../csp';
 import { albumsHeld } from './gallery-page';
-import { GLANCE_MAX, type GlanceFactView, pageSkeleton, pastYears } from './page-skeleton';
-import { type BuildOptions, cleanText, resolveImage } from './view';
+import {
+  GLANCE_MAX,
+  type GlanceFactView,
+  impactHandoff,
+  pageSkeleton,
+  pastYears,
+} from './page-skeleton';
+import { type BuildOptions, cleanText, heldOrAsked, resolveImage } from './view';
 
 export type GalaPageData = NonNullable<ClientReturn<typeof galaPageQuery, unknown>>;
 type Tier = NonNullable<GalaPageData['editions']>[number]['tiers'][number];
@@ -43,6 +49,16 @@ const PAGE_TITLE = EVENT_PAGE_NAMES.gala;
 const KIND = 'gala';
 
 const pending = (field: string) => pendingWhat('event', field, KIND) ?? 'this fact';
+
+/** The line under the glance strip, which names the dress only while the strip shows it. */
+const GLANCE_CAPTION = {
+  withDress: 'Everything you need to say yes: the date, the dress, and the price.',
+  withoutDress: 'Everything you need to say yes: the date and the price.',
+} as const;
+
+/** The box under the sponsor levels, which leads to Impact: its lead, and its promise in its own words (`impactHandoff`). */
+const IMPACT_HANDOFF = 'Want the numbers before you commit? The impact page has them';
+const IMPACT_PROMISE = 'with a source line under each one';
 
 /**
  * Whether an edition offers a table: one of its tiers is bought by enquiry. The seats heading here and the
@@ -140,6 +156,11 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
   const tickets = ticketsTrigger(ticketsUrl);
   const ticketsForm = tickets?.dialog ? framableSrc(ticketsUrl) : undefined;
 
+  // The dress code is parked (ADR 0058): its cell is left out until the edition holds it.
+  const dress = cleanText(edition?.dress) ? (edition?.dress ?? undefined) : undefined;
+  const dressPending = pendingWhat('event', 'dress', KIND);
+  const dressShown = heldOrAsked(dress, dressPending);
+
   const glance: GlanceFactView[] = [
     {
       label: 'Date',
@@ -154,7 +175,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       pending: pending('venue.name'),
       note: edition?.venue?.address || edition?.venue?.line || undefined,
     },
-    { label: 'Dress', value: edition?.dress || undefined, pending: pending('dress') },
+    ...(dressShown ? [{ label: 'Dress', value: dress, pending: dressPending }] : []),
     { label: 'Seats from', value: seats.value, pending: tiersPending, note: seats.note },
   ].slice(0, GLANCE_MAX);
 
@@ -173,6 +194,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       ],
     },
     glance,
+    glanceCaption: dressShown ? GLANCE_CAPTION.withDress : GLANCE_CAPTION.withoutDress,
     evening: {
       intro: cleanText(data?.eveningIntro) ? (data?.eveningIntro ?? undefined) : undefined,
       introPending: pendingWhat('galaPage', 'eveningIntro') ?? 'the evening, in your words',
@@ -215,6 +237,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
         .map((level) => ({ ...level, edit: edit('name', level._id, 'sponsorLevel') })),
       pending: presenceWhat('sponsorLevel')?.what ?? 'level names and amounts',
       amountPending: pendingWhat('sponsorLevel', 'amount') ?? 'the amount',
+      handoff: impactHandoff(IMPACT_HANDOFF, data?.impactSources, IMPACT_PROMISE),
       recognitionPending:
         pendingWhat('sponsorLevel', 'recognition[]') ?? 'what the level recognizes',
     },

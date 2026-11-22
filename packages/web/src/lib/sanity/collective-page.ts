@@ -9,7 +9,9 @@
  * chip, laid out and its status pill shown by the `initiatives` and `status` options), the Collective's
  * events still to come by ADR 0030 (shown or hidden with the header's "See what is on" by `events`), the
  * one voice as it stands or its slot under the registry's chip, the take-part rows with the lead that
- * counts them, and the `data-sanity` attributes for click-to-edit in draft mode.
+ * counts them, and the `data-sanity` attributes for click-to-edit in draft mode. The argument, the events
+ * and the voice are parked (ADR 0058): each section is left out until the Studio holds something for it,
+ * and the sections drawn take turns on the two grounds.
  */
 import { collectiveEvents } from '@oy/content/lead-event';
 import { COLLECTIVE_VOICE_SLOT, pendingWhat, presenceWhat } from '@oy/content/pending';
@@ -19,7 +21,7 @@ import { countWord } from '@oy/ui/content/count-word.ts';
 import { monthDay, weekdayTime } from '@oy/ui/content/edition-dates.ts';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton } from './page-skeleton';
-import { type BuildOptions, cleanText, resolveImage } from './view';
+import { alternate, type BuildOptions, cleanText, heldOrAsked, resolveImage } from './view';
 
 export type CollectivePageData = NonNullable<ClientReturn<typeof collectivePageQuery, unknown>>;
 
@@ -31,8 +33,6 @@ export interface CollectiveLayout extends Record<string, string> {
 }
 
 const PAGE_TITLE = COLLECTIVE_NAME;
-
-const pending = (field: string) => pendingWhat('collectivePage', field) ?? 'this part of the page';
 
 /** An initiative's status value as its fact reads it. */
 const STATUS_WORDS: Readonly<Record<string, string>> = {
@@ -60,11 +60,16 @@ const EVENTS_ANCHOR = '#events';
 /** The quiet action on every event row, as the prototype words it: it opens the contact form. */
 const ASK_TO_JOIN = { label: 'Ask to join', kind: 'enquiry', enquiryKind: 'contact' } as const;
 
-/** The take-part lead as spec Q15 keeps it, counting the rows the band draws. */
-function takePartIntro(count: number): string | undefined {
+/**
+ * The take-part lead as spec Q15 keeps it, counting the rows the band draws. It speaks of the projects
+ * above only when the page draws one.
+ */
+function takePartIntro(count: number, projects: number): string | undefined {
   if (count === 0) return undefined;
   const ways = `${countWord(count)} ${count === 1 ? 'way' : 'ways'}`;
-  return `The projects above are led by members. ${ways} to join them.`;
+  return projects > 0
+    ? `The projects above are led by members. ${ways} to join them.`
+    : `${ways} to take part.`;
 }
 
 export function buildCollectivePage(data: CollectivePageData | null, options: BuildOptions) {
@@ -75,10 +80,27 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
   const initiatives = (data?.initiatives ?? []).filter(
     (initiative) => initiative !== null && Boolean(cleanText(initiative.name)),
   );
-  const eventsShown = layout.events !== 'hidden';
+  const argument = data?.argument && data.argument.length > 0 ? data.argument : undefined;
+  const argumentPending = pendingWhat('collectivePage', 'argument');
+  const whyShown = heldOrAsked(argument, argumentPending);
+  const events = collectiveEvents(data?.events ?? [], { now: options.now });
+  const eventsPending = presenceWhat('event', 'collective')?.what;
+  // Shown by the option, and then only with an event to list or a row that asks for one.
+  const eventsShown = layout.events !== 'hidden' && heldOrAsked(events.length > 0, eventsPending);
+  const voicePending = pendingWhat('collectivePage', 'voice');
+  const voiceShown = heldOrAsked(voice, voicePending);
   const actions = page.header.actions.filter(
     (action) => eventsShown || cleanText(action.href) !== EVENTS_ANCHOR,
   );
+  // The sections take turns from white, counting only the ones drawn, so no two neighbours share a
+  // ground. With every section drawn that is the prototype's order: the argument on white, the events on
+  // the alternate, the initiatives in turn, the voice and take part after them.
+  const [, eventsGround, ...rest] = alternate(
+    [whyShown, eventsShown, ...initiatives.map(() => true), voiceShown, true],
+    'white',
+  );
+  const initiativeGrounds = rest.slice(0, initiatives.length);
+  const [voiceGround = 'white', takePartGround = 'alt'] = rest.slice(initiatives.length);
 
   return {
     title: page.title,
@@ -87,8 +109,9 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
     root: { ...layout },
     header: { variant: 'slim' as const, ...page.header, actions },
     why: {
-      argument: data?.argument && data.argument.length > 0 ? data.argument : undefined,
-      pending: pending('argument'),
+      shown: whyShown,
+      argument,
+      pending: argumentPending,
       edit: edit('argument'),
       // The Collective program's own photograph, so one replacement reaches every card and this page.
       photo: resolveImage(options.imageSet, photo?.image, { width: 720 }),
@@ -105,8 +128,7 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
           _key: initiative._key,
           id,
           headingId: `${id}-heading`,
-          // The prototype alternates the grounds from white, whether or not the events show.
-          ground: index % 2 === 1 ? ('alt' as const) : ('white' as const),
+          ground: initiativeGrounds[index] ?? 'white',
           initiative: {
             name: initiative.name,
             memberLed: initiative.memberLed,
@@ -147,8 +169,9 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
     },
     events: {
       shown: eventsShown,
+      ground: eventsGround ?? 'alt',
       // Every listed event has a start, so its date block and weekday are always in words.
-      items: collectiveEvents(data?.events ?? [], { now: options.now }).map((event) => ({
+      items: events.map((event) => ({
         _id: event._id,
         title: event.title,
         summary: event.summary,
@@ -158,11 +181,13 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
         venue: event.venue,
         edit: edit('title', event._id, 'event'),
       })),
-      pending: presenceWhat('event', 'collective')?.what ?? 'the next events',
+      pending: eventsPending,
       venuePending: pendingWhat('event', 'venue.name', 'collective') ?? 'the venue',
       action: ASK_TO_JOIN,
     },
     voice: {
+      shown: voiceShown,
+      ground: voiceGround,
       testimonial: voice
         ? {
             quote: voice.quote,
@@ -172,13 +197,14 @@ export function buildCollectivePage(data: CollectivePageData | null, options: Bu
           }
         : undefined,
       placeholder: COLLECTIVE_VOICE_SLOT,
-      pending: pending('voice'),
+      pending: voicePending,
       edit: voice ? edit('quote', voice._id, 'testimonial') : edit('voice'),
     },
     takePart: {
       ...page.takePart,
-      intro: takePartIntro(page.takePart.rows.length),
+      intro: takePartIntro(page.takePart.rows.length, initiatives.length),
       labels: 'column' as const,
+      ground: takePartGround,
     },
     edit: page.layoutEdit,
   };
