@@ -1,7 +1,7 @@
 # 144: The git guardrail lets through common spellings of the commands CLAUDE.md says it blocks
 
 Labels: bug
-Status: open
+Status: resolved
 Blocked by: none
 
 **Finding** (R144 in `docs/plans/review-alignment-and-quality.md`; .claude/hooks/block-dangerous-git.sh; major; correctness): 'git checkout -- .' and 'git restore -- .' are the usual way an agent discards changes, and 'git clean -xdf' would also delete ignored files such as packages/web/.env and packages/web/.vercel/project.json; all three pass. In a session without permission prompts the hook is the only guard between an agent and uncommitted work, and branch protection covers main only, not the stacked branches of pull requests 12 to 15. The header's 'fails closed' is about unreadable payloads, not these spellings.
@@ -16,3 +16,5 @@ Blocked by: none
 ## Comments
 
 **Triage, 27 September 2026:** Ready: the hook guards agents, so the owner may want to read that diff before it merges.
+
+**21 November 2026:** Fixed by pull request 57: the hook reads the command as a shell does and matches flags in any order; `scripts/tests/git-guard.test.sh` feeds these spellings and more through the Claude and Codex registrations in CI.

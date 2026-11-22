@@ -1,0 +1,21 @@
+name: Agents Doctor
+
+# Checks that the repository follows the shared agent kit (AGENTS.md, .agents/ policy files, the
+# kit skills and their adapter, hooks, the PR template, CODEOWNERS). It runs on every pull
+# request, without path filters, because .agents/merge-policy.json lists it as a required check.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  agents-doctor:
+    # Pinned like every action here; doctor-ref matches, so the workflow and the doctor script it
+    # runs come from the same guild commit. ci fails on a broken kit contract.
+    uses: greenpill-dev-guild/.github/.github/workflows/agents-doctor.yml@d5bab15ee152be8fe289257826b28655090e4d05
+    with:
+      mode: ci
+      doctor-ref: d5bab15ee152be8fe289257826b28655090e4d05
