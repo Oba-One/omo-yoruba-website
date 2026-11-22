@@ -3,6 +3,7 @@ import { EDITION_FIELDS, type EditionField, editionFieldShown } from './edition-
 import {
   ALBUM_CREDIT_PENDING,
   ALBUM_YEAR_PENDING,
+  askedFor,
   COLLECTIVE_VOICE_SLOT,
   GENERAL_CONTACT_PENDING,
   GENERAL_RESPONDS_PENDING,
@@ -156,6 +157,7 @@ describe('PARKED', () => {
       'Lessons, questions: an answer',
       'Collective, the argument: why culture and sustainability sit together, in your words',
       'Collective, one voice: the quote and who said it',
+      'Get Involved and Our Story, talk to someone: who answers the general inbox',
       'Impact, Odunde as civic infrastructure: the number of vendors hosted',
     ]);
     expect(PARKED.presence.map((row) => `${row.where}: ${row.what}`)).toEqual([
@@ -478,10 +480,10 @@ describe('Get Involved', () => {
     const general = PENDING.filter(
       (row) => row.type === 'siteSettings' && row.condition?.includes('role == "general"'),
     );
-    expect(general.map((row) => row.what)).toEqual([
-      GENERAL_CONTACT_PENDING,
-      GENERAL_RESPONDS_PENDING,
-    ]);
+    // Who answers is parked (ADR 0058): the organization answers, so only the reply time is asked.
+    expect(general.map((row) => row.what)).toEqual([GENERAL_RESPONDS_PENDING]);
+    expect(askedFor(GENERAL_RESPONDS_PENDING)).toBe(true);
+    expect(askedFor(GENERAL_CONTACT_PENDING)).toBe(false);
   });
 });
 

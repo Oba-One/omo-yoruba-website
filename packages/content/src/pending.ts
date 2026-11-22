@@ -618,6 +618,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     condition: 'count(contacts[role == "general" && defined(name)]) == 0',
     where: 'Get Involved and Our Story, talk to someone',
     what: GENERAL_CONTACT_PENDING,
+    parked: true,
   },
   {
     type: 'siteSettings',
@@ -960,6 +961,12 @@ const REGISTER_PRESENCE: readonly PresenceEntry[] = [
  */
 export const PENDING: readonly PendingEntry[] = REGISTER_ROWS.filter((row) => !row.parked);
 export const PRESENCE: readonly PresenceEntry[] = REGISTER_PRESENCE.filter((row) => !row.parked);
+
+/**
+ * Whether the registry asks for the row of this wording: for a row a page names by its constant
+ * (`GENERAL_CONTACT_PENDING`) rather than finding it with `pendingWhat`. A parked row answers false.
+ */
+export const askedFor = (what: string): boolean => PENDING.some((row) => row.what === what);
 
 /** The rows set aside for now, kept beside their neighbours so each returns by losing one property. */
 export const PARKED: {
