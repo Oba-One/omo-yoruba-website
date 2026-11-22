@@ -45,7 +45,12 @@ const page = buildFestivalPage(data, { imageSet, draft: preview, studioUrl: STUD
 cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
 ---
 
-<SiteLayout title={page.title} description={page.description} root={page.root}>
+<SiteLayout
+  title={page.title}
+  description={page.description}
+  share={page.share}
+  root={page.root}
+>
   <main id="main">
     <PageHeader
       variant={page.header.variant}

@@ -22,6 +22,7 @@ import {
   type ImageLike,
   present,
   resolveImage,
+  shareImage,
 } from './view';
 
 /** The glance strip holds five facts at most. */
@@ -107,6 +108,8 @@ export function pageSkeleton<L extends Record<string, string>>(
     layout,
     title: cleanText(data?.seo?.title) || cleanText(header?.title) || title,
     description: cleanText(data?.seo?.description) || cleanText(header?.line),
+    // The header photograph as the link preview's picture, for a page whose header draws it (ADR 0060).
+    share: shareImage(options.imageSet, header?.image),
     header: {
       titlePending: pendingWhat(type, 'header.title') ?? 'the page heading',
       imagePending: pendingWhat(type, 'header.image') ?? 'the header photograph',

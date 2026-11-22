@@ -223,6 +223,28 @@ describe('buildAlbumPage', () => {
     expect(buildAlbumPage(seeded, options, '').lightbox.openKey).toBeUndefined();
   });
 
+  it('shares its cover, else its first photograph, and nothing while the gallery holds the albums (ADR 0060)', () => {
+    // The fixture's photographs are 1100 wide: the preview takes that width, at the preview's shape.
+    const first = buildAlbumPage(seeded, options, null).share;
+    expect(first).toMatchObject({ width: 1100, height: 578 });
+    expect(first?.url).toContain('gala2025attendeesgroupphoto');
+    expect(first?.alt).toBe(
+      'Three women in gold, green and copper gèlè and lace stand together in the hall',
+    );
+    const covered = buildAlbumPage(
+      withAlbum({ cover: photo('the-cover', 'The hall before the guests') }),
+      options,
+      'gala-2025-three-friends-selfie',
+    ).share;
+    expect(covered?.url).toContain('thecover');
+    expect(covered?.alt).toBe('The hall before the guests');
+    const held = {
+      ...seeded,
+      page: { ...seeded.page, layout: { captions: 'always', state: 'soon' } },
+    } as AlbumPageData;
+    expect(buildAlbumPage(held, options, null).share).toBeUndefined();
+  });
+
   it('keeps every photograph off the page while the gallery holds the albums, a photo address included (R01)', () => {
     const held = {
       ...seeded,

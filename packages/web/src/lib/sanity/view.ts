@@ -5,9 +5,10 @@
  * parts a page singleton's view repeats (the header, the take-part rows, past years) are in
  * `page-skeleton.ts`.
  */
-import type { ImageSetBuilder, ImageSetOptions } from '@oy/content/images';
+import { assetDimensions, type ImageSetBuilder, type ImageSetOptions } from '@oy/content/images';
 import type { ResolvedImage } from '@oy/ui/media/image.ts';
 import { stegaClean } from '@sanity/client/stega';
+import { SHARE_HEIGHT, SHARE_WIDTH, type ShareImage } from '../seo';
 import { dataAttribute } from './data-attribute';
 
 export interface BuildOptions {
@@ -38,6 +39,29 @@ export function resolveImage(
 ): ResolvedImage | undefined {
   const set = imageSet(image, options);
   return set ? { ...set, alt: image?.alt ?? '' } : undefined;
+}
+
+/**
+ * A photograph as a link preview's picture (ADR 0060): cropped around its focus point to 1200 by 630, as a
+ * JPEG every app's crawler reads, with its alt text cleaned of stega. Undefined without a photograph, so
+ * the layout falls back to the site's default picture.
+ */
+export function shareImage(
+  imageSet: ImageSetBuilder,
+  image: ImageLike | null | undefined,
+): ShareImage | undefined {
+  // A photograph narrower than the preview is served at its own width, not the next size down.
+  const natural = assetDimensions(image?.asset?._ref);
+  const croppedWidth = natural
+    ? Math.round(natural.width * (1 - (image?.crop?.left ?? 0) - (image?.crop?.right ?? 0)))
+    : SHARE_WIDTH;
+  const set = imageSet(image, {
+    width: Math.min(SHARE_WIDTH, croppedWidth),
+    aspect: SHARE_WIDTH / SHARE_HEIGHT,
+    format: 'jpg',
+  });
+  if (!set) return undefined;
+  return { url: set.src, width: set.width, height: set.height, alt: cleanText(image?.alt) ?? '' };
 }
 
 /** The text with any stega removed and trimmed, or undefined when nothing is left. */

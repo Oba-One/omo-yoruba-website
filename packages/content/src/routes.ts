@@ -22,6 +22,18 @@ export const PUBLIC_ROUTES = [
 ] as const;
 export type PublicRoute = (typeof PUBLIC_ROUTES)[number];
 
+/**
+ * The origin the site is served from: the bare name redirects here (open-work D2). Every page's canonical
+ * link, its link preview's address and the sitemap name it, whatever host answered (ADR 0060).
+ */
+export const SITE_ORIGIN = 'https://www.omoyorubasocal.org';
+
+/** The pages a sitemap lists as they are; the album pages follow from the albums (ADR 0060). */
+export const SITEMAP_ROUTES = PUBLIC_ROUTES.filter(
+  (route): route is Exclude<PublicRoute, '/gallery/[album]' | '/404'> =>
+    route !== '/gallery/[album]' && route !== '/404',
+);
+
 /** The singleton behind each page route. */
 export const ROUTE_SINGLETONS: Record<string, PublicRoute> = {
   homepage: '/',

@@ -8,6 +8,8 @@ import {
   PUBLIC_ROUTES,
   programRoute,
   routesFor,
+  SITE_ORIGIN,
+  SITEMAP_ROUTES,
   TYPE_ROUTES,
   tagsForRoute,
 } from './routes';
@@ -55,6 +57,17 @@ describe('editionRoute and programRoute', () => {
     for (const page of ['lessons', 'collective', null]) {
       expect(PUBLIC_ROUTES).toContain(programRoute(page));
     }
+  });
+});
+
+describe('SITEMAP_ROUTES', () => {
+  it('lists the pages a visitor browses, never the album template or the 404 page (ADR 0060)', () => {
+    expect(SITE_ORIGIN).toBe('https://www.omoyorubasocal.org');
+    expect(SITEMAP_ROUTES).toContain('/');
+    expect(SITEMAP_ROUTES).toContain('/gallery');
+    expect(SITEMAP_ROUTES).not.toContain('/gallery/[album]');
+    expect(SITEMAP_ROUTES).not.toContain('/404');
+    expect(SITEMAP_ROUTES).toHaveLength(PUBLIC_ROUTES.length - 2);
   });
 });
 

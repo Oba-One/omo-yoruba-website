@@ -99,6 +99,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
 
   return {
     title: page.title,
+    share: page.share,
     description: page.description,
     layout,
     root: { ...layout },

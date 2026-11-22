@@ -1,0 +1,6 @@
+# The site's own pages are for search; the Studio and the API are not (ADR 0060).
+User-agent: *
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://www.omoyorubasocal.org/sitemap.xml

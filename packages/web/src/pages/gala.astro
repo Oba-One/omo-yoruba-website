@@ -49,7 +49,12 @@ const page = buildGalaPage(data, { imageSet, draft: preview, studioUrl: STUDIO_B
 cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
 ---
 
-<SiteLayout title={page.title} description={page.description} root={page.root}>
+<SiteLayout
+  title={page.title}
+  description={page.description}
+  share={page.share}
+  root={page.root}
+>
   <main id="main">
     <PageHeader
       variant="photo"

@@ -181,6 +181,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
 
   return {
     title: page.title,
+    share: page.share,
     description: page.description,
     layout,
     root: { ...layout },

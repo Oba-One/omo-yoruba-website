@@ -1,7 +1,7 @@
 import { getActionContext } from 'astro:actions';
 import { PUBLIC_PREVIEW_ORIGIN } from 'astro:env/client';
 import { defineMiddleware } from 'astro:middleware';
-import { isPreviewHost, uncacheableReason } from './lib/cache-policy';
+import { isUnlistedHost, uncacheableReason } from './lib/cache-policy';
 import { buildCsp, CSP_REPORT_PATH, cspExempt, reportingEndpointsHeader } from './lib/csp';
 import type { FormOutcome } from './lib/forms/action-paths';
 import {
@@ -24,19 +24,20 @@ function setHeaders(
     response.headers.set('Reporting-Endpoints', REPORTING_ENDPOINTS);
   }
   // The preview host serves every page uncached for the Studio's iframe and, as a custom domain,
-  // outside Vercel Authentication; search engines keep to the public host.
+  // outside Vercel Authentication; a `vercel.app` host serves the same pages as the public one
+  // (ADR 0060). Search engines keep to the public host, and neither answer is ever cached.
   if (noindex) response.headers.set('X-Robots-Tag', 'noindex, nofollow');
 }
 
 /**
  * Three jobs. The report-only CSP header on every page (docs/adr/0011), and `noindex` on
- * everything the preview host answers. The forms without
+ * everything the preview host and a `vercel.app` host answer (ADR 0060). The forms without
  * JavaScript (ADR 0019): a form posted to an action runs here, before the page; a success
  * redirects to the same page with the modal open on its success block (or the footer on its
  * thanks), so a refresh never resubmits, and an error hands the result to the page, which
  * re-renders it with the values kept. Astro's documented pattern for redirect after POST. And
  * the cache guard (ADR 0021): after the page rendered, a draft-mode request, a request on the
- * preview host or anything but a GET switches the cache off, last, so no page-level
+ * preview host or a `vercel.app` host, or anything but a GET switches the cache off, last, so no page-level
  * `cache.set()` can switch it back on.
  */
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -79,7 +80,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (reason) context.cache?.set(false);
   const headers = {
     csp: !cspExempt(context.url.pathname),
-    noindex: isPreviewHost(context.url.origin, previewOrigin),
+    noindex: isUnlistedHost(context.url.origin, previewOrigin),
   };
   try {
     setHeaders(response, headers);
