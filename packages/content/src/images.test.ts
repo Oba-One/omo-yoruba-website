@@ -52,6 +52,13 @@ describe('createImageSet', () => {
     expect(set).toMatchObject({ width: 600, height: 400 });
   });
 
+  it("serves a fixed format in place of the browser's choice when one is asked for (ADR 0060)", () => {
+    const set = imageSet(hero, { width: 600, aspect: 3 / 2, format: 'jpg' });
+    expect(set?.src).toContain('fm=jpg');
+    expect(set?.src).not.toContain('auto=format');
+    expect(imageSet(hero, { width: 600 })?.src).toContain('auto=format');
+  });
+
   it('applies a stored crop to the natural size before choosing widths', () => {
     const cropped = { ...hero, crop: { top: 0, bottom: 0, left: 0.25, right: 0.25 } };
     const set = imageSet(cropped, { width: 1440 });

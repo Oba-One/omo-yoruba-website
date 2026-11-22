@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The `funders` option: partners and funders shown (the Pending line while the Studio holds none) or hidden, between governance and the dark band that closes the page. The band's sentence names the partnerships lead, or the role with the chip for how soon they reply.",
+          "The `funders` option: partners and funders shown (the Pending line while the Studio holds none) or hidden, after governance. The ask that closes the page is a card at the section's foot, or stands alone with the partners hidden. Its sentence names the partnerships lead, or the role with the chip for how soon they reply.",
       },
     },
   },
@@ -25,7 +25,7 @@ type Story = StoryObj<Args>;
 export const Shown: Story = {
   args: {
     options: { funders: 'shown' },
-    slots: { default: [voices, photographs, governance, funders, fund] },
+    slots: { default: [voices, photographs, governance, funders] },
   },
 };
 

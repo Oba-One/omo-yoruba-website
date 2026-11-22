@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 // The Join Dialog (ADR 0050) is on a page only while Organization details hold the membership form's
 // address. Without it (CI's placeholder content, or a dataset that holds none) `#join` opens nothing and a

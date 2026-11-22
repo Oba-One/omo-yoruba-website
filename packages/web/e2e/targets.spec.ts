@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { albumTiles, NO_SUCH_ALBUM, openEnquiry } from './helpers';
 
 // The elder test at 375: every control a finger can reach has a 44px box (QUALITY.md section 2).

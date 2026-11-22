@@ -4,7 +4,8 @@ import { defineQuery } from 'groq';
  * The homepage in one read (ROUTES section 1): the singleton with its hero, stats, voices,
  * year-in-the-life tiles and doors resolved, every festival and gala edition for the season rule
  * (`leadEvent`), each with how its ticket tiers are bought so the band can tell whether the Gala
- * offers a table, and the first three programs in order (the prototype's cards).
+ * offers a table, the two event pages' headers for the cards that introduce the two events (ADR 0057),
+ * and the first three programs in order (the prototype's cards).
  * Images project the asset reference, the hotspot and the crop, never a URL string, so the site
  * builds every URL itself (`createImageSet`) and stega never lands in a `src`. Layout values come
  * back as stored; the page fills the schema defaults (`withLayoutDefaults`).
@@ -24,6 +25,8 @@ export const homepageQuery = defineQuery(`*[_id == "homepage"][0]{
     _id, kind, title, edition, start, end, "venueName": venue.name, summary,
     "tiers": *[_type == "ticketTier" && event._ref == ^._id]{variant}
   },
+  "festivalHeader": *[_id == "festivalPage"][0].header{kicker{yo, en}, title, line, image{_type, alt, caption, hotspot, crop, asset}},
+  "galaHeader": *[_id == "galaPage"][0].header{kicker{yo, en}, title, line, image{_type, alt, caption, hotspot, crop, asset}},
   "stats": stats[]->{_id, value, label, shortLabel, source},
   programsIntro,
   "programs": *[_type == "program"] | order(order asc)[0...3]{

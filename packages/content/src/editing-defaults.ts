@@ -18,7 +18,7 @@ export const FIXED_LAYOUTS: Readonly<Record<string, Readonly<Record<string, stri
     labels: 'column',
   },
   programsPage: {
-    // Three across since ADR 0055: three programs run, and the Programs page leaves out the fourth.
+    // Three across since ADR 0056: three programs run, and the Programs page leaves out the fourth.
     cards: 'three',
     inline: 'expanded',
   },

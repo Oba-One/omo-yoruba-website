@@ -498,7 +498,7 @@ export const impactPage = definePage({
       title: 'Fund the next year',
       type: 'object',
       description:
-        'The dark band that closes the page. Its line names the partnerships lead and how soon they answer, from Organization details, which administrators keep.',
+        'The ask that closes the page, a card under the partners. Its line names the partnerships lead and how soon they answer, from Organization details, which administrators keep.',
       fields: [
         defineField({ name: 'title', title: 'Heading', type: 'string', validation: voice.heading }),
       ],

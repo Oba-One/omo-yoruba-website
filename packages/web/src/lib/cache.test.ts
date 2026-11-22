@@ -17,6 +17,8 @@ describe('cachePage', () => {
         tags: [
           'type:siteSettings',
           'type:homepage',
+          'type:festivalPage',
+          'type:galaPage',
           'type:event',
           'type:ticketTier',
           'type:program',

@@ -652,7 +652,7 @@ describe('Impact', () => {
     expect(JSON.stringify(impact)).not.toMatch(/Citrus College|before Odunde/);
   });
 
-  it('revises a caption still as the earlier seed wrote it, and retires the closing band line', () => {
+  it("revises a caption still as the earlier seed wrote it, and retires the closing ask's stored line", () => {
     const stored = {
       photos: [
         {

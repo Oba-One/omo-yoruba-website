@@ -1,6 +1,6 @@
 # An album holds its videos, and YouTube loads only on the visitor's press
 
-Amended by ADR 0055: an event page shows the first two videos of the past edition's album, and a lone video
+Amended by ADR 0056: an event page shows the first two videos of the past edition's album, and a lone video
 fills the column.
 
 Decided on 10 October 2026, at the owner's request of that day: "we need to pull in some video content from odunde

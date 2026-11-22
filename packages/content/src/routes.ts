@@ -22,6 +22,18 @@ export const PUBLIC_ROUTES = [
 ] as const;
 export type PublicRoute = (typeof PUBLIC_ROUTES)[number];
 
+/**
+ * The origin the site is served from: the bare name redirects here (open-work D2). Every page's canonical
+ * link, its link preview's address and the sitemap name it, whatever host answered (ADR 0060).
+ */
+export const SITE_ORIGIN = 'https://www.omoyorubasocal.org';
+
+/** The pages a sitemap lists as they are; the album pages follow from the albums (ADR 0060). */
+export const SITEMAP_ROUTES = PUBLIC_ROUTES.filter(
+  (route): route is Exclude<PublicRoute, '/gallery/[album]' | '/404'> =>
+    route !== '/gallery/[album]' && route !== '/404',
+);
+
 /** The singleton behind each page route. */
 export const ROUTE_SINGLETONS: Record<string, PublicRoute> = {
   homepage: '/',
@@ -115,8 +127,12 @@ export function programHref(
 export const TYPE_ROUTES: Record<string, readonly PublicRoute[]> = {
   siteSettings: PUBLIC_ROUTES,
   ...Object.fromEntries(Object.entries(ROUTE_SINGLETONS).map(([type, route]) => [type, [route]])),
-  // Donate's trust block keeps its promise of a source line under every number only while Impact shows them.
-  impactPage: ['/impact', '/donate'],
+  // The boxes that lead to Impact (Donate's trust block, the Programs year strip, the Gala's sponsor
+  // levels) keep their promise of a source line under every number only while Impact shows them.
+  impactPage: ['/impact', '/donate', '/programs', '/gala'],
+  // The homepage introduces the two events from their own pages' headers (ADR 0057).
+  festivalPage: ['/odunde', '/'],
+  galaPage: ['/gala', '/'],
   // Every album page closes with the gallery's credit and permissions section and wears its kicker; the
   // gallery's state holds the photographs the event pages' past years reach through albums (ADR 0043).
   galleryPage: ['/gallery', '/gallery/[album]', '/odunde', '/gala'],

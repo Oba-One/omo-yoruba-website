@@ -19,6 +19,7 @@
     "./api-version": "./src/api-version.ts",
     "./take-part": "./src/take-part.ts",
     "./doors": "./src/doors.ts",
+    "./partners": "./src/partners.ts",
     "./giving": "./src/giving.ts",
     "./albums": "./src/albums.ts",
     "./videos": "./src/videos.ts"
@@ -49,7 +50,7 @@
     "rxjs": "7.8.2",
     "sanity": "6.12.0",
     "styled-components": "6.5.3",
-    "zod": "4.5.4"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/react": "19.2.18",

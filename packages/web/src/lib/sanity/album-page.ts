@@ -31,6 +31,7 @@ import {
   editAttributes,
   present,
   resolveImage,
+  shareImage,
   studioText,
 } from './view';
 
@@ -80,6 +81,9 @@ export function buildAlbumPage(
 
   return {
     found: album !== null,
+    // The link preview shows the cover, else the first photograph; a photo address shares its album page's
+    // (ADR 0060). While held no photograph leaves here, so the site's default shows.
+    share: held ? undefined : shareImage(options.imageSet, album?.cover ?? album?.photos?.[0]),
     title: title ?? GALLERY_TITLE,
     // While held the page still describes itself, without a count of photographs it does not show.
     description: title

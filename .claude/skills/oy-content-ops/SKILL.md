@@ -78,6 +78,10 @@ rather than duplicates. Ids you create never contain a period.
   the staff and volunteers together; Impact's board cell counts the board. The teacher is the `person`
   `lessonsPage.teacher` picks, in no group and listed on the Lessons page only; her email there is the
   `teacher` routing contact's.
+- **Partner**: a `partner` with its `name`, its `kind` (partner, sponsor or funder, the card's kicker), where
+  it shows (`scope`: `odunde` for the festival page; Impact lists every partner), the `url` of its own site,
+  a `logo` when they send one, and `line`: one sentence on what they do with us, in the organization's own
+  words (ADR 0057). A card is whole without a line, a link or a logo.
 - **Outcome**: an item of Impact's own list, `impactPage.outcomes`, in order (ADR 0042): a `program` or an
   event page (`kind` festival or gala), never both, with the `figure` (the number, what it counts and its
   source) once something is measured, or the plain statement of what is being measured this year. Impact shows

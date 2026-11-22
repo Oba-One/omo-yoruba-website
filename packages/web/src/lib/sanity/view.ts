@@ -5,9 +5,10 @@
  * parts a page singleton's view repeats (the header, the take-part rows, past years) are in
  * `page-skeleton.ts`.
  */
-import type { ImageSetBuilder, ImageSetOptions } from '@oy/content/images';
+import { assetDimensions, type ImageSetBuilder, type ImageSetOptions } from '@oy/content/images';
 import type { ResolvedImage } from '@oy/ui/media/image.ts';
 import { stegaClean } from '@sanity/client/stega';
+import { SHARE_HEIGHT, SHARE_WIDTH, type ShareImage } from '../seo';
 import { dataAttribute } from './data-attribute';
 
 export interface BuildOptions {
@@ -40,6 +41,29 @@ export function resolveImage(
   return set ? { ...set, alt: image?.alt ?? '' } : undefined;
 }
 
+/**
+ * A photograph as a link preview's picture (ADR 0060): cropped around its focus point to 1200 by 630, as a
+ * JPEG every app's crawler reads, with its alt text cleaned of stega. Undefined without a photograph, so
+ * the layout falls back to the site's default picture.
+ */
+export function shareImage(
+  imageSet: ImageSetBuilder,
+  image: ImageLike | null | undefined,
+): ShareImage | undefined {
+  // A photograph narrower than the preview is served at its own width, not the next size down.
+  const natural = assetDimensions(image?.asset?._ref);
+  const croppedWidth = natural
+    ? Math.round(natural.width * (1 - (image?.crop?.left ?? 0) - (image?.crop?.right ?? 0)))
+    : SHARE_WIDTH;
+  const set = imageSet(image, {
+    width: Math.min(SHARE_WIDTH, croppedWidth),
+    aspect: SHARE_WIDTH / SHARE_HEIGHT,
+    format: 'jpg',
+  });
+  if (!set) return undefined;
+  return { url: set.src, width: set.width, height: set.height, alt: cleanText(image?.alt) ?? '' };
+}
+
 /** The text with any stega removed and trimmed, or undefined when nothing is left. */
 export function cleanText(value: string | null | undefined): string | undefined {
   return value ? stegaClean(value).trim() || undefined : undefined;
@@ -62,6 +86,31 @@ export function oneLine(value: string | null | undefined): string | undefined {
     .map((line) => line.trim())
     .filter(Boolean);
   return lines.length > 0 ? lines.join(', ') : undefined;
+}
+
+/**
+ * Whether a slot is drawn: the Studio holds its value, or the registry asks for it and hands the wording
+ * of its Pending note. With neither, the fact is parked and the slot is left out (ADR 0058).
+ */
+export const heldOrAsked = (value: unknown, pending: string | undefined): boolean =>
+  Boolean(value || pending);
+
+/** The ground a section stands on: white, or the theme's alternate. */
+export type Ground = 'white' | 'alt';
+
+/**
+ * The grounds of a run of sections, taking turns from `first` and counting only the ones drawn, so a
+ * section left out never leaves two neighbours on one ground. A section not drawn keeps the ground it
+ * would have had, which nothing reads.
+ */
+export function alternate(drawn: readonly boolean[], first: Ground): Ground[] {
+  const other = (ground: Ground): Ground => (ground === 'white' ? 'alt' : 'white');
+  let next = first;
+  return drawn.map((shown) => {
+    const ground = next;
+    if (shown) next = other(next);
+    return ground;
+  });
 }
 
 /** Whether a list item is there: the filter every builder runs over a list the query may answer with nulls. */

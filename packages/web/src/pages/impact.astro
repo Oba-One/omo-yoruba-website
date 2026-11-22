@@ -4,8 +4,10 @@
  * through `loadQuery`, with the registry's Pending chips for every fact the Studio does not hold and the
  * layout options read from the singleton with the schema defaults filled. Built for the grant reviewer:
  * every figure carries its source line or its chip, a program with no number says what is being measured,
- * and the governance block names what is not yet published rather than leaving it out. The page arranges
- * library parts and owns its copy (the kickers and headings the prototype carries) and its layout.
+ * and the governance block names what is not yet published rather than leaving it out. The page closes on
+ * its partners as cards with the ask among them, where the prototype drew name chips and a dark band
+ * (ADR 0057). The page arranges library parts and owns its copy (the kickers and headings the prototype
+ * carries) and its layout.
  */
 import { PUBLIC_SANITY_DATASET, PUBLIC_SANITY_PROJECT_ID } from 'astro:env/client';
 import { createImageSet } from '@oy/content/images';
@@ -13,13 +15,13 @@ import { impactPageQuery } from '@oy/content/queries';
 import OutcomeCard from '@oy/ui/cards/OutcomeCard/OutcomeCard.astro';
 import PullQuote from '@oy/ui/cards/PullQuote/PullQuote.astro';
 import FactList from '@oy/ui/content/FactList/FactList.astro';
-import PartnerRow from '@oy/ui/content/PartnerRow/PartnerRow.astro';
+import PartnerCards from '@oy/ui/content/PartnerCards/PartnerCards.astro';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
-import ActionButton from '@oy/ui/core/ActionButton/ActionButton.astro';
 import Button from '@oy/ui/core/Button/Button.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
 import PhotoMosaic from '@oy/ui/media/PhotoMosaic/PhotoMosaic.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
+import AskCard from '@oy/ui/page/AskCard/AskCard.astro';
 import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
 import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
@@ -42,6 +44,15 @@ const imageSet = createImageSet({
 const page = buildImpactPage(data, { imageSet, draft: preview, studioUrl: STUDIO_BASE_PATH });
 cachePage(Astro, '/impact', { draft: preview, failed: Boolean(error) });
 const rows = page.outcomes.layout === 'row';
+// The closing ask: who answers, and the two forms it opens.
+const ask = {
+  kicker: { yo: 'Ọdún tí ń bọ̀', en: 'The year ahead' },
+  title: page.fund.title,
+  line: page.fund.line,
+  linePending: page.fund.linePending,
+  action: page.fund.actions[0],
+  secondAction: page.fund.actions[1],
+};
 ---
 
 <SiteLayout title={page.title} description={page.description} root={page.root}>
@@ -155,7 +166,7 @@ const rows = page.outcomes.layout === 'row';
     <Section id="voices" labelledby="voices-heading">
       <SectionHead
         title="In their words"
-        intro="A parent, an elder, and a vendor, in their own words."
+        intro="What people say about the work, in their own words."
         id="voices-heading"
       />
       <CardGrid columns={3}>
@@ -195,27 +206,19 @@ const rows = page.outcomes.layout === 'row';
     </Section>
 
     {
-      page.partners.shown && (
+      /* The page closes on its partners, with the ask among them (ADR 0057). With the partners hidden
+         by the option, the ask is the section, and its heading the section's own. */
+      page.partners.shown ? (
         <Section id="funders" ground="alt" labelledby="funders-heading" data-sanity={page.edit.funders}>
           <SectionHead title="Partners and funders" intro={page.partners.intro} id="funders-heading" />
-          <PartnerRow partners={page.partners.items} pending={page.partners.pending} />
+          <PartnerCards partners={page.partners.items} pending={page.partners.pending} />
+          <AskCard id="fund" {...ask} />
+        </Section>
+      ) : (
+        <Section id="fund" ground="alt" labelledby="fund-heading">
+          <AskCard headingId="fund-heading" level={2} {...ask} />
         </Section>
       )
     }
-
-    <Section id="fund" ground="dark" labelledby="fund-heading">
-      <SectionHead
-        kicker={{ yo: 'Ọdún tí ń bọ̀', en: 'The year ahead' }}
-        swatch={false}
-        title={page.fund.title}
-        intro={page.fund.line}
-        notePending={page.fund.linePending}
-        id="fund-heading"
-      />
-      <ButtonRow>
-        <ActionButton action={page.fund.actions[0]} variant="primary" />
-        <ActionButton action={page.fund.actions[1]} variant="secondary" arrow={false} />
-      </ButtonRow>
-    </Section>
   </main>
 </SiteLayout>

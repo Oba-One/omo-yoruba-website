@@ -35,7 +35,7 @@ event page (past galas on the Gala page). The only place a past edition appears 
 _Avoid_: recap, archive, previous events
 
 **Zone**:
-One of the festival's three areas (ADR 0055): Ọjà Balógun (the market), Àgbàlá Ọmọde (the
+One of the festival's three areas (ADR 0056): Ọjà Balógun (the market), Àgbàlá Ọmọde (the
 children's yard) and Ẹgbẹ́ Ìbílẹ̀ (the hometown associations). A zone the Studio does not hold yet
 shows as a placeholder, up to the three.
 _Avoid_: area, stage, village
@@ -93,7 +93,7 @@ _Avoid_: edition, meetup, class
 One of four: Lessons, Collective, Kids & STEM, Cultural Exchange. Only Lessons and the
 Collective have their own page; Kids & STEM and Cultural Exchange are inline programs,
 described in full on the Programs hub. Cultural Exchange is not running, so the hub leaves it
-out, card and section, until it is (ADR 0055).
+out, card and section, until it is (ADR 0056).
 _Avoid_: programme in code and copy (US spelling), course
 
 **Sub-program**:
@@ -280,6 +280,12 @@ _Avoid_: placeholder flag, TODO, lorem ipsum, mock
 The one list of required-for-launch fields with the wording of what is missing. The Studio's
 To do and the site's chips both read it.
 _Avoid_: placeholder list, TODO list, missing-content map
+
+**Parked**:
+A registry row the launch does not wait for (ADR 0058). The To do leaves it out, no chip names it, and
+the page leaves its block out while the Studio holds nothing there. The block shows once it is filled,
+and the row is asked again by losing its `parked` mark.
+_Avoid_: hidden field, optional field, disabled row, archived
 
 **Presence pending**:
 A Pending row for a document type with no documents yet (people, partners, testimonials) or

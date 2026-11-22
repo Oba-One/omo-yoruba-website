@@ -73,6 +73,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
     name,
     url,
     kind,
+    line,
     logo{_type, alt, caption, hotspot, crop, asset}
   },
   layout{phead, zones, schedule, labels},
@@ -89,6 +90,7 @@ export const festivalPageQuery = defineQuery(`*[_id == "festivalPage"][0]{
  * every honoree with the edition it belongs to. Images project the asset reference, the hotspot and the crop (ADR 0022). Layout values
  * come back as stored; the page fills the schema defaults (`withLayoutDefaults`).
  * The gallery's `state` comes too: while it holds the albums, past years show no photograph and no video (ADR 0043).
+ * Impact's `sources` option comes too, for the box under the sponsor levels that leads there.
  */
 export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
   header{
@@ -161,5 +163,6 @@ export const galaPageQuery = defineQuery(`*[_id == "galaPage"][0]{
     "eventId": event._ref
   },
   layout{treatment, tiers, awards, schedule, past, labels},
+  "impactSources": *[_type == "impactPage" && _id == "impactPage"][0].layout.sources,
   seo{title, description}
 }`);

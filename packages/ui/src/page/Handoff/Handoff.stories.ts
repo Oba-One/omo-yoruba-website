@@ -1,6 +1,6 @@
 import { pendingWhat } from '@oy/content/pending';
 import type { ComponentProps } from 'astro/types';
-import { FESTIVAL_GIVE_HANDOFF } from '../../fixtures/event-pages';
+import { FESTIVAL_GIVE_HANDOFF, FESTIVAL_PARTNERS_HANDOFF } from '../../fixtures/event-pages';
 import { type Meta, onDark, type StoryArgs, type StoryObj } from '../../storybook';
 import Handoff from './Handoff.astro';
 
@@ -34,20 +34,17 @@ export const ButtonOnly: Story = { args: { text: undefined } };
 
 export const OnDark: Story = { ...onDark };
 
-/** The box under the Odunde take-part band: the page's line and the quiet Donate. */
+/** The box under the Odunde take-part band: the page's line and Donate as the outline (ADR 0056). */
 export const Box: Story = {
-  args: { shape: 'box', variant: 'quiet', ...FESTIVAL_GIVE_HANDOFF },
+  args: { shape: 'box', ...FESTIVAL_GIVE_HANDOFF },
 };
+
+/** The quiet link in a box, deepened for the tint, as the Gala's sponsors section points at Impact. */
+export const BoxQuiet: Story = { args: { shape: 'box', variant: 'quiet' } };
 
 /** The box with two buttons, as the Odunde partners section closes: gold Donate, then the outline. */
 export const BoxTwoButtons: Story = {
-  args: {
-    shape: 'box',
-    variant: 'primary',
-    text: 'Want the day to happen again next June? Give now, or sponsor and join this row.',
-    action: { label: 'Donate', kind: 'give' },
-    secondAction: { label: 'Sponsor Odunde', kind: 'enquiry', enquiryKind: 'sponsor' },
-  },
+  args: { shape: 'box', variant: 'primary', ...FESTIVAL_PARTNERS_HANDOFF },
 };
 
 /** The box whose line is a missing fact: Get Involved's give door without its blurb shows the chip. */

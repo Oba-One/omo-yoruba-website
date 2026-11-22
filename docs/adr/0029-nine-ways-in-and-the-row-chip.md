@@ -2,7 +2,7 @@
 
 Amended by ADR 0050: since 11 October 2026 the `member` way opens the Join Dialog, Zeffy's membership form, and
 the member enquiry is what its button falls back to.
-Amended by ADR 0055: the give and updates buttons are outlines like every other row's, never the band's gold;
+Amended by ADR 0056: the give and updates buttons are outlines like every other row's, never the band's gold;
 no row's button is a quiet text link any more.
 
 Decided with the owner on 12 September 2026 (Phase 6 grill, `docs/tickets/phase-6/spec.md`, Q1). ADR

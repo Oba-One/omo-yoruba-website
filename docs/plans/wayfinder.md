@@ -98,8 +98,8 @@ Claude Code without opening code. Full list: `docs/design/README.md` section 8.
   outrank the prototype (Odunde unmarked, Lessons never School, the Pending chip, no invented copy).
 
 - [Lighthouse CI: `@lhci/cli` 0.15.1 installed, every preview audited](../research/phase-4-lighthouse-ci.md):
-  owner's yes on 12 September 2026; `.github/workflows/lighthouse.yml` skips until the bypass secret
-  exists (ticket 28); the config reads `LIGHTHOUSE_*`, since lhci treats `LHCI_*` as flags.
+  owner's yes on 12 September 2026; `.github/workflows/lighthouse.yml` fails (it skipped until 21 November) until the
+  bypass secret exists (ticket 28); the config reads `LIGHTHOUSE_*`, since lhci treats `LHCI_*` as flags.
 
 - [One route map for editions and programs](../tickets/wayfinder/issues/34-phase-4-leftovers.md):
   `editionRoute` and `programRoute` in `@oy/content/routes` serve the news cards, the event band and

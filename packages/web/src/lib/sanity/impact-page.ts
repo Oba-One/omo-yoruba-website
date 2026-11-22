@@ -7,10 +7,11 @@
  * photograph, the outcomes headed by their subjects with slots for the prototype's subjects not yet
  * covered and the links to their pages, the civic prose with the cells read from the festival's editions,
  * the voices with their slots, the six photographs, governance (the cells and the newest document of each
- * kind), every partner by kind and name, the closing band's sentence from the partnerships routing contact,
+ * kind), every partner by kind and name, the closing ask's sentence from the partnerships routing contact,
  * and the `data-sanity` attributes for click-to-edit in draft mode.
  */
 import { pageEdition, pastEdition } from '@oy/content/lead-event';
+import { partnerKindRank } from '@oy/content/partners';
 import {
   GOVERNANCE_NOTE_PENDING,
   IMPACT_OUTCOME_SLOTS,
@@ -27,7 +28,15 @@ import { EVENT_PAGE_NAMES, editionRoute, programHref } from '@oy/content/routes'
 import type { ActionLike } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
 import { pageSkeleton, TAX_STATUS_CELL } from './page-skeleton';
-import { type BuildOptions, cleanText, oneLine, present, resolveImage, textOr } from './view';
+import {
+  type BuildOptions,
+  cleanText,
+  heldOrAsked,
+  oneLine,
+  present,
+  resolveImage,
+  textOr,
+} from './view';
 
 export type ImpactPageData = NonNullable<ClientReturn<typeof impactPageQuery, unknown>>;
 
@@ -46,11 +55,8 @@ const pending = (field: string) => pendingWhat('impactPage', field) ?? 'this par
 const SOURCES_LEAD =
   'Every number carries a source line: the year it covers and how it was counted.';
 
-/** The prototype's heading for the closing band while the Studio holds none. */
+/** The prototype's heading for the closing ask while the Studio holds none. */
 const FUND_TITLE = 'Fund the next year';
-
-/** The order partners list in: funders first, then partners, then sponsors, then any without a kind. */
-const PARTNER_ORDER: Readonly<Record<string, number>> = { funder: 0, partner: 1, sponsor: 2 };
 
 type Outcome = NonNullable<ImpactPageData['outcomes']>[number];
 type Program = ImpactPageData['programs'][number];
@@ -182,7 +188,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
   const annualHref = fileHref(annual);
   const board = data?.boardCount ?? 0;
 
-  // The closing band names the partnerships lead as the sponsor form's success copy does.
+  // The closing ask names the partnerships lead as the sponsor form's success copy does.
   const partnerships = settings?.partnerships;
   const leadName = cleanText(partnerships?.name);
   const leadEmail = cleanText(partnerships?.email);
@@ -228,19 +234,20 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
     civic: {
       prose: data?.civicInfra && data.civicInfra.length > 0 ? data.civicInfra : undefined,
       pending: pending('civicInfra'),
+      // The past edition's two figures are parked (ADR 0058): a cell with neither its figure nor a row
+      // that asks for it is left out.
       cells: [
         {
           label: 'Attendance',
           value: past?.attendance?.value ?? undefined,
           note: past?.attendance?.label ?? undefined,
-          pending: pendingWhat('event', 'attendance', 'festival') ?? 'the attendance figure',
+          pending: pendingWhat('event', 'attendance', 'festival'),
         },
         {
           label: 'Vendors hosted',
           value: past?.vendorsHosted?.value ?? undefined,
           note: past?.vendorsHosted?.label ?? undefined,
-          pending:
-            pendingWhat('event', 'vendorsHosted', 'festival') ?? 'the number of vendors hosted',
+          pending: pendingWhat('event', 'vendorsHosted', 'festival'),
         },
         {
           label: 'Partners',
@@ -252,7 +259,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
           value: next?.cost ?? undefined,
           pending: pendingWhat('event', 'cost', 'festival') ?? 'the cost',
         },
-      ],
+      ].filter((cell) => heldOrAsked(cell.value, cell.pending)),
       edit: past ? edit('attendance', past._id, 'event') : undefined,
     },
     voices: {
@@ -319,16 +326,15 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       intro: data?.fundersIntro ?? undefined,
       items: (data?.partners ?? [])
         .filter((partner) => cleanText(partner.name))
-        .sort(
-          (a, b) =>
-            (PARTNER_ORDER[cleanText(a.kind) ?? ''] ?? 3) -
-            (PARTNER_ORDER[cleanText(b.kind) ?? ''] ?? 3),
-        )
+        // In the kinds' own order (`@oy/content/partners`), a partner of no known kind last.
+        .sort((a, b) => partnerKindRank(cleanText(a.kind)) - partnerKindRank(cleanText(b.kind)))
         .map((partner) => ({
           _id: partner._id,
           name: partner.name,
           url: cleanText(partner.url),
-          logo: resolveImage(options.imageSet, partner.logo, { width: 280 }),
+          kind: cleanText(partner.kind),
+          line: partner.line ?? undefined,
+          logo: resolveImage(options.imageSet, partner.logo, { width: 320 }),
         })),
       pending: presenceWhat('partner')?.what ?? 'partner and funder names',
     },

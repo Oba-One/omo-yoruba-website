@@ -152,14 +152,10 @@ describe('buildFestivalPage', () => {
 
   it('writes the header facts and the glance from the edition, with the registry chips for what is missing', () => {
     const view = buildFestivalPage(seeded, options);
-    expect(view.header.facts).toEqual([
-      { pending: 'the date' },
-      { pending: 'the hours' },
-      { pending: 'the cost' },
-    ]);
+    // The hours are parked (ADR 0058): neither the header nor the glance draws them while they are owed.
+    expect(view.header.facts).toEqual([{ pending: 'the date' }, { pending: 'the cost' }]);
     expect(view.glance).toEqual([
       { label: 'Date', value: undefined, pending: 'the date' },
-      { label: 'Time', value: undefined, pending: 'the hours' },
       {
         label: 'Where',
         value: 'Leimert Park',
@@ -200,14 +196,28 @@ describe('buildFestivalPage', () => {
     expect(filled.glance[2]?.note).toBe('Degnan Boulevard');
   });
 
-  it('names the row that owes the hours: the end when it is missing, the date when the start is', () => {
+  it('leaves the hours out while the end is missing, and names the date when the start is', () => {
     const startOnly = {
       ...seeded,
       editions: [edition('event-odunde-2027', 2027, { start: '2027-06-12T18:00:00.000Z' })],
     } as unknown as FestivalPageData;
     const view = buildFestivalPage(startOnly, options);
-    expect(view.header.facts[1]).toEqual({ pending: 'the hours' });
-    expect(view.glance[1]).toEqual({ label: 'Time', value: undefined, pending: 'the hours' });
+    // The hours are parked (ADR 0058): a start alone draws the date and no hours.
+    expect(view.header.facts).toHaveLength(2);
+    expect(view.header.facts[0]).toEqual({ text: 'Saturday 12 June 2027' });
+    expect(view.glance.map((fact) => fact.label)).not.toContain('Time');
+    const both = {
+      ...seeded,
+      editions: [
+        edition('event-odunde-2027', 2027, {
+          start: '2027-06-12T18:00:00.000Z',
+          end: '2027-06-13T02:00:00.000Z',
+        }),
+      ],
+    } as unknown as FestivalPageData;
+    const held = buildFestivalPage(both, options);
+    expect(held.header.facts[1]).toEqual({ text: '11am to 7pm' });
+    expect(held.glance[1]).toMatchObject({ label: 'Time', value: '11am to 7pm' });
     const endOnly = {
       ...seeded,
       editions: [edition('event-odunde-2027', 2027, { end: '2027-06-13T02:00:00.000Z' })],
@@ -247,7 +257,8 @@ describe('buildFestivalPage', () => {
     const empty = buildFestivalPage(null, options);
     expect(empty.title).toBe('Odunde Festival');
     expect(empty.whatItIs).toBeUndefined();
-    expect(empty.glance.map((fact) => fact.label)).toEqual(['Date', 'Time', 'Where', 'Cost']);
+    // The hours are parked (ADR 0058), so an empty dataset draws three cells.
+    expect(empty.glance.map((fact) => fact.label)).toEqual(['Date', 'Where', 'Cost']);
   });
 
   it('carries the zones, the schedule the option shows and the plan facts with their chips', () => {
@@ -297,10 +308,22 @@ describe('buildFestivalPage', () => {
       pending: 'the rows, times and content',
     });
     expect(view.schedule.items).toHaveLength(1);
-    expect(view.plan.facts).toEqual([
-      { _key: 'fact-1', label: 'Parking', value: null, pending: 'a practical fact' },
-    ]);
+    // A row without its value is parked (ADR 0058): the page leaves it out, and keeps the ones it holds.
+    expect(view.plan.facts).toEqual([]);
     expect(view.plan.pending).toBe('the eight practical facts');
+    const planned = buildFestivalPage(
+      {
+        ...withDay,
+        planYourVisit: [
+          ...(withDay.planYourVisit ?? []),
+          { _key: 'fact-2', label: '[ Label ]', value: '[ A practical fact ]' },
+        ],
+      } as unknown as FestivalPageData,
+      options,
+    );
+    expect(planned.plan.facts).toEqual([
+      { _key: 'fact-2', label: '[ Label ]', value: '[ A practical fact ]', pending: undefined },
+    ]);
     const collapsed = buildFestivalPage(
       { ...withDay, layout: { schedule: 'collapsed' } } as FestivalPageData,
       options,
@@ -328,7 +351,8 @@ describe('buildFestivalPage', () => {
       intro: 'Two ways in. Each one says what it asks of you, then opens a short form.',
       labels: 'column',
       vendorTerms: null,
-      vendorTermsPending: 'fees, deadline and permit rules',
+      // Parked (ADR 0058): the vendor row shows the terms it holds and no chip for the rest.
+      vendorTermsPending: undefined,
       pending: 'the ways in',
       rowPending: 'which way to take part',
     });
@@ -375,8 +399,9 @@ describe('buildFestivalPage', () => {
       confirmed: false,
       pending: 'photographer credit to confirm',
     });
+    // The attendance is parked (ADR 0058): no chip stands where the figure would.
     expect(view.past.attendance).toBeUndefined();
-    expect(view.past.attendancePending).toBe('the attendance figure');
+    expect(view.past.attendancePending).toBeUndefined();
     expect(view.past.pending).toBe('the photo albums');
 
     const counted = {
@@ -436,8 +461,21 @@ describe('buildFestivalPage', () => {
     expect(view.past.held).toBe(true);
     expect(view.past.slides).toEqual([]);
     expect(view.past.album).toBeUndefined();
-    // The attendance is no photograph: the edition the photographs come from still gives it.
-    expect(view.past.attendancePending).toBe('the attendance figure');
+    // The attendance is no photograph: the edition the photographs come from still gives it once held.
+    const counted = buildFestivalPage(
+      {
+        ...seeded,
+        galleryLayout: { state: 'soon' },
+        editions: (seeded.editions ?? []).map((edition) =>
+          edition?.album
+            ? { ...edition, attendance: { value: '[ Figure ]', label: '[ what it counts ]' } }
+            : edition,
+        ),
+      } as unknown as FestivalPageData,
+      options,
+    );
+    expect(counted.past.attendance).toBeDefined();
+    expect(view.past.attendancePending).toBeUndefined();
     expect(buildFestivalPage(seeded, options).past.held).toBe(false);
   });
 
@@ -535,17 +573,25 @@ describe('buildFestivalPage', () => {
     });
   });
 
-  it('carries the partners with their logos resolved, or the registry wording for none', () => {
+  it('carries the partners with their kind, line and logo, or the registry wording for none', () => {
     const withPartners = {
       ...seeded,
       partnersIntro: 'The day is open because these organizations help pay for it.',
       partners: [
-        { _id: 'partner-1', name: '[ Partner name ]', url: null, kind: 'partner', logo: null },
+        {
+          _id: 'partner-1',
+          name: '[ Partner name ]',
+          url: null,
+          kind: 'partner',
+          line: null,
+          logo: null,
+        },
         {
           _id: 'partner-2',
           name: '[ Funder name ]',
           url: 'https://example.org',
           kind: 'funder',
+          line: '[ What they do with us ]',
           logo: image('[ Funder name ]'),
         },
       ],
@@ -557,6 +603,11 @@ describe('buildFestivalPage', () => {
     expect(view.partners.items.map((partner) => partner.name)).toEqual([
       '[ Partner name ]',
       '[ Funder name ]',
+    ]);
+    // What each is to us heads its card, and the line follows the name where the Studio holds one.
+    expect(view.partners.items.map(({ kind, line, url }) => ({ kind, line, url }))).toEqual([
+      { kind: 'partner', line: undefined, url: undefined },
+      { kind: 'funder', line: '[ What they do with us ]', url: 'https://example.org' },
     ]);
     expect(view.partners.items[0]?.logo).toBeUndefined();
     expect(view.partners.items[1]?.logo?.alt).toBe('[ Funder name ]');

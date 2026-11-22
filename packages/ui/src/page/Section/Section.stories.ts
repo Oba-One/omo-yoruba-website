@@ -42,5 +42,5 @@ export const Batik: Story = { args: { ground: 'paper', texture: 'batik' } };
 /** The narrow wrap, 900px, as the Lessons page sets its questions (`11 Yoruba Language School.dc.html`). */
 export const Narrow: Story = { args: { ground: 'alt', width: 'narrow' } };
 
-/** The dark band a page closes on (Impact's Fund the next year): the dark scope and the drifting dot field. */
+/** The dark band, as the 404 page stands on it: the dark scope and the drifting dot field. */
 export const Dark: Story = { args: { ground: 'dark' } };

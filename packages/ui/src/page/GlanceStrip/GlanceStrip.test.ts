@@ -1,9 +1,12 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './GlanceStrip.stories';
 
-const { Five, Four, WithCaption, Pending, InColumn, Empty, NoteLink } = composeStories(stories);
+const { Five, Four, WithCaption, Pending, InColumn, TwoInColumn, OneInColumn, Empty, NoteLink } =
+  composeStories(stories);
 
 describe('GlanceStrip', () => {
   it('sets five facts with a label, the value or its chip, and the note', async () => {
@@ -26,6 +29,23 @@ describe('GlanceStrip', () => {
   it('tells the tokens how many columns a shorter strip has', async () => {
     const strip = (await renderToBody(Four)).querySelector('.oy-glance');
     expect(strip?.getAttribute('data-cols')).toBe('4');
+    // A strip that leaves a parked fact out (ADR 0058) can hold two cells, or one.
+    const two = (await renderToBody(TwoInColumn)).querySelector('.oy-glance');
+    expect(two?.getAttribute('data-cols')).toBe('2');
+    expect(two?.children).toHaveLength(2);
+    const one = (await renderToBody(OneInColumn)).querySelector('.oy-glance');
+    expect(one?.getAttribute('data-cols')).toBe('1');
+    expect(one?.children).toHaveLength(1);
+  });
+
+  it('gives every count it can hold a column rule in the tokens, so no strip falls back to five', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../../../tokens/src/oy-components.css'),
+      'utf8',
+    );
+    for (const count of ['1', '2', '3', '4']) {
+      expect(css, `data-cols="${count}"`).toContain(`.oy-glance[data-cols="${count}"] {`);
+    }
   });
 
   it('adds the line under the strip and chips every missing value', async () => {

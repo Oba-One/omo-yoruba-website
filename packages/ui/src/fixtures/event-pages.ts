@@ -250,6 +250,13 @@ export const FESTIVAL_GIVE_HANDOFF = {
   action: { label: 'Donate', kind: 'give' },
 };
 
+/** The handoff that closes the Odunde partners section: the gold Donate, then Sponsor Odunde. */
+export const FESTIVAL_PARTNERS_HANDOFF = {
+  text: 'Want the day to happen again next June? Give now, or sponsor and join them.',
+  action: { label: 'Donate', kind: 'give' },
+  secondAction: { label: 'Sponsor Odunde', kind: 'enquiry', enquiryKind: 'sponsor' },
+};
+
 /** A carousel slide from a register photograph: the seed stores its caption as the alt text too. */
 const slide = (key: string, photo: { src: string; alt: string }) => ({
   _key: key,

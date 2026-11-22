@@ -1,5 +1,5 @@
-import { GENERAL_CONTACT_PENDING, pendingWhat, presenceWhat } from '@oy/content/pending';
-import { expect, test } from '@playwright/test';
+import { pendingWhat, presenceWhat } from '@oy/content/pending';
+import { expect, test } from './fixtures';
 import {
   axeViolations,
   bodyOption as body,
@@ -133,21 +133,21 @@ test.describe('the Our Story page', () => {
     const section = page.locator('#contact');
     await expect(section.locator('h2')).toHaveText(/\S/);
     const facts = section.locator('.oy-fact');
+    // Who receives this is parked (ADR 0058): the row is drawn once the settings name a person, and no
+    // chip stands in for it before.
+    const named = (await facts.locator('dt', { hasText: /^Who receives this$/ }).count()) === 1;
     await expect(facts.locator('dt')).toHaveText([
       'Email',
       'Phone',
       'Mailing address',
-      'Who receives this',
+      ...(named ? ['Who receives this'] : []),
     ]);
-    if ((await facts.nth(3).locator('.oy-pend').count()) === 1) {
-      await expect(facts.nth(3)).toContainText(GENERAL_CONTACT_PENDING, { ignoreCase: true });
-    }
+    if (named) await expect(facts.nth(3).locator('.oy-pend')).toHaveCount(0);
     const phone = await facts.nth(1).locator('a[href^="tel:"]').count();
     await expect(section.getByText('If it is urgent, calling reaches a person')).toHaveCount(phone);
     expectNoMockWhileOwed(await section.innerText(), [
       [/555-0148/, pendingWhat('siteSettings', 'phone')],
       [/Leimert Boulevard/, pendingWhat('siteSettings', 'address')],
-      [/Folasade Adeyemi|treasurer and membership/i, GENERAL_CONTACT_PENDING],
     ]);
     await expectEnquiryRoundTrip(
       page,

@@ -14,3 +14,7 @@ Blocked by: none
 - [ ] `bun check` green; Playwright in both data modes where a page changes
 
 ## Comments
+
+11 October 2026: one of the lists is shared now. The partner kinds live in `@oy/content/partners`, read by
+the schema, Impact's loader and `PartnerCards`, and the documents index no longer exports `PARTNER_KINDS`,
+which nothing imported. The rest of this ticket stands.

@@ -24,6 +24,15 @@ export const siteSettingsQuery = defineQuery(`*[_id == "siteSettings"][0]{
   theme
 }`);
 
+/**
+ * What the sitemap lists beyond the pages (ADR 0060): the slug of every album the gallery lists (a slug and
+ * at least one photograph), in slug order, and the gallery's state, since a held gallery shows no photograph.
+ */
+export const sitemapQuery = defineQuery(`{
+  "albums": *[_type == "album" && defined(slug.current) && count(photos) > 0] | order(slug.current asc).slug.current,
+  "gallery": *[_type == "galleryPage" && _id == "galleryPage"][0].layout{state}
+}`);
+
 /** The slice the actions read: the routing contacts and the general inbox. */
 export const routingQuery = defineQuery(
   `*[_id == "siteSettings"][0]{contacts[]{role, name, email, phone, responds}, generalEmail, phone}`,

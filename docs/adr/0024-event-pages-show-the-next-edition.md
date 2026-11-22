@@ -2,7 +2,7 @@
 
 Amended by ADR 0052: the edition's `ticketsUrl` is its ticket link, and a Zeffy ticket form there opens in the
 Tickets Dialog on the Gala page; any other link still opens in a new tab.
-Amended by ADR 0055: the festival has three zones, not four, so the page draws three zone cards.
+Amended by ADR 0056: the festival has three zones, not four, so the page draws three zone cards.
 
 Decided with the owner on 12 September 2026 (Phase 5 grill, `docs/tickets/phase-5/spec.md`). `/odunde`
 and `/gala` each show the next edition of their kind: the nearest one still to come by the rule the

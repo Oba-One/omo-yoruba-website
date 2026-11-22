@@ -67,7 +67,7 @@ describe('the Odunde page-section stories', () => {
     expect(first?.querySelector('.oy-btn--primary')).not.toBeNull();
     expect(section?.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
     const handoff = section?.querySelector('.oy-takepart + .oy-handoff');
-    // The gift under the band is an outline too: the section shows the gold and one other shape (ADR 0055).
+    // The gift under the band is an outline too: the section shows the gold and one other shape (ADR 0056).
     expect(handoff?.querySelector('.oy-btn--secondary[data-give]')).not.toBeNull();
     expect(section?.querySelector('.oy-btn--quiet')).toBeNull();
   });

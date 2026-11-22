@@ -8,6 +8,8 @@ import {
   PUBLIC_ROUTES,
   programRoute,
   routesFor,
+  SITE_ORIGIN,
+  SITEMAP_ROUTES,
   TYPE_ROUTES,
   tagsForRoute,
 } from './routes';
@@ -58,6 +60,17 @@ describe('editionRoute and programRoute', () => {
   });
 });
 
+describe('SITEMAP_ROUTES', () => {
+  it('lists the pages a visitor browses, never the album template or the 404 page (ADR 0060)', () => {
+    expect(SITE_ORIGIN).toBe('https://www.omoyorubasocal.org');
+    expect(SITEMAP_ROUTES).toContain('/');
+    expect(SITEMAP_ROUTES).toContain('/gallery');
+    expect(SITEMAP_ROUTES).not.toContain('/gallery/[album]');
+    expect(SITEMAP_ROUTES).not.toContain('/404');
+    expect(SITEMAP_ROUTES).toHaveLength(PUBLIC_ROUTES.length - 2);
+  });
+});
+
 describe('PUBLIC_ROUTES', () => {
   it('lists every public route of ROUTES-AND-INTERACTIONS section 1', () => {
     expect(PUBLIC_ROUTES).toEqual([
@@ -97,7 +110,10 @@ describe('TYPE_ROUTES and routesFor', () => {
       '/gala',
       '/impact',
     ]);
-    expect(routesFor('impactPage')).toEqual(['/impact', '/donate']);
+    expect(routesFor('impactPage')).toEqual(['/impact', '/donate', '/programs', '/gala']);
+    // An event page leads with its own route; the homepage follows, for the card that introduces it.
+    expect(routesFor('festivalPage')).toEqual(['/odunde', '/']);
+    expect(routesFor('galaPage')).toEqual(['/gala', '/']);
     expect(routesFor('siteSettings')).toEqual(
       PUBLIC_ROUTES.filter((route) => !route.includes('[')),
     );
@@ -124,6 +140,9 @@ describe('tagsForRoute', () => {
     expect(tagsForRoute('/')).toEqual([
       'type:siteSettings',
       'type:homepage',
+      // The two events' cards read each event page's own header (ADR 0057).
+      'type:festivalPage',
+      'type:galaPage',
       'type:event',
       // The event band names tables only when the lead Gala edition has a table tier.
       'type:ticketTier',

@@ -70,7 +70,7 @@ describe('the Impact page-section stories', () => {
     expect(text(filled?.querySelector('.oy-outcome-fig'))).toBe('[ Figure ]');
   });
 
-  it('funders: the Pending line or the section gone, then governance owed and the dark band', async () => {
+  it('funders: the Pending line with the ask at its foot, or the ask alone in its own section', async () => {
     const shown = (await renderToBody(Funders.Shown)).querySelector('.oy-home');
     expect(text(shown?.querySelector('#funders .oy-pend-line'))).toContain(
       'partner and funder names',
@@ -89,15 +89,23 @@ describe('the Impact page-section stories', () => {
     expect(text(shown?.querySelector('#governance .oy-facts'))).not.toMatch(
       /95-4612387|Leimert Boulevard|March 2027/,
     );
-    const band = shown?.querySelector('#fund');
-    expect(band?.classList.contains('oy-dark')).toBe(true);
-    expect(text(band?.querySelector('.oy-sec-intro'))).toBe(
+    // The ask is a card inside Partners and funders, on the section's own ground: no dark band of its
+    // own above the dark footer (ADR 0057). It keeps the anchor `#fund`.
+    expect(shown?.querySelector('.oy-section.oy-dark')).toBeNull();
+    const ask = shown?.querySelector('#funders .oy-ask-card#fund');
+    expect(text(ask?.querySelector('h3'))).toBe('Fund the next year');
+    expect(text(ask?.querySelector('.oy-ask-card-copy p'))).toBe(
       'Our partnerships lead answers Pending: how soon the partnerships lead replies',
     );
-    expect(band?.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
-    expect(text(band)).not.toMatch(/Adebayo Ogunlesi/);
+    expect(ask?.querySelectorAll('.oy-btn--primary')).toHaveLength(1);
+    expect(text(ask)).not.toMatch(/Adebayo Ogunlesi/);
+    expect(shown?.querySelectorAll('#fund')).toHaveLength(1);
     const hidden = (await renderToBody(Funders.Hidden)).querySelector('.oy-home');
     expect(hidden?.querySelector('#funders')).toBeNull();
-    expect(hidden?.querySelector('#fund')).not.toBeNull();
+    const alone = hidden?.querySelector('section#fund');
+    expect(alone?.classList.contains('oy-dark')).toBe(false);
+    expect(alone?.getAttribute('aria-labelledby')).toBe('fund-heading');
+    expect(text(alone?.querySelector('.oy-ask-card h2#fund-heading'))).toBe('Fund the next year');
+    expect(hidden?.querySelectorAll('#fund')).toHaveLength(1);
   });
 });

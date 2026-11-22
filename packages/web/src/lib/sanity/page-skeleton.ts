@@ -22,6 +22,7 @@ import {
   type ImageLike,
   present,
   resolveImage,
+  shareImage,
 } from './view';
 
 /** The glance strip holds five facts at most. */
@@ -56,14 +57,30 @@ export interface PageSingletonLike {
  */
 export const TAX_STATUS_CELL = { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' };
 
+/** What a box that leads to Impact promises of its numbers, in the words most of them use. */
+const SOURCE_LINE_PROMISE = 'with a source line under every number';
+
+/**
+ * The words of a box that leads to Impact (Donate's trust block, the Programs year strip, the Gala's
+ * sponsor levels): the lead, and its promise of a source line under the numbers only while Impact's
+ * `sources` option shows them (spec Q5 of Phase 7). A box that words the promise its own way hands it.
+ */
+export function impactHandoff(
+  lead: string,
+  impactSources: string | null | undefined,
+  promise = SOURCE_LINE_PROMISE,
+): string {
+  return cleanText(impactSources) === 'hidden' ? `${lead}.` : `${lead}, ${promise}.`;
+}
+
 /** One cell of the glance strip, as `GlanceStrip` takes it. */
 export interface GlanceFactView {
   key?: string;
   label: string;
   value?: string;
   note?: string;
-  /** The registry's wording when the value is missing. */
-  pending: string;
+  /** The registry's wording when the value is missing; none for a parked fact (ADR 0058). */
+  pending?: string;
   /** The registry's wording when the note is a missing fact. */
   notePending?: string;
 }
@@ -91,6 +108,8 @@ export function pageSkeleton<L extends Record<string, string>>(
     layout,
     title: cleanText(data?.seo?.title) || cleanText(header?.title) || title,
     description: cleanText(data?.seo?.description) || cleanText(header?.line),
+    // The header photograph as the link preview's picture, for a page whose header draws it (ADR 0060).
+    share: shareImage(options.imageSet, header?.image),
     header: {
       titlePending: pendingWhat(type, 'header.title') ?? 'the page heading',
       imagePending: pendingWhat(type, 'header.image') ?? 'the header photograph',

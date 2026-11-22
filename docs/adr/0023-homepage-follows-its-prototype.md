@@ -1,5 +1,8 @@
 # The homepage follows its prototype where the routes table and the Phase 4 spec differed
 
+Amended by ADR 0057: a section under the event band introduces the two events, a card each, which the
+prototype does not draw.
+
 Decided 12 September 2026, at the owner's request after reviewing pull request 5 ("full alignment
 with the claude design", `docs/design/design/02 Homepage.dc.html` at 375 and 1440). Phase 4 had
 followed ROUTES section 4 and its own spec in a few places where the prototype shows otherwise; the
