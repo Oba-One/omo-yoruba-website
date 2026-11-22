@@ -2,8 +2,9 @@
 
 The old site's public URLs and where each should land on the new one. Read on 4 October 2026 from
 `omoyorubaofsocal.org` (WordPress; its Yoast sitemap, navigation and footer gave 86 URLs, all answering 200).
-The targets are a proposal for the owner to confirm (open-work D18); Phase 9 then puts the confirmed rows in
-`astro.config.ts` `redirects` (open-work E11, ROUTES section 1).
+The owner confirmed the targets on 21 November 2026 (open-work D18). The rules live in
+`packages/web/src/lib/redirects.ts` and the middleware answers them (ADR 0061, open-work E11). The one change
+from the proposal is the Cultural Exchange post, which lands on `/programs#kids` (ADR 0056).
 
 Two things decide whether these rules ever run:
 
@@ -54,7 +55,7 @@ that covers their subject; the rest go home.
 | --- | --- | --- |
 | `/blog/`, `/category/blog/`, `/category/news/`, `/category/uncategorized/` | `/` | no news |
 | `/2018/09/06/2019-cultural-enrichment-conference/` | `/odunde` | a registration notice for the summer conference |
-| `/2019/08/31/cultural-exchange-children-origin/` | `/programs#exchange` | the Cultural Exchange program |
+| `/2019/08/31/cultural-exchange-children-origin/` | `/programs#kids` | the Cultural Exchange program, off the Programs page since ADR 0056, so the inline program beside it |
 | `/2019/08/31/yoruba-language-lesson/` | `/programs/yoruba-lessons` | the language program |
 | `/2019/08/31/cultural-diversity-nigerian-foods/` | `/odunde` | a notice for the summer conference |
 | the five posts under `/2023/05/21/` | `/` | general pieces on culture |

@@ -619,6 +619,14 @@ header. A link preview is cached by each app: Facebook's Sharing Debugger and si
 page again after its picture changes. The default picture is `packages/web/public/share.jpg`, 1200 by 630,
 cut from the homepage's hero photograph.
 
+## The old site's addresses
+
+ADR 0061. `packages/web/src/lib/redirects.ts` maps 56 of the old site's addresses to their successors, and
+the middleware answers each with 301, with or without the trailing slash. To add one, add its path (no
+trailing slash) to the map; the unit test checks that every target is a page this site serves. The rules
+reach old links only once `omoyorubaofsocal.org` points at the Vercel project (add it under Domains), and its
+MX records must stay as they are, since `info@omoyorubaofsocal.org` is the general inbox.
+
 ## Rollback
 
 Vercel keeps every deployment: promote the previous production deployment from the

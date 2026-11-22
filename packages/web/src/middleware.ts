@@ -10,6 +10,7 @@ import {
   redirectAfterNewsletter,
 } from './lib/forms/modal-state';
 import type { FormResult } from './lib/forms/result';
+import { oldSiteRedirect } from './lib/redirects';
 import { DRAFT_SESSION_COOKIE, isDraftRequest, PERSPECTIVE_COOKIE } from './lib/sanity/preview';
 
 const CSP_REPORT_ONLY = buildCsp();
@@ -30,7 +31,8 @@ function setHeaders(
 }
 
 /**
- * Three jobs. The report-only CSP header on every page (docs/adr/0011), and `noindex` on
+ * Four jobs. The old site's addresses answer 301 to their successors here (ADR 0061). The
+ * report-only CSP header on every page (docs/adr/0011), and `noindex` on
  * everything the preview host and a `vercel.app` host answer (ADR 0060). The forms without
  * JavaScript (ADR 0019): a form posted to an action runs here, before the page; a success
  * redirects to the same page with the modal open on its success block (or the footer on its
@@ -41,6 +43,19 @@ function setHeaders(
  * `cache.set()` can switch it back on.
  */
 export const onRequest = defineMiddleware(async (context, next) => {
+  // The old site's addresses go to their successors before anything renders (ADR 0061), with the same
+  // `noindex` a preview or `vercel.app` host gives every answer.
+  const successor = ['GET', 'HEAD'].includes(context.request.method)
+    ? oldSiteRedirect(context.url.pathname)
+    : undefined;
+  if (successor) {
+    const redirect = new Response(null, { status: 301, headers: { Location: successor } });
+    setHeaders(redirect, {
+      csp: false,
+      noindex: isUnlistedHost(context.url.origin, PUBLIC_PREVIEW_ORIGIN || undefined),
+    });
+    return redirect;
+  }
   const { action, setActionResult, serializeActionResult } = getActionContext(context);
   if (action?.calledFrom === 'form') {
     const result = await action.handler();
