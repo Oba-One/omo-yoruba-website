@@ -20,7 +20,7 @@ const partners = [
   { _id: 'other-type', _type: 'hometownAssociation', name: '[ Association ]', scope: ['odunde'] },
 ];
 
-async function partnerIds(query: string, documents = partners) {
+async function partnerIds(query: string, documents: Record<string, unknown>[] = partners) {
   const result = (await (
     await evaluate(parse(query), { dataset: [...pages, ...documents] })
   ).get()) as { partners: { _id: string }[] };
