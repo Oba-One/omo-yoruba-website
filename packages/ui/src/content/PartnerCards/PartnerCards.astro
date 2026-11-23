@@ -4,8 +4,9 @@
  * Festival.dc.html` draws a row of name chips; ADR 0057). One card each on the card base: what the
  * partner is to us as the kicker (partner, sponsor or funder, the one list in `@oy/content/partners`),
  * its name, one line on what it does with us when the Studio holds one, and a quiet link to its own
- * site, worded by the site's address. The logo leads the card when the Studio holds one. Three across,
- * two on a tablet and one on a phone, a short last row in the middle. No partner renders the registry's
+ * site, worded by the site's address. The logo leads the card when the Studio holds one. Four partners
+ * form two balanced rows; other lists sit three across, two on a tablet and one on a phone, with a
+ * short last row in the middle. No partner renders the registry's
  * Pending line. `PartnerRow` keeps the chips for a list of names alone.
  */
 import { PARTNER_KIND_TITLES, partnerKind } from '@oy/content/partners';
@@ -59,7 +60,7 @@ const list = (partners ?? []).filter(
       <Pending variant="line" what={pending} />
     </div>
   ) : (
-    <CardGrid columns={3} center class:list={['oy-partner-cards', className]} data-sanity={edit}>
+    <CardGrid columns={list.length === 4 ? 2 : 3} center class:list={['oy-partner-cards', className]} data-sanity={edit}>
       {list.map((partner) => {
         const logo = imgAttributes(partner.logo, '160px');
         // Checked again here: the Studio's URL rule does not run on API or seed writes.
@@ -115,7 +116,7 @@ const list = (partners ?? []).filter(
   }
   /* A partner's card is short, so a tablet keeps two across where the grid's three stack to one. */
   @media (560px <= width <= 860px) {
-    :global(.oy-card-grid.oy-partner-cards[data-columns='3'][data-center]) {
+    :global(.oy-card-grid.oy-partner-cards[data-center]) {
       --across: 2;
     }
   }
