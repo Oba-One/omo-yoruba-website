@@ -1,9 +1,10 @@
 /**
  * The one Content Security Policy allow-list for the site.
  *
- * Sent as Content-Security-Policy-Report-Only by src/middleware.ts, with violations
- * posted to /api/csp-report, until the policy below proves clean on the live site
- * (ADR 0011, ADR 0062, docs/runbook.md). Inline scripts run by hash: each is a
+ * Sent by src/middleware.ts as Content-Security-Policy in a production build, and as
+ * Content-Security-Policy-Report-Only under `astro dev`, for drafts and on the preview
+ * host (`cspHeaderName`), with violations posted to /api/csp-report (ADR 0011,
+ * ADR 0062, docs/runbook.md). Inline scripts run by hash: each is a
  * component's `<script is:inline>`, hashed from its source into csp-hashes.ts.
  * Inline styles are allowed outright: the view transitions write a style element
  * per animated element, named per render. Third parties allowed: Sanity, Zeffy,
@@ -54,8 +55,12 @@ export const cspDirectives: Readonly<Record<string, readonly string[]>> = {
   'object-src': ["'none'"],
 };
 
-/** Whether the policy blocks on the public site; true once the live site reports clean (ADR 0062). */
-export const CSP_ENFORCED = false;
+/**
+ * Whether the policy blocks on the public site (ADR 0062): switched on 22 November 2026, after the live site
+ * reported no violation of this policy on any page, dialog, album or video. The middleware enforces it in a
+ * production build only, so `astro dev` and its toolbar stay report-only.
+ */
+export const CSP_ENFORCED = true;
 
 /**
  * The header the policy goes out under. A draft request and the preview host always report only: the Visual
@@ -74,6 +79,22 @@ export function cspHeaderName({
   return enforced && !draft && !previewHost
     ? 'Content-Security-Policy'
     : 'Content-Security-Policy-Report-Only';
+}
+
+/**
+ * A short, stable name for a policy (FNV-1a over its text and whether it is enforced), which every page carries
+ * in a meta tag so the router can tell a page served under another policy (src/lib/csp-swap.ts), switching
+ * enforcement off included. Not a security measure.
+ */
+export function cspFingerprint(
+  policy: string = `${CSP_ENFORCED ? 'enforce' : 'report'} ${buildCsp()}`,
+): string {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < policy.length; index += 1) {
+    hash ^= policy.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
 }
 
 export function buildCsp(

@@ -4,6 +4,7 @@ import { defineMiddleware } from 'astro:middleware';
 import { isUnlistedHost, uncacheableReason } from './lib/cache-policy';
 import {
   buildCsp,
+  CSP_ENFORCED,
   CSP_REPORT_PATH,
   cspExempt,
   cspHeaderName,
@@ -43,7 +44,7 @@ function setHeaders(response: Response, { csp, noindex }: HeaderPlan): void {
 
 /**
  * Four jobs. The old site's addresses answer 301 to their successors here (ADR 0061). The
- * report-only CSP header on every page (ADR 0011, ADR 0062) with the security headers on every answer, and `noindex` on
+ * CSP header on every page, enforced in production (ADR 0011, ADR 0062), with the security headers on every answer, and `noindex` on
  * everything the preview host and a `vercel.app` host answer (ADR 0060). The forms without
  * JavaScript (ADR 0019): a form posted to an action runs here, before the page; a success
  * redirects to the same page with the modal open on its success block (or the footer on its
@@ -112,7 +113,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   return withHeaders(response, {
     csp:
       !cspExempt(context.url.pathname) &&
-      cspHeaderName({ draft, previewHost: context.url.origin === previewOrigin }),
+      cspHeaderName({
+        draft,
+        previewHost: context.url.origin === previewOrigin,
+        enforced: CSP_ENFORCED && import.meta.env.PROD,
+      }),
     noindex: isUnlistedHost(context.url.origin, previewOrigin),
   });
 });
