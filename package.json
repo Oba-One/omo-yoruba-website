@@ -24,6 +24,7 @@
     "format": "biome format --write .",
     "typecheck": "bun run --filter '*' typecheck",
     "typegen": "bun run --filter @oy/content typegen",
+    "csp:hashes": "bun scripts/generate-csp-hashes.ts",
     "seed": "bun run --filter @oy/content seed",
     "export": "bun run --filter @oy/content export",
     "migrate": "bun run --filter @oy/content migrate",

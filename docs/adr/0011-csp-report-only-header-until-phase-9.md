@@ -4,6 +4,9 @@ status: proposed
 
 # The CSP is a report-only header from middleware until Phase 9
 
+Amended by ADR 0062: the policy allows inline scripts by hash and inline styles outright, and is enforced once
+the live site reports clean; draft requests and the preview host keep it report-only.
+
 Astro's built-in `security.csp` renders a `<meta>` tag, has no report-only mode, and is
 documented as unsupported with the `<ClientRouter />` cross-fade the brief requires
 (`docs/research/astro-7-csp-cache-env.md`). So `packages/web` keeps `security.csp: false` and
