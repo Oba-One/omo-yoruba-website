@@ -345,7 +345,7 @@ describe('buildImpactPage', () => {
     });
   });
 
-  it('lists every partner, funders first, with its kind and line, and hides the section by its option', () => {
+  it('preserves the query order with each partner kind and line, and hides the section by its option', () => {
     const partners = [
       { _id: 'p-a', name: '[ A sponsor ]', url: null, kind: 'sponsor', line: null, logo: null },
       {
@@ -360,14 +360,14 @@ describe('buildImpactPage', () => {
     ];
     const view = buildImpactPage(withData({ partners }), options).partners;
     expect(view.items.map((partner) => partner.name)).toEqual([
-      '[ A funder ]',
-      '[ A partner ]',
       '[ A sponsor ]',
+      '[ A partner ]',
+      '[ A funder ]',
     ]);
     expect(view.items.map(({ kind, line, url }) => ({ kind, line, url }))).toEqual([
-      { kind: 'funder', line: undefined, url: undefined },
-      { kind: 'partner', line: '[ What they do with us ]', url: 'https://example.org' },
       { kind: 'sponsor', line: undefined, url: undefined },
+      { kind: 'partner', line: '[ What they do with us ]', url: 'https://example.org' },
+      { kind: 'funder', line: undefined, url: undefined },
     ]);
     expect(view.intro).toBe('Everyone who has supported the work.');
     expect(
