@@ -108,9 +108,43 @@ test.describe('site chrome', () => {
     expect(headers['x-content-type-options']).toBe('nosniff');
     expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
     expect(headers['permissions-policy']).toContain('camera=()');
-    const policy = headers['content-security-policy-report-only'] ?? '';
+    // Report-only under `astro dev`, enforced on a deployed site (PLAYWRIGHT_TEST_BASE_URL).
+    const policy =
+      headers['content-security-policy'] ?? headers['content-security-policy-report-only'] ?? '';
     expect(policy).toMatch(/script-src 'self' 'sha256-/);
     expect(policy).not.toMatch(/script-src[^;]*'unsafe-inline'/);
+  });
+
+  test('the router swaps under the same policy and fully loads a page from another deploy (ADR 0062)', async ({
+    page,
+  }) => {
+    const marker = () =>
+      page.evaluate(() => (window as unknown as { sameDocument?: boolean }).sameDocument === true);
+    await page.goto('/');
+    await page.evaluate(() => Object.assign(window, { sameDocument: true }));
+    await page.locator('footer a[href="/our-story"]').first().click();
+    await expect(page).toHaveURL(/\/our-story$/);
+    await expect(page.locator('h1')).toBeVisible();
+    expect(await marker()).toBe(true);
+
+    // The next page as a deploy with another policy would serve it.
+    await page.route('**/impact', async (route) => {
+      const response = await route.fetch();
+      const html = (await response.text()).replace(
+        /(<meta name="oy-csp" content=")[^"]*"/,
+        '$1from-another-deploy"',
+      );
+      await route.fulfill({ response, body: html });
+    });
+    const fullLoad = page.waitForEvent('load');
+    await page.locator('footer a[href="/impact"]').first().click();
+    await fullLoad;
+    await expect(page).toHaveURL(/\/impact$/);
+    await expect(page.locator('h1')).toBeVisible();
+    expect(await marker()).toBe(false);
+    // The full load replaced the swap: one history entry for the page, so Back returns to Our Story.
+    await page.goBack();
+    await expect(page).toHaveURL(/\/our-story$/);
   });
 
   test('no inline script breaks the policy, on load, in the Give Dialog or across a router swap (ADR 0062)', async ({
