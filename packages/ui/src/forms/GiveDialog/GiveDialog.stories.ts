@@ -25,7 +25,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Every Donate trigger opens this dialog around the Zeffy embed. The site hands the iframe over as a template from a server island; the dialog mounts it on first open, sizes it by Zeffy's own messages and falls back after eight seconds to the mailing address and the contact enquiry. Under the form a link opens Zeffy's own page for it in a new tab, where Apple Pay and Google Pay can show. While the settings hold no Zeffy URL the island answers Pending.",
+          "Every Donate trigger opens this dialog around the Zeffy embed. The page carries the iframe in a template, which the dialog mounts on first open, sizes it by Zeffy's own messages and falls back after eight seconds to the mailing address and the contact enquiry. Under the form a link opens Zeffy's own page for it in a new tab, where Apple Pay and Google Pay can show. While the settings hold no Zeffy URL the page shows Pending in its place.",
       },
     },
   },
@@ -63,7 +63,7 @@ export const FallbackWithAddress: Story = {
   },
 };
 
-/** The island's answer while the Zeffy URL is empty: no Try again, the Pending chip in the check line. */
+/** The page's answer while the Zeffy URL is empty: no Try again, the Pending chip in the check line. */
 export const Pending: Story = { args: { mode: 'pending', slots: {} } };
 
 /** Under 720px the dialog is the bottom sheet. */

@@ -1,7 +1,7 @@
 ---
 /**
  * The chrome around every page (ROUTES section 2): the tokens, the nav, the page, the footer,
- * the Enquiry Modal, the Give Dialog with its server island and, once Organization details hold the
+ * the Enquiry Modal, the Give Dialog with its Zeffy frame and, once Organization details hold the
  * membership form, the Join Dialog (ADR 0050), the cross-fade at 380ms that reduced motion switches
  * off, the gold progress bar, the form bridge and the analytics bridge.
  * Site settings come from one query per render; a failed read renders Pending, never an
@@ -26,6 +26,7 @@ import {
 } from '@oy/content/enquiry-kinds';
 import { siteSettingsQuery } from '@oy/content/queries';
 import NewsletterBand from '@oy/ui/bands/NewsletterBand/NewsletterBand.astro';
+import Pending from '@oy/ui/core/Pending/Pending.astro';
 import EnquiryModal from '@oy/ui/forms/EnquiryModal/EnquiryModal.astro';
 import GiveDialog from '@oy/ui/forms/GiveDialog/GiveDialog.astro';
 import JoinDialog from '@oy/ui/forms/JoinDialog/JoinDialog.astro';
@@ -36,7 +37,6 @@ import ProgressBar from '@oy/ui/page/ProgressBar/ProgressBar.astro';
 import { VisualEditing } from '@sanity/astro/visual-editing';
 import Analytics from '../components/Analytics.astro';
 import FormBridge from '../components/FormBridge.astro';
-import ZeffyEmbed from '../components/ZeffyEmbed.astro';
 import ZeffyFrame from '../components/ZeffyFrame.astro';
 import { framableSrc } from '../lib/csp';
 import { ENQUIRY_ACTIONS, NEWSLETTER_ACTION } from '../lib/forms/action-paths';
@@ -113,8 +113,11 @@ if (modal.state === 'error' || newsletter.state === 'error') {
 // page (ADR 0060). A page answering an error names none, since it is not the page at that address.
 const canonical = (Astro.response.status ?? 200) < 400 ? canonicalUrl(path) : undefined;
 
-// The same check as the island's, so the dialog never waits for a frame the island refuses. Zeffy's
-// own page for the same form is the dialog's link to Apple Pay and Google Pay (ADR 0045).
+// Only an address on Zeffy's origin becomes the donation form's frame (a javascript: URL written through the
+// API would run in the site's origin). Zeffy's own page for the same form is the dialog's link to Apple Pay
+// and Google Pay (ADR 0045). The frame rides this page, as the Join Dialog's does, which a publish of the
+// settings purges: a server island would ship an inline script that changes every render, which no CSP hash
+// can allow (ADR 0062).
 const giveForm = framableSrc(settings?.zeffyEmbedUrl);
 const giveMode = giveForm ? 'embed' : 'pending';
 const givePage = zeffyPageHref(giveForm);
@@ -216,7 +219,13 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
         address={settings?.address}
         ein={settings?.ein}
       >
-        <ZeffyEmbed slot="embed" server:defer />
+        {
+          giveForm ? (
+            <ZeffyFrame slot="embed" address={giveForm} form="give" title="Zeffy donation form" />
+          ) : (
+            <Pending slot="embed" what="the Zeffy link" />
+          )
+        }
       </GiveDialog>
       {
         joinForm && (

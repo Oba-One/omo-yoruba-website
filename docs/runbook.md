@@ -643,14 +643,17 @@ rollback is a Sanity document history restore in the Studio.
 
 ## Content Security Policy
 
-Status: report-only (ADR 0011). `packages/web/src/lib/csp.ts` is the one allow-list;
+Status: report-only until the live site reports clean, then enforced (ADR 0011, ADR 0062).
+`packages/web/src/lib/csp.ts` is the one allow-list;
 `src/middleware.ts` sends it as `Content-Security-Policy-Report-Only` on every route
 except `/admin` and `/api/csp-report`. Violations are POSTed to `/api/csp-report` and
 appear in the Vercel function logs as `[csp-report]` lines with the document, directive,
 blocked URL and source. The endpoint accepts report content types only, caps a body at 32 KB
 and a batch at 20 reports, and truncates fields, since anyone can post to it.
 
-Allowed today: `'self'` everywhere; scripts and connections to PostHog
+Allowed today: `'self'` everywhere; the hash of each component's `<script is:inline>`
+(`csp-hashes.ts`, written by `bun run csp:hashes`; `bun run check` fails while it is out of date);
+inline styles; scripts and connections to PostHog
 (`us.i.posthog.com`, `us-assets.i.posthog.com`); images from `cdn.sanity.io`; connections
 to `*.api.sanity.io` and `*.apicdn.sanity.io`; frames from `www.zeffy.com` and
 `www.youtube-nocookie.com`; `frame-ancestors 'self'` for the embedded Presentation tool.
@@ -667,9 +670,18 @@ no YouTube or Google origin is in `script-src`, `img-src` or `connect-src`. `fra
 origin rather than reading `frame-src`, so neither the Give Dialog nor the Join Dialog frames the player.
 
 To allow a new origin: add it to the directive in `csp.ts`, update this list, and note it
-in the pull request body. Expect `style-src` reports from Astro's inlined small stylesheets
-and any `style=""` attribute; Phase 9 decides between `build.inlineStylesheets: 'never'`
-plus hashes, `'unsafe-inline'` for styles, and Astro's built-in meta CSP (wayfinder ticket 13).
+in the pull request body. A new inline script needs no entry: add it as `<script is:inline>` (no
+other attribute) and run `bun run csp:hashes`. Astro keeps bundled scripts as files
+(`vite.build.assetsInlineLimit`), and the site has no server island, since neither could pass a
+hash fixed at build.
+
+Every answer the function gives also carries `X-Content-Type-Options: nosniff`,
+`Referrer-Policy: strict-origin-when-cross-origin` and a `Permissions-Policy` with the camera,
+microphone, location and ad topics off (`SECURITY_HEADERS` in `csp.ts`). Vercel adds HSTS.
+
+To check a deploy: open a few pages, the Give Dialog, an album's Lightbox and a video, and move
+between pages; the browser console lists any `Content-Security-Policy` report, and the Vercel
+function logs list the same as `[csp-report]` lines. Enforce only when there are none.
 
 ## CI and merging
 
