@@ -364,6 +364,10 @@ way.
 3. Fill in the boxes. The small grey words under each name say what to write.
 4. Check your work and publish it.
 
+For a partner, choose **Odunde Festival and Impact pages** under **Shown on**
+to include it on both pages. Both grids show the same selected partners in name
+order. Other partner documents stay in the Studio without appearing in these grids.
+
 For a member's quote, turn on **Permission to name** only if the person has
 agreed to be named. While it is off, the website shows their initials.
 

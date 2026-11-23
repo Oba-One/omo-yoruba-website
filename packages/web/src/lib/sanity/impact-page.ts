@@ -7,11 +7,10 @@
  * photograph, the outcomes headed by their subjects with slots for the prototype's subjects not yet
  * covered and the links to their pages, the civic prose with the cells read from the festival's editions,
  * the voices with their slots, the six photographs, governance (the cells and the newest document of each
- * kind), every partner by kind and name, the closing ask's sentence from the partnerships routing contact,
+ * kind), the Odunde partners in the query's name order, the closing ask's sentence from the partnerships routing contact,
  * and the `data-sanity` attributes for click-to-edit in draft mode.
  */
 import { pageEdition, pastEdition } from '@oy/content/lead-event';
-import { partnerKindRank } from '@oy/content/partners';
 import {
   GOVERNANCE_NOTE_PENDING,
   IMPACT_OUTCOME_SLOTS,
@@ -326,8 +325,6 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       intro: data?.fundersIntro ?? undefined,
       items: (data?.partners ?? [])
         .filter((partner) => cleanText(partner.name))
-        // In the kinds' own order (`@oy/content/partners`), a partner of no known kind last.
-        .sort((a, b) => partnerKindRank(cleanText(a.kind)) - partnerKindRank(cleanText(b.kind)))
         .map((partner) => ({
           _id: partner._id,
           name: partner.name,
