@@ -28,7 +28,7 @@ describe('GiveDialog', () => {
     expect(text(body.querySelector('[data-lead]'))).toBe('Amount and card details, all here.');
     const host = body.querySelector('oy-zeffy-dialog');
     expect(host?.getAttribute('data-timeout')).toBe('8000');
-    // The listener hears the origin and the form the island's address names (ADR 0045), under a name
+    // The listener hears the origin and the form the frame's address names (ADR 0045), under a name
     // Zeffy's own embed script would not take for one of its containers (`[data-zeffy-embed]`).
     expect(host?.getAttribute('data-zeffy-origin')).toBe(ZEFFY_ORIGIN);
     expect(host?.getAttribute('data-form')).toBe('give');
@@ -159,7 +159,7 @@ describe('GiveDialog, running its element', () => {
     window.dispatchEvent(new MessageEvent('message', { data, origin }));
   };
 
-  /** Opens the dialog once the island's template has arrived with its frame, with the timers faked. */
+  /** Opens the dialog once the page's template is there with its frame, with the timers faked. */
   const openWithFrame = async () => {
     const body = await renderLive(Closed);
     body

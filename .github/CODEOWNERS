@@ -12,12 +12,12 @@
 /packages/web/src/middleware.ts                      @Oba-One
 /packages/web/src/pages/api/                         @Oba-One
 /packages/web/src/components/FormBridge.astro        @Oba-One
-/packages/web/src/components/ZeffyEmbed.astro        @Oba-One
 /packages/web/src/components/ZeffyFrame.astro        @Oba-One
 /packages/web/src/layouts/SiteLayout.astro           @Oba-One
 /packages/web/src/lib/cache-policy.ts                @Oba-One
 /packages/web/src/lib/cache.ts                       @Oba-One
 /packages/web/src/lib/csp.ts                         @Oba-One
+/packages/web/src/lib/csp-hashes.ts                  @Oba-One
 /packages/web/astro.config.ts                        @Oba-One
 /packages/content/src/enquiry-*                      @Oba-One
 /packages/content/src/schema/documents/enquiry.ts    @Oba-One

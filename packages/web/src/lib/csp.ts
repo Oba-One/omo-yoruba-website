@@ -1,24 +1,43 @@
 /**
  * The one Content Security Policy allow-list for the site.
  *
- * Phase 0 to 8: sent as Content-Security-Policy-Report-Only by src/middleware.ts,
- * with violations posted to /api/csp-report. Phase 9 flips it to enforcement
- * (docs/adr/0011, docs/runbook.md). Third parties allowed: Sanity, Zeffy,
+ * Sent as Content-Security-Policy-Report-Only by src/middleware.ts, with violations
+ * posted to /api/csp-report, until the policy below proves clean on the live site
+ * (ADR 0011, ADR 0062, docs/runbook.md). Inline scripts run by hash: each is a
+ * component's `<script is:inline>`, hashed from its source into csp-hashes.ts.
+ * Inline styles are allowed outright: the view transitions write a style element
+ * per animated element, named per render. Third parties allowed: Sanity, Zeffy,
  * PostHog, and YouTube's no-cookie player as a frame an album's video swaps in
  * once a visitor presses play (ADR 0051). Eventbrite is a link, not an embed.
  * Fonts are self-hosted.
  */
 import { YOUTUBE_EMBED_ORIGIN } from '@oy/content/videos';
 import { ZEFFY_ORIGIN } from '@oy/ui/forms/ZeffyDialog/zeffy.ts';
+import { INLINE_SCRIPT_HASHES } from './csp-hashes';
 import { STUDIO_BASE_PATH } from './paths';
 
 export const CSP_REPORT_PATH = '/api/csp-report';
+
+/**
+ * Sent with every answer the site's function gives (ADR 0062): no type sniffing, the origin alone as the
+ * referrer to another site, and no camera, microphone, location or ad-topics API for the page or its frames.
+ * Payment and fullscreen stay as browsers set them, for Zeffy's form and YouTube's player.
+ */
+export const SECURITY_HEADERS: Readonly<Record<string, string>> = {
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+};
 export const CSP_REPORT_GROUP = 'csp-endpoint';
 
 export const cspDirectives: Readonly<Record<string, readonly string[]>> = {
   'default-src': ["'self'"],
-  'script-src': ["'self'", 'https://us-assets.i.posthog.com'],
-  'style-src': ["'self'"],
+  'script-src': [
+    "'self'",
+    ...INLINE_SCRIPT_HASHES.map((hash) => `'${hash}'`),
+    'https://us-assets.i.posthog.com',
+  ],
+  'style-src': ["'self'", "'unsafe-inline'"],
   'img-src': ["'self'", 'data:', 'https://cdn.sanity.io'],
   'font-src': ["'self'"],
   'connect-src': [
@@ -34,6 +53,28 @@ export const cspDirectives: Readonly<Record<string, readonly string[]>> = {
   'base-uri': ["'self'"],
   'object-src': ["'none'"],
 };
+
+/** Whether the policy blocks on the public site; true once the live site reports clean (ADR 0062). */
+export const CSP_ENFORCED = false;
+
+/**
+ * The header the policy goes out under. A draft request and the preview host always report only: the Visual
+ * Editing overlay hydrates through Astro's own inline island script, and the Studio frames the preview host
+ * from another origin, which `frame-ancestors 'self'` would refuse.
+ */
+export function cspHeaderName({
+  draft,
+  previewHost,
+  enforced = CSP_ENFORCED,
+}: {
+  draft: boolean;
+  previewHost: boolean;
+  enforced?: boolean;
+}): 'Content-Security-Policy' | 'Content-Security-Policy-Report-Only' {
+  return enforced && !draft && !previewHost
+    ? 'Content-Security-Policy'
+    : 'Content-Security-Policy-Report-Only';
+}
 
 export function buildCsp(
   directives: Readonly<Record<string, readonly string[]>> = cspDirectives,

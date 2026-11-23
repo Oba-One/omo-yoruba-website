@@ -2,6 +2,8 @@
 
 Amended by ADR 0045: the timer is eight seconds, the iframe's address carries Zeffy's v2 parameters so the form
 reports its readiness and height to the dialog, and the dialog links Zeffy's own page for the form.
+Amended by ADR 0062: the Give Dialog's frame rides the page, as the Join Dialog's does, in place of a server
+island, whose inline script changes every render and so cannot pass a hashed CSP.
 Amended by ADR 0050: the Join Dialog is one more native dialog, for Zeffy's membership form; its frame rides the
 page rather than an island, and `#join` opens it on load.
 

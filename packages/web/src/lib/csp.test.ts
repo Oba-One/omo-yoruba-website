@@ -1,7 +1,15 @@
 import { YOUTUBE_EMBED_ORIGIN, youtubeEmbedSrc } from '@oy/content/videos';
 import { ZEFFY_ORIGIN } from '@oy/ui/forms/ZeffyDialog/zeffy.ts';
 import { describe, expect, it } from 'vitest';
-import { buildCsp, cspDirectives, cspExempt, framableSrc, reportingEndpointsHeader } from './csp';
+import {
+  buildCsp,
+  cspDirectives,
+  cspExempt,
+  cspHeaderName,
+  framableSrc,
+  reportingEndpointsHeader,
+  SECURITY_HEADERS,
+} from './csp';
 
 describe('buildCsp', () => {
   it('serialises every directive in order and ends with the report directives', () => {
@@ -34,7 +42,7 @@ describe('buildCsp', () => {
     expect(header).toContain('https://www.zeffy.com');
     expect(header).toContain('https://www.youtube-nocookie.com');
     expect(header).toContain('https://us.i.posthog.com');
-    expect(header).not.toContain('unsafe-inline');
+    expect(cspDirectives['script-src']?.join(' ')).not.toContain('unsafe-inline');
     expect(header).not.toContain('eventbrite');
   });
 });
@@ -102,5 +110,27 @@ describe('framableSrc', () => {
     }
     const form = 'https://www.zeffy.com/en-US/embed/donation-form/example';
     expect(framableSrc(form)).toBe(form);
+  });
+});
+
+describe('SECURITY_HEADERS', () => {
+  it('stop type sniffing, trim the referrer and switch off the device APIs the site never uses (ADR 0062)', () => {
+    expect(SECURITY_HEADERS['X-Content-Type-Options']).toBe('nosniff');
+    expect(SECURITY_HEADERS['Referrer-Policy']).toBe('strict-origin-when-cross-origin');
+    expect(SECURITY_HEADERS['Permissions-Policy']).toContain('camera=()');
+    // Zeffy's form takes payments and YouTube's player goes full screen inside their frames.
+    expect(SECURITY_HEADERS['Permissions-Policy']).not.toMatch(/payment|fullscreen/);
+  });
+});
+
+describe('cspHeaderName', () => {
+  it('enforces on the public site only once switched on, and never for a draft or on the preview host', () => {
+    const report = 'Content-Security-Policy-Report-Only';
+    expect(cspHeaderName({ draft: false, previewHost: false })).toBe(report);
+    expect(cspHeaderName({ draft: false, previewHost: false, enforced: true })).toBe(
+      'Content-Security-Policy',
+    );
+    expect(cspHeaderName({ draft: true, previewHost: false, enforced: true })).toBe(report);
+    expect(cspHeaderName({ draft: false, previewHost: true, enforced: true })).toBe(report);
   });
 });
