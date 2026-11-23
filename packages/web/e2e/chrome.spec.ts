@@ -101,6 +101,44 @@ test.describe('site chrome', () => {
     }
   });
 
+  test('a page carries the security headers and a policy that names its inline scripts by hash', async ({
+    request,
+  }) => {
+    const headers = (await request.get('/')).headers();
+    expect(headers['x-content-type-options']).toBe('nosniff');
+    expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    expect(headers['permissions-policy']).toContain('camera=()');
+    const policy = headers['content-security-policy-report-only'] ?? '';
+    expect(policy).toMatch(/script-src 'self' 'sha256-/);
+    expect(policy).not.toMatch(/script-src[^;]*'unsafe-inline'/);
+  });
+
+  test('no inline script breaks the policy, on load, in the Give Dialog or across a router swap (ADR 0062)', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const seen: string[] = [];
+      Object.assign(window, { cspViolations: seen });
+      document.addEventListener('securitypolicyviolation', (event) => {
+        if (event.effectiveDirective.startsWith('script-src')) {
+          seen.push(`${event.blockedURI} ${event.sourceFile}:${event.lineNumber}`);
+        }
+      });
+    });
+    await page.goto('/donate#give');
+    const give = page.locator('dialog#give');
+    await expect(give).toHaveAttribute('open', '');
+    await page.keyboard.press('Escape');
+    await expect(give).not.toHaveAttribute('open', '');
+    await page.locator('footer a[href="/our-story"]').first().click();
+    await expect(page).toHaveURL(/\/our-story$/);
+    await expect(page.locator('h1')).toBeVisible();
+    const violations = await page.evaluate(
+      () => (window as unknown as { cspViolations: string[] }).cspViolations,
+    );
+    expect(violations).toEqual([]);
+  });
+
   test('the cross-fade honours reduced motion', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');

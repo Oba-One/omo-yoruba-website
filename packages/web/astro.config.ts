@@ -106,6 +106,12 @@ export default defineConfig({
   // @sanity/astro, converts it (ADR 0041). A build never had the problem.
   vite: {
     optimizeDeps: { include: ['@sanity/astro > @sanity/visual-editing/react'] },
+    // A bundled script stays a file under /_astro, which the CSP allows as 'self'. Inlined, as Astro does a
+    // script under 4 KB, each page's small bundle would need a hash of its own (ADR 0062). Other assets keep
+    // Vite's default.
+    build: {
+      assetsInlineLimit: (file: string) => (file.endsWith('.js') ? false : undefined),
+    },
   },
 
   // Astro's built-in CSP renders a <meta> tag, has no report-only mode, and is not
