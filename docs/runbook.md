@@ -220,9 +220,28 @@ Organization details and the held-back switches included.
 
 The deployed schema is what agents read to learn each field's shape and rules, and `development` holds two
 copies of it. The Studio uploads its own each time an administrator opens `/admin` on the host it is
-registered at (`https://omo-yoruba-khaki.vercel.app/admin`; the registration has to follow the site when D2
-moves it: on 11 October 2026 the project listed two Studios, one made on 13 September and one that day,
-without naming the host of either). The Sanity MCP lists that copy as Studio-deployed and `get_schema` returns it by default, but it
+registered at, `https://www.omoyorubasocal.org/admin` (application `k7mor6teg4pvtixjk9zu2ty5`).
+On 22 November 2026, automated validation failed because the old external registration for
+`https://omo-yoruba-khaki.vercel.app/admin` (`v2o8i1q679t7ai5u4fqb4rpt`) advertised the same
+`omo-yoruba` workspace. Removing that obsolete registration restored schema selection: the Sanity
+MCP listed one Studio and validated all four headline figures. If the duplicate-registration error
+returns, inspect the applications' actual external URLs before removing an obsolete entry; keep the
+canonical `www` registration. Removing an external registration does not remove content or its hosting.
+The validation tool runs built-in rules but reports `complete=false` because it cannot execute custom
+callbacks; it does not replace Studio validation.
+
+Full Studio validation also passed on 22 November 2026 for the published `stat-years`,
+`stat-cultural-spending`, `stat-associations` and `stat-community` documents. A temporary NDJSON snapshot
+held only those four documents from `qsya7q8x` / `development`, read with the Viewer token. From
+`packages/content`, `bash scripts/sanity.sh documents validate` ran with `--workspace omo-yoruba`,
+`--project-id qsya7q8x`, `--dataset development`, `--file` pointing at that snapshot, `--level info`,
+`--format json` and `--yes`; `SANITY_AUTH_TOKEN` supplied the existing Viewer token without an
+interactive login. It returned `[]` and exited 0: no errors, warnings or informational findings.
+A separate temporary control copy triggered both custom callbacks: an em dash produced an error,
+and the organization's name without its marks produced a warning. That control exited 1 as expected.
+The temporary snapshots were deleted; CMS content was unchanged.
+
+The Sanity MCP lists the Studio's copy as Studio-deployed and `get_schema` returns it by default, but it
 folds the voice-checked rules into one `custom` rule, so it does not say that a name or a title is required,
 and it drops built-in checks and hidden conditions. The CLI writes `_.schemas.omo-yoruba` (the MCP lists it as
 Legacy; the name follows the workspace in `packages/content/src/studio/config.ts`), which keeps those rules.
