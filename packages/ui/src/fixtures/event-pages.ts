@@ -31,7 +31,7 @@ export const FESTIVAL_HEADER = {
   image: PHOTOS.processionDrummer,
   actions: [
     { label: 'Plan your day', kind: 'anchor', href: '#plan' },
-    { label: 'Apply as a vendor', kind: 'enquiry', enquiryKind: 'vendor' },
+    { label: 'Take part in Odunde', kind: 'anchor', href: '#participate' },
   ],
 };
 

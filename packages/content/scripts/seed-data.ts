@@ -537,7 +537,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       ]),
       partnersIntro: 'The day is open because these organizations help pay for it.',
       primaryAction: cta('Plan your day', 'anchor', '#plan'),
-      secondaryActions: withKeys('action', [cta('Apply as a vendor', 'enquiry', 'vendor')]),
+      secondaryActions: withKeys('action', [cta('Take part in Odunde', 'anchor', '#participate')]),
     }),
   );
 

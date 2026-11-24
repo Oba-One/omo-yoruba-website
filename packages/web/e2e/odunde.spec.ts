@@ -23,6 +23,7 @@ test.describe('the Odunde Festival page', () => {
     const expected = [
       'top',
       'glance',
+      'participate',
       'about-festival',
       'zones',
       ...(schedule === 'hidden' ? [] : ['schedule']),
@@ -32,6 +33,20 @@ test.describe('the Odunde Festival page', () => {
       'partners',
     ];
     expect(order.slice(0, expected.length)).toEqual(expected);
+    const participation = page.locator('#participate');
+    await expect(participation.locator('.oy-enquiry-card')).toHaveCount(3);
+    await expect(participation.locator('.oy-btn--secondary')).toHaveCount(3);
+    await expect(participation.locator('.oy-btn--primary')).toHaveCount(0);
+    const sizes = await participation.locator('a[data-enquiry]').evaluateAll((links) =>
+      links.map((link) => ({
+        fontSize: getComputedStyle(link).fontSize,
+        height: link.getBoundingClientRect().height,
+      })),
+    );
+    for (const size of sizes) {
+      expect(size.fontSize).toBe(sizes[0]?.fontSize);
+      expect(size.height).toBeGreaterThanOrEqual(44);
+    }
     const grounds = await page
       .locator('main > section')
       .evaluateAll((sections) =>
@@ -48,6 +63,29 @@ test.describe('the Odunde Festival page', () => {
     // The nav marks Events as the current section (the dropdown trigger hides under 880px).
     await expect(page.locator('.oy-nav-drop[data-current="true"]')).toHaveCount(1);
   });
+
+  for (const [kind, label] of [
+    ['sponsor', 'Become a sponsor'],
+    ['volunteer', 'Volunteer'],
+    ['vendor', 'Apply as a vendor'],
+  ] as const) {
+    test(`the early ${kind} card opens its form and returns focus on cancel`, async ({ page }) => {
+      await page.goto('/odunde');
+      const trigger = page.locator('#participate').getByRole('link', { name: label, exact: true });
+      await trigger.click();
+      const dialog = page.locator('dialog#enquiry');
+      await expect(dialog).toHaveAttribute('open', '');
+      await expect(dialog).toHaveAttribute('data-kind', kind);
+      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS[kind].title);
+      const form = dialog.locator(`form[data-kind="${kind}"]`);
+      await expect(form).toBeVisible();
+      await expect(page.locator(`#eq-${kind}-${ENQUIRY_SPECS[kind].fields[0]?.id}`)).toBeFocused();
+      await expect(form.locator('.oy-form-help')).toContainText('Rather speak to a person?');
+      await form.getByRole('button', { name: 'Cancel', exact: true }).click();
+      await expect(dialog).not.toHaveAttribute('open', '');
+      await expect(trigger).toBeFocused();
+    });
+  }
 
   test('shows the Studio facts or the registry chips, never an invented one', async ({ page }) => {
     await page.goto('/odunde');

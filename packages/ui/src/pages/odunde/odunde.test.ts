@@ -18,6 +18,8 @@ describe('the Odunde page-section stories', () => {
     expect(photo?.querySelector('header.oy-phead--photo')).not.toBeNull();
     expect(photo?.querySelectorAll('h1')).toHaveLength(1);
     expect(photo?.querySelectorAll('#glance .oy-glance > div')).toHaveLength(5);
+    expect(photo?.querySelectorAll('#participate .oy-enquiry-card')).toHaveLength(3);
+    expect(photo?.querySelector('#glance + #participate + #about-festival')).not.toBeNull();
     const about = photo?.querySelector('#about-festival');
     expect(text(about?.querySelector('h2'))).toBe('What Odunde is');
     expect(about?.querySelectorAll('.oy-prose p')).toHaveLength(2);

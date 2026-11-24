@@ -23,6 +23,7 @@ import PhotoCarousel from '@oy/ui/media/PhotoCarousel/PhotoCarousel.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
 import VideoGrid from '@oy/ui/media/VideoGrid/VideoGrid.astro';
 import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
+import FestivalParticipation from '@oy/ui/page/FestivalParticipation/FestivalParticipation.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
 import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
@@ -67,6 +68,7 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
       edit={page.edit.phead}
     />
     <GlanceStrip facts={page.glance} />
+    <FestivalParticipation />
 
     <Section id="about-festival" labelledby="about-festival-heading">
       <Split>

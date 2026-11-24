@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'astro/types';
 import PageRoot from '../../page/PageRoot/PageRoot.astro';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
-import { glance, header, whatItIs } from './sections';
+import { glance, header, participation, whatItIs } from './sections';
 
 type Args = StoryArgs<ComponentProps<typeof PageRoot>>;
 
@@ -23,9 +23,15 @@ export default meta;
 type Story = StoryObj<Args>;
 
 export const Photo: Story = {
-  args: { options: { phead: 'photo' }, slots: { default: [header('photo'), glance, whatItIs] } },
+  args: {
+    options: { phead: 'photo' },
+    slots: { default: [header('photo'), glance, participation, whatItIs] },
+  },
 };
 
 export const Slim: Story = {
-  args: { options: { phead: 'slim' }, slots: { default: [header('slim'), glance, whatItIs] } },
+  args: {
+    options: { phead: 'slim' },
+    slots: { default: [header('slim'), glance, participation, whatItIs] },
+  },
 };

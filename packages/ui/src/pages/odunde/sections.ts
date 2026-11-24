@@ -26,6 +26,7 @@ import {
 } from '../../fixtures/event-pages';
 import PhotoTile from '../../media/PhotoTile/PhotoTile.astro';
 import ButtonRow from '../../page/ButtonRow/ButtonRow.astro';
+import FestivalParticipation from '../../page/FestivalParticipation/FestivalParticipation.astro';
 import GlanceStrip from '../../page/GlanceStrip/GlanceStrip.astro';
 import Handoff from '../../page/Handoff/Handoff.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
@@ -50,6 +51,8 @@ export const header = (variant: 'photo' | 'slim'): SlotValue => ({
 });
 
 export const glance: SlotValue = { component: GlanceStrip, props: { facts: FESTIVAL_GLANCE } };
+
+export const participation: SlotValue = { component: FestivalParticipation };
 
 export const whatItIs: SlotValue = {
   component: Section,
