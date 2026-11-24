@@ -20,7 +20,7 @@ describe('FestivalParticipation', () => {
       const card = cards[at];
       const kind = card?.getAttribute('data-kind');
       const trigger = card?.querySelector('a[data-enquiry]');
-      expect(text(card?.querySelector('.oy-card-body > p')).length).toBeGreaterThan(0);
+      expect(text(card?.querySelector('.oy-card-body > p'))).toBeTruthy();
       expect(trigger?.getAttribute('href')).toBe(`?enquiry=${kind}#enquiry`);
       expect(text(trigger)).toContain(label);
       expect(trigger?.classList.contains('oy-btn--secondary')).toBe(true);
