@@ -90,9 +90,9 @@ export const PAGE_ACTIONS: Readonly<Record<string, readonly PageAction[]>> = {
       label: 'Plan your day',
     },
     {
-      enquiryKind: 'vendor',
-      kind: 'enquiry',
-      label: 'Apply as a vendor',
+      href: '#participate',
+      kind: 'anchor',
+      label: 'Take part in Odunde',
     },
   ],
   galaPage: [

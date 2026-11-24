@@ -60,6 +60,13 @@ test.describe('the Odunde Festival page', () => {
     const phead = await page.locator('body').getAttribute('data-phead');
     expect(phead).toMatch(/^(photo|slim)$/);
     await expect(page.locator(`header#top.oy-phead--${phead}`)).toHaveCount(1);
+    const takePart = page
+      .locator('header#top')
+      .getByRole('link', { name: 'Take part in Odunde', exact: true });
+    await expect(takePart).toHaveAttribute('href', '#participate');
+    await takePart.click();
+    await expect(page).toHaveURL(/\/odunde#participate$/);
+    await expect(participation.getByRole('heading', { level: 2 })).toBeInViewport();
     // The nav marks Events as the current section (the dropdown trigger hides under 880px).
     await expect(page.locator('.oy-nav-drop[data-current="true"]')).toHaveCount(1);
   });

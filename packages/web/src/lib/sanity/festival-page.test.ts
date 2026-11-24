@@ -239,8 +239,13 @@ describe('buildFestivalPage', () => {
     const view = buildFestivalPage(seeded, options);
     expect(view.header.actions.map((action) => action?.label)).toEqual([
       'Plan your day',
-      'Apply as a vendor',
+      'Take part in Odunde',
     ]);
+    expect(view.header.actions[1]).toEqual({
+      label: 'Take part in Odunde',
+      kind: 'anchor',
+      href: '#participate',
+    });
   });
 
   it('resolves the photographs with their alt and caption, and cleans the head of stega', () => {
