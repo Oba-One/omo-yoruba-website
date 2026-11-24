@@ -124,9 +124,9 @@ describe('SECURITY_HEADERS', () => {
 });
 
 describe('cspHeaderName', () => {
-  it('enforces on the public site only once switched on, and never for a draft or on the preview host', () => {
+  it('enforces on the public site when switched on, and never for a draft or on the preview host', () => {
     const report = 'Content-Security-Policy-Report-Only';
-    expect(cspHeaderName({ draft: false, previewHost: false })).toBe(report);
+    expect(cspHeaderName({ draft: false, previewHost: false, enforced: false })).toBe(report);
     expect(cspHeaderName({ draft: false, previewHost: false, enforced: true })).toBe(
       'Content-Security-Policy',
     );

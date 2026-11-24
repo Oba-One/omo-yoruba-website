@@ -776,7 +776,7 @@ export const partner = defineType({
       title: 'Shown on',
       type: 'array',
       of: [{ type: 'string' }],
-      description: 'Impact lists every partner; the Odunde page lists its own.',
+      description: 'The Odunde and Impact pages show the same selected partners.',
       options: { list: titled(PARTNER_SCOPES, PARTNER_SCOPE_TITLES) },
     }),
   ],

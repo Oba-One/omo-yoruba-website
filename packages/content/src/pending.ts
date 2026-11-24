@@ -945,7 +945,13 @@ const REGISTER_PRESENCE: readonly PresenceEntry[] = [
     where: 'Our Story, staff and volunteers',
     what: 'the staff and volunteers to list',
   },
-  { type: 'partner', minimum: 1, where: 'Impact and Odunde', what: 'partner and funder names' },
+  {
+    type: 'partner',
+    minimum: 1,
+    filter: '"odunde" in scope',
+    where: 'Impact and Odunde',
+    what: 'partner and funder names',
+  },
   // The gallery and past years show an album only with a photograph, so an empty one does not count.
   {
     type: 'album',

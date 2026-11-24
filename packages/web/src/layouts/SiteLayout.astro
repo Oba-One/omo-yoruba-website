@@ -38,7 +38,8 @@ import { VisualEditing } from '@sanity/astro/visual-editing';
 import Analytics from '../components/Analytics.astro';
 import FormBridge from '../components/FormBridge.astro';
 import ZeffyFrame from '../components/ZeffyFrame.astro';
-import { framableSrc } from '../lib/csp';
+import { cspFingerprint, framableSrc } from '../lib/csp';
+import { CSP_META } from '../lib/csp-swap';
 import { ENQUIRY_ACTIONS, NEWSLETTER_ACTION } from '../lib/forms/action-paths';
 import {
   modalStateFromResult,
@@ -134,6 +135,8 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* The policy this page answers under, so the router can tell a page from another deploy (ADR 0062). */}
+    <meta name={CSP_META} content={cspFingerprint()} />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {canonical && <link rel="canonical" href={canonical} />}
@@ -238,6 +241,26 @@ const analyticsOn = Boolean(PUBLIC_POSTHOG_KEY) && settings?.analyticsEnabled !=
     <FormBridge />
     <VisualEditing enabled={preview} zIndex={1000} />
     <script>
+      import { policyChanged } from '../lib/csp-swap';
+
+      // A page answering under another policy (a deploy since this tab loaded) opens with a full load, which
+      // brings its own policy, rather than a swap whose scripts the current policy might refuse (ADR 0062).
+      // Preventing the preparation after the page has loaded is the router's own way out: it sets the address
+      // and returns, with no history entry, swap or page-load of its own. A form's answer still swaps, as the
+      // router does for a page without view transitions, so what was typed survives.
+      document.addEventListener('astro:before-preparation', (event) => {
+        const load = event.loader;
+        event.loader = async () => {
+          await load();
+          if (
+            !event.defaultPrevented &&
+            !event.formData &&
+            policyChanged(document, event.newDocument)
+          ) {
+            event.preventDefault();
+          }
+        };
+      });
       // The progress bar (ProgressBar.astro) watches this attribute across the router's lifecycle.
       document.addEventListener('astro:before-preparation', () => {
         document.documentElement.setAttribute('data-loading', 'true');

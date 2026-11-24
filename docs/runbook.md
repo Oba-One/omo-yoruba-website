@@ -695,10 +695,10 @@ rollback is a Sanity document history restore in the Studio.
 
 ## Content Security Policy
 
-Status: report-only until the live site reports clean, then enforced (ADR 0011, ADR 0062).
+Status: enforced in production builds since 22 November 2026 (ADR 0062), report-only under `astro dev`,
+for draft requests and on the preview host.
 `packages/web/src/lib/csp.ts` is the one allow-list;
-`src/middleware.ts` sends it as `Content-Security-Policy-Report-Only` on every route
-except `/admin` and `/api/csp-report`. Violations are POSTed to `/api/csp-report` and
+`src/middleware.ts` sends it on every route except `/admin` and `/api/csp-report`. Violations are POSTed to `/api/csp-report` and
 appear in the Vercel function logs as `[csp-report]` lines with the document, directive,
 blocked URL and source. The endpoint accepts report content types only, caps a body at 32 KB
 and a batch at 20 reports, and truncates fields, since anyone can post to it.
@@ -731,9 +731,19 @@ Every answer the function gives also carries `X-Content-Type-Options: nosniff`,
 `Referrer-Policy: strict-origin-when-cross-origin` and a `Permissions-Policy` with the camera,
 microphone, location and ad topics off (`SECURITY_HEADERS` in `csp.ts`). Vercel adds HSTS.
 
+If the enforced policy blocks something in production, promote the previous production deployment (Rollback,
+above), which is the fastest way back; then set `CSP_ENFORCED` to false in `csp.ts` and deploy, which sends the
+policy report-only, and the reports name what it blocked. Every page names its policy and whether it is enforced in
+`<meta name="oy-csp">`, so an open tab moving to a page under another policy loads it in full rather than swapping.
+
+PostHog's hosts are written into the policy (`us.i.posthog.com`, `us-assets.i.posthog.com`). Changing
+`PUBLIC_POSTHOG_HOST` to another region or a proxy needs the same hosts in `csp.ts`, or the enforced policy blocks
+the analytics.
+
 To check a deploy: open a few pages, the Give Dialog, an album's Lightbox and a video, and move
 between pages; the browser console lists any `Content-Security-Policy` report, and the Vercel
-function logs list the same as `[csp-report]` lines. Enforce only when there are none.
+function logs list the same as `[csp-report]` lines. A report there in production means the enforced policy
+blocked something.
 
 ## CI and merging
 
