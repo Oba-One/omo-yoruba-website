@@ -246,7 +246,8 @@ describe('inputs that change nothing are hidden, or gone (ADR 0042)', () => {
     const asked = PENDING.flatMap((row) =>
       (row.fields ?? []).map((field) => ({ type: row.type, field })),
     );
-    expect(asked.length).toBeGreaterThan(100);
+    // Keep the check nonempty without fixing how many requests the owner leaves active.
+    expect(asked.length).toBeGreaterThan(0);
     expect(
       asked
         .filter(({ type, field }) => hiddenAlong(type, field))

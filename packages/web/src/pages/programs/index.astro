@@ -55,7 +55,7 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
       <h2 class="oy-visually-hidden" id="programs-heading">The programs</h2>
       <CardGrid
         columns={page.cards.columns}
-        note="Each card says who it is for and when it runs, so you can find the right one at a glance."
+        note="Choose a program to learn more or ask about joining."
       >
         {
           page.cards.items.map((card) => (
@@ -137,7 +137,7 @@ cachePage(Astro, '/programs', { draft: preview, failed: Boolean(error) });
           <SectionHead
             kicker={{ yo: 'Ọdún kan', en: 'One year' }}
             title="When things run"
-            intro="One line per program, across one year. Worth a screenshot."
+            intro="Find program schedules and annual events at a glance."
             id="year-heading"
           />
           <YearStrip

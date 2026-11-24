@@ -78,11 +78,11 @@ const row = layout === 'row';
     )
   }
   {
-    /* A span as in the prototype: the card's `.oy-door p` rules would grow it and set it at 15px. */
+    /* A span keeps the chip separate from the card's body text. */
     chip && <span class="oy-person-role oy-door-label">{chip}</span>
   }
   {title && <h3>{title}</h3>}
-  <p>{door.blurb || <Pending what={blurbPending} />}</p>
+  <p class="oy-door-blurb">{door.blurb || <Pending what={blurbPending} />}</p>
   {
     bullets &&
       ((door.bullets ?? []).length > 0 ? (
@@ -105,6 +105,9 @@ const row = layout === 'row';
   }
   .oy-door-label {
     color: var(--accent-kicker, var(--terra-600));
+  }
+  p.oy-door-blurb {
+    font-size: var(--text-body-size);
   }
   /* The prototype's `gi-bullets`: a gold bullet glyph, 15px lines, 9px apart. */
   .oy-door-bullets {

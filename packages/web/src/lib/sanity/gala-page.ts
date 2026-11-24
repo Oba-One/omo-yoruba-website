@@ -11,7 +11,7 @@
  * click-to-edit in draft mode. The parts every page singleton shares come from `pageSkeleton`.
  */
 
-import { GALA_INTROS } from '@oy/content/editing-defaults';
+import { GALA_INTROS, GALA_SPONSORSHIP_ENABLED } from '@oy/content/editing-defaults';
 import { pageEdition } from '@oy/content/lead-event';
 import { pendingWhat, presenceWhat } from '@oy/content/pending';
 import type { galaPageQuery } from '@oy/content/queries';
@@ -140,6 +140,9 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
   const { imageSet, now = new Date() } = options;
   const page = pageSkeleton<GalaLayout>('galaPage', data, options, PAGE_TITLE);
   const { edit, layout } = page;
+  const takePartRows = page.takePart.rows.filter(
+    (row) => GALA_SPONSORSHIP_ENABLED || row.way !== 'sponsor',
+  );
 
   const editions = (data?.editions ?? []).filter((event) => event !== null);
   const edition = pageEdition(editions, KIND, { now });
@@ -155,6 +158,14 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
   const ticketsUrl = cleanText(edition?.ticketsUrl);
   const tickets = ticketsTrigger(ticketsUrl);
   const ticketsForm = tickets?.dialog ? framableSrc(ticketsUrl) : undefined;
+  const headerActions = page.header.actions.filter(
+    (action) => GALA_SPONSORSHIP_ENABLED || action.enquiryKind !== 'sponsor',
+  );
+  const primary = headerActions[0];
+  const ticketAction =
+    primary?.kind === 'anchor' && cleanText(primary.href) === '#seats' && tickets
+      ? { label: primary.label, attributes: tickets.attributes }
+      : undefined;
 
   // The dress code is parked (ADR 0058): its cell is left out until the edition holds it.
   const dress = cleanText(edition?.dress) ? (edition?.dress ?? undefined) : undefined;
@@ -188,6 +199,8 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
     edition,
     header: {
       ...page.header,
+      actions: headerActions,
+      ticketAction,
       facts: [
         date ? { text: date } : { pending: pending('start') },
         venue ? { text: venue } : { pending: pending('venue.name') },
@@ -230,6 +243,7 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
       includesPending: pendingWhat('ticketTier', 'includes[]') ?? 'what the ticket includes',
     },
     sponsor: {
+      shown: GALA_SPONSORSHIP_ENABLED,
       intro: data?.sponsorIntro ?? GALA_INTROS.sponsor,
       // A level tied to an edition shows only with that edition; an untied level every year.
       levels: (data?.sponsorLevels ?? [])
@@ -260,7 +274,8 @@ export function buildGalaPage(data: GalaPageData | null, options: BuildOptions) 
     },
     takePart: {
       ...page.takePart,
-      intro: takePartIntro(page.takePart.rows.length),
+      rows: takePartRows,
+      intro: takePartIntro(takePartRows.length),
       labels: layout.labels,
     },
     edit: page.layoutEdit,

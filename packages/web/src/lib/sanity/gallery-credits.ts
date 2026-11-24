@@ -12,7 +12,7 @@ import { cleanText, studioText } from './view';
 export const CREDITS_TITLE = 'Photography credit and permissions';
 
 export const CREDITS_LEAD =
-  'These photographs show real people, including children. Here is how we credit them, how we ask permission, and how to ask for a photograph to be removed.';
+  'These photographs show real people, including children. Here is how we credit them and how to ask for a photograph to be removed.';
 
 /** How the site credits (ADR 0013): a statement of the model, naming no one. */
 export const CREDITS_LINE = 'Given with each album, and with a photograph where it differs.';

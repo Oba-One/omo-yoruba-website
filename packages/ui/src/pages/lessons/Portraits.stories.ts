@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The `portraits` option on the teacher\'s card. Until the Studio links her, the card draws the woven tick, "Teacher" and the chip for her name and bio, beside the enrol form\'s card with the chip for her email. Once linked, her portrait shows, or the woven tick when portraits are hidden. The linked teacher here is a bracketed placeholder.',
+          'The `portraits` option on the teacher\'s card. Until the Studio links her, the card draws the woven tick, "Teacher" and the chip for her name. An unconfirmed direct email stays hidden. Once linked, her portrait shows, or the woven tick when portraits are hidden. The linked teacher here is a bracketed placeholder.',
       },
     },
   },

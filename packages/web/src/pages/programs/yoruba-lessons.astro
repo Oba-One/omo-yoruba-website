@@ -82,35 +82,38 @@ cachePage(Astro, '/programs/yoruba-lessons', { draft: preview, failed: Boolean(e
       </Split>
     </Section>
 
-    <Section id="learn" ground="alt" labelledby="learn-heading">
-      <Split>
-        <SectionHead
-          kicker={{ yo: 'Ohun tí a ń kọ́', en: 'What we teach' }}
-          title="What you learn"
-          id="learn-heading"
-        />
-        {
-          page.learn.prose ? (
-            <Prose value={page.learn.prose} />
-          ) : (
-            <p>
-              <Pending what={page.learn.pending} />
-            </p>
-          )
-        }
-        {
-          page.learn.levelsShown && (
-            <EntryList
-              slot="aside"
-              entries={page.learn.levels}
-              pending={page.learn.levelsPending}
-              linePending={page.learn.linePending}
+    {
+      page.learn.shown && (
+        <Section id="learn" ground={page.learn.ground} labelledby="learn-heading">
+          <Split>
+            <SectionHead
+              kicker={{ yo: 'Ohun tí a ń kọ́', en: 'What we teach' }}
+              title="What you learn"
+              id="learn-heading"
             />
-          )
-        }
-      </Split>
-    </Section>
-
+            {
+              page.learn.prose ? (
+                <Prose value={page.learn.prose} />
+              ) : page.learn.pending ? (
+                <p>
+                  <Pending what={page.learn.pending} />
+                </p>
+              ) : null
+            }
+            {
+              page.learn.levelsShown && (
+                <EntryList
+                  slot="aside"
+                  entries={page.learn.levels}
+                  pending={page.learn.levelsPending}
+                  linePending={page.learn.linePending}
+                />
+              )
+            }
+          </Split>
+        </Section>
+      )
+    }
     {
       page.lesson.shown && (
         <Section

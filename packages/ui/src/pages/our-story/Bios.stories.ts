@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The `bios` option on the board: each card's role, name and short bio (a missing one its chip), or with `full` the full bio under the short one where it is written. The people here are bracketed placeholders; the Studio holds no board yet.",
+          "The `bios` option on the board: each card's role, name and short bio where written. Missing bios stay hidden. With `full`, the full bio follows the short one where written. The people here are bracketed placeholders.",
       },
     },
   },

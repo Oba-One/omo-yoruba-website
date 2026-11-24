@@ -47,7 +47,7 @@ export const cards = (option: CardsOption): SlotValue => {
           component: CardGrid,
           props: {
             columns: option === 'three' ? 3 : option === 'pairs' ? 2 : 4,
-            note: 'Each card says who it is for and when it runs, so you can find the right one at a glance.',
+            note: 'Choose a program to learn more or ask about joining.',
           },
           slots: {
             default: programs.map((program) => ({
@@ -86,7 +86,7 @@ export const year: SlotValue = {
         props: {
           kicker: { yo: 'Ọdún kan', en: 'One year' },
           title: 'When things run',
-          intro: 'One line per program, across one year. Worth a screenshot.',
+          intro: 'Find program schedules and annual events at a glance.',
           id: 'year-heading',
         },
       },
@@ -99,7 +99,7 @@ export const year: SlotValue = {
         props: {
           shape: 'box',
           variant: 'quiet',
-          text: 'What these programs have produced, with a source line under every number.',
+          text: 'Our work in Southern California, with a source line under every number.',
           action: { label: 'See our impact', kind: 'url', href: '/impact' },
         },
       },

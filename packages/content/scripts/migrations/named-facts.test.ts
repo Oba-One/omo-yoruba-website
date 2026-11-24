@@ -1,6 +1,6 @@
 import { evaluate, parse } from 'groq-js';
 import { describe, expect, it } from 'vitest';
-import { PENDING, pendingFilter } from '../../src/pending';
+import { PARKED, PENDING, pendingFilter } from '../../src/pending';
 import { lessonsPageQuery } from '../../src/queries/program-pages';
 import { donatePageQuery } from '../../src/queries/trust-pages';
 import { applyMutations, blockers, type StoredDocument, unpublished } from './core';
@@ -55,7 +55,7 @@ describe('named facts migration', () => {
     expect(donate.giveNow.facts[0].value).toBe('A confirmed fee policy');
     expect(donate.giveNow.facts[3].value).toBe('Contact the organization.');
     expect(donate.giveNow.facts[1].note).toBe('Confirm with the form owner');
-    const ages = PENDING.find((row) => row.fields?.includes('lessonDetails.ages'));
+    const ages = PARKED.rows.find((row) => row.fields?.includes('lessonDetails.ages'));
     expect(ages).toBeDefined();
     expect(
       await read(

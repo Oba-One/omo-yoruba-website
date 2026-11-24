@@ -12,6 +12,7 @@ describe('the Donate page-section stories', () => {
     const gold = [...(root?.querySelectorAll('.oy-btn--primary') ?? [])];
     expect(gold.map((button) => text(button))).toEqual(['Give now→']);
     expect(gold[0]?.hasAttribute('data-give')).toBe(true);
+    expect(gold[0]?.getAttribute('href')).toBe('#other');
     // Give now draws no second button.
     expect(root?.querySelector('#give-now a[data-give]')).toBeNull();
     const facts = [...(root?.querySelectorAll('#give-now .oy-fact') ?? [])].map(

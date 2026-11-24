@@ -1,3 +1,6 @@
+/** The Gala's sponsorship offers are not in use (owner, 22 November 2026). */
+export const GALA_SPONSORSHIP_ENABLED = false;
+
 /** Stable presentation and action defaults approved on 11 October 2026 (ADR 0053). */
 export const FIXED_LAYOUTS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   homepage: {

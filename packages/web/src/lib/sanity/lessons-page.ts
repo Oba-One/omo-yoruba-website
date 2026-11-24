@@ -4,13 +4,13 @@
  * it with a fixture: the layout with the schema defaults, the slim header with its gold "Write to the
  * teacher", the glance's facts with the registry's chip for an owed one, the teacher (the woven tick,
  * "Teacher" and the chip for her name before she is linked; her name, role, short bio and portrait
- * after, the portrait by the `portraits` option) with her routing contact's email or its chip, what
- * you learn (the prose and the levels, or their chips), the steps of a lesson as the `lesson` option
+ * after, the portrait by the `portraits` option) with her direct email once supplied, what
+ * you learn once teaching content is confirmed, the steps of a lesson as the `lesson` option
  * shows them, the questions parents ask with the lead that counts them, closed or the first open by
  * `faq`, the take-part rows, and the `data-sanity` attributes for click-to-edit in draft mode. The
  * page is Yoruba Language Lessons: never "School", no terms, no Saturdays, no venue.
  */
-import { pendingWhat, TEACHER_EMAIL_PENDING } from '@oy/content/pending';
+import { askedFor, pendingWhat, TEACHER_EMAIL_PENDING } from '@oy/content/pending';
 import type { lessonsPageQuery } from '@oy/content/queries';
 import { countWord } from '@oy/ui/content/count-word.ts';
 import type { ClientReturn } from '@sanity/client';
@@ -68,11 +68,14 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
     .filter((item) => heldOrAsked(item.answer, answerPending));
   const lessonShown = layout.lesson !== 'hidden';
   const faqShown = heldOrAsked(questions.length > 0, questionsPending);
-  // What you learn stands on the alternate ground; the sections under it take turns from white,
-  // counting only the ones the page draws, so no two neighbours share a ground.
-  const [lessonGround, faqGround, takePartGround] = alternate(
-    [lessonShown, faqShown, true],
-    'white',
+  const learnProse = data?.learn && data.learn.length > 0 ? data.learn : undefined;
+  const learnPending = pendingWhat('lessonsPage', 'learn');
+  const levelsShown = heldOrAsked(levels.length > 0, levelsPending);
+  const learnShown = heldOrAsked(learnProse, learnPending) || levelsShown;
+  // Alternate only the sections that are drawn, starting after the white teacher section.
+  const [learnGround, lessonGround, faqGround, takePartGround] = alternate(
+    [learnShown, lessonShown, faqShown, true],
+    'alt',
   );
 
   return {
@@ -81,7 +84,9 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
     layout,
     root: { ...layout },
     header: { variant: 'slim' as const, ...page.header },
-    glance: glanceFacts('lessonsPage', 'lessonDetails', data?.glance),
+    glance: glanceFacts('lessonsPage', 'lessonDetails', data?.glance).filter((fact) =>
+      heldOrAsked(cleanText(fact.value), askedFor(fact.pending ?? '') ? fact.pending : undefined),
+    ),
     glancePending: 'the lesson details',
     teacher: {
       intro: data?.teacherIntro ?? undefined,
@@ -95,18 +100,20 @@ export function buildLessonsPage(data: LessonsPageData | null, options: BuildOpt
       // Without a portrait, or with portraits hidden, the card draws the woven tick.
       variant: portrait ? ('portrait' as const) : ('nophoto' as const),
       namePending: pendingWhat('lessonsPage', 'teacher') ?? "the teacher's name",
-      // Before she is linked her name's chip asks for the bio too; after, the bio asks for itself.
+      // A supplied bio is shown; the missing-bio request can be deferred independently.
       bioPending: teacher ? pendingWhat('person', 'bioShort') : undefined,
       edit: teacher ? edit('name', teacher._id, 'person') : edit('teacher'),
-      // Null while the settings hold no address, so the card shows the registry's chip.
-      email: cleanText(data?.teacherEmail) ?? null,
+      // The enquiry button stays available while the teacher's direct address is unconfirmed.
+      email: cleanText(data?.teacherEmail) ?? (askedFor(TEACHER_EMAIL_PENDING) ? null : undefined),
       emailPending: TEACHER_EMAIL_PENDING,
     },
     learn: {
-      prose: data?.learn && data.learn.length > 0 ? data.learn : undefined,
-      pending: pending('learn'),
+      shown: learnShown,
+      ground: learnGround,
+      prose: learnProse,
+      pending: learnPending,
       levels,
-      levelsShown: heldOrAsked(levels.length > 0, levelsPending),
+      levelsShown,
       levelsPending,
       linePending: levelPending,
     },

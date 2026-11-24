@@ -85,7 +85,7 @@ const seeded = {
       _key: 'way-2',
       way: 'sponsor',
       title: 'Keep the day open',
-      line: 'Four questions, and we send the deck with our impact numbers.',
+      line: 'Tell us how you would like to support the festival. We reply within one week.',
       label: 'Sponsor Odunde',
     },
   ],
@@ -335,6 +335,28 @@ describe('buildFestivalPage', () => {
     );
     expect(hidden.schedule.shown).toBe(false);
   });
+
+  it.each(['shown', 'collapsed', 'hidden'] as const)(
+    'alternates the sections after the zones with the schedule %s',
+    (schedule) => {
+      const view = buildFestivalPage(
+        { ...seeded, layout: { schedule } } as FestivalPageData,
+        options,
+      );
+      const grounds = [
+        ...(view.schedule.shown ? [view.schedule.ground] : []),
+        view.plan.ground,
+        view.takePart.ground,
+        view.past.ground,
+        view.partners.ground,
+      ];
+      expect(grounds).toEqual(
+        schedule === 'hidden'
+          ? ['white', 'alt', 'white', 'alt']
+          : ['white', 'alt', 'white', 'alt', 'white'],
+      );
+    },
+  );
 
   it('writes edit attributes only in draft mode', () => {
     expect(buildFestivalPage(seeded, options).edit.phead).toBeUndefined();

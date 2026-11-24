@@ -69,7 +69,17 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
       facts={page.header.facts}
       dots
       edit={page.edit.treatment}
-    />
+    >
+      <Fragment slot="primary-action">
+        {page.header.ticketAction ? (
+          <Button variant="primary" arrow {...page.header.ticketAction.attributes}>
+            {page.header.ticketAction.label}
+          </Button>
+        ) : (
+          <ActionButton action={page.header.actions[0]} variant="primary" />
+        )}
+      </Fragment>
+    </PageHeader>
     <GlanceStrip facts={page.glance} caption={page.glanceCaption} />
 
     <Section id="evening" labelledby="evening-heading">
@@ -123,7 +133,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
       />
     </Section>
 
-    <Section id="sponsor" labelledby="sponsor-heading">
+    {page.sponsor.shown && (<Section id="sponsor" labelledby="sponsor-heading">
       <SectionHead
         kicker={{ yo: 'Àtìlẹ́yìn', en: 'Support' }}
         title="Sponsor the Gala"
@@ -141,7 +151,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
           action={{ label: 'Sponsor the Gala', kind: 'enquiry', enquiryKind: 'sponsor' }}
           variant="primary"
         />
-        <span class="oy-button-row-note">Four questions, and we send the deck with our impact numbers.</span>
+        <span class="oy-button-row-note">Tell us how you would like to support our work. We reply within one week.</span>
       </ButtonRow>
       <Handoff
         shape="box"
@@ -149,7 +159,7 @@ cachePage(Astro, '/gala', { draft: preview, failed: Boolean(error) });
         text={page.sponsor.handoff}
         action={{ label: 'See our impact', kind: 'url', href: '/impact' }}
       />
-    </Section>
+    </Section>)}
 
     {
       page.honorees.shown && (

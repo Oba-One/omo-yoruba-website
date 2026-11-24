@@ -5,11 +5,10 @@
  * the site. Yoruba Language Lessons, never "School".
  */
 
+import { askedFor } from '@oy/content/pending';
 import PersonCard from '../../cards/PersonCard/PersonCard.astro';
 import Accordion from '../../content/Accordion/Accordion.astro';
-import EntryList from '../../content/EntryList/EntryList.astro';
 import Schedule from '../../content/Schedule/Schedule.astro';
-import Pending from '../../core/Pending/Pending.astro';
 import { PHOTOS } from '../../fixtures/photos';
 import {
   ANSWER_PENDING,
@@ -35,7 +34,14 @@ export const header: SlotValue = {
   props: { variant: 'slim', ...LESSONS_HEADER },
 };
 
-export const glance: SlotValue = { component: GlanceStrip, props: { facts: LESSONS_GLANCE } };
+export const glance: SlotValue = {
+  component: GlanceStrip,
+  props: {
+    facts: LESSONS_GLANCE.filter(
+      (fact) => ('value' in fact && fact.value) || askedFor(fact.pending),
+    ),
+  },
+};
 
 /**
  * The teacher beside her form, as the `portraits` option draws her card. The linked teacher is a
@@ -87,7 +93,7 @@ export const teacher = (portraits: 'shown' | 'hidden', linked = false): SlotValu
               kind: 'enrol',
               label: 'Write to the teacher',
               variant: 'secondary',
-              email: null,
+              email: askedFor(TEACHER_PENDING.emailPending) ? null : undefined,
               emailPending: TEACHER_PENDING.emailPending,
             },
           },
@@ -97,33 +103,8 @@ export const teacher = (portraits: 'shown' | 'hidden', linked = false): SlotValu
   },
 });
 
-/** What you learn as the Studio stands: the prose and the levels owed. */
-export const learn: SlotValue = {
-  component: Section,
-  props: { id: 'learn', ground: 'alt', labelledby: 'learn-heading' },
-  slots: {
-    default: {
-      component: Split,
-      slots: {
-        default: [
-          {
-            component: SectionHead,
-            props: {
-              kicker: { yo: 'Ohun tí a ń kọ́', en: 'What we teach' },
-              title: 'What you learn',
-              id: 'learn-heading',
-            },
-          },
-          { component: Pending, props: { what: 'what the lessons teach, in her words' } },
-        ],
-        aside: {
-          component: EntryList,
-          props: { entries: [], pending: 'what each level covers' },
-        },
-      },
-    },
-  },
-};
+/** Teaching content stays hidden until the teacher supplies it. */
+export const learn: SlotValue = [];
 
 /**
  * What a lesson looks like. `placeholders` draws its rows in the bracketed form to show the layout

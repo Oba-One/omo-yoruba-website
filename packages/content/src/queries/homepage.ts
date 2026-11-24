@@ -22,7 +22,7 @@ export const homepageQuery = defineQuery(`*[_id == "homepage"][0]{
     secondaryActions[]{_key, label, kind, enquiryKind, href, newTab}
   },
   "events": *[_type == "event" && kind in ["festival", "gala"]] | order(edition desc){
-    _id, kind, title, edition, start, end, "venueName": venue.name, summary,
+    _id, kind, title, edition, start, end, "venueName": venue.name, summary, ticketsUrl,
     "tiers": *[_type == "ticketTier" && event._ref == ^._id]{variant}
   },
   "festivalHeader": *[_id == "festivalPage"][0].header{kicker{yo, en}, title, line, image{_type, alt, caption, hotspot, crop, asset}},

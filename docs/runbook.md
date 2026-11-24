@@ -123,6 +123,22 @@ site is the owner's call in wayfinder ticket 11. Locally: `bun storybook` (dev s
 dropped Chromatic on 21 November 2026 (ADR 0059), so a visual change is reviewed in Storybook and
 the pull request's captures at 375 and 1280.
 
+For local Storybook verification, wait for the server's ready message and use Brave. A cold Astro
+render in the development VM can exceed the framework's five-second limit and show
+`Unable to reach Astro rendering server`. After compilation finishes, use Reload story. On
+23 November 2026 the cold Gallery story failed in both browsers, then rendered in Brave after
+that reload; Contact rendered there too. Their accessibility scans ran on the components.
+A scan of the error screen is not a component result: confirm the expected heading or controls
+are present before recording a pass. The static Storybook build is the separate CI gate.
+
+For a stable local review without development rendering, build the stories and serve that output.
+Stop the Storybook dev server before reusing port 6006. From the repository root in the development VM setup:
+
+```bash
+bun run --filter @oy/ui build-storybook
+dm omo-yoruba python3 -m http.server 6006 --bind 0.0.0.0 --directory packages/ui/storybook-static
+```
+
 ## Hosting today
 
 Recorded in the owner's hosting session of 13 September 2026, which chose a stand-in public host
@@ -498,11 +514,21 @@ Run it from `packages/web`, as CI does. Bun links the pinned `playwright` there 
 `bunx` finds no binary, fetches the newest release and installs that release's browser build, which the pinned
 tests cannot launch: every test fails with "Executable doesn't exist" (R149).
 
-The runner starts `node ./node_modules/astro/bin/astro.mjs dev --port 4322` itself with
+A new Linux VM also needs Chromium's system libraries. The pinned CLI's
+`playwright install-deps chromium --dry-run` lists missing Ubuntu packages; an administrator
+runs `playwright install-deps chromium` inside the VM to install them. On 23 November 2026,
+missing `libnspr4.so` and related libraries made the browser exit with code 127 before any
+page test could run. Installing the browser download alone did not supply these libraries.
+The official download hosts are tracked in dev-surfaces' `allowlists/omo-yoruba.txt`; the VM
+keeps egress enforcement on.
+
+The runner starts `node ./node_modules/astro/bin/astro.mjs dev --port 4322 --ignore-lock` itself with
 `PLAYWRIGHT=1` (the dev toolbar off: its shadow DOM carries headings and controls the specs and
 axe would see) and `ASTRO_DEV_BACKGROUND=0` (Astro 7 otherwise backgrounds the dev server when
 it detects a coding agent, the runner reports "exited early" and the daemon keeps the port;
-`astro dev stop` clears one that got away). Set `PLAYWRIGHT_TEST_BASE_URL` to run the suite against a
+`astro dev stop` clears one that got away). `--ignore-lock` lets the foreground test server coexist
+with the owner's preview on 4321 without replacing its lock. Playwright owns the test process and
+stops it after the run. Set `PLAYWRIGHT_TEST_BASE_URL` to run the suite against a
 deployed URL instead of starting a server; a preview deployment also needs the project's
 Protection Bypass secret in `use.extraHTTPHeaders` (not wired: previews are private, CI runs on
 the runner). The action requests are intercepted, so nothing is written; the two no-JS success
@@ -523,6 +549,13 @@ fixture video. It answers queries only, and `astro.config.ts` takes the setting 
 address only and never on Vercel. Locally, set the same three variables
 (`PUBLIC_SANITY_PROJECT_ID=fixture`, `PUBLIC_SANITY_DATASET=development`, `SANITY_API_HOST`) and run
 `bun e2e`; the `verify-omo-yoruba` skill adds labeled captures at 375 and 1280 wide.
+
+When the runtime routes through the development VM, pass these variables inside that VM: shell
+variables before the host's `bun` shim are not forwarded. From the repository root:
+
+```bash
+dm omo-yoruba env PUBLIC_SANITY_PROJECT_ID=fixture PUBLIC_SANITY_DATASET=development SANITY_API_HOST=http://127.0.0.1:4400 bun e2e --workers 1
+```
 
 Since Phase 5 `odunde.spec.ts` and `gala.spec.ts` check each event page's blocks in order against the
 options on the body, the Studio facts or their chips (never an invented fact), one gold action per

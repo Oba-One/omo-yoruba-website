@@ -47,7 +47,7 @@ describe('the rows of the To do', () => {
       if (entry.type === 'siteSettings') expect(group, entry.where).toBe(ORGANIZATION.id);
       else expect(pages, `${entry.where}: ${entry.what}`).toContain(group);
     }
-    expect(todoGroup(rowOf(ADMINISTRATORS, 'Sponsorship', 'the amount').entry)).toBe('galaPage');
+    expect(todoGroup(rowOf(UNPARKED, 'Sponsorship', 'the amount').entry)).toBe('galaPage');
     expect(
       todoGroup(rowOf(ADMINISTRATORS, 'Get Involved, ways to get involved', 'the blurb').entry),
     ).toBe('getInvolvedPage');
@@ -89,12 +89,18 @@ describe('the rows of the To do', () => {
     ).toBe(
       'Odunde as civic infrastructure: what the festival gives the neighborhood, in your words',
     );
-    expect(todoRowTitle(rowOf(ADMINISTRATORS, 'Sponsorship', 'the amount').entry)).toBe(
+    expect(todoRowTitle(rowOf(UNPARKED, 'Sponsorship', 'the amount').entry)).toBe(
       'Sponsorship: the amount',
     );
     expect(todoRowTitle(rowOf(ADMINISTRATORS, 'Everywhere', 'EIN').entry)).toBe('Everywhere: EIN');
     expect(
-      todoRowTitle(rowOf(ADMINISTRATORS, 'Lessons, teacher', "the teacher's email").entry),
+      todoRowTitle(
+        rowOf(
+          todoPlan([], { rows: PARKED.rows, presence: [] }),
+          'Lessons, teacher',
+          "the teacher's email",
+        ).entry,
+      ),
     ).toBe("Lessons, teacher: the teacher's email");
   });
 
@@ -165,7 +171,7 @@ describe('what the To do counts', () => {
   const date = rowOf(MEMBERS, 'Odunde, at a glance', 'the date');
   const attendance = rowOf(UNPARKED, 'Odunde, past years', 'the attendance figure');
   const whatItIs = rowOf(MEMBERS, 'Odunde, what the day is', 'what Odunde is, in your words');
-  const bio = rowOf(MEMBERS, 'Our Story, board', 'a short bio');
+  const bio = rowOf(UNPARKED, 'Our Story, board', 'a short bio');
 
   const result: TodoResult = {
     editions: [festival, pastFestival, olderFestival],
@@ -210,12 +216,12 @@ describe('what the To do counts', () => {
     const gala = { _id: 'event-gala-next', kind: 'gala', start: '2099-11-20T02:00:00Z' };
     const pastGala = { _id: 'event-gala-past', kind: 'gala', start: '2000-11-20T02:00:00Z' };
     const price = rowOf(MEMBERS, 'Gala, seats and tables', 'the price');
-    const amount = rowOf(MEMBERS, 'Sponsorship', 'the amount');
+    const amount = rowOf(UNPARKED, 'Sponsorship', 'the amount');
     const tiers = MEMBERS.stillToAdd.find(({ presence }) => presence?.type === 'ticketTier');
-    const levels = MEMBERS.stillToAdd.find(({ presence }) => presence?.type === 'sponsorLevel');
+    const levels = UNPARKED.stillToAdd.find(({ presence }) => presence?.type === 'sponsorLevel');
     if (!tiers || !levels) throw new Error('missing presence rows');
     const counted = todoState(
-      MEMBERS,
+      UNPARKED,
       {
         editions: [gala, pastGala],
         rows: {

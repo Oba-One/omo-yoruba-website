@@ -45,7 +45,7 @@ const EXCHANGE_SLUG = 'cultural-exchange';
 const NOT_RUNNING: readonly string[] = [EXCHANGE_SLUG];
 
 /** The lead of the box under the year strip, which leads to Impact (`impactHandoff`). */
-const IMPACT_HANDOFF = 'What these programs have produced';
+const IMPACT_HANDOFF = 'Our work in Southern California';
 
 /** The take-part intro, counting the rows the band draws. */
 function takePartIntro(count: number): string | undefined {

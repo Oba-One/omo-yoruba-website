@@ -32,6 +32,16 @@ test.describe('the Odunde Festival page', () => {
       'partners',
     ];
     expect(order.slice(0, expected.length)).toEqual(expected);
+    const grounds = await page
+      .locator('main > section')
+      .evaluateAll((sections) =>
+        sections.map((section) => section.classList.contains('oy-section--alt')),
+      );
+    for (let at = 1; at < grounds.length; at++) {
+      expect(grounds[at], `sections ${at - 1} and ${at} have distinct grounds`).not.toBe(
+        grounds[at - 1],
+      );
+    }
     const phead = await page.locator('body').getAttribute('data-phead');
     expect(phead).toMatch(/^(photo|slim)$/);
     await expect(page.locator(`header#top.oy-phead--${phead}`)).toHaveCount(1);
@@ -88,6 +98,20 @@ test.describe('the Odunde Festival page', () => {
     // Each named zone's Yoruba name is a heading with its marks.
     for (const heading of await grid.locator('h3.oy-zone-name').all()) {
       await expect(heading).toHaveAttribute('lang', 'yo');
+    }
+    if (layout === 'mosaic' && (page.viewportSize()?.width ?? 0) <= 560) {
+      const frames = await grid.locator('.oy-zone-media').evaluateAll((elements) =>
+        elements.map((element) => {
+          const { width, height } = element.getBoundingClientRect();
+          return { width, height };
+        }),
+      );
+      expect(frames.length).toBeGreaterThan(0);
+      for (const frame of frames) {
+        expect(Math.abs(frame.width - frames[0].width)).toBeLessThan(1);
+        expect(Math.abs(frame.height - frames[0].height)).toBeLessThan(1);
+        expect(frame.width / frame.height).toBeCloseTo(4 / 3, 2);
+      }
     }
   });
 

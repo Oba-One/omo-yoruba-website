@@ -3,8 +3,8 @@
  * Impact (`14 Impact.dc.html`, ROUTES sections 1, 4 and 5, ADR 0035): composed from the one Impact query
  * through `loadQuery`, with the registry's Pending chips for every fact the Studio does not hold and the
  * layout options read from the singleton with the schema defaults filled. Built for the grant reviewer:
- * every figure carries its source line or its chip, a program with no number says what is being measured,
- * and the governance block names what is not yet published rather than leaving it out. The page closes on
+ * every figure carries its source line or its chip, program outcomes wait for sourced figures,
+ * and the governance block links published files, leaving deferred documents out. The page closes on
  * its partners as cards with the ask among them, where the prototype drew name chips and a dark band
  * (ADR 0057). The page arranges library parts and owns its copy (the kickers and headings the prototype
  * carries) and its layout.
@@ -109,42 +109,45 @@ const ask = {
       </Split>
     </Section>
 
-    <Section id="outcomes" labelledby="outcomes-heading" data-sanity={page.edit.outcomes}>
-      <SectionHead
-        kicker={{ yo: 'Èsì', en: 'Results' }}
-        title="What each program produced"
-        intro="Where a program has no number yet, we say what is being measured this year."
-        id="outcomes-heading"
-      />
-      <CardGrid columns={rows ? 1 : 4}>
-        {
-          page.outcomes.cards.map((card) => (
-            <OutcomeCard
-              title={card.title}
-              figure={card.figure}
-              line={card.line}
-              source={card.source}
-              sources={page.outcomes.sources}
-              sourcePending={page.outcomes.sourcePending}
-              pending={card.pending}
-              variant={page.outcomes.layout}
-              edit={card.edit}
-            />
-          ))
-        }
-      </CardGrid>
-      {
-        page.outcomes.links.length > 0 && (
-          <ButtonRow>
-            {page.outcomes.links.map((link) => (
-              <Button variant="quiet" href={link.href} arrow>
-                {link.name}
-              </Button>
-            ))}
-          </ButtonRow>
-        )
-      }
-    </Section>
+    {
+      page.outcomes.shown && (
+        <Section id="outcomes" labelledby="outcomes-heading" data-sanity={page.edit.outcomes}>
+          <SectionHead
+            kicker={{ yo: 'Èsì', en: 'Results' }}
+            title="What each program produced"
+            id="outcomes-heading"
+          />
+          <CardGrid columns={rows ? 1 : 4}>
+            {
+              page.outcomes.cards.map((card) => (
+                <OutcomeCard
+                  title={card.title}
+                  figure={card.figure}
+                  line={card.line}
+                  source={card.source}
+                  sources={page.outcomes.sources}
+                  sourcePending={page.outcomes.sourcePending}
+                  pending={card.pending}
+                  variant={page.outcomes.layout}
+                  edit={card.edit}
+                />
+              ))
+            }
+          </CardGrid>
+          {
+            page.outcomes.links.length > 0 && (
+              <ButtonRow>
+                {page.outcomes.links.map((link) => (
+                  <Button variant="quiet" href={link.href} arrow>
+                    {link.name}
+                  </Button>
+                ))}
+              </ButtonRow>
+            )
+          }
+        </Section>
+      )
+    }
 
     <Section id="civic" ground="alt" labelledby="civic-heading">
       <Split>
@@ -198,7 +201,7 @@ const ask = {
       <SectionHead
         kicker={{ yo: 'Ìdúró', en: 'Standing' }}
         title="Governance and accountability"
-        intro="What we are, how we are governed, and what we publish. Where a document is not ready yet, we say when it will be."
+        intro="What we are, how we are governed, and what we publish."
         id="governance-heading"
       />
       <GlanceStrip band={false} facts={page.governance.cells} />

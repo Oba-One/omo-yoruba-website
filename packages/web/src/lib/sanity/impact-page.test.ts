@@ -127,7 +127,7 @@ const seeded = {
       ...image('Members in white and green gather on Degnan Boulevard', 'Odunde • 2026'),
     },
   ],
-  governance: { form990: null, annualReport: null, audit: null },
+  governance: { financialStatements: null, form990: null, annualReport: null, audit: null },
   boardCount: 0,
   partners: [],
   fundersIntro: 'Everyone who has supported the work.',
@@ -164,7 +164,7 @@ describe('buildImpactPage', () => {
       padPending: undefined,
       pending: 'the headline figures',
     });
-    expect(view.lead).toMatch(/^Every number carries a source line/);
+    expect(view.lead).toMatch(/^Source notes explain where each figure comes from/);
     const six = buildImpactPage(withData({ layout: { stats: 'six' } }), options).numbers;
     expect(six).toMatchObject({ columns: 4, padPending: undefined });
     const hidden = buildImpactPage(withData({ layout: { sources: 'hidden' } }), options);
@@ -172,33 +172,28 @@ describe('buildImpactPage', () => {
     expect(hidden.outcomes.sources).toBe(false);
   });
 
-  it('keeps four outcome slots in the prototype order while the page references none', () => {
+  it('hides the outcome section while confirmed figures are unavailable', () => {
     const view = buildImpactPage(seeded, options).outcomes;
-    expect(view.cards.map((card) => [card.title, card.pending])).toEqual([
-      ['Yoruba Language Lessons', OUTCOME_PENDING],
-      ['Odunde Festival', OUTCOME_PENDING],
-      ['Kids & STEM', OUTCOME_PENDING],
-      ['Yoruba Cultural Collective', OUTCOME_PENDING],
-    ]);
-    expect(view.links.map((link) => [link.name, link.href])).toEqual([
-      ['Yoruba Language Lessons', '/programs/yoruba-lessons'],
-      ['Odunde Festival', '/odunde'],
-      ['Kids & STEM', '/programs#kids'],
-      ['Yoruba Cultural Collective', '/programs/cultural-collective'],
-    ]);
+    expect(view.shown).toBe(false);
+    expect(view.cards).toEqual([]);
+    expect(view.links).toEqual([]);
     expect(view.layout).toBe('card');
     expect(
       buildImpactPage(withData({ layout: { outcomes: 'rows' } }), options).outcomes.layout,
     ).toBe('card');
   });
 
-  it('heads an outcome by its subject, a figure with its source or a statement, and fills the rest with slots', () => {
+  it('shows a sourced figure under its subject without filling the remaining places with placeholders', () => {
     const outcomes = [
       {
         _key: 'outcome-festival',
         kind: 'festival',
         plainStatement: null,
-        figure: { value: '[ Figure ]', label: '[ What it counts ]', source: null },
+        figure: {
+          value: '[ Figure ]',
+          label: '[ What it counts ]',
+          source: '[ How it was counted ]',
+        },
         program: null,
       },
       {
@@ -217,20 +212,29 @@ describe('buildImpactPage', () => {
       },
     ];
     const view = buildImpactPage(withData({ outcomes }), options).outcomes;
+    expect(view.shown).toBe(true);
     expect(view.cards.map((card) => [card.title, card.figure, card.line, card.pending])).toEqual([
       ['Odunde Festival', '[ Figure ]', '[ What it counts ]', OUTCOME_PENDING],
-      ['End-of-Year Gala', undefined, '[ What is being measured this year ]', OUTCOME_PENDING],
-      ['Kids & STEM', undefined, undefined, OUTCOME_PENDING],
-      // Three outcomes leave one slot: the first prototype subject none of them names.
-      ['Yoruba Language Lessons', undefined, undefined, OUTCOME_PENDING],
     ]);
     expect(view.sourcePending).toBe('a source line under the figure');
-    expect(view.links.map((link) => link.href)).toEqual([
-      '/odunde',
-      '/gala',
-      '/programs#kids',
-      '/programs/yoruba-lessons',
-    ]);
+    expect(view.links.map((link) => link.href)).toEqual(['/odunde']);
+  });
+
+  it.each(['value', 'label', 'source'])('keeps a figure hidden while its %s is blank', (field) => {
+    const figure = {
+      value: '[ Figure ]',
+      label: '[ What it counts ]',
+      source: '[ Source ]',
+      [field]: ' ',
+    };
+    const outcomes = [
+      { _key: 'unconfirmed', kind: 'festival', program: null, plainStatement: null, figure },
+    ];
+    expect(buildImpactPage(withData({ outcomes }), options).outcomes).toMatchObject({
+      shown: false,
+      cards: [],
+      links: [],
+    });
   });
 
   it('reads the civic cells from the festival editions, leaving out a parked figure it does not hold', () => {
@@ -277,18 +281,17 @@ describe('buildImpactPage', () => {
       { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' },
       { label: 'EIN', value: undefined, pending: 'EIN' },
       { label: 'Board', value: undefined, pending: "the board's names, roles and bios" },
-      { label: 'Financials', value: undefined, pending: 'the annual report position' },
+      { label: 'Financials', value: undefined, pending: 'the financial statements' },
     ]);
     expect(view.facts.map((fact) => [fact.label, fact.value, fact.pending])).toEqual([
       ['Mailing address', undefined, 'mailing address'],
-      ['Form 990', undefined, 'the Form 990 position'],
-      ['Annual report', undefined, 'the annual report position'],
-      ['Audit', undefined, 'the audit position'],
+      ['Form 990-N', undefined, 'the Form 990 position'],
     ]);
   });
 
-  it('links a filed document with its note, shows a note alone, and asks for one with neither', () => {
+  it('links a filed Form 990-N while omitting deferred reports with only a note or no file', () => {
     const governance = {
+      financialStatements: null,
       form990: {
         _id: 'gov-990',
         year: '[ Year ]',
@@ -310,24 +313,10 @@ describe('buildImpactPage', () => {
     const view = buildImpactPage(withData({ governance, boardCount: 2 }), options).governance;
     expect(view.facts.slice(1)).toEqual([
       {
-        label: 'Form 990',
-        value: 'Form 990, [ Year ]',
+        label: 'Form 990-N',
+        value: 'Form 990-N, [ Year ]',
         href: 'https://cdn.sanity.io/files/abc/development/990.pdf',
         note: '[ A note ]',
-        pending: GOVERNANCE_NOTE_PENDING,
-      },
-      {
-        label: 'Annual report',
-        value: '[ When the first report comes ]',
-        href: undefined,
-        note: undefined,
-        pending: GOVERNANCE_NOTE_PENDING,
-      },
-      {
-        label: 'Audit',
-        value: undefined,
-        href: undefined,
-        note: undefined,
         pending: GOVERNANCE_NOTE_PENDING,
       },
     ]);
@@ -339,9 +328,73 @@ describe('buildImpactPage', () => {
     });
     expect(view.cells[3]).toEqual({
       label: 'Financials',
-      value: 'Not yet published',
-      note: '[ When the first report comes ]',
-      notePending: undefined,
+      value: undefined,
+      pending: 'the financial statements',
+    });
+  });
+
+  it('links financial statements and Form 990-N separately while deferred reports stay hidden', () => {
+    const document = (id: string) => ({
+      _id: id,
+      year: '2025',
+      note: null,
+      file: {
+        url: `https://cdn.sanity.io/files/abc/development/${id}.pdf`,
+        originalFilename: `${id}.pdf`,
+        extension: 'pdf',
+      },
+    });
+    const view = buildImpactPage(
+      withData({
+        governance: {
+          financialStatements: document('statements'),
+          form990: document('990-n'),
+          annualReport: null,
+          audit: null,
+        },
+      }),
+      options,
+    ).governance;
+    expect(view.cells[3]).toEqual({
+      label: 'Financials',
+      value: 'Published',
+      note: 'Financial statements, 2025',
+      noteHref: 'https://cdn.sanity.io/files/abc/development/statements.pdf',
+    });
+    expect(view.facts[1]).toMatchObject({
+      label: 'Form 990-N',
+      value: 'Form 990-N, 2025',
+      href: 'https://cdn.sanity.io/files/abc/development/990-n.pdf',
+    });
+    expect(view.facts.slice(2)).toEqual([]);
+  });
+
+  it.each([
+    ['annualReport', 'Annual report'],
+    ['audit', 'Audit'],
+  ] as const)('restores a deferred %s only once its document has a file', (kind, label) => {
+    const doc = {
+      _id: `gov-${kind}`,
+      year: '2025',
+      note: '[ Document note ]',
+      file: null,
+    };
+    const withoutFile = buildImpactPage(withData({ governance: { [kind]: doc } }), options);
+    expect(withoutFile.governance.facts.some((fact) => fact.label === label)).toBe(false);
+    const file = {
+      url: `https://cdn.sanity.io/files/abc/development/${kind}.pdf`,
+      originalFilename: `${kind}.pdf`,
+      extension: 'pdf',
+    };
+    const withFile = buildImpactPage(
+      withData({ governance: { [kind]: { ...doc, file } } }),
+      options,
+    );
+    expect(withFile.governance.facts.find((fact) => fact.label === label)).toMatchObject({
+      label,
+      value: `${label}, 2025`,
+      href: file.url,
+      note: '[ Document note ]',
     });
   });
 

@@ -75,7 +75,7 @@ export const whatItIs: SlotValue = {
                 {
                   component: Button,
                   props: { variant: 'quiet', href: '/impact', arrow: true },
-                  slots: { default: 'What the festival produces' },
+                  slots: { default: 'Our work and impact' },
                 },
                 {
                   component: Button,
@@ -150,9 +150,9 @@ export const schedule = (option: 'shown' | 'collapsed'): SlotValue => ({
   },
 });
 
-export const plan: SlotValue = {
+export const plan = (ground: 'white' | 'alt' = 'alt'): SlotValue => ({
   component: Section,
-  props: { id: 'plan', ground: 'alt', labelledby: 'plan-heading' },
+  props: { id: 'plan', ground, labelledby: 'plan-heading' },
   slots: {
     default: [
       {
@@ -160,14 +160,14 @@ export const plan: SlotValue = {
         props: {
           kicker: { yo: 'Ẹ múra', en: 'Get ready' },
           title: 'Plan your visit',
-          intro: 'Everything you need on the day, from getting there to what to bring.',
+          intro: 'Where to find us and how to get there.',
           id: 'plan-heading',
         },
       },
       { component: FactList, props: { facts: PLAN_FACTS } },
     ],
   },
-};
+});
 
 /**
  * The closing take-part band as the `labels` option draws it: the seed's four rows in their own order,

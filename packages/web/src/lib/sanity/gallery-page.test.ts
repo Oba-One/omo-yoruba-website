@@ -209,7 +209,7 @@ describe('buildGalleryPage', () => {
     const owed = buildGalleryPage(seeded, options).credits;
     expect(owed.title).toBe('Photography credit and permissions');
     expect(owed.lead).toBe(
-      'These photographs show real people, including children. Here is how we credit them, how we ask permission, and how to ask for a photograph to be removed.',
+      'These photographs show real people, including children. Here is how we credit them and how to ask for a photograph to be removed.',
     );
     expect(owed.rows).toEqual([
       { label: 'Credits', value: 'Given with each album, and with a photograph where it differs.' },

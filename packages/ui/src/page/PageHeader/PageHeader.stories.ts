@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'astro/types';
+import Button from '../../core/Button/Button.astro';
 import {
   FESTIVAL_HEADER,
   FESTIVAL_HEADER_STUDIO_PHOTO,
@@ -58,6 +59,23 @@ export const MixedFacts: Story = {
 
 /** One action only: the gold one. */
 export const OneAction: Story = { args: { actions: [FESTIVAL_HEADER.actions[0] ?? null] } };
+
+/** A caller can replace the primary trigger while retaining the header's layout and secondary action. */
+export const PrimaryActionSlot: Story = {
+  args: {
+    slots: {
+      'primary-action': {
+        component: Button,
+        props: {
+          variant: 'primary',
+          href: 'https://www.zeffy.com/ticketing/a-gala',
+          'data-tickets': '',
+        },
+        slots: { default: 'Get tickets' },
+      },
+    },
+  },
+};
 
 /** No photograph yet: the band keeps its surface and names the photograph it waits for. */
 export const PendingPhoto: Story = { args: { image: undefined } };

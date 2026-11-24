@@ -23,13 +23,13 @@ export default meta;
 type Story = StoryObj<Args>;
 
 export const Shown: Story = {
-  args: { options: { schedule: 'shown' }, slots: { default: [schedule('shown'), plan] } },
+  args: { options: { schedule: 'shown' }, slots: { default: [schedule('shown'), plan()] } },
 };
 
 export const Collapsed: Story = {
-  args: { options: { schedule: 'collapsed' }, slots: { default: [schedule('collapsed'), plan] } },
+  args: { options: { schedule: 'collapsed' }, slots: { default: [schedule('collapsed'), plan()] } },
 };
 
 export const Hidden: Story = {
-  args: { options: { schedule: 'hidden' }, slots: { default: [plan] } },
+  args: { options: { schedule: 'hidden' }, slots: { default: [plan('white')] } },
 };

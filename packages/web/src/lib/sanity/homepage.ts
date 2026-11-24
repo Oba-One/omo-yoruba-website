@@ -13,9 +13,11 @@ import { calendarKind, leadEvent, leadKindOf, pageEdition } from '@oy/content/le
 import { HOMEPAGE_VOICE_SLOTS, type VoiceSlot } from '@oy/content/pending';
 import type { homepageQuery } from '@oy/content/queries';
 import { editionPage } from '@oy/content/routes';
+import { ticketsTrigger } from '@oy/ui/cards/TicketTierCard/tickets.ts';
 import { longDate } from '@oy/ui/content/edition-dates.ts';
 import { usableAction } from '@oy/ui/core/ActionButton/action.ts';
 import type { ClientReturn } from '@sanity/client';
+import { framableSrc } from '../csp';
 import { SITE_NAME } from '../seo';
 import { offersTable } from './gala-page';
 import {
@@ -68,6 +70,8 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
   const events = (data?.events ?? []).filter((event) => event !== null);
   const lead = leadEvent(events, { season: layout.season, now });
   const leadKind = lead ? leadKindOf(lead) : calendarKind(now);
+  const tickets = leadKind === 'gala' ? ticketsTrigger(cleanText(lead?.ticketsUrl)) : undefined;
+  const ticketsForm = tickets?.dialog ? framableSrc(cleanText(lead?.ticketsUrl)) : undefined;
 
   // The prototype's three-column rhythm: placeholder slots fill up to three while voices are few,
   // skipping a slot a testimonial of the same context already fills.
@@ -115,7 +119,12 @@ export function buildHomepage(data: HomepageData | null, options: BuildOptions) 
       secondary: (hero?.secondaryActions ?? []).filter((action) => action !== null),
       motion: layout.motion !== 'off',
     },
-    lead: { event: lead ? bandEvent(lead) : undefined, kind: leadKind },
+    lead: {
+      event: lead ? bandEvent(lead) : undefined,
+      kind: leadKind,
+      ticketsForm,
+      ticketsPage: ticketsForm ? tickets?.attributes.href : undefined,
+    },
     // The two events the year turns on (ADR 0057): each card is its own page's header, with the next
     // edition's day and venue once the Studio holds them, so the card and the page never say two things.
     eventCards: EVENT_CARDS.map(({ kind, page, header: field }) => {

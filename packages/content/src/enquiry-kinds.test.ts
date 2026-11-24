@@ -80,6 +80,21 @@ describe('ENQUIRY_SPECS', () => {
 });
 
 describe('successCopy', () => {
+  it('keeps next steps to confirmed replies and direct lesson arrangements', () => {
+    expect(successCopy('performer', { responds: 'within one week' }).body).toBe(
+      'Our performance contact replies within one week about your performance enquiry.',
+    );
+    expect(successCopy('enrol').body).toBe(
+      'Our teacher replies about lesson arrangements. Times and fees are agreed directly with her.',
+    );
+    const copy = Object.values(ENQUIRY_SPECS)
+      .flatMap((spec) => [spec.blurb, spec.okBody, spec.foot ?? ''])
+      .join(' ');
+    expect(copy).not.toMatch(
+      /send(?:s)? the deck|program committee|in the spring|guardian consent form|after the first lesson/i,
+    );
+  });
+
   it('names the contact and the response time when the routing entry is full', () => {
     const copy = successCopy('sponsor', {
       name: 'Adebayo Ogunlesi',
@@ -87,13 +102,13 @@ describe('successCopy', () => {
     });
     expect(copy.title).toBe('Ẹ ṣé! ✓ We have your enquiry.');
     expect(copy.body).toBe(
-      'Adebayo Ogunlesi, our partnerships lead, sends the deck and the impact numbers within one working day and follows up to talk through levels and recognition.',
+      'Adebayo Ogunlesi, our partnerships lead, replies within one working day to discuss how you would like to support our work.',
     );
   });
 
   it('names the role and drops the time clause when the entry is empty', () => {
     expect(successCopy('sponsor').body).toBe(
-      'Our partnerships lead sends the deck and the impact numbers and follows up to talk through levels and recognition.',
+      'Our partnerships lead replies to discuss how you would like to support our work.',
     );
     expect(successCopy('member', {}).body).toBe(
       'Dues are not paid here. Our membership lead will call or write about payment and the next steps to join.',

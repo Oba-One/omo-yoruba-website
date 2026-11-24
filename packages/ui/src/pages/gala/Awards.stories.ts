@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'astro/types';
 import PageRoot from '../../page/PageRoot/PageRoot.astro';
 import type { Meta, StoryArgs, StoryObj } from '../../storybook';
-import { honorees, pastGalas, sponsor } from './sections';
+import { honorees, pastGalas } from './sections';
 
 type Args = StoryArgs<ComponentProps<typeof PageRoot>>;
 
@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The `awards` option, hidden by default: hidden leaves sponsor levels next to past galas; shown puts the honorees between them, this year first. The honorees are placeholders; with none in the Studio the section shows its Pending line.',
+          'The awards option, hidden by default: shown puts honorees before past galas. Sponsorship offers are not in use. The honorees are placeholders.',
       },
     },
   },
@@ -25,13 +25,13 @@ type Story = StoryObj<Args>;
 export const Hidden: Story = {
   args: {
     options: { awards: 'hidden' },
-    slots: { default: [sponsor, pastGalas('awards-hidden-carousel')] },
+    slots: { default: [pastGalas('awards-hidden-carousel')] },
   },
 };
 
 export const Shown: Story = {
   args: {
     options: { awards: 'shown' },
-    slots: { default: [sponsor, honorees, pastGalas('awards-shown-carousel')] },
+    slots: { default: [honorees, pastGalas('awards-shown-carousel')] },
   },
 };

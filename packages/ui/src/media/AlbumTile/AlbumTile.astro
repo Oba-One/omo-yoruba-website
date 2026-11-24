@@ -84,6 +84,7 @@ const shownYear = year?.trim() || undefined;
           {' • '}
         </span>
       )}
+      {shownYear && ' '}
       <span>{count}</span>
       {!shownYear && yearPending && ' '}
       {!shownYear && yearPending && <Pending what={yearPending} />}
@@ -109,7 +110,7 @@ const shownYear = year?.trim() || undefined;
     margin: 0;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 19px;
+    font-size: var(--text-h3);
     line-height: 1.2;
     color: var(--white);
     text-wrap: balance;
@@ -119,7 +120,7 @@ const shownYear = year?.trim() || undefined;
   }
   .oy-album-line {
     margin: 3px 0 0;
-    font-size: 13px;
+    font-size: var(--text-body-size);
     line-height: 1.5;
     color: var(--text-on-dark-soft);
   }

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './PartnerCards.stories';
 
-const { Default, WithLines, Seven, Logos, Pending } = composeStories(stories);
+const { Default, WithLines, Four, Seven, Logos, Pending } = composeStories(stories);
 
 describe('PartnerCards', () => {
   it('draws a card per partner: its kind as the kicker, its name, and a link worded by its address', async () => {
@@ -36,7 +36,19 @@ describe('PartnerCards', () => {
     ).toBeNull();
   });
 
-  it('sets the cards three across with a short last row in the middle', async () => {
+  it('balances four partners in two columns without changing their order', async () => {
+    const grid = (await renderToBody(Four)).querySelector('.oy-card-grid.oy-partner-cards');
+    expect(grid?.getAttribute('data-columns')).toBe('2');
+    expect([...(grid?.querySelectorAll('h3') ?? [])].map(text)).toEqual([
+      'Association of Moremi Women',
+      'Red Carpet Films',
+      'STEMnetics',
+      'WEFA',
+    ]);
+    expect(grid?.querySelector('img')).toBeNull();
+  });
+
+  it('keeps longer lists three across with a short last row in the middle', async () => {
     const grid = (await renderToBody(Seven)).querySelector('.oy-card-grid.oy-partner-cards');
     expect(grid?.getAttribute('data-columns')).toBe('3');
     expect(grid?.hasAttribute('data-center')).toBe(true);

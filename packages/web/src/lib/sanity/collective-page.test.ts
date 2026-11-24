@@ -80,7 +80,7 @@ const seeded = {
       way: 'sponsor',
       chip: 'Partner',
       title: 'Partner or fund a project',
-      line: 'Organizations, funders, and civic partners. Four questions and we send the deck.',
+      line: 'Organizations, funders and civic partners: tell us how you would like to support our work. We reply within one week.',
       label: 'Talk to us',
     },
     {
@@ -96,7 +96,7 @@ const seeded = {
       way: 'updates',
       chip: null,
       title: 'Follow the Collective',
-      line: 'Collective news goes out with our newsletter, once or twice a month.',
+      line: 'Collective news goes out with our newsletter.',
       label: 'Subscribe',
     },
   ],

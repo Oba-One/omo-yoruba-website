@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The `lesson` option: What a lesson looks like, shown after What you learn, or hidden. The Studio holds no steps yet (the register marks the prototype's invented), so Shown draws the rows in the bracketed placeholder form to show the layout, and Pending shows the registry's line as the development dataset stands.",
+          "The optional lesson steps, shown or hidden. Unconfirmed teaching content stays hidden. Shown uses bracketed steps to preview the layout, and Pending shows the request for the lesson's shape.",
       },
     },
   },

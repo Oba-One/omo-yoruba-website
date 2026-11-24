@@ -4,8 +4,8 @@
  * layout with the schema defaults, the slim header and its two actions, the headline figures (four or six
  * in the framed grid, each with its source line or chip, the empty cells under `six` waiting for
  * attendance and learners served, no source lines at all under `sources: hidden`), how we work with its
- * photograph, the outcomes headed by their subjects with slots for the prototype's subjects not yet
- * covered and the links to their pages, the civic prose with the cells read from the festival's editions,
+ * photograph, outcomes with sourced figures headed by their subjects and linked to their pages,
+ * the civic prose with the cells read from the festival's editions,
  * the voices with their slots, the six photographs, governance (the cells and the newest document of each
  * kind), every partner by kind and name, the closing ask's sentence from the partnerships routing contact,
  * and the `data-sanity` attributes for click-to-edit in draft mode.
@@ -14,7 +14,6 @@ import { pageEdition, pastEdition } from '@oy/content/lead-event';
 import { partnerKindRank } from '@oy/content/partners';
 import {
   GOVERNANCE_NOTE_PENDING,
-  IMPACT_OUTCOME_SLOTS,
   IMPACT_SIX_PENDING,
   IMPACT_VOICE_SLOTS,
   OUTCOME_PENDING,
@@ -52,8 +51,7 @@ const PAGE_TITLE = 'Impact';
 const pending = (field: string) => pendingWhat('impactPage', field) ?? 'this part of the page';
 
 /** The lead over the figures, true only while their source lines show. */
-const SOURCES_LEAD =
-  'Every number carries a source line: the year it covers and how it was counted.';
+const SOURCES_LEAD = 'Source notes explain where each figure comes from and any limitations.';
 
 /** The prototype's heading for the closing ask while the Studio holds none. */
 const FUND_TITLE = 'Fund the next year';
@@ -100,44 +98,29 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
   const sources = layout.sources !== 'hidden';
   const six = layout.stats === 'six';
 
-  // Outcomes: the page's own, then the slots for the prototype's subjects none of them names.
-  const outcomes = (data?.outcomes ?? []).filter(present);
-  const covered = new Set(outcomes.map((outcome) => outcomeSubject(outcome)?.key).filter(present));
-  const programs = data?.programs ?? [];
-  const slots = IMPACT_OUTCOME_SLOTS.map((slot) => {
-    if (slot.kind) return kindSubject(slot.kind);
-    const program = programs.find((candidate) => candidate._id === slot.program);
-    return program ? programSubject(program) : undefined;
-  })
+  // Unconfirmed outcomes stay off the page until their figure, meaning and source are supplied.
+  const outcomes = (data?.outcomes ?? [])
     .filter(present)
-    .filter((subject) => !covered.has(subject.key))
-    .slice(0, Math.max(0, IMPACT_OUTCOME_SLOTS.length - outcomes.length));
-  const outcomeCards = [
-    ...outcomes.map((outcome) => {
-      const subject = outcomeSubject(outcome);
-      const figure = cleanText(outcome.figure?.value) ? outcome.figure : undefined;
-      return {
-        key: outcome._key,
-        subject,
-        title: subject?.name,
-        figure: figure?.value ?? undefined,
-        line: (figure ? figure.label : outcome.plainStatement) ?? undefined,
-        source: figure?.source ?? undefined,
-        pending: OUTCOME_PENDING,
-        edit: edit(`outcomes[_key=="${outcome._key}"].figure`),
-      };
-    }),
-    ...slots.map((subject) => ({
-      key: `slot-${subject.key}`,
+    .filter(
+      (outcome) =>
+        cleanText(outcome.figure?.value) &&
+        cleanText(outcome.figure?.label) &&
+        cleanText(outcome.figure?.source),
+    );
+  const outcomeCards = outcomes.map((outcome) => {
+    const subject = outcomeSubject(outcome);
+    const figure = cleanText(outcome.figure?.value) ? outcome.figure : undefined;
+    return {
+      key: outcome._key,
       subject,
-      title: subject.name,
-      figure: undefined,
-      line: undefined,
-      source: undefined,
+      title: subject?.name,
+      figure: figure?.value ?? undefined,
+      line: (figure ? figure.label : outcome.plainStatement) ?? undefined,
+      source: figure?.source ?? undefined,
       pending: OUTCOME_PENDING,
-      edit: undefined,
-    })),
-  ];
+      edit: edit(`outcomes[_key=="${outcome._key}"].figure`),
+    };
+  });
   const links = outcomeCards
     .map((card) => card.subject)
     .filter((subject): subject is Subject => Boolean(subject?.href && subject.name))
@@ -166,26 +149,26 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       .map((placeholder) => ({ placeholder })),
   ];
 
-  // Governance: the newest document of each kind, a file link with its note, the note alone, or a chip.
+  // Deferred annual reports and audits return only when they hold a published file.
   const governance = data?.governance;
   const settings = data?.settings;
   const address = oneLine(settings?.address);
   const documentFact = (label: string, kind: 'form990' | 'annualReport' | 'audit') => {
     const doc = governance?.[kind];
     const href = fileHref(doc);
+    const request = presenceWhat('governanceDoc', kind);
+    if (!request && !href) return undefined;
     const note = doc?.note ?? undefined;
     return {
       label,
       value: href ? docLabel(label, doc) : note,
       href,
       note: href ? note : undefined,
-      pending: doc
-        ? GOVERNANCE_NOTE_PENDING
-        : (presenceWhat('governanceDoc', kind)?.what ?? GOVERNANCE_NOTE_PENDING),
+      pending: doc ? GOVERNANCE_NOTE_PENDING : request?.what,
     };
   };
-  const annual = governance?.annualReport;
-  const annualHref = fileHref(annual);
+  const financials = governance?.financialStatements;
+  const financialsHref = fileHref(financials);
   const board = data?.boardCount ?? 0;
 
   // The closing ask names the partnerships lead as the sponsor form's success copy does.
@@ -225,6 +208,7 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
       photoEdit: edit('howWeWorkImage'),
     },
     outcomes: {
+      shown: outcomeCards.length > 0,
       layout: layout.outcomes === 'rows' ? ('row' as const) : ('card' as const),
       sources,
       cards: outcomeCards,
@@ -289,25 +273,26 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
               value: undefined,
               pending: presenceWhat('person', 'board')?.what ?? "the board's names, roles and bios",
             },
-        annualHref
+        financialsHref
           ? {
               label: 'Financials',
               value: 'Published',
-              note: docLabel('Annual report', annual),
-              noteHref: annualHref,
+              note: docLabel('Financial statements', financials),
+              noteHref: financialsHref,
             }
-          : annual
+          : financials
             ? {
                 label: 'Financials',
                 value: 'Not yet published',
-                note: annual.note ?? undefined,
-                notePending: annual.note ? undefined : GOVERNANCE_NOTE_PENDING,
+                note: financials.note ?? undefined,
+                notePending: financials.note ? undefined : GOVERNANCE_NOTE_PENDING,
               }
             : {
                 label: 'Financials',
                 value: undefined,
                 pending:
-                  presenceWhat('governanceDoc', 'annualReport')?.what ?? GOVERNANCE_NOTE_PENDING,
+                  presenceWhat('governanceDoc', 'financialStatements')?.what ??
+                  GOVERNANCE_NOTE_PENDING,
               },
       ],
       facts: [
@@ -316,10 +301,10 @@ export function buildImpactPage(data: ImpactPageData | null, options: BuildOptio
           value: address,
           pending: pendingWhat('siteSettings', 'address') ?? 'mailing address',
         },
-        documentFact('Form 990', 'form990'),
+        documentFact('Form 990-N', 'form990'),
         documentFact('Annual report', 'annualReport'),
         documentFact('Audit', 'audit'),
-      ],
+      ].filter(present),
     },
     partners: {
       shown: layout.funders !== 'hidden',

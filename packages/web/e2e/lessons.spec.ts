@@ -26,7 +26,7 @@ test.describe('the Yoruba Language Lessons page', () => {
     const order = await page.evaluate(() =>
       Array.from(document.querySelectorAll('main > *')).map((el) => el.id),
     );
-    expect(order.slice(0, 4)).toEqual(['top', 'glance', 'teacher', 'learn']);
+    expect(order.slice(0, 3)).toEqual(['top', 'glance', 'teacher']);
     const lesson = await page.locator('body').getAttribute('data-lesson');
     expect(order.includes('lesson')).toBe(lesson !== 'hidden');
     // The questions are parked (ADR 0058): their section is drawn only with one answered.
@@ -51,7 +51,7 @@ test.describe('the Yoruba Language Lessons page', () => {
       await expect(glance).toHaveCount(0);
       await expect(page.locator('#glance .oy-pend-line')).toContainText('the lesson details');
     } else {
-      await expect(glance).toHaveCount(4);
+      await expect(glance).toHaveCount(3);
     }
     expectNoMockWhileOwed(main, [
       [/\$180|\$75/, pendingWhat('lessonsPage', 'lessonDetails.cost')],
@@ -79,11 +79,11 @@ test.describe('the Yoruba Language Lessons page', () => {
     const enquiry = section.locator('.oy-enquiry-card[data-kind="enrol"]');
     await expect(enquiry.locator('h3')).toHaveText(ENQUIRY_SPECS.enrol.title);
     const email = enquiry.locator('.oy-enquiry-card-email');
-    await expect(email).toContainText('Or email');
-    const link = email.locator('a');
-    if ((await link.count()) === 1) await expect(link).toHaveAttribute('href', /^mailto:/);
-    else
-      await expect(email).toContainText(`Pending: ${TEACHER_EMAIL_PENDING}`, { ignoreCase: true });
+    if ((await email.count()) > 0) {
+      await expect(email.locator('a')).toHaveAttribute('href', /^mailto:/);
+      await expect(email.locator('.oy-pend')).toHaveCount(0);
+    }
+    await expect(card.locator('.oy-person-bio .oy-pend')).toHaveCount(0);
   });
 
   test('teaches what the Studio holds, or names what is owed: the prose, the levels and the lesson', async ({
@@ -91,15 +91,17 @@ test.describe('the Yoruba Language Lessons page', () => {
   }) => {
     await page.goto('/programs/yoruba-lessons');
     const learn = page.locator('#learn');
-    await expect(learn.locator('h2')).toHaveText('What you learn');
-    // The levels are parked (ADR 0058): the list is drawn once a level says what it covers, and no
-    // line or chip stands in for it before.
-    await expect(learn.locator('.oy-pend-line')).toHaveCount(0);
-    await expect(learn.locator('.oy-list .oy-pend')).toHaveCount(0);
-    const text = await learn.innerText();
-    expectNoMockWhileOwed(text, [
-      [/from the first lesson|three tones/i, pendingWhat('lessonsPage', 'learn')],
-    ]);
+    if ((await learn.count()) > 0) {
+      await expect(learn.locator('h2')).toHaveText('What you learn');
+      // The levels are parked (ADR 0058): the list is drawn once a level says what it covers, and no
+      // line or chip stands in for it before.
+      await expect(learn.locator('.oy-pend-line')).toHaveCount(0);
+      await expect(learn.locator('.oy-list .oy-pend')).toHaveCount(0);
+      const text = await learn.innerText();
+      expectNoMockWhileOwed(text, [
+        [/from the first lesson|three tones/i, pendingWhat('lessonsPage', 'learn')],
+      ]);
+    }
     const lesson = page.locator('#lesson');
     if ((await lesson.count()) === 1) {
       await expect(lesson.locator('h2')).toHaveText('What a lesson looks like');

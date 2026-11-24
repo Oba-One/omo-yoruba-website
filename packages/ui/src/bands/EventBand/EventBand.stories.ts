@@ -28,6 +28,10 @@ export const Default: Story = {};
 
 export const Gala: Story = {};
 
+export const GalaTickets: Story = {
+  args: { event: { ...GALA_2026, ticketsUrl: 'https://www.zeffy.com/embed/ticketing/example' } },
+};
+
 /** An edition that offers a table: the button names both, as the prototype draws it. */
 export const GalaWithTables: Story = { args: { event: { ...GALA_2026, tables: true } } };
 

@@ -6,6 +6,7 @@
  * row never disagree.
  */
 
+import { GALA_SPONSORSHIP_ENABLED } from './editing-defaults';
 import { LESSON_FACTS, PAYMENT_FACTS } from './known-facts';
 import { COLLECTIVE_NAME } from './routes';
 
@@ -414,6 +415,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     everyEdition: true,
     where: 'Sponsorship',
     what: 'the amount',
+    ...(!GALA_SPONSORSHIP_ENABLED && { parked: true as const }),
   },
   {
     type: 'sponsorLevel',
@@ -423,12 +425,27 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     everyEdition: true,
     where: 'Sponsorship',
     what: 'what the level recognizes',
+    ...(!GALA_SPONSORSHIP_ENABLED && { parked: true as const }),
   },
 
   // Programs and lessons
   { type: 'program', fields: ['blurb'], where: 'Programs, cards', what: 'what the program is' },
   { type: 'program', fields: ['cadence'], where: 'Programs, cards', what: 'the cadence' },
-  { type: 'program', fields: ['ages'], where: 'Programs, cards', what: 'the ages' },
+  {
+    type: 'program',
+    fields: ['ages'],
+    filter: 'coalesce(page, "") != "lessons"',
+    where: 'Programs, cards',
+    what: 'the ages',
+  },
+  {
+    type: 'program',
+    fields: ['ages'],
+    filter: 'page == "lessons"',
+    where: 'Programs, cards',
+    what: 'the ages',
+    parked: true,
+  },
   // A sub-program's fact with its label and no value: the card shows the chip in the value's place.
   {
     type: 'programsPage',
@@ -464,6 +481,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     condition: `!defined(coalesce(lessonDetails.${name}, glance[lower(label) == "${label.toLowerCase()}"][0].value))`,
     where: 'Lessons, at a glance',
     what,
+    ...(name === 'ages' && { parked: true as const }),
   })),
   {
     type: 'lessonsPage',
@@ -478,6 +496,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     filter: '_id in *[_id == "lessonsPage"].teacher._ref',
     where: 'Lessons, teacher',
     what: "the teacher's short bio",
+    parked: true,
   },
   // How she wants enquiries: the enrol form always, and her own address beside it once it is set.
   {
@@ -485,12 +504,14 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     condition: 'count(contacts[role == "teacher" && defined(email)]) == 0',
     where: 'Lessons, teacher',
     what: TEACHER_EMAIL_PENDING,
+    parked: true,
   },
   {
     type: 'lessonsPage',
     fields: ['learn'],
     where: 'Lessons, what you learn',
     what: 'what the lessons teach, in her words',
+    parked: true,
   },
   {
     type: 'lessonsPage',
@@ -703,6 +724,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     fields: ['outcomes[]'],
     where: 'Impact, outcomes',
     what: 'participation figures per program',
+    parked: true,
   },
   {
     type: 'outcome',
@@ -744,8 +766,17 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
   {
     type: 'governanceDoc',
     condition: '!defined(file) && !defined(note)',
+    filter: '!(kind in ["annualReport", "audit"])',
     where: 'Impact, governance',
     what: GOVERNANCE_NOTE_PENDING,
+  },
+  {
+    type: 'governanceDoc',
+    condition: '!defined(file) && !defined(note)',
+    filter: 'kind in ["annualReport", "audit"]',
+    where: 'Impact, governance',
+    what: GOVERNANCE_NOTE_PENDING,
+    parked: true,
   },
   {
     type: 'siteSettings',
@@ -771,6 +802,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     fields: ['foundingImage'],
     where: 'Our Story, how it began',
     what: 'the earliest photograph you have: an early gathering, or the founders',
+    parked: true,
   },
   {
     type: 'storyPage',
@@ -792,6 +824,7 @@ const REGISTER_ROWS: readonly PendingEntry[] = [
     filter: 'group == "board"',
     where: 'Our Story, board',
     what: 'a short bio',
+    parked: true,
   },
   {
     type: 'person',
@@ -880,6 +913,7 @@ const REGISTER_PRESENCE: readonly PresenceEntry[] = [
     everyEdition: true,
     where: 'Sponsorship',
     what: 'level names and amounts',
+    ...(!GALA_SPONSORSHIP_ENABLED && { parked: true as const }),
   },
   // An honoree shows only when it names a Gala edition (ADR 0042).
   {
@@ -924,6 +958,13 @@ const REGISTER_PRESENCE: readonly PresenceEntry[] = [
   {
     type: 'governanceDoc',
     minimum: 1,
+    filter: 'kind == "financialStatements"',
+    where: 'Impact, governance',
+    what: 'the financial statements',
+  },
+  {
+    type: 'governanceDoc',
+    minimum: 1,
     filter: 'kind == "form990"',
     where: 'Impact, governance',
     what: 'the Form 990 position',
@@ -934,6 +975,7 @@ const REGISTER_PRESENCE: readonly PresenceEntry[] = [
     filter: 'kind == "annualReport"',
     where: 'Impact, governance',
     what: 'the annual report position',
+    parked: true,
   },
   {
     type: 'governanceDoc',
@@ -941,6 +983,7 @@ const REGISTER_PRESENCE: readonly PresenceEntry[] = [
     filter: 'kind == "audit"',
     where: 'Impact, governance',
     what: 'the audit position',
+    parked: true,
   },
   // Still to come as GROQ reads it (ADR 0030): dated, with an end ahead, or no end and a start within the
   // last day.
@@ -1082,11 +1125,19 @@ export const COLLECTIVE_VOICE_SLOT: VoiceSlot = {
 /**
  * The chip wording for an empty field, or undefined when the field is not required for launch.
  * `kind` picks the row for one kind of document (an event's `gala` or `festival`, a person's `board` or
- * `staff` group): its own row, else a row every kind shares, never a row the registry keeps for another
+ * `staff` group, or a program's own page): its own row, else a row every kind shares, never a row the registry keeps for another
  * kind. An array's name without
  * `[]` answers the row for one of its items missing a value.
  */
 export function pendingWhat(type: string, field: string, kind?: string): string | undefined {
+  // A parked request for this group must not fall through to another group's shared wording.
+  if (kind) {
+    const own = REGISTER_ROWS.find(
+      (entry) =>
+        entry.type === type && entry.fields?.includes(field) && rowKinds(entry).includes(kind),
+    );
+    if (own?.parked) return undefined;
+  }
   return whatIn(PENDING, type, field, kind);
 }
 
@@ -1116,14 +1167,16 @@ function whatIn(
 }
 
 /**
- * The kinds a row's filter narrows it to: an edition's kind or a person's group, named once
+ * The kinds a row's filter narrows it to: an edition's kind, a person's group or a program's page, named once
  * (`kind == "festival"`, `group == "board"`) or as a list (`group in ["staff", "volunteer"]`); none for a
  * row every kind shares.
  */
 function rowKinds(entry: { filter?: string }): string[] {
   const filter = entry.filter ?? '';
-  const one = [...filter.matchAll(/\b(?:kind|group) == "([^"]+)"/g)].map((match) => match[1] ?? '');
-  const lists = [...filter.matchAll(/\b(?:kind|group) in \[([^\]]*)\]/g)].flatMap((match) =>
+  const one = [...filter.matchAll(/\b(?:kind|group|page) == "([^"]+)"/g)].map(
+    (match) => match[1] ?? '',
+  );
+  const lists = [...filter.matchAll(/\b(?:kind|group|page) in \[([^\]]*)\]/g)].flatMap((match) =>
     [...(match[1] ?? '').matchAll(/"([^"]+)"/g)].map((name) => name[1] ?? ''),
   );
   return [...one, ...lists];

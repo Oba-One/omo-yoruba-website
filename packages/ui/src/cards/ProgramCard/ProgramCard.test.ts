@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './ProgramCard.stories';
 
-const { Default, Collective, NoPhoto, Pending, WithEdit, When, WhenPending } =
+const { Default, Collective, NoPhoto, Pending, WithEdit, When, WhenWithAges, WhenPending } =
   composeStories(stories);
 
 describe('ProgramCard', () => {
@@ -45,12 +45,11 @@ describe('ProgramCard', () => {
     expect(img?.getAttribute('data-sanity')).toContain('type=program;path=image');
   });
 
-  it('leads with the cadence and the ages on the Programs hub, each its chip while owed', async () => {
+  it('keeps Lessons cadence while omitting its deferred ages, and still asks for other programs', async () => {
     const card = (await renderToBody(When)).querySelector('.oy-card');
     const when = card?.querySelector('.oy-card-body > .pg-when');
     expect([...(when?.children ?? [])].map((cell) => text(cell))).toEqual([
       'Online, by arrangement',
-      'Pending: the ages',
     ]);
     // The line sits above the name, which stays the card's one heading.
     expect(when?.nextElementSibling?.tagName).toBe('H3');
@@ -64,6 +63,15 @@ describe('ProgramCard', () => {
       [...(exchange?.querySelectorAll('.pg-when > *') ?? [])].map((cell) => text(cell)),
     ).toEqual(['Pending: the cadence', 'Pending: the ages']);
     expect(exchange?.querySelector('a.oy-btn--quiet')?.getAttribute('href')).toBe('#exchange');
+  });
+
+  it('shows supplied Lessons ages even while the missing-age request is parked', async () => {
+    const card = (await renderToBody(WhenWithAges)).querySelector('.oy-card');
+    expect([...(card?.querySelectorAll('.pg-when > *') ?? [])].map((cell) => text(cell))).toEqual([
+      'Online, by arrangement',
+      '[ Confirmed ages ]',
+    ]);
+    expect(card?.querySelector('.pg-when .oy-pend')).toBeNull();
   });
 
   it('leaves the when line off the homepage card', async () => {

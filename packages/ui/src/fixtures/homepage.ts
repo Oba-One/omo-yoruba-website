@@ -180,5 +180,5 @@ export const PROVERB = {
 
 export const NEWSLETTER = {
   title: 'Festival news and updates, in your inbox',
-  blurb: 'Once or twice a month. Save-the-dates, program news, and ways to help.',
+  blurb: 'Festival dates, program news and ways to help.',
 };

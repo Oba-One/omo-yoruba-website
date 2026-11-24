@@ -7,10 +7,10 @@ test.describe('site chrome', () => {
   }) => {
     await page.goto('/');
     await expect(page.locator('dialog[open]')).toHaveCount(0);
-    // The EIN reads XX-XXXXXXX until the settings hold it; either way the line is there.
     await expect(page.locator('footer.oy-footer .oy-footer-trust')).toContainText(
-      '501(c)(3) nonprofit • Founded 1997 • EIN ',
+      '501(c)(3) nonprofit • Founded 1997 • Los Angeles, CA',
     );
+    await expect(page.locator('footer.oy-footer')).not.toContainText('EIN');
     await expect(page.locator('footer.oy-footer .oy-footer-trust')).toContainText(
       'Los Angeles, CA',
     );
@@ -158,6 +158,22 @@ test.describe('site chrome', () => {
     await burger.click();
     await expect(menu).toHaveAttribute('open', '');
     await expect(burger).toHaveAttribute('aria-expanded', 'true');
+    const pageLinkStyle = await menu
+      .getByRole('link', { name: 'Programs', exact: true })
+      .evaluate((link) => ({
+        fontSize: getComputedStyle(link).fontSize,
+        left: link.getBoundingClientRect().left,
+      }));
+    for (const name of ['Ọdúndé Festival', 'End-of-Year Gala']) {
+      const eventLinkStyle = await menu
+        .getByRole('link', { name, exact: true })
+        .evaluate((link) => ({
+          fontSize: getComputedStyle(link).fontSize,
+          left: link.getBoundingClientRect().left,
+        }));
+      expect(eventLinkStyle).toEqual(pageLinkStyle);
+    }
+    await expect(menu.locator('.oy-nav-group')).toHaveCount(0);
     // The page behind a modal dialog is inert: focus stays in the menu, or leaves the document
     // for the browser's own chrome (the body in a headless run), never a link behind the scrim.
     for (let step = 0; step < 10; step += 1) {

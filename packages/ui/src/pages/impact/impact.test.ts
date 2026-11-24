@@ -1,4 +1,3 @@
-import { OUTCOME_PENDING } from '@oy/content/pending';
 import { composeStories } from '@storybook-astro/framework/testing';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
@@ -27,7 +26,7 @@ describe('the Impact page-section stories', () => {
   it('sources: the source lines and the lead that promises them, or neither', async () => {
     const shown = (await renderToBody(Sources.Shown)).querySelector('.oy-home');
     expect(text(shown?.querySelector('#numbers .oy-sec-intro'))).toMatch(
-      /^Every number carries a source line/,
+      /^Source notes explain where each figure comes from/,
     );
     expect(shown?.querySelectorAll('#numbers .oy-source')).toHaveLength(4);
     expect(text(shown?.querySelector('#outcomes .oy-outcome .oy-source'))).toBe(
@@ -39,34 +38,17 @@ describe('the Impact page-section stories', () => {
     expect(hidden?.querySelectorAll('.oy-source')).toHaveLength(0);
   });
 
-  it('outcomes: the four slots named in the prototype order, as cards or rows, with their links', async () => {
+  it('outcomes: hidden while unconfirmed, then a sourced card or row without empty placeholders', async () => {
     const cards = (await renderToBody(Outcomes.Cards)).querySelector('.oy-home');
-    const slots = [...(cards?.querySelectorAll('#outcomes .oy-outcome') ?? [])];
-    expect(slots.map((slot) => text(slot.querySelector('h3')))).toEqual([
-      'Yoruba Language Lessons',
-      'Odunde Festival',
-      'Kids & STEM',
-      'Yoruba Cultural Collective',
-    ]);
-    expect(slots.map((slot) => text(slot.querySelector('.oy-pend')))).toEqual(
-      Array(4).fill(`Pending: ${OUTCOME_PENDING}`),
-    );
-    expect(
-      [...(cards?.querySelectorAll('#outcomes .oy-button-row a') ?? [])].map((a) =>
-        a.getAttribute('href'),
-      ),
-    ).toEqual([
-      '/programs/yoruba-lessons',
-      '/odunde',
-      '/programs#kids',
-      '/programs/cultural-collective',
-    ]);
+    expect(cards?.querySelector('#outcomes')).toBeNull();
     expect(text(cards)).not.toMatch(/The school|71 percent|210|2 sites/);
     expect(text(cards?.querySelector('#civic h2'))).toBe('Odunde as civic infrastructure');
     const rows = (await renderToBody(Outcomes.Rows)).querySelector('#outcomes');
-    expect(rows?.querySelectorAll('.oy-outcome--row')).toHaveLength(4);
+    expect(rows?.querySelectorAll('.oy-outcome--row')).toHaveLength(1);
     const filled = (await renderToBody(Outcomes.WithOutcome)).querySelector('#outcomes');
-    expect(filled?.querySelectorAll('.oy-outcome')).toHaveLength(4);
+    expect(filled?.querySelectorAll('.oy-outcome')).toHaveLength(1);
+    expect(filled?.querySelector('.oy-pend')).toBeNull();
+    expect(filled?.querySelector('.oy-button-row a')?.getAttribute('href')).toBe('/odunde');
     expect(text(filled?.querySelector('.oy-outcome-fig'))).toBe('[ Figure ]');
   });
 
@@ -85,6 +67,10 @@ describe('the Impact page-section stories', () => {
       'EIN',
       'Board',
       'Financials',
+    ]);
+    expect([...(shown?.querySelectorAll('#governance .oy-facts dt') ?? [])].map(text)).toEqual([
+      'Mailing address',
+      'Form 990-N',
     ]);
     expect(text(shown?.querySelector('#governance .oy-facts'))).not.toMatch(
       /95-4612387|Leimert Boulevard|March 2027/,

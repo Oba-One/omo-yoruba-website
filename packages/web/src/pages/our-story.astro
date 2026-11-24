@@ -64,17 +64,27 @@ cachePage(Astro, '/our-story', { draft: preview, failed: Boolean(error) });
             </p>
           )
         }
-        <FactList facts={page.founding.facts} pending={page.founding.factsPending} columns={1} />
-        <PhotoTile
-          slot="aside"
-          shape="figure"
-          height={340}
-          image={page.founding.photo}
-          caption={page.founding.caption}
-          what={page.founding.photoWhat}
-          sizes="(min-width: 1100px) 480px, (min-width: 900px) 42vw, 100vw"
-          edit={page.founding.photoEdit}
-        />
+        {
+          page.founding.photo && (
+            <FactList facts={page.founding.facts} pending={page.founding.factsPending} columns={1} />
+          )
+        }
+        <Fragment slot="aside">
+          {
+            page.founding.photo ? (
+              <PhotoTile
+                shape="figure"
+                height={340}
+                image={page.founding.photo}
+                caption={page.founding.caption}
+                sizes="(min-width: 1100px) 480px, (min-width: 900px) 42vw, 100vw"
+                edit={page.founding.photoEdit}
+              />
+            ) : (
+              <FactList facts={page.founding.facts} pending={page.founding.factsPending} columns={1} />
+            )
+          }
+        </Fragment>
       </Split>
     </Section>
 

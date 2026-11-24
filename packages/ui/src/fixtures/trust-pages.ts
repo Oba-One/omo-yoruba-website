@@ -145,7 +145,7 @@ export const IMPACT_STATS = [
 );
 
 export const SOURCES_LEAD =
-  'Every number carries a source line: the year it covers and how it was counted.';
+  'Source notes explain where each figure comes from and any limitations.';
 
 export const HOW_WE_WORK_PENDING = owed('impactPage', 'howWeWork');
 
@@ -200,14 +200,12 @@ export const GOVERNANCE_CELLS = [
   { label: 'Tax status', value: '501(c)(3)', note: 'Founded 1997' },
   { label: 'EIN', pending: owed('siteSettings', 'ein') },
   { label: 'Board', pending: missing('person', 'board') },
-  { label: 'Financials', pending: missing('governanceDoc', 'annualReport') },
+  { label: 'Financials', pending: missing('governanceDoc', 'financialStatements') },
 ];
 
 export const GOVERNANCE_FACTS = [
   { label: 'Mailing address', pending: owed('siteSettings', 'address') },
-  { label: 'Form 990', pending: missing('governanceDoc', 'form990') },
-  { label: 'Annual report', pending: missing('governanceDoc', 'annualReport') },
-  { label: 'Audit', pending: missing('governanceDoc', 'audit') },
+  { label: 'Form 990-N', pending: missing('governanceDoc', 'form990') },
 ];
 
 export const FUNDERS_INTRO = 'Everyone who has supported the work.';
@@ -337,7 +335,7 @@ export const GIVE_FACTS = [
 export const LARGER_SCALE = {
   title: 'Giving at a larger scale',
   intro:
-    'Organizations, funders, and civic partners. Named levels, recognition, and a conversation with a person. Four questions and we send the deck.',
+    'Organizations, funders and civic partners: tell us how you would like to support our work. We reply within one week.',
   door: seededDoor('partner'),
 };
 

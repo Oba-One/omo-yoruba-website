@@ -28,7 +28,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The partners and sponsors of a page as cards: what each is to us as the kicker, its name, one line when the Studio holds one, and a quiet link worded by its site's address. Three across, a short last row in the middle. No partners shows the registry's Pending line.",
+          "The partners and sponsors of a page as cards: what each is to us as the kicker, its name, one line when the Studio holds one, and a quiet link worded by its site's address. Four partners form two balanced rows; other lists sit three across with a short last row in the middle. No partners shows the registry's Pending line.",
       },
     },
   },
@@ -47,6 +47,35 @@ export const WithLines: Story = {
       ...partner,
       line: '[ One line on what they do with us ]',
     })),
+  },
+};
+
+/** Odunde's four published partners, without logos, in two balanced rows. */
+export const Four: Story = {
+  args: {
+    partners: [
+      {
+        ...ODUNDE[0],
+        line: 'The Association of Moremi Women joined us to present Odunde 2026 and celebrate Yorùbá culture.',
+        url: 'https://www.facebook.com/100070440635407/?locale=en_GB',
+      },
+      {
+        _id: 'partner-red-carpet-films',
+        name: 'Red Carpet Films',
+        kind: 'sponsor',
+        line: 'Red Carpet Films photographed and filmed Odunde 2026, helping us share the day with our wider community.',
+        url: 'https://www.youtube.com/@redcarpetfilmshollywood',
+      },
+      {
+        ...ODUNDE[1],
+        line: 'Our announced STEM Hub partner for Odunde 2026, STEMnetics creates hands-on learning experiences for children.',
+        url: 'https://www.stemnetics.org/',
+      },
+      {
+        ...ODUNDE[2],
+        line: 'A sponsor of Odunde 2026, WEFA builds digital experiences connecting people with nature and community.',
+      },
+    ],
   },
 };
 

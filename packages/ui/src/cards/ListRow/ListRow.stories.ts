@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'astro/types';
 import { SPONSOR_LEVEL_PLACEHOLDERS } from '../../fixtures/event-pages';
-import { type Meta, type StoryArgs, type StoryObj, wrap } from '../../storybook';
+import type { Meta, StoryArgs, StoryObj } from '../../storybook';
 import ListRow, { type TierRowLike } from './ListRow.astro';
 
 type Args = StoryArgs<ComponentProps<typeof ListRow>>;
@@ -9,7 +9,7 @@ const meta = {
   title: 'Cards/ListRow',
   component: ListRow,
   args: { kind: 'tier', row: SPONSOR_LEVEL_PLACEHOLDERS[0] as TierRowLike },
-  decorators: [wrap('oy-list')],
+  decorators: [(story: () => string) => `<ul class="oy-list">${story()}</ul>`],
   parameters: {
     docs: {
       description: {
@@ -33,6 +33,19 @@ export const Entry: Story = {
   args: {
     kind: 'entry',
     row: { _key: 'level-1', title: '[ The first level ]', line: '[ What the level covers ]' },
+  },
+};
+
+/** A practical detail under the entry, as Donate lists its other ways to give. */
+export const EntryWithDetail: Story = {
+  args: {
+    kind: 'entry',
+    row: {
+      _key: 'way-1',
+      title: '[ A way to give ]',
+      line: '[ How to give this way ]',
+      detail: '[ The practical details ]',
+    },
   },
 };
 

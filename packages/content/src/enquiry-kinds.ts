@@ -149,11 +149,10 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     kind: 'sponsor',
     title: 'Sponsor Omo Yorùbá',
     blurb:
-      'Four questions, then we send the deck and the impact numbers. One enquiry covers Odunde, the Gala, the Collective, or all of it.',
+      'Tell us how you would like to support our work. One enquiry covers Odunde, the Gala, the Collective, or our programs.',
     submit: 'Send enquiry',
     ok: 'Ẹ ṣé! ✓ We have your enquiry.',
-    okBody:
-      '{contact} sends the deck and the impact numbers{responds} and follows up to talk through levels and recognition.',
+    okBody: '{contact} replies{responds} to discuss how you would like to support our work.',
     role: 'partnerships',
     contactNamed: '{name}, our partnerships lead,',
     contactUnnamed: 'Our partnerships lead',
@@ -179,15 +178,13 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
   performer: {
     kind: 'performer',
     title: 'Ask about performing',
-    blurb:
-      'Drummers, dancers, and cultural groups. Six questions, and the program committee sees every one.',
+    blurb: 'Drummers, dancers, and cultural groups: tell us about your performance.',
     submit: 'Send enquiry',
     ok: 'Ẹ ṣé! ✓ We have your details.',
-    okBody:
-      'The festival program is decided in the spring. You hear from us either way{responds}, whether or not there is a slot this year.',
+    okBody: '{contact} replies{responds} about your performance enquiry.',
     role: 'performers',
-    contactNamed: '{name}, for the program committee,',
-    contactUnnamed: 'The program committee',
+    contactNamed: '{name}, our performance contact,',
+    contactUnnamed: 'Our performance contact',
     fields: [
       T('group', 'Group or artist name', {
         required: true,
@@ -251,7 +248,7 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     submit: 'Raise your hand',
     ok: 'Ẹ ṣé! ✓',
     okBody: '{contact} writes{responds}. Most people start at a single event and go from there.',
-    foot: 'Volunteers under 18 are welcome. We send a guardian consent form before a first shift.',
+    foot: 'If you are under 18, tell us your age so we can discuss the next steps.',
     role: 'volunteers',
     contactNamed: '{name}, who places volunteers,',
     contactUnnamed: 'The person who places volunteers',
@@ -276,7 +273,7 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     submit: 'Send to the teacher',
     ok: 'Ẹ ṣé! ✓ We have your message.',
     okBody:
-      '{contact} replies{responds} with a level, a time, and the link for the call. Nothing is charged online: fees are agreed with her and settled after the first lesson.',
+      '{contact} replies{responds} about lesson arrangements. Times and fees are agreed directly with her.',
     role: 'teacher',
     contactNamed: '{name}, our teacher,',
     contactUnnamed: 'Our teacher',
@@ -308,7 +305,7 @@ export const ENQUIRY_SPECS: Record<EnquiryKind, KindSpec> = {
     kind: 'vendor',
     title: 'Apply for a booth at Ọjà Balógun',
     blurb:
-      'The market at Odunde. Fees and dates are on the festival page, and a booth is not held until the fee is paid.',
+      'The market at Odunde. Tell us what you sell and the booth you need. Our team will follow up about your application and next steps.',
     submit: 'Send application',
     ok: 'Ẹ ṣé! ✓ Your application is in.',
     okBody:

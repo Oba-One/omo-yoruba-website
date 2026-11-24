@@ -6,10 +6,10 @@ import * as stories from './SiteFooter.stories';
 const { Default, Pending, Filled, UnsafeSocials, NewsletterSuccess } = composeStories(stories);
 
 describe('SiteFooter', () => {
-  it('reads the EIN placeholder and Pending chips while the settings are empty', async () => {
+  it('keeps the trust line and Pending contact details while settings are empty', async () => {
     const body = await renderToBody(Pending);
     expect(text(body.querySelector('.oy-footer-trust'))).toContain(
-      '501(c)(3) nonprofit • Founded 1997 • EIN XX-XXXXXXX • Los Angeles, CA',
+      '501(c)(3) nonprofit • Founded 1997 • Los Angeles, CA',
     );
     const chips = Array.from(body.querySelectorAll('.oy-pend')).map((chip) => text(chip));
     expect(chips).toEqual([
@@ -32,9 +32,10 @@ describe('SiteFooter', () => {
     expect(body.querySelector('#subscribe.oy-footer-newsletter form.oy-signup')).not.toBeNull();
   });
 
-  it('renders the real EIN, address, email, phone and one link per social network once set', async () => {
+  it('omits the EIN while keeping the address, contacts and social links', async () => {
     const body = await renderToBody(Filled);
-    expect(text(body.querySelector('[data-ein]'))).toBe('12-3456789');
+    expect(text(body.querySelector('footer'))).not.toContain('12-3456789');
+    expect(text(body.querySelector('.oy-footer-trust'))).not.toContain('EIN');
     expect(body.querySelector('a[href="mailto:hello@example.org"]')).not.toBeNull();
     expect(body.querySelector('a[href="tel:0000000000"]')).not.toBeNull();
     expect(body.querySelectorAll('.oy-footer-address br')).toHaveLength(2);

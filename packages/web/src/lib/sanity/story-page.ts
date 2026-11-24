@@ -76,7 +76,6 @@ export function buildStoryPage(data: StoryPageData | null, options: BuildOptions
       factsPending: pending('foundingFacts[]'),
       photo: resolveImage(options.imageSet, data?.foundingImage, { width: 720 }),
       caption: data?.foundingImage?.caption ?? undefined,
-      photoWhat: pending('foundingImage'),
       photoEdit: edit('foundingImage'),
     },
     timeline: {
@@ -99,7 +98,7 @@ export function buildStoryPage(data: StoryPageData | null, options: BuildOptions
       })),
       pending: presenceWhat('person', 'board')?.what ?? "the board's names, roles and bios",
       rolePending: pendingWhat('person', 'role', 'board') ?? 'the role',
-      bioPending: pendingWhat('person', 'bioShort', 'board') ?? 'a short bio',
+      bioPending: pendingWhat('person', 'bioShort', 'board'),
     },
     staff: {
       intro: data?.staffIntro ?? undefined,
