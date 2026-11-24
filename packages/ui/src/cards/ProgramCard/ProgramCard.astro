@@ -7,7 +7,7 @@
  * green, the one place green lives outside its page. A missing blurb shows the registry's chip;
  * without an action the card has no link. With `showWhen` (the Programs hub, `10 Programs.dc.html`) the
  * card leads with the program's cadence and ages above its name, each the registry's chip while the
- * Studio holds none.
+ * Studio holds none and the fact is still required for launch.
  */
 import { pendingWhat } from '@oy/content/pending';
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
@@ -51,6 +51,7 @@ const action: ActionLike | undefined = program.action?.label ? program.action : 
 const blurbPending = pendingWhat('program', 'blurb');
 const cadence = program.cadence?.trim();
 const ages = program.ages?.trim();
+const agesPending = pendingWhat('program', 'ages', program.page ?? undefined);
 ---
 
 <Card
@@ -78,7 +79,7 @@ const ages = program.ages?.trim();
       <>
         <div class="pg-when">
           {cadence ? <span>{program.cadence}</span> : <Pending what={pendingWhat('program', 'cadence')} />}
-          {ages ? <span>{program.ages}</span> : <Pending what={pendingWhat('program', 'ages')} />}
+          {ages ? <span>{program.ages}</span> : agesPending && <Pending what={agesPending} />}
         </div>
         {name && <h3>{name}</h3>}
       </>

@@ -189,7 +189,7 @@ export const takePart: SlotValue = {
         props: {
           shape: 'box',
           variant: 'quiet',
-          text: 'See what the Collective has built so far.',
+          text: 'Learn how our organization works.',
           action: { label: 'See our impact', kind: 'url', href: '/impact' },
         },
       },

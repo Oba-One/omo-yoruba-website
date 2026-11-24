@@ -10,6 +10,7 @@ import OutcomeCard from '../../cards/OutcomeCard/OutcomeCard.astro';
 import EntryList from '../../content/EntryList/EntryList.astro';
 import FactList from '../../content/FactList/FactList.astro';
 import Prose from '../../content/Prose/Prose.astro';
+import Button from '../../core/Button/Button.astro';
 import {
   DONATE_HEADER,
   GIFTS_PENDING,
@@ -32,6 +33,13 @@ import type { SlotValue } from '../../storybook';
 export const header: SlotValue = {
   component: PageHeader,
   props: { variant: 'slim', ...DONATE_HEADER },
+  slots: {
+    'primary-action': {
+      component: Button,
+      props: { href: '#other', 'data-give': '', arrow: true },
+      slots: { default: DONATE_HEADER.actions[0]?.label ?? '' },
+    },
+  },
 };
 
 /** Give now: the seeded blurb beside the facts, the Zeffy ones owed; no second gold button. */

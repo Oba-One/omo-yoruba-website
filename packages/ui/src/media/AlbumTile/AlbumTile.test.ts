@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook-astro/framework/testing';
+import { within } from 'storybook/test';
 import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './AlbumTile.stories';
@@ -19,7 +20,7 @@ describe('AlbumTile', () => {
     expect(link?.querySelector('.oy-pend')).toBeNull();
   });
 
-  it("leaves the cover's alt empty, frames it lazily, and sets the title at 19px or the lead's size", async () => {
+  it("leaves the cover's alt empty, frames it lazily, and distinguishes the lead's size", async () => {
     const body = await renderToBody(Default);
     const img = body.querySelector('img');
     expect(img?.getAttribute('alt')).toBe('');
@@ -35,6 +36,9 @@ describe('AlbumTile', () => {
     const line = body.querySelector('.oy-album-line');
     expect(text(line)).toBe('2025 • 6 photographs');
     expect(line?.querySelector('.oy-album-dot')?.getAttribute('aria-hidden')).toBe('true');
+    expect(
+      within(body).getByRole('link', { name: 'End-of-Year Gala 2025 6 photographs' }),
+    ).toBeTruthy();
   });
 
   it("shows the registry's chip after the count where the year is owed", async () => {

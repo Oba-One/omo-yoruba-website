@@ -26,6 +26,7 @@ import {
 } from '../../fixtures/event-pages';
 import PhotoTile from '../../media/PhotoTile/PhotoTile.astro';
 import ButtonRow from '../../page/ButtonRow/ButtonRow.astro';
+import FestivalParticipation from '../../page/FestivalParticipation/FestivalParticipation.astro';
 import GlanceStrip from '../../page/GlanceStrip/GlanceStrip.astro';
 import Handoff from '../../page/Handoff/Handoff.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
@@ -51,6 +52,8 @@ export const header = (variant: 'photo' | 'slim'): SlotValue => ({
 
 export const glance: SlotValue = { component: GlanceStrip, props: { facts: FESTIVAL_GLANCE } };
 
+export const participation: SlotValue = { component: FestivalParticipation };
+
 export const whatItIs: SlotValue = {
   component: Section,
   props: { id: 'about-festival', labelledby: 'about-festival-heading' },
@@ -75,7 +78,7 @@ export const whatItIs: SlotValue = {
                 {
                   component: Button,
                   props: { variant: 'quiet', href: '/impact', arrow: true },
-                  slots: { default: 'What the festival produces' },
+                  slots: { default: 'Our work and impact' },
                 },
                 {
                   component: Button,
@@ -150,9 +153,9 @@ export const schedule = (option: 'shown' | 'collapsed'): SlotValue => ({
   },
 });
 
-export const plan: SlotValue = {
+export const plan = (ground: 'white' | 'alt' = 'alt'): SlotValue => ({
   component: Section,
-  props: { id: 'plan', ground: 'alt', labelledby: 'plan-heading' },
+  props: { id: 'plan', ground, labelledby: 'plan-heading' },
   slots: {
     default: [
       {
@@ -160,14 +163,14 @@ export const plan: SlotValue = {
         props: {
           kicker: { yo: 'Ẹ múra', en: 'Get ready' },
           title: 'Plan your visit',
-          intro: 'Everything you need on the day, from getting there to what to bring.',
+          intro: 'Where to find us and how to get there.',
           id: 'plan-heading',
         },
       },
       { component: FactList, props: { facts: PLAN_FACTS } },
     ],
   },
-};
+});
 
 /**
  * The closing take-part band as the `labels` option draws it: the seed's four rows in their own order,

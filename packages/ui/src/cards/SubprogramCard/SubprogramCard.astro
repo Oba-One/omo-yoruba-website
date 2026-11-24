@@ -64,4 +64,16 @@ const sizes = '(min-width: 1100px) 540px, (min-width: 600px) 50vw, 100vw';
     height: 190px;
     aspect-ratio: auto;
   }
+  @media (max-width: 600px) {
+    :global(.oy-subprogram .oy-fact) {
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+    :global(.oy-card.oy-subprogram .oy-facts .oy-fact dt) {
+      width: auto;
+    }
+    :global(.oy-card.oy-subprogram .oy-facts .oy-fact dd) {
+      font-size: var(--text-body-size);
+    }
+  }
 </style>

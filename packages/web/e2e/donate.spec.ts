@@ -50,6 +50,7 @@ test.describe('the Donate page', () => {
     await expect(gold).toHaveCount(1);
     const trigger = page.locator('header#top a[data-give]');
     await expect(trigger).toContainText('Give now');
+    await expect(trigger).toHaveAttribute('href', '#other');
     await expectGiveRoundTrip(page, trigger);
     await expectEnquiryRoundTrip(page, page.locator('header#top a[data-enquiry="sponsor"]'));
   });

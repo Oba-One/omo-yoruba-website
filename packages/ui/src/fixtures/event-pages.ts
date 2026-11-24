@@ -31,7 +31,7 @@ export const FESTIVAL_HEADER = {
   image: PHOTOS.processionDrummer,
   actions: [
     { label: 'Plan your day', kind: 'anchor', href: '#plan' },
-    { label: 'Apply as a vendor', kind: 'enquiry', enquiryKind: 'vendor' },
+    { label: 'Take part in Odunde', kind: 'anchor', href: '#participate' },
   ],
 };
 
@@ -190,14 +190,14 @@ export const FESTIVAL_TAKE_PART = [
     _key: 'way-2',
     way: 'sponsor',
     title: 'Keep the day open',
-    line: 'Four questions, and we send the deck with our impact numbers.',
+    line: 'Tell us how you would like to support the festival. We reply within one week.',
     label: 'Sponsor Odunde',
   },
   {
     _key: 'way-3',
     way: 'performer',
     title: 'Drummers, dancers, cultural groups',
-    line: 'One short form, and the program committee sees every one.',
+    line: 'Tell us about your performance. We reply within one week.',
     label: 'Ask about performing',
   },
   {
@@ -215,7 +215,7 @@ export const GALA_TAKE_PART = [
     _key: 'way-1',
     way: 'sponsor',
     title: 'Sponsor the evening',
-    line: 'Four questions and we send the deck. One enquiry covers the Gala, Odunde, or both.',
+    line: 'Tell us how you would like to support our events. We reply within one week.',
     label: 'Sponsor the Gala',
   },
   {
@@ -244,9 +244,9 @@ export const GALA_TAKE_PART = [
 /** The registry's wording for the vendor row while the edition holds no terms, as Odunde 2027 does. */
 export const VENDOR_TERMS_PENDING = 'fees, deadline and permit rules';
 
-/** The page's give handoff under the Odunde band (the prototype's own line). */
+/** The page's invitation to give under the Odunde take-part band. */
 export const FESTIVAL_GIVE_HANDOFF = {
-  text: 'Too small to sponsor, but want the day to happen? A gift does the same work.',
+  text: 'You can also support Odunde with a donation.',
   action: { label: 'Donate', kind: 'give' },
 };
 

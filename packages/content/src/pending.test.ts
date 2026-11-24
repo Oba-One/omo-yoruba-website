@@ -151,6 +151,13 @@ describe('PARKED', () => {
       'Odunde, past years: the attendance figure',
       'Odunde, plan your visit: a practical fact',
       'Gala, at a glance: the dress code',
+      'Sponsorship: the amount',
+      'Sponsorship: what the level recognizes',
+      'Programs, cards: the ages',
+      'Lessons, at a glance: the ages lessons serve',
+      "Lessons, teacher: the teacher's short bio",
+      "Lessons, teacher: the teacher's email",
+      'Lessons, what you learn: what the lessons teach, in her words',
       'Lessons, levels: what each level covers',
       'Lessons, levels: what the level covers',
       'Lessons, questions: the questions parents ask',
@@ -158,9 +165,16 @@ describe('PARKED', () => {
       'Collective, the argument: why culture and sustainability sit together, in your words',
       'Collective, one voice: the quote and who said it',
       'Get Involved and Our Story, talk to someone: who answers the general inbox',
+      'Impact, outcomes: participation figures per program',
       'Impact, Odunde as civic infrastructure: the number of vendors hosted',
+      'Impact, governance: a file, or a note such as Copies on request',
+      'Our Story, how it began: the earliest photograph you have: an early gathering, or the founders',
+      'Our Story, board: a short bio',
     ]);
     expect(PARKED.presence.map((row) => `${row.where}: ${row.what}`)).toEqual([
+      'Sponsorship: level names and amounts',
+      'Impact, governance: the annual report position',
+      'Impact, governance: the audit position',
       'Yoruba Cultural Collective: the next events',
     ]);
   });
@@ -172,14 +186,14 @@ describe('PARKED', () => {
     expect(pendingWhat('event', 'vendorTerms.fees', 'festival')).toBeUndefined();
     // What a page still owes beside a parked row keeps its chip.
     expect(pendingWhat('festivalPage', 'planYourVisit[]')).toBe('the eight practical facts');
-    expect(pendingWhat('lessonsPage', 'learn')).toBe('what the lessons teach, in her words');
+    expect(pendingWhat('lessonsPage', 'oneLesson[]')).toBe('the shape of a lesson');
   });
 
   it('keeps a wording a story can read, asked or parked', () => {
     expect(registerWhat('lessonsPage', 'faq')).toBe('an answer');
     expect(registerWhat('event', 'attendance', 'festival')).toBe('the attendance figure');
     expect(registerWhat('event', 'attendance', 'gala')).toBeUndefined();
-    expect(registerWhat('lessonsPage', 'learn')).toBe(pendingWhat('lessonsPage', 'learn'));
+    expect(registerWhat('lessonsPage', 'learn')).toBe('what the lessons teach, in her words');
     expect(registerPresenceWhat('event', 'collective')).toEqual({
       what: 'the next events',
       minimum: 1,
@@ -196,7 +210,6 @@ describe('PRESENCE', () => {
       'testimonial',
       'partner',
       'ticketTier',
-      'sponsorLevel',
       'honoree',
       'governanceDoc',
       'zone',
@@ -311,6 +324,17 @@ describe('pendingWhat and pendingTitle', () => {
 });
 
 describe('the inline programs on the Programs hub', () => {
+  it('defers Lessons card ages without hiding ages still required for other programs', () => {
+    expect(pendingWhat('program', 'ages', 'lessons')).toBeUndefined();
+    expect(registerWhat('program', 'ages', 'lessons')).toBe('the ages');
+    expect(pendingWhat('program', 'ages', 'collective')).toBe('the ages');
+    expect(pendingWhat('program', 'ages')).toBe('the ages');
+    const ages = PENDING.find((row) => row.type === 'program' && row.fields?.includes('ages'));
+    expect(ages && pendingFilter(ages)).toBe(
+      '_type == "program" && coalesce(page, "") != "lessons" && (!defined(ages))',
+    );
+  });
+
   it("names a sub-program's owed fact with the register's wording, and each of Cultural Exchange's facts by itself", () => {
     expect(pendingWhat('programsPage', 'kidsStem.subprograms')).toBe('ages and what they build');
     expect(pendingWhat('programsPage', 'culturalExchange.blurb')).toBe('what the exchange is');
@@ -332,9 +356,9 @@ describe('the inline programs on the Programs hub', () => {
 
 describe('the Lessons page', () => {
   it('names a glance fact, the teacher and her email the way the page shows them, and no voices', () => {
-    expect(pendingWhat('lessonsPage', 'lessonDetails.ages')).toBe('the ages lessons serve');
+    expect(pendingWhat('lessonsPage', 'lessonDetails.ages')).toBeUndefined();
     expect(pendingWhat('lessonsPage', 'teacher')).toBe("the teacher's name and bio");
-    const email = PENDING.find(
+    const email = PARKED.rows.find(
       (row) => row.type === 'siteSettings' && row.what === "the teacher's email",
     );
     expect(email?.condition).toContain('role == "teacher"');
@@ -348,7 +372,7 @@ describe('the Lessons page', () => {
 
 describe("the Lessons page's teaching sections", () => {
   it('names the prose, the levels, the lesson and a step without its place', () => {
-    expect(pendingWhat('lessonsPage', 'learn')).toBe('what the lessons teach, in her words');
+    expect(pendingWhat('lessonsPage', 'learn')).toBeUndefined();
     expect(pendingWhat('lessonsPage', 'oneLesson[]')).toBe('the shape of a lesson');
     expect(pendingWhat('lessonsPage', 'oneLesson')).toBe('the step');
     // The levels and the questions are parked (ADR 0058).
@@ -369,16 +393,18 @@ describe("the Collective's one voice", () => {
 });
 
 describe('the Lessons page, beyond its sections', () => {
-  it("asks for the glance when the page holds none, and for a linked teacher's short bio", () => {
+  it("asks for the confirmed glance facts and keeps the deferred teacher bio's scope", () => {
     expect(pendingWhat('lessonsPage', 'lessonDetails.format')).toBe('the lesson format');
-    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
-    const bio = PENDING.find((row) => row.type === 'person' && row.fields?.includes('bioShort'));
+    expect(pendingWhat('person', 'bioShort')).toBeUndefined();
+    const bio = PARKED.rows.find(
+      (row) => row.type === 'person' && row.fields?.includes('bioShort'),
+    );
     // Only the person the Lessons page links is listed, never every person without a bio.
     expect(bio?.filter).toContain('lessonsPage');
   });
 
   it('keeps the teacher email chip in one constant the registry row uses', () => {
-    const row = PENDING.find(
+    const row = PARKED.rows.find(
       (entry) => entry.type === 'siteSettings' && entry.condition?.includes('"teacher"'),
     );
     expect(row?.what).toBe(TEACHER_EMAIL_PENDING);
@@ -448,8 +474,9 @@ describe('a row narrowed by group', () => {
   });
 
   it('keeps an unnarrowed row answering for every group', () => {
-    // The linked teacher's short bio is narrowed by her id, not by a group, so it still answers.
-    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
+    // The teacher's deferred bio retains its wording without asking for it at launch.
+    expect(registerWhat('person', 'bioShort')).toBe("the teacher's short bio");
+    expect(pendingWhat('person', 'bioShort')).toBeUndefined();
   });
 });
 
@@ -497,6 +524,7 @@ describe('Impact', () => {
   });
 
   it("names an outcome's missing source only where it has a figure, and one with nothing at all", () => {
+    expect(pendingWhat('impactPage', 'outcomes[]')).toBeUndefined();
     expect(pendingWhat('outcome', 'figure.source')).toBe('a source line under the figure');
     const source = PENDING.find(
       (row) => row.type === 'outcome' && row.fields?.includes('figure.source'),
@@ -522,9 +550,16 @@ describe('Impact', () => {
   });
 
   it('names each kind of governance document apart, and a document with neither file nor note', () => {
+    expect(presenceWhat('governanceDoc', 'financialStatements')?.what).toBe(
+      'the financial statements',
+    );
     expect(presenceWhat('governanceDoc', 'form990')?.what).toBe('the Form 990 position');
-    expect(presenceWhat('governanceDoc', 'annualReport')?.what).toBe('the annual report position');
-    expect(presenceWhat('governanceDoc', 'audit')?.what).toBe('the audit position');
+    expect(presenceWhat('governanceDoc', 'annualReport')).toBeUndefined();
+    expect(presenceWhat('governanceDoc', 'audit')).toBeUndefined();
+    expect(registerPresenceWhat('governanceDoc', 'annualReport')?.what).toBe(
+      'the annual report position',
+    );
+    expect(registerPresenceWhat('governanceDoc', 'audit')?.what).toBe('the audit position');
     expect(PENDING.find((row) => row.what === GOVERNANCE_NOTE_PENDING)?.type).toBe('governanceDoc');
     expect(presenceWhat('person', 'board')?.what).toBe("the board's names, roles and bios");
   });
@@ -542,15 +577,12 @@ describe('Impact', () => {
 });
 
 describe('Our Story', () => {
-  it('names the founding photograph, the founding facts and a board member without a short bio', () => {
-    expect(pendingWhat('storyPage', 'foundingImage')).toBe(
-      'the earliest photograph you have: an early gathering, or the founders',
-    );
+  it('parks the founding photograph and board bios while keeping the other facts', () => {
+    expect(pendingWhat('storyPage', 'foundingImage')).toBeUndefined();
     expect(pendingWhat('storyPage', 'foundingFacts')).toBe('a founding fact');
     expect(pendingWhat('storyPage', 'foundingFacts[]')).toBe('the founding facts');
-    expect(pendingWhat('person', 'bioShort', 'board')).toBe('a short bio');
-    // The Lessons page still reads its own row for the linked teacher.
-    expect(pendingWhat('person', 'bioShort')).toBe("the teacher's short bio");
+    expect(pendingWhat('person', 'bioShort', 'board')).toBeUndefined();
+    expect(registerWhat('person', 'bioShort')).toBe("the teacher's short bio");
     expect(pendingWhat('person', 'role', 'staff')).toBe('the role');
     expect(pendingWhat('person', 'role', 'teacher')).toBeUndefined();
     expect(pendingWhat('storyPage', 'takePart[]')).toBe('the ways in');

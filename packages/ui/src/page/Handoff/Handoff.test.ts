@@ -26,7 +26,7 @@ describe('Handoff', () => {
   it('draws the box with the line first and Donate as the outline after it', async () => {
     const box = (await renderToBody(Box)).querySelector('.oy-handoff');
     expect(text(box?.querySelector('p.oy-handoff-say'))).toBe(
-      'Too small to sponsor, but want the day to happen? A gift does the same work.',
+      'You can also support Odunde with a donation.',
     );
     const buttons = box?.querySelectorAll('.oy-handoff-actions a.oy-btn');
     expect(buttons).toHaveLength(1);

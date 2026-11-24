@@ -54,7 +54,12 @@ test.describe('the Programs page', () => {
     if (count > 0) {
       expect(count).toBeLessThanOrEqual(option === 'three' ? 3 : 4);
       for (const card of await cards.all()) {
-        await expect(card.locator('.pg-when > *')).toHaveCount(2);
+        const facts = await card.locator('.pg-when > *').count();
+        expect(facts).toBeGreaterThanOrEqual(1);
+        expect(facts).toBeLessThanOrEqual(2);
+        if ((await card.getAttribute('data-program')) === 'lessons') {
+          await expect(card.locator('.pg-when')).not.toContainText('Pending: the ages');
+        }
         await expect(card.locator('h3')).toHaveCount(1);
       }
       // A program with its own page links there; an inline program links to its section here.
@@ -74,7 +79,7 @@ test.describe('the Programs page', () => {
       }
     }
     await expect(page.locator('#four .oy-card-grid-note')).toContainText(
-      'Each card says who it is for and when it runs',
+      'Choose a program to learn more or ask about joining.',
     );
     // The register's cadences and ages (docs/design/design/19 Mock Content Register) never fill a gap.
     expectNoMockWhileOwed(await page.locator('#four').innerText(), [

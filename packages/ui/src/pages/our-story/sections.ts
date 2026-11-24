@@ -14,7 +14,6 @@ import {
   BOARD_PLACEHOLDERS,
   FOUNDING_FACTS,
   FOUNDING_PENDING,
-  FOUNDING_PHOTO_WHAT,
   PEOPLE_PENDING,
   REACH_US,
   STAFF_INTRO,
@@ -25,7 +24,6 @@ import {
   TIMELINE_PLACEHOLDERS,
 } from '../../fixtures/trust-pages';
 import EnquiryCard from '../../forms/EnquiryCard/EnquiryCard.astro';
-import PhotoTile from '../../media/PhotoTile/PhotoTile.astro';
 import CardGrid from '../../page/CardGrid/CardGrid.astro';
 import Handoff from '../../page/Handoff/Handoff.astro';
 import PageHeader from '../../page/PageHeader/PageHeader.astro';
@@ -40,7 +38,7 @@ export const header: SlotValue = {
   props: { variant: 'slim', ...STORY_HEADER },
 };
 
-/** How it began: the story owed, the founding facts, the placeholder for the earliest photograph. */
+/** How it began: the story beside its facts while no early photograph is available. */
 export const founding: SlotValue = {
   component: Section,
   props: { id: 'origin', labelledby: 'origin-heading' },
@@ -51,11 +49,10 @@ export const founding: SlotValue = {
         default: [
           { component: SectionHead, props: { title: 'How it began, 1997', id: 'origin-heading' } },
           { component: Pending, props: { what: FOUNDING_PENDING } },
-          { component: FactList, props: { facts: FOUNDING_FACTS, columns: 1 } },
         ],
         aside: {
-          component: PhotoTile,
-          props: { shape: 'figure', height: 340, what: FOUNDING_PHOTO_WHAT },
+          component: FactList,
+          props: { facts: FOUNDING_FACTS, columns: 1 },
         },
       },
     },

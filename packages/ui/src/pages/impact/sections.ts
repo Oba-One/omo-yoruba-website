@@ -26,7 +26,6 @@ import {
   IMPACT_PHOTOS,
   IMPACT_SIX_PENDING,
   IMPACT_STATS,
-  OUTCOME_PENDING,
   OUTCOME_PLACEHOLDER,
   OUTCOME_SLOTS,
   OUTCOME_SOURCE_PENDING,
@@ -111,9 +110,8 @@ export const how: SlotValue = {
 };
 
 /**
- * What each program produced as the `outcomes` option lays it out. Without an outcome the four slots name
- * their subjects; `placeholder` puts a bracketed outcome with its figure and source first, as an owner's
- * outcome takes its place.
+ * Program outcomes stay hidden until sourced figures are ready. The bracketed fixture previews
+ * a complete outcome without adding empty places for the other programs.
  */
 export const outcomes = (
   layout: 'cards' | 'rows',
@@ -122,9 +120,8 @@ export const outcomes = (
     placeholder = false,
   }: { sources?: 'shown' | 'hidden'; placeholder?: boolean } = {},
 ): SlotValue => {
-  const slots = placeholder
-    ? OUTCOME_SLOTS.filter((slot) => slot.title !== OUTCOME_PLACEHOLDER.title)
-    : OUTCOME_SLOTS;
+  if (!placeholder) return [];
+  const links = OUTCOME_SLOTS.filter((slot) => slot.title === OUTCOME_PLACEHOLDER.title);
   return {
     component: Section,
     props: { id: 'outcomes', labelledby: 'outcomes-heading' },
@@ -135,7 +132,6 @@ export const outcomes = (
           props: {
             kicker: { yo: 'Èsì', en: 'Results' },
             title: 'What each program produced',
-            intro: 'Where a program has no number yet, we say what is being measured this year.',
             id: 'outcomes-heading',
           },
         },
@@ -144,34 +140,22 @@ export const outcomes = (
           props: { columns: layout === 'rows' ? 1 : 4 },
           slots: {
             default: [
-              ...(placeholder
-                ? [
-                    {
-                      component: OutcomeCard,
-                      props: {
-                        ...OUTCOME_PLACEHOLDER,
-                        sources: sources === 'shown',
-                        sourcePending: OUTCOME_SOURCE_PENDING,
-                        variant: layout === 'rows' ? 'row' : 'card',
-                      },
-                    },
-                  ]
-                : []),
-              ...slots.map((slot) => ({
+              {
                 component: OutcomeCard,
                 props: {
-                  title: slot.title,
-                  pending: OUTCOME_PENDING,
+                  ...OUTCOME_PLACEHOLDER,
+                  sources: sources === 'shown',
+                  sourcePending: OUTCOME_SOURCE_PENDING,
                   variant: layout === 'rows' ? 'row' : 'card',
                 },
-              })),
+              },
             ],
           },
         },
         {
           component: ButtonRow,
           slots: {
-            default: OUTCOME_SLOTS.map((slot) => ({
+            default: links.map((slot) => ({
               component: Button,
               props: { variant: 'quiet', href: slot.href, arrow: true },
               slots: { default: slot.title },
@@ -287,8 +271,7 @@ export const governance: SlotValue = {
         props: {
           kicker: { yo: 'Ìdúró', en: 'Standing' },
           title: 'Governance and accountability',
-          intro:
-            'What we are, how we are governed, and what we publish. Where a document is not ready yet, we say when it will be.',
+          intro: 'What we are, how we are governed, and what we publish.',
           id: 'governance-heading',
         },
       },

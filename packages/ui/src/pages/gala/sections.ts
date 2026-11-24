@@ -5,6 +5,7 @@
  * `buildGalaPage`. The section kickers and headings are the page's copy, as on the site.
  */
 
+import { GALA_SPONSORSHIP_ENABLED } from '@oy/content/editing-defaults';
 import PersonCard from '../../cards/PersonCard/PersonCard.astro';
 import { countWord } from '../../content/count-word';
 import Prose from '../../content/Prose/Prose.astro';
@@ -52,7 +53,9 @@ export const header: SlotValue = {
     title: GALA_HEADER.title,
     line: GALA_HEADER.line,
     image: GALA_HEADER.image.src,
-    actions: GALA_HEADER.actions,
+    actions: GALA_HEADER.actions.filter(
+      (action) => GALA_SPONSORSHIP_ENABLED || action.enquiryKind !== 'sponsor',
+    ),
     facts: GALA_META,
     dots: true,
   },
@@ -128,6 +131,9 @@ export const seats = (tiers: 'columns' | 'rows'): SlotValue => ({
 });
 
 /** The closing band on the tint: the seed's four rows, the give row last with its Donate. */
+const activeTakePart = GALA_TAKE_PART.filter(
+  (row) => GALA_SPONSORSHIP_ENABLED || row.way !== 'sponsor',
+);
 export const takePart = (labels: TakePartLabels): SlotValue => ({
   component: Section,
   props: { id: 'take-part', ground: 'alt', labelledby: 'take-part-heading' },
@@ -138,14 +144,14 @@ export const takePart = (labels: TakePartLabels): SlotValue => ({
         props: {
           kicker: { yo: 'Ẹ dara pọ̀ mọ́ wa', en: 'Join us' },
           title: 'Take part',
-          intro: `${countWord(GALA_TAKE_PART.length)} ways to be part of the evening, whether or not you can be in the room.`,
+          intro: `${countWord(activeTakePart.length)} ways to be part of the evening, whether or not you can be in the room.`,
           id: 'take-part-heading',
         },
       },
       {
         component: TakePartBand,
         props: {
-          rows: GALA_TAKE_PART,
+          rows: activeTakePart,
           labels,
           rowPending: 'a way in, its title or its button label',
         },
@@ -181,7 +187,7 @@ export const sponsor: SlotValue = {
                 variant: 'primary',
               },
             },
-            '<span class="oy-button-row-note">Four questions, and we send the deck with our impact numbers.</span>',
+            '<span class="oy-button-row-note">Tell us how you would like to support our work. We reply within one week.</span>',
           ],
         },
       },

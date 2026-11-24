@@ -80,8 +80,10 @@ const mailto = address ? safeHref(`mailto:${address}`) : undefined;
 </article>
 
 <style>
+  .oy-enquiry-card .oy-card-body > p {
+    font-size: var(--text-body-size);
+  }
   .oy-enquiry-card-meta {
-    font-size: var(--text-caption);
     letter-spacing: var(--track-caption);
     color: var(--text-muted);
   }
@@ -96,14 +98,12 @@ const mailto = address ? safeHref(`mailto:${address}`) : undefined;
   /* A sentence, so its link is an inline target in running text (the 44px sweep's exception). */
   .oy-enquiry-card-email {
     margin: 0;
-    font-size: 14.5px;
     color: var(--text-muted);
   }
   .oy-enquiry-card-note {
     margin: 16px 0 0;
     padding-top: 14px;
     border-top: 1px solid var(--border-soft);
-    font-size: 14.5px;
     line-height: 1.55;
     color: var(--text-muted);
   }

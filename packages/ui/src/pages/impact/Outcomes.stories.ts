@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "The `outcomes` option: what each program produced as four cards across or one row each. While the Studio holds no outcome, the four slots name the prototype's subjects with the registry's chip; an outcome headed by its subject takes a slot's place (bracketed here). The links under the grid name each subject's page.",
+          'Program outcomes stay hidden until sourced figures are available. The complete bracketed fixture previews a card or row with its figure, meaning, source and program link.',
       },
     },
   },
@@ -22,16 +22,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 
-/** As the development dataset stands: the four slots. */
+/** As the development dataset stands: no program outcome figures have been confirmed. */
 export const Cards: Story = {
   args: { options: { outcomes: 'cards' }, slots: { default: [how, outcomes('cards'), civic] } },
 };
 
 export const Rows: Story = {
-  args: { options: { outcomes: 'rows' }, slots: { default: [outcomes('rows')] } },
+  args: {
+    options: { outcomes: 'rows' },
+    slots: { default: [outcomes('rows', { placeholder: true })] },
+  },
 };
 
-/** An outcome with its figure in the first place, the slots after it. */
+/** A sourced outcome on its own, without empty cards for the other programs. */
 export const WithOutcome: Story = {
   args: {
     options: { outcomes: 'cards' },

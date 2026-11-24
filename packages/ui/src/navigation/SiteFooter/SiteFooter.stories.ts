@@ -9,7 +9,7 @@ type Args = StoryArgs<ComponentProps<typeof SiteFooter>>;
 const seeded = {
   orgName: 'Omo Yorùbá of Southern California',
   newsletterTitle: 'Festival news and updates, in your inbox',
-  newsletterBlurb: 'Once or twice a month. Save-the-dates, program news, and ways to help.',
+  newsletterBlurb: 'Festival dates, program news and ways to help.',
 };
 
 const meta = {
@@ -22,7 +22,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The last thing on every page: the trust line, the ways to reach a person, the socials, the newsletter, and the two link columns. Every fact the owner still owes renders as a Pending chip; the EIN reads XX-XXXXXXX until the settings hold it.',
+          'The last thing on every page: the trust line, contacts, socials, newsletter and link columns. The EIN stays on Impact and Donate. Missing contact details render as Pending chips.',
       },
     },
   },

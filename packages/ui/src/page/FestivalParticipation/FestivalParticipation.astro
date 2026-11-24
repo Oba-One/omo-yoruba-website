@@ -1,0 +1,20 @@
+---
+/** Flyer visitors meet three equal ways to participate before the festival's longer story. */
+import EnquiryCard from '../../forms/EnquiryCard/EnquiryCard.astro';
+import CardGrid from '../CardGrid/CardGrid.astro';
+import Section from '../Section/Section.astro';
+import SectionHead from '../SectionHead/SectionHead.astro';
+---
+
+<Section id="participate" ground="alt" labelledby="participate-heading">
+  <SectionHead
+    title="Help make Odunde happen"
+    intro="Choose how you would like to take part."
+    id="participate-heading"
+  />
+  <CardGrid columns={3}>
+    <EnquiryCard kind="sponsor" title="Sponsor Odunde" label="Become a sponsor" variant="secondary" />
+    <EnquiryCard kind="volunteer" title="Volunteer at Odunde" label="Volunteer" variant="secondary" />
+    <EnquiryCard kind="vendor" title="Vend at Odunde" label="Apply as a vendor" variant="secondary" />
+  </CardGrid>
+</Section>

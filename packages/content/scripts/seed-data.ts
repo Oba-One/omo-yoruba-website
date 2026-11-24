@@ -168,7 +168,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       CONTACT_ROLES.map((role) => ({ _type: 'contactRole', role })),
     ),
     newsletterTitle: 'Festival news and updates, in your inbox',
-    newsletterBlurb: 'Once or twice a month. Save-the-dates, program news, and ways to help.',
+    newsletterBlurb: 'Festival dates, program news and ways to help.',
     analyticsEnabled: true,
     theme: 'adire',
   });
@@ -517,14 +517,14 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           _type: 'takePartRow',
           way: 'sponsor',
           title: 'Keep the day open',
-          line: 'Four questions, and we send the deck with our impact numbers.',
+          line: 'Tell us how you would like to support the festival. We reply within one week.',
           label: 'Sponsor Odunde',
         },
         {
           _type: 'takePartRow',
           way: 'performer',
           title: 'Drummers, dancers, cultural groups',
-          line: 'One short form, and the program committee sees every one.',
+          line: 'Tell us about your performance. We reply within one week.',
           label: 'Ask about performing',
         },
         {
@@ -537,7 +537,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       ]),
       partnersIntro: 'The day is open because these organizations help pay for it.',
       primaryAction: cta('Plan your day', 'anchor', '#plan'),
-      secondaryActions: withKeys('action', [cta('Apply as a vendor', 'enquiry', 'vendor')]),
+      secondaryActions: withKeys('action', [cta('Take part in Odunde', 'anchor', '#participate')]),
     }),
   );
 
@@ -560,7 +560,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           _type: 'takePartRow',
           way: 'sponsor',
           title: 'Sponsor the evening',
-          line: 'Four questions and we send the deck. One enquiry covers the Gala, Odunde, or both.',
+          line: 'Tell us how you would like to support our events. We reply within one week.',
           label: 'Sponsor the Gala',
         },
         {
@@ -757,7 +757,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           way: 'sponsor',
           chip: 'Partner',
           title: 'Partner or fund a project',
-          line: 'Organizations, funders, and civic partners. Four questions and we send the deck.',
+          line: 'Organizations, funders and civic partners: tell us how you would like to support our work. We reply within one week.',
           label: 'Talk to us',
         },
         {
@@ -772,7 +772,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
           _type: 'takePartRow',
           way: 'updates',
           title: 'Follow the Collective',
-          line: 'Collective news goes out with our newsletter, once or twice a month.',
+          line: 'Collective news goes out with our newsletter.',
           label: 'Subscribe',
         },
       ]),
@@ -887,7 +887,7 @@ export function buildSeed(assets: SeedAssets): SeedDocument[] {
       largerScale: {
         title: 'Giving at a larger scale',
         blurb:
-          'Organizations, funders, and civic partners. Named levels, recognition, and a conversation with a person. Four questions and we send the deck.',
+          'Organizations, funders and civic partners: tell us how you would like to support our work. We reply within one week.',
         doors: withKeys('door', [ref('door-partner')]),
       },
       // The standard wording for a 501(c)(3), from the confirmed status (spec Q17).

@@ -224,9 +224,26 @@ const isOpen = (k: EnquiryKind) => k === kind;
   }
   .oy-form-foot {
     margin: 0;
-    font-size: 14px;
     line-height: 1.6;
     color: var(--text-muted);
+  }
+  .oy-modal-head p,
+  .oy-form-help,
+  .oy-form-foot,
+  .oy-errsum,
+  .oy-ok p,
+  .oy-modal :global(.oy-input),
+  .oy-modal :global(.oy-label),
+  .oy-modal :global(.oy-field-hint),
+  .oy-modal :global(.oy-field-error) {
+    font-size: var(--text-body-size);
+  }
+  .oy-form-help a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
   .oy-form-actions {
     margin-top: 8px;

@@ -80,6 +80,9 @@ export const impactPageQuery = defineQuery(`*[_type == "impactPage" && _id == "i
   "voices": voices[]->{_id, quote, name, relation, permissionToName, context},
   photos[]{_key, _type, alt, caption, hotspot, crop, asset},
   "governance": {
+    "financialStatements": *[_type == "governanceDoc" && kind == "financialStatements"] | order(defined(year) desc, year desc)[0]{
+      _id, year, note, "file": file.asset->{url, originalFilename, extension}
+    },
     "form990": *[_type == "governanceDoc" && kind == "form990"] | order(defined(year) desc, year desc)[0]{
       _id, year, note, "file": file.asset->{url, originalFilename, extension}
     },

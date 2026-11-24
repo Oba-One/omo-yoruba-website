@@ -52,12 +52,17 @@ const link = safeHref(href);
 <style>
   .oy-credit-line {
     margin: 12px 0 0;
-    font-size: 14.5px;
+    font-size: var(--text-body-size);
     color: var(--text-muted);
   }
   .oy-credit-line--inline {
     margin: 0;
     font-size: inherit;
     color: inherit;
+  }
+  .oy-credit-line a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
   }
 </style>

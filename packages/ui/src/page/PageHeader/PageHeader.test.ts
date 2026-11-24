@@ -12,6 +12,7 @@ const {
   PendingHeading,
   Still,
   StudioPhotograph,
+  PrimaryActionSlot,
 } = composeStories(stories);
 
 describe('PageHeader', () => {
@@ -46,9 +47,22 @@ describe('PageHeader', () => {
     expect(buttons?.[0]?.classList.contains('oy-btn--primary')).toBe(true);
     expect(buttons?.[0]?.getAttribute('href')).toBe('#plan');
     expect(buttons?.[1]?.classList.contains('oy-btn--secondary')).toBe(true);
-    expect(buttons?.[1]?.getAttribute('data-enquiry')).toBe('vendor');
+    expect(buttons?.[1]?.getAttribute('href')).toBe('#participate');
+    expect(text(buttons?.[1])).toContain('Take part in Odunde');
     const one = (await renderToBody(OneAction)).querySelectorAll('.oy-phead-cta .oy-btn');
     expect(one).toHaveLength(1);
+  });
+
+  it('replaces only the primary action through its slot, keeping the secondary action and one gold button', async () => {
+    const header = (await renderToBody(PrimaryActionSlot)).querySelector('header.oy-phead');
+    const buttons = header?.querySelectorAll('.oy-phead-cta .oy-btn');
+    expect(buttons).toHaveLength(2);
+    expect(buttons?.[0]?.hasAttribute('data-tickets')).toBe(true);
+    expect(buttons?.[0]?.getAttribute('href')).toBe('https://www.zeffy.com/ticketing/a-gala');
+    expect(buttons?.[1]?.getAttribute('href')).toBe('#participate');
+    expect(text(buttons?.[1])).toContain('Take part in Odunde');
+    expect(header?.querySelectorAll('.oy-phead-cta .oy-btn--primary')).toHaveLength(1);
+    expect(header?.querySelectorAll('.oy-phead-cta a[href="#plan"]')).toHaveLength(0);
   });
 
   it('writes each missing fact as its chip, each behind a hidden dot', async () => {

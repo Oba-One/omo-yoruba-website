@@ -108,7 +108,7 @@ describe('buildLessonsPage', () => {
     expect(view.glancePending).toBe('the lesson details');
   });
 
-  it("draws the glance's four facts, the owed one with its chip", () => {
+  it('shows the confirmed glance facts without an unconfirmed age range', () => {
     expect(buildLessonsPage(seeded, options).glance).toEqual([
       {
         key: 'format',
@@ -125,13 +125,6 @@ describe('buildLessonsPage', () => {
         pending: 'when lessons run',
       },
       {
-        key: 'ages',
-        label: 'Ages',
-        value: undefined,
-        note: undefined,
-        pending: 'the ages lessons serve',
-      },
-      {
         key: 'cost',
         label: 'Cost',
         value: 'Agreed with her',
@@ -141,14 +134,25 @@ describe('buildLessonsPage', () => {
     ]);
   });
 
-  it('before a teacher is linked: the role, the woven tick and the chips for her name and email', () => {
+  it('shows the age range again once the teacher confirms it', () => {
+    const glance = seeded.glance?.map((fact) =>
+      fact?.label === 'Ages' ? { ...fact, value: '[ Confirmed ages ]' } : fact,
+    );
+    expect(
+      buildLessonsPage({ ...seeded, glance } as LessonsPageData, options).glance.find(
+        (fact) => fact.key === 'ages',
+      )?.value,
+    ).toBe('[ Confirmed ages ]');
+  });
+
+  it('before a teacher is linked: her role and name request, with no unconfirmed email', () => {
     const view = buildLessonsPage(seeded, options).teacher;
     expect(view).toMatchObject({
       intro: seeded.teacherIntro,
       person: { role: 'Teacher', name: undefined, bio: undefined, image: undefined },
       variant: 'nophoto',
       namePending: "the teacher's name and bio",
-      email: null,
+      email: undefined,
       emailPending: "the teacher's email",
       bioPending: undefined,
     });
@@ -163,7 +167,7 @@ describe('buildLessonsPage', () => {
       bio: '[ A short bio ]',
     });
     expect(view.person.image?.alt).toBe('[ Portrait ]');
-    expect(view.bioPending).toBe("the teacher's short bio");
+    expect(view.bioPending).toBeUndefined();
     expect(view.variant).toBe('portrait');
     expect(view.email).toBe('teacher@example.org');
     const hidden = buildLessonsPage(
@@ -174,12 +178,14 @@ describe('buildLessonsPage', () => {
     expect(hidden.teacher.person.image).toBeUndefined();
   });
 
-  it('carries what you learn: the prose or its chip, and the levels once each says what it covers', () => {
+  it('hides what you learn until the teacher supplies prose or complete levels', () => {
     const empty = buildLessonsPage(seeded, options).learn;
     // The levels are parked (ADR 0058): the list is left out until a level holds its line.
     expect(empty).toEqual({
+      shown: false,
+      ground: 'alt',
       prose: undefined,
-      pending: 'what the lessons teach, in her words',
+      pending: undefined,
       levels: [],
       levelsShown: false,
       levelsPending: undefined,
@@ -205,18 +211,30 @@ describe('buildLessonsPage', () => {
       options,
     ).learn;
     expect(written.prose).toHaveLength(1);
+    expect(written.shown).toBe(true);
     // A level without its line waits unseen beside the one that has it.
     expect(written.levelsShown).toBe(true);
     expect(written.levels).toEqual([
       { _key: 'level-1', title: '[ Level one ]', line: '[ What it covers ]' },
     ]);
+    const levelsOnly = buildLessonsPage(
+      {
+        ...seeded,
+        levels: [{ _key: 'level-1', name: '[ Level one ]', blurb: '[ What it covers ]' }],
+      } as unknown as LessonsPageData,
+      options,
+    ).learn;
+    expect(levelsOnly.shown).toBe(true);
+    expect(levelsOnly.levelsShown).toBe(true);
+    expect(levelsOnly.prose).toBeUndefined();
+    expect(levelsOnly.pending).toBeUndefined();
   });
 
   it("carries a lesson's steps as day-led rows, shown or hidden by the option", () => {
     const view = buildLessonsPage(seeded, options).lesson;
     expect(view).toEqual({
       shown: true,
-      ground: 'white',
+      ground: 'alt',
       steps: [],
       pending: 'the shape of a lesson',
       stepPending: 'the step',
@@ -294,14 +312,14 @@ describe('buildLessonsPage', () => {
         view.takePart.ground,
       ].filter(Boolean);
     };
-    expect(grounds(answered)).toEqual(['white', 'alt', 'white']);
-    expect(grounds(seeded)).toEqual(['white', 'alt']);
+    expect(grounds(answered)).toEqual(['alt', 'white', 'alt']);
+    expect(grounds(seeded)).toEqual(['alt', 'white']);
     expect(grounds({ ...answered, layout: { lesson: 'hidden' } } as LessonsPageData)).toEqual([
-      'white',
       'alt',
+      'white',
     ]);
     expect(grounds({ ...seeded, layout: { lesson: 'hidden' } } as LessonsPageData)).toEqual([
-      'white',
+      'alt',
     ]);
     const open = buildLessonsPage(
       { ...seeded, layout: { faq: 'open' } } as LessonsPageData,

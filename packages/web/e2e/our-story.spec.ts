@@ -63,9 +63,9 @@ test.describe('the Our Story page', () => {
       [/Crenshaw|Thirty-one people|borrowed blackboard/i, pendingWhat('storyPage', 'founding')],
       [/Balogun|Sofolahan|with 29 others|Nine children/, pendingWhat('storyPage', 'foundingFacts')],
     ]);
-    // The earliest photograph is owed: never the summer camp captioned as the founding years. The guard
-    // reads the photograph's own column, since the story may name Citrus College, where the summer
-    // gathering was held for years.
+    // The owner has no early photograph. Keep the facts beside the story without a photo placeholder.
+    await expect(section.locator('.oy-ph')).toHaveCount(0);
+    await expect(section.locator('img')).toHaveCount(0);
     expect(await section.locator('.oy-split-aside').innerText()).not.toMatch(
       /before Odunde|Citrus College/,
     );
@@ -98,6 +98,7 @@ test.describe('the Our Story page', () => {
     await page.goto('/our-story');
     const board = page.locator('#board');
     await expect(board.locator('h2')).toHaveText('Board of directors');
+    await expect(board.locator('.oy-person-bio .oy-pend')).toHaveCount(0);
     if ((await board.locator('.oy-person').count()) === 0) {
       await expect(board.locator('.oy-pend-line')).toContainText(
         presenceWhat('person', 'board')?.what ?? '',

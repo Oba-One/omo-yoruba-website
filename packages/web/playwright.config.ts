@@ -68,7 +68,8 @@ export default defineConfig({
           // backgrounds the dev server when it detects a coding agent (the process then "exits
           // early" and the daemon keeps the port); ASTRO_DEV_BACKGROUND set to anything turns that
           // detection off, so the server stays in the foreground under the runner.
-          command: 'node ./node_modules/astro/bin/astro.mjs dev --port 4322',
+          // The isolated fixture server runs alongside the owner's preview without replacing its lock.
+          command: 'node ./node_modules/astro/bin/astro.mjs dev --port 4322 --ignore-lock',
           // Against the fixture, the dev server holds no Sanity token, even where packages/web/.env has one:
           // the fixture needs none, and no request then carries one.
           env: {

@@ -23,6 +23,7 @@ import PhotoCarousel from '@oy/ui/media/PhotoCarousel/PhotoCarousel.astro';
 import PhotoTile from '@oy/ui/media/PhotoTile/PhotoTile.astro';
 import VideoGrid from '@oy/ui/media/VideoGrid/VideoGrid.astro';
 import ButtonRow from '@oy/ui/page/ButtonRow/ButtonRow.astro';
+import FestivalParticipation from '@oy/ui/page/FestivalParticipation/FestivalParticipation.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
 import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
 import PageHeader from '@oy/ui/page/PageHeader/PageHeader.astro';
@@ -67,6 +68,7 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
       edit={page.edit.phead}
     />
     <GlanceStrip facts={page.glance} />
+    <FestivalParticipation />
 
     <Section id="about-festival" labelledby="about-festival-heading">
       <Split>
@@ -85,7 +87,7 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
           )
         }
         <ButtonRow>
-          <Button variant="quiet" href="/impact" arrow>What the festival produces</Button>
+          <Button variant="quiet" href="/impact" arrow>Our work and impact</Button>
           <Button variant="quiet" href="/gala" arrow>The other half of our year, the Gala</Button>
         </ButtonRow>
         <PhotoTile
@@ -112,7 +114,7 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
 
     {
       page.schedule.shown && (
-        <Section id="schedule" labelledby="schedule-heading">
+        <Section id="schedule" ground={page.schedule.ground} labelledby="schedule-heading">
           <SectionHead
             kicker={{ yo: 'Ètò ọjọ́', en: 'Order of the day' }}
             title="The day, hour by hour"
@@ -131,17 +133,22 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
       )
     }
 
-    <Section id="plan" ground="alt" labelledby="plan-heading">
+    <Section id="plan" ground={page.plan.ground} labelledby="plan-heading">
       <SectionHead
         kicker={{ yo: 'Ẹ múra', en: 'Get ready' }}
         title="Plan your visit"
-        intro="Everything you need on the day, from getting there to what to bring."
+        intro="Where to find us and how to get there."
         id="plan-heading"
       />
       <FactList facts={page.plan.facts} pending={page.plan.pending} />
     </Section>
 
-    <Section id="take-part" labelledby="take-part-heading" data-sanity={page.edit.labels}>
+    <Section
+      id="take-part"
+      ground={page.takePart.ground}
+      labelledby="take-part-heading"
+      data-sanity={page.edit.labels}
+    >
       <SectionHead
         kicker={{ yo: 'Ẹ dara pọ̀ mọ́ wa', en: 'Join us' }}
         title="Take part in Odunde"
@@ -158,12 +165,12 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
       />
       <Handoff
         shape="box"
-        text="Too small to sponsor, but want the day to happen? A gift does the same work."
+        text="You can also support Odunde with a donation."
         action={{ label: 'Donate', kind: 'give' }}
       />
     </Section>
 
-    <Section id="past" ground="alt" labelledby="past-heading">
+    <Section id="past" ground={page.past.ground} labelledby="past-heading">
       <SectionHead
         kicker={{ yo: 'Ọdún tí ó kọjá', en: 'Years past' }}
         title="Odunde in past years"
@@ -199,7 +206,7 @@ cachePage(Astro, '/odunde', { draft: preview, failed: Boolean(error) });
       }
     </Section>
 
-    <Section id="partners" labelledby="partners-heading">
+    <Section id="partners" ground={page.partners.ground} labelledby="partners-heading">
       <SectionHead
         title="Partners and sponsors of Odunde"
         intro={page.partners.intro}

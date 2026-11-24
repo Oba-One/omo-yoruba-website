@@ -10,7 +10,9 @@ describe('NewsletterBand', () => {
     const band = (await renderToBody(Default)).querySelector('#subscribe.oy-newsletter.oy-dark');
     expect(band?.querySelector('.v2-dots--drift')?.getAttribute('aria-hidden')).toBe('true');
     expect(text(band?.querySelector('h2'))).toBe('Festival news and updates, in your inbox');
-    expect(text(band?.querySelector('.oy-newsletter-copy p'))).toContain('Once or twice a month');
+    expect(text(band?.querySelector('.oy-newsletter-copy p'))).toBe(
+      'Festival dates, program news and ways to help.',
+    );
     const form = band?.querySelector('oy-newsletter');
     expect(form?.getAttribute('data-variant')).toBe('band');
     expect(form?.querySelector('input[type="email"]')?.getAttribute('id')).toBe(

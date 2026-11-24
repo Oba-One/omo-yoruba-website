@@ -26,7 +26,7 @@ import {
   pageSkeleton,
   pastYears,
 } from './page-skeleton';
-import { type BuildOptions, cleanText, heldOrAsked, resolveImage } from './view';
+import { alternate, type BuildOptions, cleanText, heldOrAsked, resolveImage } from './view';
 
 export type FestivalPageData = NonNullable<ClientReturn<typeof festivalPageQuery, unknown>>;
 
@@ -96,6 +96,12 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     }));
   // The heading counts the zones the block draws: those listed, padded to the number the festival has.
   const zoneCount = presenceTotal('zone', zones.length);
+  const scheduleShown = layout.schedule !== 'hidden';
+  // The zones use the alternate ground; only drawn sections take the next turn.
+  const [scheduleGround, planGround, takePartGround, pastGround, partnersGround] = alternate(
+    [scheduleShown, true, true, true, true],
+    'white',
+  );
 
   return {
     title: page.title,
@@ -119,13 +125,15 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     zonesIntro: data?.zonesIntro ?? undefined,
     zones,
     schedule: {
-      shown: layout.schedule !== 'hidden',
+      shown: scheduleShown,
+      ground: scheduleGround,
       open: layout.schedule === 'shown',
       items: (edition?.schedule ?? []).filter((item) => item !== null),
       pending: pending('schedule[]'),
       timePending: pendingWhat('event', 'schedule', KIND) ?? 'the time',
     },
     plan: {
+      ground: planGround,
       facts: (data?.planYourVisit ?? [])
         .filter((fact) => fact !== null)
         .filter((fact) => heldOrAsked(cleanText(fact.value), planFactPending))
@@ -139,6 +147,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
     },
     takePart: {
       ...page.takePart,
+      ground: takePartGround,
       intro: takePartIntro(page.takePart.rows.length),
       labels: layout.labels,
       // Null while the next edition holds no terms, so the vendor row shows the registry's chip when
@@ -147,6 +156,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       vendorTermsPending: pendingWhat('event', 'vendorTerms.fees', KIND),
     },
     past: {
+      ground: pastGround,
       // While the gallery holds the albums the section keeps its words and the attendance, and the
       // page leaves out the photographs, their credit and the way to the albums (ADR 0043).
       intro: data?.pastYearsIntro ?? undefined,
@@ -156,6 +166,7 @@ export function buildFestivalPage(data: FestivalPageData | null, options: BuildO
       ...past.view,
     },
     partners: {
+      ground: partnersGround,
       intro: data?.partnersIntro ?? undefined,
       items: (data?.partners ?? [])
         .filter((partner) => partner !== null)

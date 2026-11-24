@@ -27,7 +27,25 @@ const audit = async (page: Page) => {
 test.describe('axe on the layout', () => {
   test('nothing open', async ({ page }) => {
     await page.goto('/');
-    expect(await audit(page)).toEqual([]);
+    const closedAudit = async () => {
+      await expect(page.locator('main#main')).toBeVisible();
+      await expect(page.locator('dialog[open]')).toHaveCount(0);
+      return audit(page);
+    };
+    const violations = await closedAudit().catch(async (error: unknown) => {
+      // Only the initial, state-free audit can restart after the cold dev server reloads.
+      // Axe violations are asserted outside this catch; dialog audits never restart this way.
+      if (
+        process.env.PLAYWRIGHT_TEST_BASE_URL ||
+        !String(error).includes('Execution context was destroyed')
+      ) {
+        throw error;
+      }
+      await page.waitForLoadState('load');
+      await expect(page).toHaveURL('/');
+      return closedAudit();
+    });
+    expect(violations).toEqual([]);
   });
 
   test('with the Enquiry Modal open', async ({ page }) => {
@@ -57,6 +75,8 @@ test.describe('axe on the layout', () => {
 // leave out; heading order is the one a page composition can break (Phase 5: the footer's headings
 // followed Odunde's last h2 as h4s).
 test('headings never skip a level on the content routes', async ({ page }) => {
+  // Thirteen navigations and axe scans share this test's budget, including cold route compilation.
+  test.slow();
   const headingsInOrder = async (route: string) => {
     await page.goto(route);
     const results = await new AxeBuilder({ page }).withRules(['heading-order']).analyze();

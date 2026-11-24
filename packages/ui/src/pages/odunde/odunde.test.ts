@@ -18,6 +18,8 @@ describe('the Odunde page-section stories', () => {
     expect(photo?.querySelector('header.oy-phead--photo')).not.toBeNull();
     expect(photo?.querySelectorAll('h1')).toHaveLength(1);
     expect(photo?.querySelectorAll('#glance .oy-glance > div')).toHaveLength(5);
+    expect(photo?.querySelectorAll('#participate .oy-enquiry-card')).toHaveLength(3);
+    expect(photo?.querySelector('#glance + #participate + #about-festival')).not.toBeNull();
     const about = photo?.querySelector('#about-festival');
     expect(text(about?.querySelector('h2'))).toBe('What Odunde is');
     expect(about?.querySelectorAll('.oy-prose p')).toHaveLength(2);
@@ -46,11 +48,13 @@ describe('the Odunde page-section stories', () => {
     const shown = (await renderToBody(Schedule.Shown)).querySelector('.oy-home');
     expect(shown?.querySelector('#schedule details')?.hasAttribute('open')).toBe(true);
     expect(shown?.querySelectorAll('#plan .oy-fact')).toHaveLength(8);
+    expect(shown?.querySelector('#plan')?.classList.contains('oy-section--alt')).toBe(true);
     const collapsed = (await renderToBody(Schedule.Collapsed)).querySelector('.oy-home');
     expect(collapsed?.querySelector('#schedule details')?.hasAttribute('open')).toBe(false);
     const hidden = (await renderToBody(Schedule.Hidden)).querySelector('.oy-home');
     expect(hidden?.querySelector('#schedule')).toBeNull();
     expect(text(hidden?.querySelector('#plan h2'))).toBe('Plan your visit');
+    expect(hidden?.querySelector('#plan')?.classList.contains('oy-section--alt')).toBe(false);
   });
 
   it('take part: the rows in their own order, the first with the gold, then the give handoff', async () => {

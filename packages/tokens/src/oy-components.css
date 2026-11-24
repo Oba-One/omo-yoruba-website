@@ -691,6 +691,12 @@
   .oy-zones[data-layout="mosaic"] {
     grid-template-columns: 1fr;
   }
+  .oy-zones[data-layout="mosaic"] .oy-zone:nth-child(n) .oy-zone-media {
+    height: auto;
+    min-height: 0;
+    flex: none;
+    aspect-ratio: 4 / 3;
+  }
 }
 
 /* ---- Take-part accents: one colour per way in. Chip and heading carry it, nothing else. ---- */

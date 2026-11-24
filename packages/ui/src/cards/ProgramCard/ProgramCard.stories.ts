@@ -45,9 +45,18 @@ export const WithEdit: Story = {
   args: { imageEdit: 'id=program-yoruba-lessons;type=program;path=image;base=%2Fadmin' },
 };
 
-/** On the Programs hub: the cadence and the ages over the name, the ages Pending as seeded. */
+/** On the Programs hub: the cadence over the name, with unconfirmed Lessons ages deferred. */
 export const When: Story = {
   args: { program: PROGRAM_CARDS[0] as Args['program'], showWhen: true, mediaHeight: 160 },
+};
+
+/** A bracketed content fixture proves supplied ages return without another switch. */
+export const WhenWithAges: Story = {
+  args: {
+    program: { ...PROGRAM_CARDS[0], ages: '[ Confirmed ages ]' } as Args['program'],
+    showWhen: true,
+    mediaHeight: 160,
+  },
 };
 
 /** Cultural Exchange on the hub: both facts Pending, and the link to its section on the page. */

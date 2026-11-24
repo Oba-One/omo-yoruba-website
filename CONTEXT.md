@@ -157,8 +157,8 @@ a button opens the member enquiry. A handoff: the membership is Zeffy's record.
 _Avoid_: membership modal, dues checkout, signup
 
 **Tickets Dialog**:
-The dialog the Gala's Get tickets buttons open while the edition's ticket link is a Zeffy ticket form: wraps the
-form, where seats are chosen and paid for, with a fallback to the contact enquiry. On the Gala page only. A
+The dialog the Gala's Get tickets buttons and homepage's Gala Tickets button open while the edition's ticket link is a Zeffy ticket form: wraps the
+form, where seats are chosen and paid for, with a fallback to the contact enquiry. A
 handoff: the order is Zeffy's record.
 _Avoid_: checkout, ticket modal, box office
 
@@ -318,8 +318,10 @@ what it waits for until a document fills it.
 _Avoid_: placeholder card, mock, sample
 
 **Governance document**:
-A Form 990, an annual report or an audit position, kept as a file or as a note such as "Copies on
-request". Impact shows the newest of each kind and names a missing one.
+A Form 990-N, financial statements, an annual report or an audit position, kept as a file or as a
+note such as "Copies on request". Impact shows the newest of each kind. Annual reports and audits
+stay hidden until a published file exists. Financial statements fill the Financials cell; they
+do not confirm an annual report or an audit.
 _Avoid_: financials, filing, paperwork
 
 **Timeline entry**:

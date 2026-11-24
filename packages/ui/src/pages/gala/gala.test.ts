@@ -85,23 +85,16 @@ describe('the Gala page-section stories', () => {
     expect(hidden?.querySelector('#honorees')).toBeNull();
     const order = (root: Element | null | undefined) =>
       [...(root?.querySelectorAll(':scope > section') ?? [])].map((section) => section.id);
-    expect(order(hidden)).toEqual(['sponsor', 'past']);
+    expect(order(hidden)).toEqual(['past']);
     const shown = (await renderToBody(Awards.Shown)).querySelector('.oy-home');
-    expect(order(shown)).toEqual(['sponsor', 'honorees', 'past']);
+    expect(order(shown)).toEqual(['honorees', 'past']);
     expect(shown?.querySelectorAll('#honorees article.oy-person')).toHaveLength(2);
     expect(text(shown?.querySelector('#honorees .oy-person-role'))).toBe('This year');
   });
 
-  it('sponsor: the levels, one gold action with its line, and the impact handoff', async () => {
+  it('keeps unused sponsorship offers hidden', async () => {
     const root = (await renderToBody(Awards.Hidden)).querySelector('.oy-home');
-    const section = root?.querySelector('#sponsor');
-    expect(section?.querySelectorAll('ul.oy-list > li.oy-lrow--tier')).toHaveLength(2);
-    const gold = section?.querySelectorAll('.oy-btn--primary');
-    expect(gold).toHaveLength(1);
-    expect(gold?.[0]?.getAttribute('data-enquiry')).toBe('sponsor');
-    expect(section?.querySelector('.oy-handoff a.oy-btn--quiet')?.getAttribute('href')).toBe(
-      '/impact',
-    );
+    expect(root?.querySelector('#sponsor')).toBeNull();
   });
 
   it('past: the carousel with its credit and links, or nothing', async () => {

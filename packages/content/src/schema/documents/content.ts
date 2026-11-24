@@ -973,7 +973,12 @@ export const givingLevel = defineType({
   preview: { select: { title: 'amount', subtitle: 'what' } },
 });
 
-export const GOVERNANCE_KINDS = ['form990', 'annualReport', 'audit'] as const;
+export const GOVERNANCE_KINDS = [
+  'form990',
+  'financialStatements',
+  'annualReport',
+  'audit',
+] as const;
 
 export const governanceDoc = defineType({
   name: 'governanceDoc',
@@ -986,7 +991,8 @@ export const governanceDoc = defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Form 990', value: 'form990' },
+          { title: 'Form 990-N', value: 'form990' },
+          { title: 'Financial statements', value: 'financialStatements' },
           { title: 'Annual report', value: 'annualReport' },
           { title: 'Audit', value: 'audit' },
         ],

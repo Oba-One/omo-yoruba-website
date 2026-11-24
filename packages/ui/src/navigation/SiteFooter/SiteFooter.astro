@@ -1,8 +1,8 @@
 ---
 /**
  * The site footer (ROUTES section 2, Site Footer.dc.html): the indigo band with the drifting
- * àdìrẹ dot field, the light lockup, the trust line ("501(c)(3) nonprofit • Founded 1997 • EIN
- * XX-XXXXXXX • Los Angeles, CA", the EIN placeholder until the settings hold it; the tax status
+ * àdìrẹ dot field, the light lockup, the trust line ("501(c)(3) nonprofit • Founded 1997 •
+ * Los Angeles, CA"; the tax status
  * carries no year, ADR 0049), the general email, phone and mailing address (Pending chips while
  * empty), the social marks for the networks the settings list, the newsletter block with
  * `NewsletterForm`, and the two link
@@ -55,8 +55,6 @@ const {
   newsletter = true,
 } = Astro.props;
 
-const EIN_PLACEHOLDER = 'XX-XXXXXXX';
-const ein = settings.ein?.trim() || EIN_PLACEHOLDER;
 const email = settings.generalEmail?.trim();
 const phone = settings.phone?.trim();
 const addressLines = (settings.address ?? '')
@@ -86,7 +84,7 @@ const socials = (settings.socials ?? []).flatMap((social) => {
     <div>
       <Logo variant="light" />
       <p class="oy-footer-trust">
-        501(c)(3) nonprofit • Founded 1997 • EIN <span data-ein>{ein}</span> • Los Angeles, CA<br />
+        501(c)(3) nonprofit • Founded 1997 • Los Angeles, CA<br />
         {email ? <a href={`mailto:${email}`}>{email}</a> : <Pending what="the general inbox" />}
         {phone && <span> • <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a></span>}
       </p>

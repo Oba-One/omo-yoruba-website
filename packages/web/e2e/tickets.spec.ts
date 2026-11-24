@@ -1,5 +1,23 @@
 import { expect, test } from './fixtures';
 
+test('homepage Tickets opens the purchase dialog without navigation; Learn more opens the Gala page', async ({
+  page,
+}) => {
+  await page.route('https://www.zeffy.com/**', () => {});
+  await page.goto('/');
+  const trigger = page.locator('#lead-event a[data-tickets]');
+  test.skip((await trigger.count()) === 0, 'The homepage has no Gala with an embedded ticket form');
+  await expect(page.locator('dialog#tickets')).not.toHaveAttribute('open', '');
+  await trigger.click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('dialog#tickets')).toHaveAttribute('open', '');
+  await expect(page.locator('dialog#tickets iframe')).toHaveAttribute('title', 'Zeffy ticket form');
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await page.locator('#lead-event').getByRole('link', { name: 'Learn more' }).click();
+  await expect(page).toHaveURL(/\/gala$/);
+});
+
 // The Tickets Dialog (ADR 0052) is on the Gala page only while the next edition's ticket link is a Zeffy
 // ticket form. Without one (CI's placeholder content, an Eventbrite link, or no link) `#tickets` opens
 // nothing. With one, the seats block's Get tickets button opens the dialog around the form's frame, whose
@@ -40,6 +58,18 @@ test('Get tickets opens the Tickets Dialog once the edition holds a Zeffy ticket
   await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toHaveAttribute('open', '');
+  await expect(trigger).toBeFocused();
+});
+
+test('the Gala hero opens tickets directly and returns focus when closed', async ({ page }) => {
+  await page.route('https://www.zeffy.com/**', () => {});
+  await page.goto('/gala');
+  const trigger = page.locator('header#top a[data-tickets]');
+  test.skip((await trigger.count()) === 0, 'The next edition holds no Zeffy ticket form');
+  await trigger.click();
+  await expect(page).toHaveURL(/\/gala$/);
+  await expect(page.locator('dialog#tickets')).toHaveAttribute('open', '');
+  await page.keyboard.press('Escape');
   await expect(trigger).toBeFocused();
 });
 

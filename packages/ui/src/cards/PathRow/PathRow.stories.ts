@@ -85,7 +85,7 @@ export const TakePartRowPending: Story = {
     door: undefined,
     way: 'sponsor',
     chip: 'Sponsors',
-    line: 'Four questions, and we send the deck with our impact numbers.',
+    line: 'Tell us how you would like to support the festival. We reply within one week.',
     pending: 'a way in, its title or its button label',
     primary: false,
   },

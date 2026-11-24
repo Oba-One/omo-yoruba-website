@@ -3,9 +3,17 @@ import { describe, expect, it } from 'vitest';
 import { renderToBody, text } from '../../test/stories';
 import * as stories from './EventBand.stories';
 
-const { Gala, GalaWithTables, Odunde, Filled, Pending } = composeStories(stories);
+const { Gala, GalaTickets, GalaWithTables, Odunde, Filled, Pending } = composeStories(stories);
 
 describe('EventBand', () => {
+  it('opens the supplied ticket form directly and keeps a separate link to the Gala page', async () => {
+    const band = (await renderToBody(GalaTickets)).querySelector('.oy-event-band');
+    expect(band?.querySelector('[data-tickets]')?.getAttribute('href')).toBe(
+      'https://www.zeffy.com/ticketing/example',
+    );
+    expect(band?.querySelector('a.oy-btn--quiet')?.getAttribute('href')).toBe('/gala');
+    expect(text(band?.querySelector('a.oy-btn--quiet'))).toContain('Learn more');
+  });
   it('frames the Gala with its kicker and button and marks the missing date and venue', async () => {
     const band = (await renderToBody(Gala)).querySelector('.oy-event-band');
     expect(band?.getAttribute('data-kind')).toBe('gala');

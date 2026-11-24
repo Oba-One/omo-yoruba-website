@@ -353,14 +353,14 @@ describe('buildProgramsPage', () => {
 
   it('promises a source line under every number, under the year strip, only while Impact shows them', () => {
     expect(buildProgramsPage(seeded, options).year.handoff).toBe(
-      'What these programs have produced, with a source line under every number.',
+      'Our work in Southern California, with a source line under every number.',
     );
     const hidden = { ...seeded, impactSources: 'hidden' } as unknown as ProgramsPageData;
     expect(buildProgramsPage(hidden, options).year.handoff).toBe(
-      'What these programs have produced.',
+      'Our work in Southern California.',
     );
     expect(buildProgramsPage(null, options).year.handoff).toBe(
-      'What these programs have produced, with a source line under every number.',
+      'Our work in Southern California, with a source line under every number.',
     );
   });
 

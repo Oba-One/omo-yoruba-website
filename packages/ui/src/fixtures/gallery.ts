@@ -164,7 +164,7 @@ export const CREDIT_ROWS = [
 /** Photography credit and permissions as the site builds it (`galleryCredits`): the page's words, the rows owed. */
 export const GALLERY_CREDITS = {
   title: 'Photography credit and permissions',
-  lead: 'These photographs show real people, including children. Here is how we credit them, how we ask permission, and how to ask for a photograph to be removed.',
+  lead: 'These photographs show real people, including children. Here is how we credit them and how to ask for a photograph to be removed.',
   rows: CREDIT_ROWS,
   action: { label: 'Send a message', kind: 'enquiry', enquiryKind: 'contact' },
 };

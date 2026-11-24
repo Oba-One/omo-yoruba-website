@@ -23,6 +23,7 @@ test.describe('the Odunde Festival page', () => {
     const expected = [
       'top',
       'glance',
+      'participate',
       'about-festival',
       'zones',
       ...(schedule === 'hidden' ? [] : ['schedule']),
@@ -32,12 +33,59 @@ test.describe('the Odunde Festival page', () => {
       'partners',
     ];
     expect(order.slice(0, expected.length)).toEqual(expected);
+    const participation = page.locator('#participate');
+    await expect(participation.locator('.oy-enquiry-card')).toHaveCount(3);
+    await expect(participation.locator('.oy-btn--secondary')).toHaveCount(3);
+    await expect(participation.locator('.oy-btn--primary')).toHaveCount(0);
+    const sizes = await participation.locator('a[data-enquiry]').evaluateAll((links) =>
+      links.map((link) => ({
+        fontSize: getComputedStyle(link).fontSize,
+        height: link.getBoundingClientRect().height,
+      })),
+    );
+    for (const size of sizes) {
+      expect(size.fontSize).toBe(sizes[0]?.fontSize);
+      expect(size.height).toBeGreaterThanOrEqual(44);
+    }
+    const grounds = await page
+      .locator('main > section')
+      .evaluateAll((sections) =>
+        sections.map((section) => section.classList.contains('oy-section--alt')),
+      );
+    for (let at = 1; at < grounds.length; at++) {
+      expect(grounds[at], `sections ${at - 1} and ${at} have distinct grounds`).not.toBe(
+        grounds[at - 1],
+      );
+    }
     const phead = await page.locator('body').getAttribute('data-phead');
     expect(phead).toMatch(/^(photo|slim)$/);
     await expect(page.locator(`header#top.oy-phead--${phead}`)).toHaveCount(1);
     // The nav marks Events as the current section (the dropdown trigger hides under 880px).
     await expect(page.locator('.oy-nav-drop[data-current="true"]')).toHaveCount(1);
   });
+
+  for (const [kind, label] of [
+    ['sponsor', 'Become a sponsor'],
+    ['volunteer', 'Volunteer'],
+    ['vendor', 'Apply as a vendor'],
+  ] as const) {
+    test(`the early ${kind} card opens its form and returns focus on cancel`, async ({ page }) => {
+      await page.goto('/odunde');
+      const trigger = page.locator('#participate').getByRole('link', { name: label, exact: true });
+      await trigger.click();
+      const dialog = page.locator('dialog#enquiry');
+      await expect(dialog).toHaveAttribute('open', '');
+      await expect(dialog).toHaveAttribute('data-kind', kind);
+      await expect(page.locator('#enquiry-title')).toHaveText(ENQUIRY_SPECS[kind].title);
+      const form = dialog.locator(`form[data-kind="${kind}"]`);
+      await expect(form).toBeVisible();
+      await expect(page.locator(`#eq-${kind}-${ENQUIRY_SPECS[kind].fields[0]?.id}`)).toBeFocused();
+      await expect(form.locator('.oy-form-help')).toContainText('Rather speak to a person?');
+      await form.getByRole('button', { name: 'Cancel', exact: true }).click();
+      await expect(dialog).not.toHaveAttribute('open', '');
+      await expect(trigger).toBeFocused();
+    });
+  }
 
   test('shows the Studio facts or the registry chips, never an invented one', async ({ page }) => {
     await page.goto('/odunde');
@@ -88,6 +136,20 @@ test.describe('the Odunde Festival page', () => {
     // Each named zone's Yoruba name is a heading with its marks.
     for (const heading of await grid.locator('h3.oy-zone-name').all()) {
       await expect(heading).toHaveAttribute('lang', 'yo');
+    }
+    if (layout === 'mosaic' && (page.viewportSize()?.width ?? 0) <= 560) {
+      const frames = await grid.locator('.oy-zone-media').evaluateAll((elements) =>
+        elements.map((element) => {
+          const { width, height } = element.getBoundingClientRect();
+          return { width, height };
+        }),
+      );
+      expect(frames.length).toBeGreaterThan(0);
+      for (const frame of frames) {
+        expect(Math.abs(frame.width - frames[0].width)).toBeLessThan(1);
+        expect(Math.abs(frame.height - frames[0].height)).toBeLessThan(1);
+        expect(frame.width / frame.height).toBeCloseTo(4 / 3, 2);
+      }
     }
   });
 

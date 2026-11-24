@@ -21,6 +21,7 @@ import ProgramCard from '@oy/ui/cards/ProgramCard/ProgramCard.astro';
 import PullQuote from '@oy/ui/cards/PullQuote/PullQuote.astro';
 import PathRows from '@oy/ui/content/PathRows/PathRows.astro';
 import ProverbLine from '@oy/ui/content/ProverbLine/ProverbLine.astro';
+import TicketsDialog from '@oy/ui/forms/TicketsDialog/TicketsDialog.astro';
 import PhotoMosaic from '@oy/ui/media/PhotoMosaic/PhotoMosaic.astro';
 import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
 import Handoff from '@oy/ui/page/Handoff/Handoff.astro';
@@ -28,6 +29,7 @@ import Hero from '@oy/ui/page/Hero/Hero.astro';
 import Section from '@oy/ui/page/Section/Section.astro';
 import SectionHead from '@oy/ui/page/SectionHead/SectionHead.astro';
 import StatStrip from '@oy/ui/page/StatStrip/StatStrip.astro';
+import ZeffyFrame from '../components/ZeffyFrame.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { cachePage } from '../lib/cache';
 import { STUDIO_BASE_PATH } from '../lib/paths';
@@ -148,5 +150,10 @@ cachePage(Astro, '/', { draft: preview, failed: Boolean(error) });
       }
     </Section>
   </main>
+  {home.lead.ticketsForm && (
+    <TicketsDialog pageHref={home.lead.ticketsPage}>
+      <ZeffyFrame slot="embed" address={home.lead.ticketsForm} form="tickets" title="Zeffy ticket form" />
+    </TicketsDialog>
+  )}
 </SiteLayout>
 

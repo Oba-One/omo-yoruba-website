@@ -24,7 +24,8 @@ describe('the Our Story page-section stories', () => {
       'Status: 501(c)(3) nonprofit',
       'First year: Pending: a founding fact',
     ]);
-    expect(hidden?.querySelector('#origin .oy-ph')).not.toBeNull();
+    expect(hidden?.querySelector('#origin .oy-ph')).toBeNull();
+    expect(hidden?.querySelectorAll('#origin .oy-split-aside .oy-fact')).toHaveLength(4);
     // No invented founders, church hall or first-year detail.
     expect(text(hidden)).not.toMatch(/Balogun|Sofolahan|Crenshaw|blackboard|before Odunde/);
     const shown = (await renderToBody(Timeline.Shown)).querySelector('#timeline');
@@ -40,7 +41,7 @@ describe('the Our Story page-section stories', () => {
     expect(short?.querySelector('.oy-person-bio--full')).toBeNull();
     const owed = short?.querySelectorAll('.oy-person')[3];
     expect(text(owed?.querySelector('.oy-person-role'))).toBe('Pending: the role');
-    expect(text(owed?.querySelector('.oy-person-bio'))).toBe('Pending: a short bio');
+    expect(owed?.querySelector('.oy-person-bio')).toBeNull();
     const full = (await renderToBody(Bios.Full)).querySelector('#board');
     expect(full?.querySelectorAll('.oy-person-bio--full')).toHaveLength(2);
   });

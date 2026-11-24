@@ -154,18 +154,33 @@ describe('buildGalaPage', () => {
       } as unknown as GalaPageData,
       options,
     );
-    expect(view.header.actions.map((action) => action.label)).toEqual([
-      'Get tickets',
-      'Sponsor the evening',
-    ]);
+    expect(view.header.actions.map((action) => action.label)).toEqual(['Get tickets']);
     expect(view.takePart.rows[0]).toMatchObject({
-      title: 'Sponsor the evening',
-      label: 'Sponsor the Gala',
-    });
-    expect(view.takePart.rows[1]).toMatchObject({
       title: 'Help welcome guests',
       label: 'Offer your time',
     });
+  });
+
+  it('opens the fixed hero ticket action directly and preserves missing-link behavior', () => {
+    const pageWith = (ticketsUrl: string | null) =>
+      buildGalaPage(
+        {
+          ...seeded,
+          editions: [edition('event-gala-2026', 2026, { ticketsUrl })],
+        } as unknown as GalaPageData,
+        options,
+      );
+    expect(pageWith('https://www.zeffy.com/embed/ticketing/a-gala').header.ticketAction).toEqual({
+      label: 'Get tickets',
+      attributes: { href: 'https://www.zeffy.com/ticketing/a-gala', 'data-tickets': '' },
+    });
+    expect(pageWith('https://example.org/tickets').header.ticketAction?.attributes).toEqual({
+      href: 'https://example.org/tickets',
+      target: '_blank',
+      rel: 'noopener',
+    });
+    expect(pageWith(null).header.ticketAction).toBeUndefined();
+    expect(pageWith('javascript:alert(1)').header.ticketAction).toBeUndefined();
   });
 
   it('supplies ticket instructions only for an embedded form and keeps custom introductions', () => {
@@ -227,10 +242,7 @@ describe('buildGalaPage', () => {
         note: undefined,
       },
     ]);
-    expect(view.header.actions.map((action) => action?.label)).toEqual([
-      'Get tickets',
-      'Sponsor the evening',
-    ]);
+    expect(view.header.actions.map((action) => action?.label)).toEqual(['Get tickets']);
   });
 
   it('fills the facts the edition holds and derives the seats from its tiers', () => {
@@ -322,14 +334,9 @@ describe('buildGalaPage', () => {
       intro: undefined,
       introPending: 'the evening, in your words',
     });
-    expect(view.takePart.rows.map((row) => row.way)).toEqual([
-      'sponsor',
-      'table',
-      'volunteer',
-      'give',
-    ]);
+    expect(view.takePart.rows.map((row) => row.way)).toEqual(['table', 'volunteer', 'give']);
     expect(view.takePart.intro).toBe(
-      'Four ways to be part of the evening, whether or not you can be in the room.',
+      'Three ways to be part of the evening, whether or not you can be in the room.',
     );
     expect(view.takePart.labels).toBe('column');
   });
@@ -343,7 +350,7 @@ describe('buildGalaPage', () => {
     expect(view.edit.treatment).toBeUndefined();
     const draft = buildGalaPage(seeded, { ...options, draft: true });
     expect(draft.edit.treatment).toBeUndefined();
-    expect(draft.takePart.rows[0]?.edit).toContain('path=takePart:way-1');
+    expect(draft.takePart.rows[0]?.edit).toContain('path=takePart:way-2');
     expect(buildGalaPage(null, options).title).toBe('End-of-Year Gala');
   });
 
@@ -429,6 +436,7 @@ describe('buildGalaPage', () => {
   it('carries the sponsor levels with their wording and edit attributes', () => {
     const view = buildGalaPage(seeded, options);
     expect(view.sponsor).toMatchObject({
+      shown: false,
       levels: [],
       pending: 'level names and amounts',
       amountPending: 'the amount',

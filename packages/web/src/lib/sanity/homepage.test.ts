@@ -127,6 +127,25 @@ const data = {
 } as unknown as HomepageData;
 
 describe('buildHomepage', () => {
+  it('mounts the lead Gala ticket form and never mounts it for the festival', () => {
+    const events = data.events.map((event) => ({
+      ...event,
+      ticketsUrl: 'https://www.zeffy.com/embed/ticketing/example',
+    }));
+    const view = buildHomepage({ ...data, events } as unknown as HomepageData, {
+      imageSet,
+      draft: false,
+      studioUrl: '/admin',
+      now,
+    });
+    expect(view.lead.ticketsForm).toBe('https://www.zeffy.com/embed/ticketing/example');
+    expect(view.lead.ticketsPage).toBe('https://www.zeffy.com/ticketing/example');
+    const festival = buildHomepage(
+      { ...data, events, layout: { season: 'odunde' } } as unknown as HomepageData,
+      { imageSet, draft: false, studioUrl: '/admin', now },
+    );
+    expect(festival.lead.ticketsForm).toBeUndefined();
+  });
   it('fills the layout defaults and drives the body attributes from them', () => {
     const view = buildHomepage(data, { imageSet, draft: false, studioUrl: '/admin', now });
     expect(view.layout).toEqual({

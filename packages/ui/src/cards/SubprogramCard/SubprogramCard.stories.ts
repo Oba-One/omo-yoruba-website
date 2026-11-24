@@ -41,6 +41,24 @@ export const Filled: Story = {
   },
 };
 
+/** Confirmed STEM wording stays readable when the facts stack on a small screen. */
+export const LongFact: Story = {
+  args: {
+    subprogram: {
+      ...stem,
+      facts: [
+        { _key: 'fact-1', label: 'Ages', value: 'Children and teenagers' },
+        {
+          _key: 'fact-2',
+          label: 'What they build',
+          value:
+            'Children and teenagers explore STEM through hands-on projects, with staff guiding them between activity stations.',
+        },
+      ],
+    } as Args['subprogram'],
+  },
+};
+
 /** No photograph in the Studio: the placeholder names the one the card waits for. */
 export const NoPhoto: Story = {
   args: { subprogram: { ...agbala, image: null } as Args['subprogram'] },

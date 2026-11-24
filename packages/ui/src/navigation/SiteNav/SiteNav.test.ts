@@ -50,12 +50,12 @@ describe('SiteNav', () => {
     expect(lessons.querySelector('[aria-current="page"]')).toBeNull();
   });
 
-  it('flattens the links in the mobile menu with Events as a group label and Donate last', async () => {
+  it('shows event and page links as peers in one mobile list, with Donate last', async () => {
     const body = await renderToBody(MobileMenuOpen);
     const menu = body.querySelector('dialog.oy-nav-menu');
     expect(menu?.hasAttribute('open')).toBe(true);
     expect(menu?.getAttribute('aria-label')).toBe('Menu');
-    expect(text(menu?.querySelector('.oy-nav-group'))).toBe('Events');
+    expect(menu?.querySelector('.oy-nav-group, .oy-nav-nested')).toBeNull();
     const labels = Array.from(menu?.querySelectorAll('a') ?? []).map((a) => text(a));
     expect(labels).toEqual([
       'Ọdúndé Festival',

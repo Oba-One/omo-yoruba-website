@@ -13,6 +13,7 @@
  */
 import { pendingWhat } from '@oy/content/pending';
 import { editionRoute } from '@oy/content/routes';
+import { ticketsTrigger } from '../../cards/TicketTierCard/tickets';
 import { longDate } from '../../content/edition-dates';
 import Button from '../../core/Button/Button.astro';
 import Kicker from '../../core/Kicker/Kicker.astro';
@@ -31,6 +32,7 @@ export interface BandEvent {
   summary?: string | null;
   /** Whether the edition offers a table, which the Gala's button names only then. */
   tables?: boolean | null;
+  ticketsUrl?: string | null;
 }
 
 interface Props {
@@ -58,6 +60,7 @@ const copy = COPY[kind];
 // The Gala's button names tables only when the edition offers one, as the Gala page's seats heading does.
 const button = kind === 'gala' && !event?.tables ? 'Tickets' : copy.button;
 const href = editionRoute(kind);
+const tickets = kind === 'gala' ? ticketsTrigger(event?.ticketsUrl) : undefined;
 const datePending = pendingWhat('event', 'start', kind);
 const venuePending = pendingWhat('event', 'venue.name', kind);
 
@@ -93,9 +96,12 @@ const when = longDate(event?.start);
                 )}
               </p>
             </div>
-            <Button href={href} arrow>
-              {button}
-            </Button>
+            <div class="oy-band-actions">
+              <Button {...(tickets?.attributes ?? { href })} arrow>
+                {button}
+              </Button>
+              {kind === 'gala' && <Button href={href} variant="quiet" arrow>Learn more</Button>}
+            </div>
           </>
         ) : (
           <Pending variant="line" what="the lead event: an edition with a date and a venue" />
@@ -163,8 +169,12 @@ const when = longDate(event?.start);
   .oy-band-summary--apart {
     flex-basis: 100%;
   }
-  .oy-event-band :global(.oy-btn) {
+  .oy-band-actions {
     margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-2);
   }
   .oy-event-band :global(.oy-pend-line) {
     flex: 1;

@@ -36,7 +36,7 @@ test.describe('the Impact page', () => {
       'top',
       'numbers',
       'how',
-      'outcomes',
+      ...((await page.locator('#outcomes').count()) > 0 ? ['outcomes'] : []),
       'civic',
       'voices',
       'photographs',
@@ -83,17 +83,21 @@ test.describe('the Impact page', () => {
     ]);
   });
 
-  test('names what each program produced, or keeps a place for it, and links each subject to its page', async ({
+  test('hides program outcomes until sourced figures exist, then links each displayed subject', async ({
     page,
   }) => {
     await page.goto('/impact');
     const section = page.locator('#outcomes');
+    if ((await section.count()) === 0) {
+      await expect(page.locator('.oy-outcome')).toHaveCount(0);
+      return;
+    }
     await expect(section.locator('h2')).toHaveText('What each program produced');
     const cards = section.locator('.oy-outcome');
-    expect(await cards.count()).toBeGreaterThanOrEqual(PLACEHOLDER_PROJECT ? 1 : 4);
+    expect(await cards.count()).toBeGreaterThanOrEqual(1);
     for (const card of await cards.all()) {
-      const measured = await card.getAttribute('data-measured');
-      if (measured === null) await expect(card.locator('.oy-pend')).toHaveCount(1);
+      await expect(card.locator('.oy-outcome-fig')).not.toBeEmpty();
+      await expect(card.locator('.oy-pend')).toHaveCount(0);
     }
     const rows = (await body(page, 'outcomes')) === 'rows';
     await expect(section.locator('.oy-outcome--row')).toHaveCount(rows ? await cards.count() : 0);
@@ -106,7 +110,7 @@ test.describe('the Impact page', () => {
       const hrefs = await section
         .locator('.oy-button-row a')
         .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-      expect(hrefs).toEqual(expect.arrayContaining(['/odunde', '/programs/yoruba-lessons']));
+      expect(hrefs.length).toBeGreaterThan(0);
     }
   });
 
@@ -164,17 +168,22 @@ test.describe('the Impact page', () => {
     );
     expect(cells).toEqual(['Tax status', 'EIN', 'Board', 'Financials']);
     await expect(section.locator('.oy-glance > div').first()).toContainText('501(c)(3)');
-    await expect(section.locator('.oy-facts dt')).toHaveText([
-      'Mailing address',
-      'Form 990',
-      'Annual report',
-      'Audit',
-    ]);
+    const factLabels = ['Mailing address', 'Form 990-N'];
+    for (const label of ['Annual report', 'Audit']) {
+      const row = section.locator('.oy-fact').filter({
+        has: page.locator('dt', { hasText: new RegExp(`^${label}$`) }),
+      });
+      if ((await row.count()) > 0) {
+        factLabels.push(label);
+        await expect(row.locator('a[href]')).toHaveCount(1);
+        await expect(row.locator('.oy-pend')).toHaveCount(0);
+      }
+    }
+    await expect(section.locator('.oy-facts dt')).toHaveText(factLabels);
     expectNoMockWhileOwed(await section.innerText(), [
       [/95-4612387/, pendingWhat('siteSettings', 'ein')],
       [/Leimert Boulevard/, pendingWhat('siteSettings', 'address')],
       [/March 2027|Filed annually/i, presenceWhat('governanceDoc', 'form990')?.what],
-      [/Not yet audited|reviewed by the board/i, presenceWhat('governanceDoc', 'audit')?.what],
       [/Listed in full/, presenceWhat('person', 'board')?.what],
     ]);
   });

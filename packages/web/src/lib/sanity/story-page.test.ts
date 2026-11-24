@@ -99,7 +99,7 @@ describe('buildStoryPage', () => {
     expect(buildStoryPage(null, options).title).toBe('Our Story');
   });
 
-  it('carries how it began: the story owed, the facts with their chips, the photograph owed', () => {
+  it('carries how it began: the story owed, the facts with their chips, and no invented photograph', () => {
     const view = buildStoryPage(seeded, options).founding;
     expect(view.prose).toBeUndefined();
     expect(view.pending).toBe('the 1997 story, in your words');
@@ -110,9 +110,6 @@ describe('buildStoryPage', () => {
       ['First year', undefined, 'a founding fact'],
     ]);
     expect(view.photo).toBeUndefined();
-    expect(view.photoWhat).toBe(
-      'the earliest photograph you have: an early gathering, or the founders',
-    );
   });
 
   it('shows the timeline only by its option, each entry its year, line and milestone', () => {
@@ -142,7 +139,7 @@ describe('buildStoryPage', () => {
       people: [],
       pending: "the board's names, roles and bios",
       rolePending: 'the role',
-      bioPending: 'a short bio',
+      bioPending: undefined,
       full: false,
     });
     expect(view.staff).toMatchObject({

@@ -15,6 +15,7 @@ import OutcomeCard from '@oy/ui/cards/OutcomeCard/OutcomeCard.astro';
 import EntryList from '@oy/ui/content/EntryList/EntryList.astro';
 import FactList from '@oy/ui/content/FactList/FactList.astro';
 import Prose from '@oy/ui/content/Prose/Prose.astro';
+import Button from '@oy/ui/core/Button/Button.astro';
 import Pending from '@oy/ui/core/Pending/Pending.astro';
 import CardGrid from '@oy/ui/page/CardGrid/CardGrid.astro';
 import GlanceStrip from '@oy/ui/page/GlanceStrip/GlanceStrip.astro';
@@ -47,7 +48,11 @@ cachePage(Astro, '/donate', { draft: preview, failed: Boolean(error) });
       titlePending={page.header.titlePending}
       line={page.header.line}
       actions={page.header.actions}
-    />
+    >
+      <Button slot="primary-action" href="#other" data-give arrow>
+        {page.header.actions[0]?.label}
+      </Button>
+    </PageHeader>
 
     <Section id="give-now" labelledby="give-heading">
       <Split align="center">

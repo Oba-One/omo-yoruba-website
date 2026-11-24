@@ -1180,6 +1180,10 @@
             },
             {
               "type": "string",
+              "value": "financialStatements"
+            },
+            {
+              "type": "string",
               "value": "annualReport"
             },
             {

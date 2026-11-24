@@ -6,7 +6,7 @@
  * the exact link and `data-current` on the Events trigger when a child is current. The dropdown
  * opens on hover, on focus within and on click, and closes on Escape; the inline element keeps
  * `aria-expanded` honest. Under 880px (the ported CSS breakpoint) the burger opens the mobile
- * menu, a native dialog with the same links flattened, Events as a group label and Donate at the
+ * menu, a native dialog with all page links in one flat list and Donate at the
  * bottom: the browser traps focus and closes on Escape, the element returns focus to the burger
  * and closes the menu when a link is chosen. Nothing opens on load. Renders once per page and is
  * persisted across navigations by the layout (ADR 0018, ADR 0020).
@@ -76,13 +76,7 @@ const ariaCurrent = (href: string) => (href === current ? 'page' : undefined);
     </div>
     <dialog class="oy-nav-menu oy-dark" id="oy-nav-menu" aria-label="Menu" open={menuOpen}>
       <button class="oy-nav-close" type="button" aria-label="Close menu">×</button>
-      <span class="oy-nav-group">Events</span>
-      {EVENT_LINKS.map((link) => (
-        <a class="oy-nav-nested" href={link.href} aria-current={ariaCurrent(link.href)}>
-          {link.label}
-        </a>
-      ))}
-      {NAV_LINKS.map((link) => (
+      {[...EVENT_LINKS, ...NAV_LINKS].map((link) => (
         <a href={link.href} aria-current={ariaCurrent(link.href)}>
           {link.label}
         </a>

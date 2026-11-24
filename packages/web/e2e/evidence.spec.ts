@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect, FIXTURE_API, test } from './fixtures';
 
 // Labeled captures for a pull request, at 375 and 1280 wide, kept outside the checkout so they survive its
@@ -28,7 +28,7 @@ interface Capture {
 
 const captures: Capture[] = [];
 
-async function capture(page: Page, flow: string, step: string): Promise<void> {
+async function capture(page: Page, flow: string, step: string, target?: Locator): Promise<void> {
   const original = page.viewportSize();
   for (const { label, width, height } of WIDTHS) {
     await page.setViewportSize({ width, height });
@@ -36,13 +36,16 @@ async function capture(page: Page, flow: string, step: string): Promise<void> {
     await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => done(null))));
     await page.waitForLoadState('networkidle');
     const file = `${flow}-${step}-${label}.png`;
-    await page.screenshot({ path: join(DIR as string, file), fullPage: false });
+    if (target) await target.screenshot({ path: join(DIR as string, file) });
+    else await page.screenshot({ path: join(DIR as string, file), fullPage: false });
     captures.push({ flow, step, width: label, url: new URL(page.url()).pathname, file });
   }
   if (original) await page.setViewportSize(original);
 }
 
 test.describe('evidence', () => {
+  // Both flows own one manifest, so they share a worker even when the group is retried.
+  test.describe.configure({ mode: 'serial' });
   test.skip(!DIR, 'captures run only when OY_EVIDENCE_DIR names where to keep them');
 
   test.beforeAll(() => mkdirSync(DIR as string, { recursive: true }));
@@ -87,5 +90,28 @@ test.describe('evidence', () => {
     await page.locator('a[data-photo]').first().click();
     await expect(page.locator('dialog.oy-lightbox[open]')).toBeVisible();
     await capture(page, 'gallery', '4-lightbox');
+  });
+
+  test('Odunde participation', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'the desktop project takes both widths');
+    // Eight captures and three dialog flows share this test's budget.
+    test.slow();
+    await page.goto('/odunde');
+    const participation = page.locator('#participate');
+    await expect(participation.locator('.oy-enquiry-card')).toHaveCount(3);
+    await capture(page, 'odunde', '1-participation', participation);
+    for (const [kind, label] of [
+      ['sponsor', 'Become a sponsor'],
+      ['volunteer', 'Volunteer'],
+      ['vendor', 'Apply as a vendor'],
+    ] as const) {
+      await participation.getByRole('link', { name: label, exact: true }).click();
+      const dialog = page.locator('dialog#enquiry');
+      await expect(dialog).toHaveAttribute('open', '');
+      await expect(dialog).toHaveAttribute('data-kind', kind);
+      await capture(page, 'odunde', `2-${kind}`);
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toHaveAttribute('open', '');
+    }
   });
 });

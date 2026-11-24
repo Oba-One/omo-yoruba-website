@@ -8,6 +8,7 @@
  * breathing slowly when motion is on (`.v2-kb`, off under reduced motion) and the àdìrẹ dot field
  * when the page asks. Without a photograph the band keeps its surface and names the missing
  * photograph; without a heading the H1 carries a Pending chip, so the page keeps its one H1.
+ * The primary-action slot replaces only the first trigger, keeping the shared action layout.
  */
 import ActionButton from '../../core/ActionButton/ActionButton.astro';
 import type { ActionLike } from '../../core/ActionButton/action';
@@ -118,7 +119,9 @@ const shownFacts = facts ?? [];
       {
         (primary || secondary) && (
           <div class="oy-phead-cta">
-            <ActionButton action={primary} variant="primary" />
+            <slot name="primary-action">
+              <ActionButton action={primary} variant="primary" />
+            </slot>
             <ActionButton action={secondary} variant="secondary" arrow={false} />
           </div>
         )
