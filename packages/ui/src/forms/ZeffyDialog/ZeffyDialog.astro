@@ -335,8 +335,8 @@ const pageLink = mode === 'pending' ? undefined : safeHref(pageHref);
         host.dataset.state = 'loading';
         stop();
         timer = window.setTimeout(fail, timeout);
-        // The template may still be on its way (the Give Dialog's comes from a server island); keep looking
-        // for it until the timer ends.
+        // The template may not be in the page yet (a story mounts it late); keep looking for it until the
+        // timer ends.
         if (!mountFrame()) poll = window.setInterval(mountFrame, 200);
       };
       api.open = (from) => {

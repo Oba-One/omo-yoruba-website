@@ -2,7 +2,7 @@ import { expect, test } from './fixtures';
 
 // While the settings hold no Zeffy URL (wayfinder ticket 03) the dialog opens in its pending
 // mode: the Pending chip, the check line, Contact us, no Try again, no foot. Once the URL is set the
-// embed box mounts the island's iframe instead, its address carrying Zeffy's v2 parameters
+// embed box mounts the page's iframe instead, its address carrying Zeffy's v2 parameters
 // (ADR 0045). The timed fallback is covered by the GiveDialog stories' play functions, and
 // Zeffy's messages by the GiveDialog element tests.
 test('a Donate trigger opens the Give Dialog, Escape closes it and focus returns', async ({

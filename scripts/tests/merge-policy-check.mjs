@@ -97,7 +97,6 @@ const mustBeCritical = [
   '.codex/hooks.json',
   '.github/workflows/ci.yml',
   'packages/web/src/components/FormBridge.astro',
-  'packages/web/src/components/ZeffyEmbed.astro',
   'packages/content/scripts/export.ts',
   'packages/content/scripts/dataset.ts',
   'packages/content/src/studio/roles.ts',

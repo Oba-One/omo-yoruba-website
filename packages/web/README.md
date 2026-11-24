@@ -28,8 +28,8 @@ and no GROQ.
   and what is never cached (ADR 0021). `src/lib/csp.ts`: the one CSP allow-list.
 - `src/middleware.ts`: sends the CSP report-only (ADR 0011), switches the cache off where the policy
   says, and runs the forms' no-JavaScript path.
-- `src/components/`: `FormBridge.astro` (hands a form to the actions), `ZeffyEmbed.astro` (the Give
-  Dialog's server island) and `Analytics.astro` (PostHog, once a key is set).
+- `src/components/`: `FormBridge.astro` (hands a form to the actions), `ZeffyFrame.astro` (the Give and
+  Join Dialogs' Zeffy frame) and `Analytics.astro` (PostHog, once a key is set).
 - `e2e/` with `playwright.config.ts`: the end-to-end specs. `lighthouserc.cjs` holds the Lighthouse
   budgets, and `vercel.json` pins Vercel's install and build commands, which run the pinned Bun
   through `scripts/pinned-bun.sh` (`docs/runbook.md`, Deploy).
