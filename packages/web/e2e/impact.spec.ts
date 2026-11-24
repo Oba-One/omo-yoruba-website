@@ -168,12 +168,22 @@ test.describe('the Impact page', () => {
     );
     expect(cells).toEqual(['Tax status', 'EIN', 'Board', 'Financials']);
     await expect(section.locator('.oy-glance > div').first()).toContainText('501(c)(3)');
-    await expect(section.locator('.oy-facts dt')).toHaveText(['Mailing address', 'Form 990-N']);
+    const factLabels = ['Mailing address', 'Form 990-N'];
+    for (const label of ['Annual report', 'Audit']) {
+      const row = section.locator('.oy-fact').filter({
+        has: page.locator('dt', { hasText: new RegExp(`^${label}$`) }),
+      });
+      if ((await row.count()) > 0) {
+        factLabels.push(label);
+        await expect(row.locator('a[href]')).toHaveCount(1);
+        await expect(row.locator('.oy-pend')).toHaveCount(0);
+      }
+    }
+    await expect(section.locator('.oy-facts dt')).toHaveText(factLabels);
     expectNoMockWhileOwed(await section.innerText(), [
       [/95-4612387/, pendingWhat('siteSettings', 'ein')],
       [/Leimert Boulevard/, pendingWhat('siteSettings', 'address')],
       [/March 2027|Filed annually/i, presenceWhat('governanceDoc', 'form990')?.what],
-      [/Not yet audited|reviewed by the board/i, presenceWhat('governanceDoc', 'audit')?.what],
       [/Listed in full/, presenceWhat('person', 'board')?.what],
     ]);
   });

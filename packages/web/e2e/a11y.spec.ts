@@ -27,7 +27,25 @@ const audit = async (page: Page) => {
 test.describe('axe on the layout', () => {
   test('nothing open', async ({ page }) => {
     await page.goto('/');
-    expect(await audit(page)).toEqual([]);
+    const closedAudit = async () => {
+      await expect(page.locator('main#main')).toBeVisible();
+      await expect(page.locator('dialog[open]')).toHaveCount(0);
+      return audit(page);
+    };
+    const violations = await closedAudit().catch(async (error: unknown) => {
+      // Only the initial, state-free audit can restart after the cold dev server reloads.
+      // Axe violations are asserted outside this catch; dialog audits never restart this way.
+      if (
+        process.env.PLAYWRIGHT_TEST_BASE_URL ||
+        !String(error).includes('Execution context was destroyed')
+      ) {
+        throw error;
+      }
+      await page.waitForLoadState('load');
+      await expect(page).toHaveURL('/');
+      return closedAudit();
+    });
+    expect(violations).toEqual([]);
   });
 
   test('with the Enquiry Modal open', async ({ page }) => {

@@ -104,16 +104,22 @@ test.describe('the homepage', () => {
     });
     expect(cells).toHaveLength(3);
     for (const { width, column } of cells) expect(Math.abs(width - column)).toBeLessThan(1);
-    // The band's button keeps to the right edge of the content, wrapped or not (an edition exists
-    // only with the Studio's content, so CI's placeholder run has no button to measure).
+    // The action group and each of its buttons keep to the right edge, including Gala's Learn more.
+    // Without an edition, the placeholder run has no actions to measure.
     const band = page.locator('#lead-event .oy-band-inner');
-    const button = band.locator('.oy-btn');
-    if ((await button.count()) > 0) {
-      const [inner, box] = await Promise.all([band.boundingBox(), button.boundingBox()]);
+    const actions = band.locator('.oy-band-actions');
+    if ((await actions.count()) > 0) {
+      const [inner, box] = await Promise.all([band.boundingBox(), actions.boundingBox()]);
       const padding = await band.evaluate((el) => parseFloat(getComputedStyle(el).paddingRight));
       expect(
         inner && box && Math.abs(inner.x + inner.width - padding - (box.x + box.width)),
       ).toBeLessThan(1);
+      for (const button of await actions.locator('.oy-btn').all()) {
+        const buttonBox = await button.boundingBox();
+        expect(
+          box && buttonBox && Math.abs(box.x + box.width - (buttonBox.x + buttonBox.width)),
+        ).toBeLessThan(1);
+      }
     }
   });
 

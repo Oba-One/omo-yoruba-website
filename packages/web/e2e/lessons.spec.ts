@@ -46,16 +46,19 @@ test.describe('the Yoruba Language Lessons page', () => {
     expect(main).not.toMatch(/\bSchool\b/);
     expect(main).not.toMatch(/Saturday|\bterm\b|12 Sep/i);
     const glance = page.locator('#glance .oy-glance > div');
+    const ages = glance.filter({ has: page.locator('b', { hasText: /^Ages$/ }) });
+    const ageCount = await ages.count();
+    expect(ageCount).toBeLessThanOrEqual(1);
+    await expect(ages.locator('.oy-pend')).toHaveCount(0);
     if (PLACEHOLDER_PROJECT) {
       // No facts: the band keeps its place with the registry's line.
       await expect(glance).toHaveCount(0);
       await expect(page.locator('#glance .oy-pend-line')).toContainText('the lesson details');
     } else {
-      await expect(glance).toHaveCount(3);
+      await expect(glance).toHaveCount(3 + ageCount);
     }
     expectNoMockWhileOwed(main, [
       [/\$180|\$75/, pendingWhat('lessonsPage', 'lessonDetails.cost')],
-      [/5 to adult/i, pendingWhat('lessonsPage', 'lessonDetails.ages')],
       [
         /Yetunde Ojo|Segun Adewale|Bisi Olatunji|Kunle Fashola/,
         pendingWhat('lessonsPage', 'teacher'),
